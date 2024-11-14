@@ -12,9 +12,9 @@ from .utils import (
     generate_anchors,
     decode_landmarks
 )
-from .config import get_config
-
-from.model_store import download
+from .model_store import verify_model_weights
+from typing import Tuple, List
+from .log import logger
 
 
 def parse_arguments():
@@ -78,6 +78,29 @@ def parse_arguments():
     return parser.parse_args()
 
 
+def resize_image(frame, target_shape=(640, 640)):
+    width, height = target_shape
+
+    # Aspect-ratio preserving resize
+    im_ratio = float(frame.shape[0]) / frame.shape[1]
+    model_ratio = height / width
+    if im_ratio > model_ratio:
+        new_height = height
+        new_width = int(new_height / im_ratio)
+    else:
+        new_width = width
+        new_height = int(new_width * im_ratio)
+
+    resize_factor = float(new_height) / frame.shape[0]
+    resized_frame = cv2.resize(frame, (new_width, new_height))
+
+    # Create blank image and place resized image on it
+    image = np.zeros((height, width, 3), dtype=np.uint8)
+    image[:new_height, :new_width, :] = resized_frame
+
+    return image, resize_factor
+
+
 class RetinaFace:
     def __init__(
         self,
@@ -88,50 +111,79 @@ class RetinaFace:
         post_nms_topk=750,
         vis_threshold=0.6
     ) -> None:
-        
+
         self.model_path = model_path
         self.conf_threshold = conf_threshold
         self.pre_nms_topk = pre_nms_topk
         self.nms_threshold = nms_threshold
         self.post_nms_topk = post_nms_topk
         self.vis_threshold = vis_threshold
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+        # Generate anchor boxes
+        self.priors = generate_anchors(image_size=(640, 640))
 
         # Load ONNX model
-        self.ort_session = ort.InferenceSession(model_path)
-        
-        
-    @staticmethod
-    def preprocess_image(image, rgb_mean=(104, 117, 123)):
-        image = np.float32(image)
-        image -= rgb_mean
+        self._initialize_model(model_path)
+
+    def _initialize_model(self, model_path: str) -> None:
+        """
+        Initializes an ONNX model session from the given path.
+
+        Args:
+            model_path (str): The file path to the ONNX model.
+
+        Raises:
+            RuntimeError: If the model fails to load, logs an error and raises an exception.
+        """
+        try:
+            self.session = ort.InferenceSession(model_path)
+            self.input_name = self.session.get_inputs()[0].name
+            logger.info(f"Successfully initialized the model from {model_path}")
+        except Exception as e:
+            logger.error(f"Failed to load model from '{model_path}': {e}")
+            raise RuntimeError(f"Failed to initialize model session for '{model_path}'") from e
+
+    def preprocess(self, image: np.ndarray) -> np.ndarray:
+        """Preprocess input image for model inference.
+
+        Args:
+            image (np.ndarray): Input image.
+
+        Returns:
+            np.ndarray: Preprocessed image tensor with shape (1, C, H, W)
+        """
+        image = np.float32(image) - np.array([104, 117, 123], dtype=np.float32)
         image = image.transpose(2, 0, 1)  # HWC to CHW
         image = np.expand_dims(image, axis=0)  # Add batch dimension (1, C, H, W)
         return image
 
-    def infer(self, image_path):
+    def inference(self, input_tensor: np.ndarray) -> List[np.ndarray]:
+        """Perform model inference on the preprocessed image tensor.
+
+        Args:
+            input_tensor (np.ndarray): Preprocessed input tensor.
+
+        Returns:
+            List[np.ndarray]: Raw model outputs.
+        """
+        return self.session.run(None, {self.input_name: input_tensor})
+
+    def infer(self, image):
         # Load and preprocess image
-        original_image = cv2.imread(image_path)
-        img_height, img_width, _ = original_image.shape
-        image = self.preprocess_image(original_image)
+        image, resize_factor = resize_image(image)
+        height, width, _ = image.shape
+
+        image_tensor = self.preprocess(image)
 
         # Run ONNX model inference
-        outputs = self.ort_session.run(None, {'input': image})
+        outputs = self.inference(image_tensor)
         loc, conf, landmarks = outputs[0].squeeze(0), outputs[1].squeeze(0), outputs[2].squeeze(0)
 
-        # Generate anchor boxes
-        priors = generate_anchors(image_size=(img_height, img_width))
-
         # Decode boxes and landmarks
-        boxes = decode(torch.tensor(loc), priors).to(self.device)
-        landmarks = decode_landmarks(torch.tensor(landmarks), priors).to(self.device)
+        boxes = decode(torch.tensor(loc), self.priors).cpu().numpy()
+        landmarks = decode_landmarks(torch.tensor(landmarks), self.priors).cpu().numpy()
 
-        # Adjust scales for boxes and landmarks
-        bbox_scale = torch.tensor([img_width, img_height] * 2, device=self.device)
-        boxes = (boxes * bbox_scale).cpu().numpy()
-
-        landmark_scale = torch.tensor([img_width, img_height] * 5, device=self.device)
-        landmarks = (landmarks * landmark_scale).cpu().numpy()
+        boxes, landmarks = self._scale_detections(boxes, landmarks, resize_factor, height, width)
 
         scores = conf[:, 1]  # Confidence scores for class 1 (face)
 
@@ -152,7 +204,18 @@ class RetinaFace:
         detections, landmarks = detections[:self.post_nms_topk], landmarks[:self.post_nms_topk]
 
         # Concatenate detections and landmarks
-        return np.concatenate((detections, landmarks), axis=1), original_image
+        return np.concatenate((detections, landmarks), axis=1)
+    
+    
+    def _scale_detections(self, boxes: np.ndarray, landmarks: np.ndarray, resize_factor: float, width: int, height: int) -> Tuple[np.ndarray, np.ndarray]:
+        """Scale bounding boxes and landmarks to the original image size."""
+        bbox_scale = np.array([width, height] * 2)
+        boxes = boxes * bbox_scale / resize_factor
+
+        landmark_scale = np.array([width, height] * 5)
+        landmarks = landmarks * landmark_scale / resize_factor
+
+        return boxes, landmarks
 
     def save_output_image(self, original_image, image_path):
         im_name = os.path.splitext(os.path.basename(image_path))[0]
@@ -161,7 +224,8 @@ class RetinaFace:
         print(f"Image saved at '{save_name}'")
 
     def run_inference(self, image_path, save_image=False):
-        detections, original_image = self.infer(image_path)
+        original_image = original_image = cv2.imread(image_path)
+        detections = self.infer(original_image)
         draw_detections(original_image, detections, self.vis_threshold)
 
         if save_image:
@@ -170,10 +234,10 @@ class RetinaFace:
 
 if __name__ == '__main__':
     args = parse_arguments()
-
+    import time
     # Initialize and run the ONNX inference
     retinaface_inference = RetinaFace(
-        model_path=download("retinaface_mnet_v2"),
+        model_path=verify_model_weights("retinaface_mnet_v2"),
         conf_threshold=args.conf_threshold,
         pre_nms_topk=args.pre_nms_topk,
         nms_threshold=args.nms_threshold,
@@ -182,3 +246,10 @@ if __name__ == '__main__':
     )
 
     retinaface_inference.run_inference(args.image_path, save_image=args.save_image)
+    # avg = 0
+    # for _ in range(50):
+    #     st = time.time()
+    #     retinaface_inference.run_inference(args.image_path, save_image=args.save_image)
+    #     d = time.time() - st
+    #     avg += d
+    # print("avg", avg/50)
