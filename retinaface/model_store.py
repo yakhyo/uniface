@@ -1,6 +1,6 @@
 import os
-import requests
 import hashlib
+import requests
 from typing import Dict
 
 from .log import logger

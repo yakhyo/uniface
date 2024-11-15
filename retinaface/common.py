@@ -9,7 +9,30 @@ import cv2
 import numpy as np
 
 
-def generate_anchors(image_size=[640, 640], ):
+def resize_image(frame, target_shape=(640, 640)):
+    width, height = target_shape
+
+    # Aspect-ratio preserving resize
+    im_ratio = float(frame.shape[0]) / frame.shape[1]
+    model_ratio = height / width
+    if im_ratio > model_ratio:
+        new_height = height
+        new_width = int(new_height / im_ratio)
+    else:
+        new_width = width
+        new_height = int(new_width * im_ratio)
+
+    resize_factor = float(new_height) / frame.shape[0]
+    resized_frame = cv2.resize(frame, (new_width, new_height))
+
+    # Create blank image and place resized image on it
+    image = np.zeros((height, width, 3), dtype=np.uint8)
+    image[:new_height, :new_width, :] = resized_frame
+
+    return image, resize_factor
+
+
+def generate_anchors(image_size=(640, 640)):
     """Generate anchor boxes based on image size."""
     image_size = image_size
 
@@ -80,7 +103,7 @@ def nms(dets, threshold):
     return keep
 
 
-def decode(loc, priors, variances=[0.1, 0.2]):
+def decode_boxes(loc, priors, variances=[0.1, 0.2]):
     """
     Decode locations from predictions using priors to undo
     the encoding done for offset regression at train time.
@@ -135,46 +158,3 @@ def decode_landmarks(predictions, priors, variances=[0.1, 0.2]):
     return landmarks
 
 
-def draw_detections(original_image, detections, vis_threshold):
-    """
-    Draws bounding boxes and landmarks on the image based on multiple detections.
-
-    Args:
-        original_image (ndarray): The image on which to draw detections.
-        detections (ndarray): Array of detected bounding boxes and landmarks.
-        vis_threshold (float): The confidence threshold for displaying detections.
-    """
-
-    # Colors for visualization
-    LANDMARK_COLORS = [
-        (0, 0, 255),    # Right eye (Red)
-        (0, 255, 255),  # Left eye (Yellow)
-        (255, 0, 255),  # Nose (Magenta)
-        (0, 255, 0),    # Right mouth (Green)
-        (255, 0, 0)     # Left mouth (Blue)
-    ]
-    BOX_COLOR = (0, 0, 255)
-    TEXT_COLOR = (255, 255, 255)
-
-    # Filter by confidence
-    detections = detections[detections[:, 4] >= vis_threshold]
-
-    print(f"#faces: {len(detections)}")
-
-    # Slice arrays efficiently
-    boxes = detections[:, 0:4].astype(np.int32)
-    scores = detections[:, 4]
-    landmarks = detections[:, 5:15].reshape(-1, 5, 2).astype(np.int32)
-
-    for box, score, landmark in zip(boxes, scores, landmarks):
-        # Draw bounding box
-        cv2.rectangle(original_image, (box[0], box[1]), (box[2], box[3]), BOX_COLOR, 2)
-
-        # Draw confidence score
-        text = f"{score:.2f}"
-        cx, cy = box[0], box[1] + 12
-        cv2.putText(original_image, text, (cx, cy), cv2.FONT_HERSHEY_DUPLEX, 0.5, TEXT_COLOR)
-
-        # Draw landmarks
-        for point, color in zip(landmark, LANDMARK_COLORS):
-            cv2.circle(original_image, point, 1, color, 4)
