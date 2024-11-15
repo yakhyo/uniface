@@ -6,7 +6,7 @@ import onnxruntime as ort
 import torch
 from typing import Tuple, List
 
-from .log import logger
+from .log import Logger
 from .model_store import verify_model_weights
 
 from .common import (
@@ -24,23 +24,20 @@ class RetinaFace:
         model: str,
         conf_thresh: float = 0.5,
         nms_thresh: float = 0.4,
-        input_size: Tuple[int, int] = (640, 640),
         pre_nms_topk: int = 5000,
         post_nms_topk: int = 750,
     ) -> None:
 
         self.conf_thresh = conf_thresh
         self.nms_thresh = nms_thresh
-        self.input_size = input_size
-
         self.pre_nms_topk = pre_nms_topk
         self.post_nms_topk = post_nms_topk
 
         # Get path to model weights
         self._model_path = verify_model_weights(model)
 
-        # Generate anchor boxes
-        self._priors = generate_anchors(image_size=input_size)
+        # Placeholder for anchor boxes
+        self._priors = None
 
         # Initialize model
         self._initialize_model(self._model_path)
@@ -58,9 +55,9 @@ class RetinaFace:
         try:
             self.session = ort.InferenceSession(model_path)
             self.input_name = self.session.get_inputs()[0].name
-            logger.info(f"Successfully initialized the model from {model_path}")
+            Logger.info(f"Successfully initialized the model from {model_path}")
         except Exception as e:
-            logger.error(f"Failed to load model from '{model_path}': {e}")
+            Logger.error(f"Failed to load model from '{model_path}': {e}")
             raise RuntimeError(f"Failed to initialize model session for '{model_path}'") from e
 
     def preprocess(self, image: np.ndarray) -> np.ndarray:
@@ -104,11 +101,12 @@ class RetinaFace:
                 - landmarks (np.ndarray): Array of detected facial landmarks.
                 Shape: (num_detections, 5, 2), where each row contains 5 landmark points (x, y).
         """
-        if input_size is not None and input_size != self.input_size:
+
+        if input_size is not None and self._priors is None:
             self._priors = generate_anchors(image_size=input_size)
 
-        # Preprocessing
         image, resize_factor = resize_image(image, target_shape=input_size)
+
         height, width, _ = image.shape
         image_tensor = self.preprocess(image)
 
@@ -120,12 +118,7 @@ class RetinaFace:
 
         return detections, landmarks
 
-    def postprocess(
-        self,
-        outputs: List[np.ndarray],
-        resize_factor: float,
-        shape: Tuple[int, int]
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    def postprocess(self, outputs: List[np.ndarray], resize_factor: float, shape: Tuple[int, int]) -> Tuple[np.ndarray, np.ndarray]:
         """
         Process the model outputs into final detection results.
 
@@ -175,13 +168,7 @@ class RetinaFace:
 
         return detections, landmarks
 
-    def _scale_detections(
-        self,
-        boxes: np.ndarray,
-        landmarks: np.ndarray,
-        resize_factor: float,
-        shape: Tuple[int, int]
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    def _scale_detections(self, boxes: np.ndarray, landmarks: np.ndarray, resize_factor: float, shape: Tuple[int, int]) -> Tuple[np.ndarray, np.ndarray]:
         """Scale bounding boxes and landmarks to the original image size."""
         bbox_scale = np.array([shape[0], shape[1]] * 2)
         boxes = boxes * bbox_scale / resize_factor

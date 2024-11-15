@@ -3,7 +3,7 @@ import hashlib
 import requests
 from typing import Dict
 
-from .log import logger
+from .log import Logger
 
 
 MODEL_URLS: Dict[str, str] = {
@@ -64,17 +64,17 @@ def verify_model_weights(model_name: str, root: str = '~/.retinaface/models') ->
     if not os.path.exists(model_path):
         url = MODEL_URLS.get(model_name)
         if not url:
-            logger.error(f"No URL found for model '{model_name}'")
+            Logger.error(f"No URL found for model '{model_name}'")
             raise ValueError(f"No URL found for model '{model_name}'")
 
-        logger.info(f"Downloading '{model_name}' from {url}")
+        Logger.info(f"Downloading '{model_name}' from {url}")
         download_file(url, model_path)
-        logger.info(f"Successfully '{model_name}' downloaded to {model_path}")
+        Logger.info(f"Successfully '{model_name}' downloaded to {model_path}")
 
     expected_hash = MODEL_SHA256.get(model_name)
     if expected_hash and not verify_file_hash(model_path, expected_hash):
         os.remove(model_path)  # Remove corrupted file
-        logger.warning("Corrupted weight detected. Removing...")
+        Logger.warning("Corrupted weight detected. Removing...")
         raise ValueError(f"Hash mismatch for '{model_name}'. The file may be corrupted; please try downloading again.")
 
     return model_path
@@ -101,7 +101,7 @@ def verify_file_hash(file_path: str, expected_hash: str) -> bool:
             file_hash.update(chunk)
     actual_hash = file_hash.hexdigest()
     if actual_hash != expected_hash:
-        logger.warning(f"Expected hash: {expected_hash}, but got: {actual_hash}")
+        Logger.warning(f"Expected hash: {expected_hash}, but got: {actual_hash}")
     return actual_hash == expected_hash
 
 

@@ -13,10 +13,12 @@
 
 
 from .retinaface import RetinaFace
+from .log import Logger
 from .version import __version__, __author__
 
 __all__ = [
     "__version__",
     "__author__"
     "RetinaFace",
+    "Logger"
 ]

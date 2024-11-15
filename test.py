@@ -1,7 +1,7 @@
 from retinaface import RetinaFace
 import cv2
 import os
-
+import numpy as np
 
 def draw_detections(original_image, detections, vis_threshold):
     """
@@ -61,7 +61,7 @@ def save_output_image(original_image, image_path):
 
 def run_inference(image_path, save_image=False, vis_threshold=0.6):
     original_image = original_image = cv2.imread(image_path)
-    detections, landmarks = retinaface_inference.detect(original_image, (640, 640))
+    detections, landmarks = retinaface_inference.detect(original_image, (720, 720))
     draw_detections(original_image, (detections, landmarks), vis_threshold)
 
     if save_image:
@@ -85,5 +85,6 @@ if __name__ == '__main__':
         st = time.time()
         run_inference(img_path, save_image=True, vis_threshold=0.6)
         d = time.time() - st
+        print(d)
         avg += d
     print("avg", avg/50)
