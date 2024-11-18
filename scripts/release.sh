@@ -14,7 +14,7 @@ python3 setup.py sdist bdist_wheel
 echo "Release package created successfully in the 'dist/' folder."
 
 
-echo "Uploading the package to PyPI..."
-twine upload dist/*
+# echo "Uploading the package to PyPI..."
+# twine upload dist/*
 
-echo "Release uploaded successfully!"
+# echo "Release uploaded successfully!"

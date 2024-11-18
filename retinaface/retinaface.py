@@ -4,7 +4,7 @@ import numpy as np
 import onnxruntime as ort
 
 import torch
-from typing import Tuple, List
+from typing import Tuple, List, Optional
 
 from .log import Logger
 from .model_store import verify_model_weights
@@ -26,18 +26,31 @@ class RetinaFace:
         nms_thresh: float = 0.4,
         pre_nms_topk: int = 5000,
         post_nms_topk: int = 750,
+        dynamic_size: Optional[bool] = False,
+        input_size: Optional[Tuple[int, int]] = (640, 640),  # Default input size if dynamic_size=False
     ) -> None:
 
         self.conf_thresh = conf_thresh
         self.nms_thresh = nms_thresh
         self.pre_nms_topk = pre_nms_topk
         self.post_nms_topk = post_nms_topk
+        self.dynamic_size = dynamic_size
+        self.input_size = input_size
+
+        Logger.info(
+            f"Initializing RetinaFace with model={model}, conf_thresh={conf_thresh}, nms_thresh={nms_thresh}, "
+            f"pre_nms_topk={pre_nms_topk}, post_nms_topk={post_nms_topk}, dynamic_size={dynamic_size}, "
+            f"input_size={input_size}"
+        )
 
         # Get path to model weights
         self._model_path = verify_model_weights(model)
+        Logger.info(f"Verified model weights located at: {self._model_path}")
 
-        # Placeholder for anchor boxes
-        self._priors = None
+        # Precompute anchors if using static size
+        if not dynamic_size and input_size is not None:
+            self._priors = generate_anchors(image_size=input_size)
+            Logger.debug("Generated anchors for static input size.")
 
         # Initialize model
         self._initialize_model(self._model_path)
@@ -85,14 +98,12 @@ class RetinaFace:
         """
         return self.session.run(None, {self.input_name: input_tensor})
 
-    def detect(self, image: np.ndarray, input_size: Tuple[int, int] = None) -> Tuple[np.ndarray, np.ndarray]:
+    def detect(self, image: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """
         Perform face detection on an input image and return bounding boxes and landmarks.
 
         Args:
             image (np.ndarray): Input image as a NumPy array of shape (height, width, channels).
-            input_size (Tuple[int, int], optional): Target size for resizing the input image (width, height).
-                If provided and different from `self.input_size`, new anchors will be generated.
 
         Returns:
             Tuple[np.ndarray, np.ndarray]: Detection results containing:
@@ -102,10 +113,12 @@ class RetinaFace:
                 Shape: (num_detections, 5, 2), where each row contains 5 landmark points (x, y).
         """
 
-        if input_size is not None and self._priors is None:
-            self._priors = generate_anchors(image_size=input_size)
-
-        image, resize_factor = resize_image(image, target_shape=input_size)
+        if self.dynamic_size:
+            height, width, _ = image.shape
+            self._priors = generate_anchors(image_size=(height, width))  # generate anchors for each input image
+            resize_factor = 1.0  # No resizing
+        else:
+            image, resize_factor = resize_image(image, target_shape=self.input_size)
 
         height, width, _ = image.shape
         image_tensor = self.preprocess(image)

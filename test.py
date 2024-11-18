@@ -61,7 +61,7 @@ def save_output_image(original_image, image_path):
 
 def run_inference(image_path, save_image=False, vis_threshold=0.6):
     original_image = original_image = cv2.imread(image_path)
-    detections, landmarks = retinaface_inference.detect(original_image, (720, 720))
+    detections, landmarks = retinaface_inference.detect(original_image)
     draw_detections(original_image, (detections, landmarks), vis_threshold)
 
     if save_image:
@@ -77,6 +77,7 @@ if __name__ == '__main__':
         pre_nms_topk=5000,
         nms_thresh=0.4,
         post_nms_topk=750,
+        input_size=(1024, 1024)
     )
     
     img_path = "assets/test.jpg"
