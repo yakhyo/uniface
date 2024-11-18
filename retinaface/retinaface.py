@@ -1,3 +1,7 @@
+# Copyright 2024 Yakhyokhuja Valikhujaev
+# Author: Yakhyokhuja Valikhujaev
+# GitHub: https://github.com/yakhyo
+
 import os
 import cv2
 import numpy as np
@@ -19,6 +23,29 @@ from .common import (
 
 
 class RetinaFace:
+    """
+    A class for face detection using the RetinaFace model.
+
+    Args:
+        model (str): Path or identifier of the model weights.
+        conf_thresh (float): Confidence threshold for detections. Defaults to 0.5.
+        nms_thresh (float): Non-maximum suppression threshold. Defaults to 0.4.
+        pre_nms_topk (int): Maximum number of detections before NMS. Defaults to 5000.
+        post_nms_topk (int): Maximum number of detections after NMS. Defaults to 750.
+        dynamic_size (Optional[bool]): Whether to adjust anchor generation dynamically based on image size. Defaults to False.
+        input_size (Optional[Tuple[int, int]]): Static input size for the model (width, height). Defaults to (640, 640).
+
+    Attributes:
+        conf_thresh (float): Confidence threshold for filtering detections.
+        nms_thresh (float): Threshold for NMS to remove duplicate detections.
+        pre_nms_topk (int): Maximum detections to consider before applying NMS.
+        post_nms_topk (int): Maximum detections retained after applying NMS.
+        dynamic_size (bool): Indicates if input size and anchors are dynamically adjusted.
+        input_size (Tuple[int, int]): The model's input image size.
+        _model_path (str): Path to the model weights.
+        _priors (torch.Tensor): Precomputed anchor boxes for static input size.
+    """
+
     def __init__(
         self,
         model: str,
@@ -101,7 +128,7 @@ class RetinaFace:
     def detect(
         self,
         image: np.ndarray,
-        max_num: Optional[int] = None,
+        max_num: Optional[int] = 0,
         metric: Literal["default", "max"] = "default",
         center_weight: Optional[float] = 2.0
     ) -> Tuple[np.ndarray, np.ndarray]:
@@ -142,7 +169,7 @@ class RetinaFace:
         # Postprocessing
         detections, landmarks = self.postprocess(outputs, resize_factor, shape=(width, height))
 
-        if max_num is not None and detections.shape[0] > max_num:
+        if max_num > 0 and detections.shape[0] > max_num:
             # Calculate area of detections
             areas = (detections[:, 2] - detections[:, 0]) * (detections[:, 3] - detections[:, 1])
 

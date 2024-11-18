@@ -14,11 +14,13 @@
 
 from .retinaface import RetinaFace
 from .log import Logger
+from .model_store import verify_model_weights
 from .version import __version__, __author__
 
 __all__ = [
     "__version__",
     "__author__"
     "RetinaFace",
-    "Logger"
+    "Logger",
+    "verify_model_weights"
 ]

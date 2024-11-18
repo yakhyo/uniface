@@ -1,3 +1,7 @@
+# Copyright 2024 Yakhyokhuja Valikhujaev
+# Author: Yakhyokhuja Valikhujaev
+# GitHub: https://github.com/yakhyo
+
 import os
 import hashlib
 import requests

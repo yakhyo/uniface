@@ -1,15 +1,27 @@
-import math
-import numpy as np
-from itertools import product
-
-import torch
-from typing import Tuple
+# Copyright 2024 Yakhyokhuja Valikhujaev
+# Author: Yakhyokhuja Valikhujaev
+# GitHub: https://github.com/yakhyo
 
 import cv2
+import math
+import itertools
 import numpy as np
 
+import torch
+from typing import Tuple, List
 
-def resize_image(frame, target_shape=(640, 640)):
+
+def resize_image(frame, target_shape: Tuple[int, int] = (640, 640)) -> Tuple[np.ndarray, float]:
+    """
+    Resize an image to fit within a target shape while keeping its aspect ratio.
+
+    Args:
+        frame (np.ndarray): Input image.
+        target_shape (Tuple[int, int]): Target size (width, height). Defaults to (640, 640).
+
+    Returns:
+        Tuple[np.ndarray, float]: Resized image on a blank canvas and the resize factor.
+    """
     width, height = target_shape
 
     # Aspect-ratio preserving resize
@@ -32,8 +44,16 @@ def resize_image(frame, target_shape=(640, 640)):
     return image, resize_factor
 
 
-def generate_anchors(image_size=(640, 640)):
-    """Generate anchor boxes based on image size."""
+def generate_anchors(image_size: Tuple[int, int] = (640, 640)) -> torch.Tensor:
+    """
+    Generate anchor boxes for a given image size.
+
+    Args:
+        image_size (Tuple[int, int]): Input image size (width, height). Defaults to (640, 640).
+
+    Returns:
+        torch.Tensor: Anchor box coordinates as a tensor.
+    """
     image_size = image_size
 
     steps = [8, 16, 32]
@@ -49,21 +69,21 @@ def generate_anchors(image_size=(640, 640)):
 
     for k, (map_height, map_width) in enumerate(feature_maps):
         step = steps[k]
-        for i, j in product(range(map_height), range(map_width)):
+        for i, j in itertools.product(range(map_height), range(map_width)):
             for min_size in min_sizes[k]:
                 s_kx = min_size / image_size[1]
                 s_ky = min_size / image_size[0]
 
                 dense_cx = [x * step / image_size[1] for x in [j + 0.5]]
                 dense_cy = [y * step / image_size[0] for y in [i + 0.5]]
-                for cy, cx in product(dense_cy, dense_cx):
+                for cy, cx in itertools.product(dense_cy, dense_cx):
                     anchors += [cx, cy, s_kx, s_ky]
 
     output = torch.Tensor(anchors).view(-1, 4)
     return output
 
 
-def nms(dets, threshold):
+def nms(dets: List[np.ndarray], threshold: float):
     """
     Apply Non-Maximum Suppression (NMS) to reduce overlapping bounding boxes based on a threshold.
 
@@ -103,7 +123,7 @@ def nms(dets, threshold):
     return keep
 
 
-def decode_boxes(loc, priors, variances=[0.1, 0.2]):
+def decode_boxes(loc, priors, variances=[0.1, 0.2]) -> torch.Tensor:
     """
     Decode locations from predictions using priors to undo
     the encoding done for offset regression at train time.
@@ -130,7 +150,7 @@ def decode_boxes(loc, priors, variances=[0.1, 0.2]):
     return boxes
 
 
-def decode_landmarks(predictions, priors, variances=[0.1, 0.2]):
+def decode_landmarks(predictions, priors, variances=[0.1, 0.2]) -> torch.Tensor:
     """
     Decode landmarks from predictions using prior boxes to reverse the encoding done during training.
 
@@ -156,5 +176,3 @@ def decode_landmarks(predictions, priors, variances=[0.1, 0.2]):
     landmarks = landmarks.view(landmarks.size(0), -1)
 
     return landmarks
-
-
