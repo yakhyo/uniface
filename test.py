@@ -77,7 +77,7 @@ if __name__ == '__main__':
         pre_nms_topk=5000,
         nms_thresh=0.4,
         post_nms_topk=750,
-        input_size=(1024, 1024)
+        # input_size=(1024, 1024)
     )
     
     img_path = "assets/test.jpg"

@@ -4,7 +4,7 @@ import numpy as np
 import onnxruntime as ort
 
 import torch
-from typing import Tuple, List, Optional
+from typing import Tuple, List, Optional, Literal
 
 from .log import Logger
 from .model_store import verify_model_weights
@@ -98,12 +98,25 @@ class RetinaFace:
         """
         return self.session.run(None, {self.input_name: input_tensor})
 
-    def detect(self, image: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    def detect(
+        self,
+        image: np.ndarray,
+        max_num: Optional[int] = None,
+        metric: Literal["default", "max"] = "default",
+        center_weight: Optional[float] = 2.0
+    ) -> Tuple[np.ndarray, np.ndarray]:
         """
         Perform face detection on an input image and return bounding boxes and landmarks.
 
         Args:
             image (np.ndarray): Input image as a NumPy array of shape (height, width, channels).
+            max_num (int, optional): Maximum number of detections to return. Defaults to 1.
+            metric (str, optional): Metric for ranking detections when `max_num` is specified. 
+                Options:
+                - "default": Prioritize detections closer to the image center.
+                - "max": Prioritize detections with larger bounding box areas.
+            center_weight (float, optional): Weight for penalizing detections farther from the image center 
+                when using the "default" metric. Defaults to 2.0.
 
         Returns:
             Tuple[np.ndarray, np.ndarray]: Detection results containing:
@@ -128,6 +141,30 @@ class RetinaFace:
 
         # Postprocessing
         detections, landmarks = self.postprocess(outputs, resize_factor, shape=(width, height))
+
+        if max_num is not None and detections.shape[0] > max_num:
+            # Calculate area of detections
+            areas = (detections[:, 2] - detections[:, 0]) * (detections[:, 3] - detections[:, 1])
+
+            # Calculate offsets from image center
+            _center = (height // 2, width // 2)
+            offsets = np.vstack([
+                (detections[:, 0] + detections[:, 2]) / 2 - _center[1],
+                (detections[:, 1] + detections[:, 3]) / 2 - _center[0]
+            ])
+            offset_dist_squared = np.sum(np.power(offsets, 2.0), axis=0)
+
+            # Calculate scores based on the chosen metric
+            if metric == 'max':
+                scores = areas
+            else:
+                scores = areas - offset_dist_squared * center_weight
+
+            # Sort by scores and select top `max_num`
+            sorted_indices = np.argsort(scores)[::-1][:max_num]
+
+            detections = detections[sorted_indices]
+            landmarks = landmarks[sorted_indices]
 
         return detections, landmarks
 
