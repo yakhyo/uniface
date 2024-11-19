@@ -10,10 +10,10 @@ import onnxruntime as ort
 import torch
 from typing import Tuple, List, Optional, Literal
 
-from .log import Logger
-from .model_store import verify_model_weights
+from retinaface.log import Logger
+from retinaface.model_store import verify_model_weights
 
-from .common import (
+from retinaface.common import (
     nms,
     resize_image,
     decode_boxes,
@@ -174,10 +174,10 @@ class RetinaFace:
             areas = (detections[:, 2] - detections[:, 0]) * (detections[:, 3] - detections[:, 1])
 
             # Calculate offsets from image center
-            _center = (height // 2, width // 2)
+            center = (height // 2, width // 2)
             offsets = np.vstack([
-                (detections[:, 0] + detections[:, 2]) / 2 - _center[1],
-                (detections[:, 1] + detections[:, 3]) / 2 - _center[0]
+                (detections[:, 0] + detections[:, 2]) / 2 - center[1],
+                (detections[:, 1] + detections[:, 3]) / 2 - center[0]
             ])
             offset_dist_squared = np.sum(np.power(offsets, 2.0), axis=0)
 

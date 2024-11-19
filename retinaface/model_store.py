@@ -5,31 +5,9 @@
 import os
 import hashlib
 import requests
-from typing import Dict
 
-from .log import Logger
-
-
-MODEL_URLS: Dict[str, str] = {
-    'retinaface_mnet025': 'https://github.com/yakhyo/retinaface-pytorch/releases/download/v0.0.1/retinaface_mv1_0.25.onnx',
-    'retinaface_mnet050': 'https://github.com/yakhyo/retinaface-pytorch/releases/download/v0.0.1/retinaface_mv1_0.50.onnx',
-    'retinaface_mnet_v1': 'https://github.com/yakhyo/retinaface-pytorch/releases/download/v0.0.1/retinaface_mv1.onnx',
-    'retinaface_mnet_v2': 'https://github.com/yakhyo/retinaface-pytorch/releases/download/v0.0.1/retinaface_mv2.onnx',
-    'retinaface_r18': 'https://github.com/yakhyo/retinaface-pytorch/releases/download/v0.0.1/retinaface_r18.onnx',
-    'retinaface_r34': 'https://github.com/yakhyo/retinaface-pytorch/releases/download/v0.0.1/retinaface_r34.onnx'
-}
-
-MODEL_SHA256: Dict[str, str] = {
-    'retinaface_mnet025': 'b7a7acab55e104dce6f32cdfff929bd83946da5cd869b9e2e9bdffafd1b7e4a5',
-    'retinaface_mnet050': 'd8977186f6037999af5b4113d42ba77a84a6ab0c996b17c713cc3d53b88bfc37',
-    'retinaface_mnet_v1': '75c961aaf0aff03d13c074e9ec656e5510e174454dd4964a161aab4fe5f04153',
-    'retinaface_mnet_v2': '3ca44c045651cabeed1193a1fae8946ad1f3a55da8fa74b341feab5a8319f757',
-    'retinaface_r18': 'e8b5ddd7d2c3c8f7c942f9f10cec09d8e319f78f09725d3f709631de34fb649d',
-    'retinaface_r34': 'bd0263dc2a465d32859555cb1741f2d98991eb0053696e8ee33fec583d30e630'
-}
-
-
-CHUNK_SIZE = 8192
+from retinaface.log import Logger
+import retinaface.constants as const
 
 
 def verify_model_weights(model_name: str, root: str = '~/.retinaface/models') -> str:
@@ -66,7 +44,7 @@ def verify_model_weights(model_name: str, root: str = '~/.retinaface/models') ->
     model_path = os.path.join(root, f'{model_name}.onnx')
 
     if not os.path.exists(model_path):
-        url = MODEL_URLS.get(model_name)
+        url = const.MODEL_URLS.get(model_name)
         if not url:
             Logger.error(f"No URL found for model '{model_name}'")
             raise ValueError(f"No URL found for model '{model_name}'")
@@ -75,7 +53,7 @@ def verify_model_weights(model_name: str, root: str = '~/.retinaface/models') ->
         download_file(url, model_path)
         Logger.info(f"Successfully '{model_name}' downloaded to {model_path}")
 
-    expected_hash = MODEL_SHA256.get(model_name)
+    expected_hash = const.MODEL_SHA256.get(model_name)
     if expected_hash and not verify_file_hash(model_path, expected_hash):
         os.remove(model_path)  # Remove corrupted file
         Logger.warning("Corrupted weight detected. Removing...")
@@ -90,7 +68,7 @@ def download_file(url: str, dest_path: str) -> None:
         response = requests.get(url, stream=True)
         response.raise_for_status()
         with open(dest_path, "wb") as file:
-            for chunk in response.iter_content(chunk_size=CHUNK_SIZE):
+            for chunk in response.iter_content(chunk_size=const.CHUNK_SIZE):
                 if chunk:
                     file.write(chunk)
     except requests.RequestException as e:
@@ -101,7 +79,7 @@ def verify_file_hash(file_path: str, expected_hash: str) -> bool:
     """Compute the SHA-256 hash of the file and compare it with the expected hash."""
     file_hash = hashlib.sha256()
     with open(file_path, "rb") as f:
-        for chunk in iter(lambda: f.read(CHUNK_SIZE), b""):
+        for chunk in iter(lambda: f.read(const.CHUNK_SIZE), b""):
             file_hash.update(chunk)
     actual_hash = file_hash.hexdigest()
     if actual_hash != expected_hash:

@@ -1,75 +1,42 @@
-from retinaface import RetinaFace
-import cv2
 import os
+import cv2
 import numpy as np
 
-def draw_detections(original_image, detections, vis_threshold):
-    """
-    Draws bounding boxes and landmarks on the image based on multiple detections.
-
-    Args:
-        original_image (ndarray): The image on which to draw detections.
-        detections (ndarray): Array of detected bounding boxes and landmarks.
-        vis_threshold (float): The confidence threshold for displaying detections.
-    """
-
-    # Colors for visualization
-    LANDMARK_COLORS = [
-        (0, 0, 255),    # Right eye (Red)
-        (0, 255, 255),  # Left eye (Yellow)
-        (255, 0, 255),  # Nose (Magenta)
-        (0, 255, 0),    # Right mouth (Green)
-        (255, 0, 0)     # Left mouth (Blue)
-    ]
-    BOX_COLOR = (0, 0, 255)
-    TEXT_COLOR = (255, 255, 255)
-
-    detections, landmarks = detections
-
-    # Filter by confidence
-    filtered = detections[:, 4] >= vis_threshold
-
-    print(f"#faces: {sum(filtered)}")
-
-    # Slice arrays efficiently
-    detections = detections[filtered]
-    landmarks = landmarks[filtered]
-
-    boxes = detections[:, :4].astype(np.int32)
-    scores = detections[:, 4]
-
-    for box, score, landmark in zip(boxes, scores, landmarks):
-        # Draw bounding box
-        cv2.rectangle(original_image, (box[0], box[1]), (box[2], box[3]), BOX_COLOR, 2)
-
-        # Draw confidence score
-        text = f"{score:.2f}"
-        cx, cy = box[0], box[1] + 12
-        cv2.putText(original_image, text, (cx, cy), cv2.FONT_HERSHEY_DUPLEX, 0.5, TEXT_COLOR)
-
-        # Draw landmarks
-        for point, color in zip(landmark, LANDMARK_COLORS):
-            cv2.circle(original_image, point, 1, color, 4)
-
-
-def save_output_image(original_image, image_path):
-    im_name = os.path.splitext(os.path.basename(image_path))[0]
-    save_name = f"{im_name}_onnx_out.jpg"
-    cv2.imwrite(save_name, original_image)
-    print(f"Image saved at '{save_name}'")
+from retinaface import RetinaFace, draw_detections
 
 
 def run_inference(image_path, save_image=False, vis_threshold=0.6):
-    original_image = original_image = cv2.imread(image_path)
-    detections, landmarks = retinaface_inference.detect(original_image)
-    draw_detections(original_image, (detections, landmarks), vis_threshold)
+    """
+    Perform inference on an image, draw detections, and optionally save the output image.
 
+    Args:
+        image_path (str): Path to the input image.
+        save_image (bool): Whether to save the output image with detections.
+        vis_threshold (float): Confidence threshold for displaying detections.
+    """
+    # Load the image
+    original_image = cv2.imread(image_path)
+    if original_image is None:
+        print(f"Error: Could not read image from {image_path}")
+        return
+
+    # Perform face detection
+    boxes, landmarks = retinaface_inference.detect(original_image)
+
+    # Draw detections on the image
+    draw_detections(original_image, (boxes, landmarks), vis_threshold)
+
+    # Save the output image if requested
     if save_image:
-        save_output_image(original_image, image_path)
+        im_name = os.path.splitext(os.path.basename(image_path))[0]
+        save_name = f"{im_name}_out.jpg"
+        cv2.imwrite(save_name, original_image)
+        print(f"Image saved at '{save_name}'")
 
 
 if __name__ == '__main__':
     import time
+
     # Initialize and run the ONNX inference
     retinaface_inference = RetinaFace(
         model="retinaface_mnet_v2",
@@ -77,9 +44,8 @@ if __name__ == '__main__':
         pre_nms_topk=5000,
         nms_thresh=0.4,
         post_nms_topk=750,
-        # input_size=(1024, 1024)
     )
-    
+
     img_path = "assets/test.jpg"
     avg = 0
     for _ in range(50):
@@ -88,4 +54,4 @@ if __name__ == '__main__':
         d = time.time() - st
         print(d)
         avg += d
-    print("avg", avg/50)
+    print("avg", avg / 50)

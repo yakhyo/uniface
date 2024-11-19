@@ -16,11 +16,13 @@ from .retinaface import RetinaFace
 from .log import Logger
 from .model_store import verify_model_weights
 from .version import __version__, __author__
+from .visualization import draw_detections
 
 __all__ = [
     "__version__",
     "__author__"
     "RetinaFace",
     "Logger",
-    "verify_model_weights"
+    "verify_model_weights",
+    "draw_detections"
 ]
