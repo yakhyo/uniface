@@ -6,12 +6,12 @@ from typing import Dict
 
 
 MODEL_URLS: Dict[str, str] = {
-    'retinaface_mnet025': 'https://github.com/yakhyo/uniface/releases/download/v0.0.1/retinaface_mv1_0.25.onnx',
-    'retinaface_mnet050': 'https://github.com/yakhyo/uniface/releases/download/v0.0.1/retinaface_mv1_0.50.onnx',
-    'retinaface_mnet_v1': 'https://github.com/yakhyo/uniface/releases/download/v0.0.1/retinaface_mv1.onnx',
-    'retinaface_mnet_v2': 'https://github.com/yakhyo/uniface/releases/download/v0.0.1/retinaface_mv2.onnx',
-    'retinaface_r18': 'https://github.com/yakhyo/uniface/releases/download/v0.0.1/retinaface_r18.onnx',
-    'retinaface_r34': 'https://github.com/yakhyo/uniface/releases/download/v0.0.1/retinaface_r34.onnx'
+    'retinaface_mnet025': 'https://github.com/yakhyo/uniface/releases/download/v0.1.1/retinaface_mv1_0.25.onnx',
+    'retinaface_mnet050': 'https://github.com/yakhyo/uniface/releases/download/v0.1.1/retinaface_mv1_0.50.onnx',
+    'retinaface_mnet_v1': 'https://github.com/yakhyo/uniface/releases/download/v0.1.1/retinaface_mv1.onnx',
+    'retinaface_mnet_v2': 'https://github.com/yakhyo/uniface/releases/download/v0.1.1/retinaface_mv2.onnx',
+    'retinaface_r18': 'https://github.com/yakhyo/uniface/releases/download/v0.1.1/retinaface_r18.onnx',
+    'retinaface_r34': 'https://github.com/yakhyo/uniface/releases/download/v0.1.1/retinaface_r34.onnx'
 }
 
 MODEL_SHA256: Dict[str, str] = {
