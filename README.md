@@ -12,7 +12,7 @@
 
 </div>
 
-**uniface** is a lightweight face detection library designed for high-performance face localization and landmark detection. The library supports ONNX models and provides utilities for bounding box visualization and landmark plotting. To train RetinaFace model, see https://github.com/yakhyo/retinaface-pytorch.
+**uniface** is a lightweight face detection library designed for high-performance face localization, landmark detection and face alignment. The library supports ONNX models and provides utilities for bounding box visualization and landmark plotting. To train RetinaFace model, see https://github.com/yakhyo/retinaface-pytorch.
 
 ---
 
@@ -46,6 +46,19 @@ pip install .
 ---
 
 ## Quick Start
+
+To get started with face detection using **UniFace**, check out the [example notebook](examples/face_detection.ipynb).
+It demonstrates how to initialize the model, run inference, and visualize the results.
+
+---
+
+## Examples
+
+Explore the following example notebooks to learn how to use **UniFace** effectively:
+
+- [Face Detection](examples/face_detection.ipynb): Demonstrates how to perform face detection, draw bounding boxes, and landmarks on an image.
+- [Face Alignment](examples/face_alignment.ipynb): Shows how to align faces using detected landmarks.
+- [Age and Gender Detection](examples/age_gender.ipynb): Example for detecting age and gender from faces. (underdevelopment)
 
 ### Initialize the Model
 
