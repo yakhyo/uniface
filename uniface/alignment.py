@@ -9,18 +9,18 @@ from typing import Tuple
 
 # Reference alignment for facial landmarks (ArcFace)
 reference_alignment: np.ndarray = np.array(
-    [[
+    [
         [38.2946, 51.6963],
         [73.5318, 51.5014],
         [56.0252, 71.7366],
         [41.5493, 92.3655],
         [70.7299, 92.2041]
-    ]],
+    ],
     dtype=np.float32
 )
 
 
-def estimate_norm(landmark: np.ndarray, image_size: int = 112) -> Tuple[np.ndarray, int]:
+def estimate_norm(landmark: np.ndarray, image_size: int = 112) -> np.ndarray:
     """
     Estimate the normalization transformation matrix for facial landmarks.
 
@@ -29,40 +29,31 @@ def estimate_norm(landmark: np.ndarray, image_size: int = 112) -> Tuple[np.ndarr
         image_size (int, optional): The size of the output image. Default is 112.
 
     Returns:
-        Tuple[np.ndarray, int]: A tuple containing:
-            - min_matrix (np.ndarray): The 2x3 transformation matrix for aligning the landmarks.
-            - min_index (int): The index of the reference alignment that resulted in the minimum error.
+        np.ndarray: The 2x3 transformation matrix for aligning the landmarks.
 
     Raises:
-        AssertionError: If the input landmark array does not have the shape (5, 2).
+        AssertionError: If the input landmark array does not have the shape (5, 2)
+                        or if image_size is not a multiple of 112 or 128.
     """
     assert landmark.shape == (5, 2), "Landmark array must have shape (5, 2)."
-    min_matrix: np.ndarray = np.empty((2, 3))
-    min_index: int = -1
-    min_error: float = float('inf')
+    assert image_size % 112 == 0 or image_size % 128 == 0, "Image size must be a multiple of 112 or 128."
 
-    # Prepare landmarks for transformation
-    landmark_transform = np.insert(landmark, 2, values=np.ones(5), axis=1)
-    transform = SimilarityTransform()
-
-    # Adjust alignment based on image size
-    if image_size == 112:
-        alignment = reference_alignment
+    if image_size % 112 == 0:
+        ratio = float(image_size) / 112.0
+        diff_x = 0.0
     else:
-        alignment = (image_size / 112) * reference_alignment
+        ratio = float(image_size) / 128.0
+        diff_x = 8.0 * ratio
 
-    # Iterate through reference alignments
-    for idx in np.arange(alignment.shape[0]):
-        transform.estimate(landmark, alignment[idx])
-        matrix = transform.params[0:2, :]
-        results = np.dot(matrix, landmark_transform.T).T
-        error = np.sum(np.sqrt(np.sum((results - alignment[idx]) ** 2, axis=1)))
-        if error < min_error:
-            min_error = error
-            min_matrix = matrix
-            min_index = idx
+    # Adjust reference alignment based on ratio and diff_x
+    alignment = reference_alignment * ratio
+    alignment[:, 0] += diff_x
 
-    return min_matrix, min_index
+    # Compute the transformation matrix
+    transform = SimilarityTransform()
+    transform.estimate(landmark, alignment)
+    matrix = transform.params[0:2, :]
+    return matrix
 
 
 def face_alignment(image: np.ndarray, landmark: np.ndarray, image_size: int = 112) -> np.ndarray:
@@ -77,8 +68,8 @@ def face_alignment(image: np.ndarray, landmark: np.ndarray, image_size: int = 11
     Returns:
         np.ndarray: The aligned face as a NumPy array.
     """
-    # Get the transformation matrix and pose index
-    M, pose_index = estimate_norm(landmark, image_size)
+    # Get the transformation matrix
+    M = estimate_norm(landmark, image_size)
     # Warp the input image to align the face
     warped = cv2.warpAffine(image, M, (image_size, image_size), borderValue=0.0)
     return warped
