@@ -3,12 +3,12 @@ name: Build, Test, and Publish
 on:
   push:
     branches:
-      - main
+      - main  # Trigger on pushes to main
     tags:
       - "v*.*.*"  # Trigger publish on version tags
   pull_request:
     branches:
-      - main
+      - main  # Trigger checks on pull requests to main
 
 jobs:
   build:
@@ -33,12 +33,12 @@ jobs:
           python -m pip install .[dev] || pip install pytest  # Use extras_require if available
 
       - name: Run Tests
-        run: |
-          pytest
+        run: pytest
 
   publish:
     runs-on: ubuntu-latest
     needs: build  # Publish only if tests pass
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'  # Trigger only on pushes to main
 
     steps:
       - name: Checkout code
