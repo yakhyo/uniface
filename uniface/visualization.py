@@ -28,8 +28,6 @@ def draw_detections(image, detections, vis_threshold=0.6):
     landmarks = landmarks[filtered]
     scores = scores[filtered]
 
-    print(f"#faces: {len(scores)}")
-
     # Draw bounding boxes, scores, and landmarks
     for box, score, landmark in zip(boxes, scores, landmarks):
         cv2.rectangle(image, box[:2], box[2:], (0, 0, 255), 2)

@@ -6,3 +6,4 @@ onnx
 onnxruntime
 requests
 torch
+scikit-image

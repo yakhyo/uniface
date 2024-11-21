@@ -9,7 +9,7 @@ if os.path.exists("README.md"):
 
 setup(
     name="uniface",
-    version="0.1.2",
+    version="0.1.3",
     packages=find_packages(),
     install_requires=[
         "numpy",
@@ -17,7 +17,8 @@ setup(
         "onnx",
         "onnxruntime",
         "requests",
-        "torch"
+        "torch",
+        "scikit-image"
     ],
     extras_require={
         "dev": ["pytest"],
