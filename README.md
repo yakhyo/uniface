@@ -6,6 +6,7 @@
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
 [![PyPI Version](https://img.shields.io/pypi/v/uniface.svg)](https://pypi.org/project/uniface/)
 [![Build Status](https://github.com/yakhyo/uniface/actions/workflows/build.yml/badge.svg)](https://github.com/yakhyo/uniface/actions)
+[![GitHub Repository](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/yakhyo/uniface)
 [![Downloads](https://pepy.tech/badge/uniface)](https://pepy.tech/project/uniface)
 [![Code Style: PEP8](https://img.shields.io/badge/code%20style-PEP8-green.svg)](https://www.python.org/dev/peps/pep-0008/)
 [![GitHub Release Downloads](https://img.shields.io/github/downloads/yakhyo/uniface/total.svg?label=Model%20Downloads)](https://github.com/yakhyo/uniface/releases)
