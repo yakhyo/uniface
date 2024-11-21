@@ -16,6 +16,7 @@ from uniface.retinaface import RetinaFace
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
 from uniface.version import __version__, __author__
+from uniface.alignment import face_alignment
 from uniface.visualization import draw_detections
 
 __all__ = [
@@ -24,5 +25,6 @@ __all__ = [
     "RetinaFace",
     "Logger",
     "verify_model_weights",
-    "draw_detections"
+    "draw_detections",
+    "face_alignment"
 ]

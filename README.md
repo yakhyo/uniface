@@ -17,8 +17,10 @@
 ---
 
 ## Features
+
 - [ ] Age and gender detection (Planned).
 - [ ] Face recognition (Planned).
+- [x] Face Alignment (Added: 2024-11-21).
 - [x] High-speed face detection using ONNX models (Added: 2024-11-20).
 - [x] Accurate facial landmark localization (e.g., eyes, nose, and mouth) (Added: 2024-11-20).
 - [x] Easy-to-use API for inference and visualization (Added: 2024-11-20).
@@ -27,24 +29,17 @@
 
 ## Installation
 
-### Using pip
+The easiest way to install **UniFace** is via [PyPI](https://pypi.org/project/uniface/). This will automatically install the library along with its prerequisites.
 
 ```bash
 pip install uniface
 ```
 
-### Local installation using pip
-
-**Clone the repository**
+To work with the latest version of **UniFace**, which may not yet be released on PyPI, you can install it directly from the repository:
 
 ```bash
 git clone https://github.com/yakhyo/uniface.git
 cd uniface
-```
-
-**Install using pip**
-
-```bash
 pip install .
 ```
 
@@ -147,6 +142,7 @@ cv2.destroyAllWindows()
 ### `RetinaFace` Class
 
 #### Initialization
+
 ```python
 RetinaFace(
     model: str,
@@ -158,17 +154,19 @@ RetinaFace(
 ```
 
 **Parameters**:
-- `model` *(str)*: Name of the model to use. Supported models:
+
+- `model` _(str)_: Name of the model to use. Supported models:
   - `retinaface_mnet025`, `retinaface_mnet050`, `retinaface_mnet_v1`, `retinaface_mnet_v2`
   - `retinaface_r18`, `retinaface_r34`
-- `conf_thresh` *(float, default=0.5)*: Minimum confidence score for detections.
-- `pre_nms_topk` *(int, default=5000)*: Max detections to keep before NMS.
-- `nms_thresh` *(float, default=0.4)*: IoU threshold for Non-Maximum Suppression.
-- `post_nms_topk` *(int, default=750)*: Max detections to keep after NMS.
+- `conf_thresh` _(float, default=0.5)_: Minimum confidence score for detections.
+- `pre_nms_topk` _(int, default=5000)_: Max detections to keep before NMS.
+- `nms_thresh` _(float, default=0.4)_: IoU threshold for Non-Maximum Suppression.
+- `post_nms_topk` _(int, default=750)_: Max detections to keep after NMS.
 
 ---
 
 ### `detect` Method
+
 ```python
 detect(
     image: np.ndarray,
@@ -182,22 +180,25 @@ detect(
 Detects faces in the given image and returns bounding boxes and landmarks.
 
 **Parameters**:
-- `image` *(np.ndarray)*: Input image in BGR format.
-- `max_num` *(int, default=0)*: Maximum number of faces to return. `0` means return all.
-- `metric` *(str, default="default")*: Metric for prioritizing detections:
+
+- `image` _(np.ndarray)_: Input image in BGR format.
+- `max_num` _(int, default=0)_: Maximum number of faces to return. `0` means return all.
+- `metric` _(str, default="default")_: Metric for prioritizing detections:
   - `"default"`: Prioritize detections closer to the image center.
   - `"max"`: Prioritize larger bounding box areas.
-- `center_weight` *(float, default=2.0)*: Weight for prioritizing center-aligned faces.
+- `center_weight` _(float, default=2.0)_: Weight for prioritizing center-aligned faces.
 
 **Returns**:
-- `bounding_boxes` *(np.ndarray)*: Array of detections as `[x_min, y_min, x_max, y_max, confidence]`.
-- `landmarks` *(np.ndarray)*: Array of landmarks as `[(x1, y1), ..., (x5, y5)]`.
+
+- `bounding_boxes` _(np.ndarray)_: Array of detections as `[x_min, y_min, x_max, y_max, confidence]`.
+- `landmarks` _(np.ndarray)_: Array of landmarks as `[(x1, y1), ..., (x5, y5)]`.
 
 ---
 
 ### Visualization Utilities
 
 #### `draw_detections`
+
 ```python
 draw_detections(
     image: np.ndarray,
@@ -210,9 +211,10 @@ draw_detections(
 Draws bounding boxes and landmarks on the given image.
 
 **Parameters**:
-- `image` *(np.ndarray)*: The input image in BGR format.
-- `detections` *(Tuple[np.ndarray, np.ndarray])*: A tuple of bounding boxes and landmarks.
-- `vis_threshold` *(float)*: Minimum confidence score for visualization.
+
+- `image` _(np.ndarray)_: The input image in BGR format.
+- `detections` _(Tuple[np.ndarray, np.ndarray])_: A tuple of bounding boxes and landmarks.
+- `vis_threshold` _(float)_: Minimum confidence score for visualization.
 
 ---
 
