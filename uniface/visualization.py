@@ -6,7 +6,7 @@ import cv2
 import numpy as np
 
 
-def draw_detections(image, detections, vis_threshold=0.6):
+def draw_detections(image, detections, vis_threshold: float = 0.6):
     """
     Draw bounding boxes and landmarks on the image.
 
