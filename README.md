@@ -72,7 +72,9 @@ uniface_inference = RetinaFace(
     conf_thresh=0.5,             # Confidence threshold
     pre_nms_topk=5000,           # Pre-NMS Top-K detections
     nms_thresh=0.4,              # NMS IoU threshold
-    post_nms_topk=750            # Post-NMS Top-K detections
+    post_nms_topk=750,           # Post-NMS Top-K detections
+    dynamic_size=False,          # Arbitrary image size inference
+    input_size=(640, 640)        # Pre-defined input image size
 )
 ```
 
@@ -158,12 +160,16 @@ cv2.destroyAllWindows()
 #### Initialization
 
 ```python
+from typings import Tuple
+
 RetinaFace(
     model: str,
     conf_thresh: float = 0.5,
     pre_nms_topk: int = 5000,
     nms_thresh: float = 0.4,
-    post_nms_topk: int = 750
+    post_nms_topk: int = 750,
+    dynamic_size: bool = False,
+    input_size: Tuple[int, int] = (640, 640)
 )
 ```
 
@@ -176,6 +182,8 @@ RetinaFace(
 - `pre_nms_topk` _(int, default=5000)_: Max detections to keep before NMS.
 - `nms_thresh` _(float, default=0.4)_: IoU threshold for Non-Maximum Suppression.
 - `post_nms_topk` _(int, default=750)_: Max detections to keep after NMS.
+- `dynamic_size` _(Optional[bool], default=False)_: Use dynamic input size.
+- `input_size` _(Optional[Tuple[int, int]], default=(640, 640))_: Static input size for the model (width, height).
 
 ---
 
@@ -217,7 +225,7 @@ Detects faces in the given image and returns bounding boxes and landmarks.
 draw_detections(
     image: np.ndarray,
     detections: Tuple[np.ndarray, np.ndarray],
-    vis_threshold: float
+    vis_threshold: float = 0.6
 ) -> None
 ```
 
@@ -228,7 +236,7 @@ Draws bounding boxes and landmarks on the given image.
 
 - `image` _(np.ndarray)_: The input image in BGR format.
 - `detections` _(Tuple[np.ndarray, np.ndarray])_: A tuple of bounding boxes and landmarks.
-- `vis_threshold` _(float)_: Minimum confidence score for visualization.
+- `vis_threshold` _(float, default=0.6)_: Minimum confidence score for visualization.
 
 ---
 
