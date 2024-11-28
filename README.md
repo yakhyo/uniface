@@ -17,12 +17,14 @@
 
 ## Features
 
-- [ ] Age and gender detection (Planned).
-- [ ] Face recognition (Planned).
-- [x] Face Alignment (Added: 2024-11-21).
-- [x] High-speed face detection using ONNX models (Added: 2024-11-20).
-- [x] Accurate facial landmark localization (e.g., eyes, nose, and mouth) (Added: 2024-11-20).
-- [x] Easy-to-use API for inference and visualization (Added: 2024-11-20).
+| Date       | Feature Description                                                                                                          |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Planned    | 🎭 **Age and Gender Detection**: Planned feature for predicting age and gender from facial images.                           |
+| Planned    | 🧩 **Face Recognition**: Upcoming capability to identify and verify faces.                                                   |
+| 2024-11-21 | 🔄 **Face Alignment**: Added precise face alignment for better downstream tasks.                                             |
+| 2024-11-20 | ⚡ **High-Speed Face Detection**: ONNX model integration for faster and efficient face detection.                            |
+| 2024-11-20 | 🎯 **Facial Landmark Localization**: Accurate detection of key facial features like eyes, nose, and mouth.                   |
+| 2024-11-20 | 🛠 **API for Inference and Visualization**: Simplified API for seamless inference and visual results generation.              |
 
 ---
 
