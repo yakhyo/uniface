@@ -1,4 +1,4 @@
-# Copyright 2024 Yakhyokhuja Valikhujaev
+# Copyright 2025 Yakhyokhuja Valikhujaev
 #
 # Licensed under the MIT License.
 # You may obtain a copy of the License at

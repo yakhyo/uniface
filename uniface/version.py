@@ -1,4 +1,4 @@
-# Copyright 2024 Yakhyokhuja Valikhujaev
+# Copyright 2025 Yakhyokhuja Valikhujaev
 #
 # Licensed under the MIT License.
 # You may obtain a copy of the License at
@@ -11,5 +11,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-__version__ = "0.1.5"
+__version__ = "0.1.6"
 __author__ = "Yakhyokhuja Valikhujaev"
