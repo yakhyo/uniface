@@ -1,4 +1,4 @@
-# Copyright 2024 Yakhyokhuja Valikhujaev
+# Copyright 2025 Yakhyokhuja Valikhujaev
 #
 # Licensed under the MIT License.
 # You may obtain a copy of the License at
@@ -11,17 +11,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+__license__ = "MIT"
+__author__ = "Yakhyokhuja Valikhujaev"
+__version__ = "0.1.6"
+
 
 from uniface.retinaface import RetinaFace
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
-from uniface.version import __version__, __author__
 from uniface.alignment import face_alignment
 from uniface.visualization import draw_detections
 
 __all__ = [
     "__version__",
-    "__author__"
+    "__author__",
+    "__license__",
     "RetinaFace",
     "Logger",
     "verify_model_weights",

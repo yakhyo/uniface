@@ -1,4 +1,4 @@
-# Copyright 2024 Yakhyokhuja Valikhujaev
+# Copyright 2025 Yakhyokhuja Valikhujaev
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
@@ -20,7 +20,7 @@ reference_alignment: np.ndarray = np.array(
 )
 
 
-def estimate_norm(landmark: np.ndarray, image_size: int = 112) -> np.ndarray:
+def estimate_norm(landmark: np.ndarray, image_size: int = 112) -> Tuple[np.ndarray, np.ndarray]:
     """
     Estimate the normalization transformation matrix for facial landmarks.
 
@@ -30,6 +30,7 @@ def estimate_norm(landmark: np.ndarray, image_size: int = 112) -> np.ndarray:
 
     Returns:
         np.ndarray: The 2x3 transformation matrix for aligning the landmarks.
+        np.ndarray: The 2x3 inverse transformation matrix for aligning the landmarks.
 
     Raises:
         AssertionError: If the input landmark array does not have the shape (5, 2)
@@ -52,11 +53,14 @@ def estimate_norm(landmark: np.ndarray, image_size: int = 112) -> np.ndarray:
     # Compute the transformation matrix
     transform = SimilarityTransform()
     transform.estimate(landmark, alignment)
+
     matrix = transform.params[0:2, :]
-    return matrix
+    inverse_matrix = np.linalg.inv(transform.params)[0:2, :]
+
+    return matrix, inverse_matrix
 
 
-def face_alignment(image: np.ndarray, landmark: np.ndarray, image_size: int = 112) -> np.ndarray:
+def face_alignment(image: np.ndarray, landmark: np.ndarray, image_size: int = 112) -> Tuple[np.ndarray, np.ndarray]:
     """
     Align the face in the input image based on the given facial landmarks.
 
@@ -67,9 +71,12 @@ def face_alignment(image: np.ndarray, landmark: np.ndarray, image_size: int = 11
 
     Returns:
         np.ndarray: The aligned face as a NumPy array.
+        np.ndarray: The 2x3 transformation matrix used for alignment.
     """
     # Get the transformation matrix
-    M = estimate_norm(landmark, image_size)
+    M, M_inv = estimate_norm(landmark, image_size)
+
     # Warp the input image to align the face
     warped = cv2.warpAffine(image, M, (image_size, image_size), borderValue=0.0)
-    return warped
+
+    return warped, M_inv

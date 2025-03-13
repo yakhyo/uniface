@@ -1,4 +1,4 @@
-# Copyright 2024 Yakhyokhuja Valikhujaev
+# Copyright 2025 Yakhyokhuja Valikhujaev
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
@@ -8,7 +8,7 @@ import numpy as np
 
 def draw_detections(image, detections, vis_threshold: float = 0.6):
     """
-    Draw bounding boxes and landmarks on the image.
+    Draw bounding boxes and landmarks on the image with thickness scaled by bbox size.
 
     Args:
         image (ndarray): Image to draw detections on.
@@ -30,7 +30,16 @@ def draw_detections(image, detections, vis_threshold: float = 0.6):
 
     # Draw bounding boxes, scores, and landmarks
     for box, score, landmark in zip(boxes, scores, landmarks):
-        cv2.rectangle(image, box[:2], box[2:], (0, 0, 255), 2)
-        cv2.putText(image, f"{score:.2f}", (box[0], box[1] + 12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+        # Calculate thickness proportional to the bbox size
+        thickness = max(1, int(min(box[2] - box[0], box[3] - box[1]) / 100))
+
+        # Draw rectangle
+        cv2.rectangle(image, tuple(box[:2]), tuple(box[2:]), (0, 0, 255), thickness)
+
+        # Draw score
+        cv2.putText(image, f"{score:.2f}", (box[0], box[1] + 12),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), thickness)
+
+        # Draw landmarks
         for point, color in zip(landmark, _colors):
-            cv2.circle(image, tuple(point), 2, color, -1)
+            cv2.circle(image, tuple(point), thickness, color, -1)

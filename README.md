@@ -1,6 +1,5 @@
 # UniFace: All-in-One Face Analysis Library
 
-
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
 [![PyPI Version](https://img.shields.io/pypi/v/uniface.svg)](https://pypi.org/project/uniface/)
@@ -10,21 +9,20 @@
 [![Code Style: PEP8](https://img.shields.io/badge/code%20style-PEP8-green.svg)](https://www.python.org/dev/peps/pep-0008/)
 [![GitHub Release Downloads](https://img.shields.io/github/downloads/yakhyo/uniface/total.svg?label=Model%20Downloads)](https://github.com/yakhyo/uniface/releases)
 
-
 **uniface** is a lightweight face detection library designed for high-performance face localization, landmark detection and face alignment. The library supports ONNX models and provides utilities for bounding box visualization and landmark plotting. To train RetinaFace model, see https://github.com/yakhyo/retinaface-pytorch.
 
 ---
 
 ## Features
 
-| Date       | Feature Description                                                                                                          |
-| ---------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| Planned    | 🎭 **Age and Gender Detection**: Planned feature for predicting age and gender from facial images.                           |
-| Planned    | 🧩 **Face Recognition**: Upcoming capability to identify and verify faces.                                                   |
-| 2024-11-21 | 🔄 **Face Alignment**: Added precise face alignment for better downstream tasks.                                             |
-| 2024-11-20 | ⚡ **High-Speed Face Detection**: ONNX model integration for faster and efficient face detection.                            |
-| 2024-11-20 | 🎯 **Facial Landmark Localization**: Accurate detection of key facial features like eyes, nose, and mouth.                   |
-| 2024-11-20 | 🛠 **API for Inference and Visualization**: Simplified API for seamless inference and visual results generation.              |
+| Date       | Feature Description                                                                                             |
+| ---------- | --------------------------------------------------------------------------------------------------------------- |
+| Planned    | 🎭 **Age and Gender Detection**: Planned feature for predicting age and gender from facial images.              |
+| Planned    | 🧩 **Face Recognition**: Upcoming capability to identify and verify faces.                                      |
+| 2024-11-21 | 🔄 **Face Alignment**: Added precise face alignment for better downstream tasks.                                |
+| 2024-11-20 | ⚡ **High-Speed Face Detection**: ONNX model integration for faster and efficient face detection.               |
+| 2024-11-20 | 🎯 **Facial Landmark Localization**: Accurate detection of key facial features like eyes, nose, and mouth.      |
+| 2024-11-20 | 🛠 **API for Inference and Visualization**: Simplified API for seamless inference and visual results generation. |
 
 ---
 
@@ -54,6 +52,10 @@ It demonstrates how to initialize the model, run inference, and visualize the re
 ---
 
 ## Examples
+
+<div align="center">
+    <img src="assets/alignment_result.png">
+</div>
 
 Explore the following example notebooks to learn how to use **UniFace** effectively:
 
@@ -152,6 +154,10 @@ cv2.destroyAllWindows()
 | retinaface_mnet_v2 | 91.70%     | 91.03%     | 86.60%     |
 | retinaface_r18     | 92.50%     | 91.02%     | 86.63%     |
 | retinaface_r34     | **94.16%** | **93.12%** | **88.90%** |
+
+<div align="center">
+    <img src="assets/test_result.png">
+</div>
 
 ## API Reference
 
