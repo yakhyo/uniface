@@ -181,7 +181,7 @@ RetinaFace(
 
 **Parameters**:
 
-- `model` _(str)_: Name of the model to use. Supported models:
+- `model_name` _(str)_: Name of the model to use. Supported models:
   - `retinaface_mnet025`, `retinaface_mnet050`, `retinaface_mnet_v1`, `retinaface_mnet_v2`
   - `retinaface_r18`, `retinaface_r34`
 - `conf_thresh` _(float, default=0.5)_: Minimum confidence score for detections.
