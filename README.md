@@ -94,6 +94,7 @@ original_image = cv2.imread(image_path)
 
 # Perform inference
 boxes, landmarks = uniface_inference.detect(original_image)
+# boxes: [x_min, y_min, x_max, y_max, confidence]
 
 # Visualize results
 draw_detections(original_image, (boxes, landmarks), vis_threshold=0.6)
@@ -126,6 +127,8 @@ while True:
 
     # Perform inference
     boxes, landmarks = uniface_inference.detect(frame)
+    # 'boxes' contains bounding box coordinates and confidence scores:
+    # Format: [x_min, y_min, x_max, y_max, confidence]
 
     # Draw detections on the frame
     draw_detections(frame, (boxes, landmarks), vis_threshold=0.6)
