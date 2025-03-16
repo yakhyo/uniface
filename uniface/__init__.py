@@ -13,7 +13,7 @@
 
 __license__ = "MIT"
 __author__ = "Yakhyokhuja Valikhujaev"
-__version__ = "0.1.6"
+__version__ = "0.1.7"
 
 
 from uniface.retinaface import RetinaFace

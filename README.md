@@ -70,7 +70,7 @@ from uniface import RetinaFace
 
 # Initialize the RetinaFace model
 uniface_inference = RetinaFace(
-    model="retinaface_mnet_v2",  # Model name
+    model_name="retinaface_mnet_v2",  # Model name
     conf_thresh=0.5,             # Confidence threshold
     pre_nms_topk=5000,           # Pre-NMS Top-K detections
     nms_thresh=0.4,              # NMS IoU threshold
@@ -169,7 +169,7 @@ cv2.destroyAllWindows()
 from typings import Tuple
 
 RetinaFace(
-    model: str,
+    model_name: str,
     conf_thresh: float = 0.5,
     pre_nms_topk: int = 5000,
     nms_thresh: float = 0.4,

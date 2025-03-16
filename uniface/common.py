@@ -7,7 +7,6 @@ import math
 import itertools
 import numpy as np
 
-import torch
 from typing import Tuple, List
 
 
@@ -44,7 +43,7 @@ def resize_image(frame, target_shape: Tuple[int, int] = (640, 640)) -> Tuple[np.
     return image, resize_factor
 
 
-def generate_anchors(image_size: Tuple[int, int] = (640, 640)) -> torch.Tensor:
+def generate_anchors(image_size: Tuple[int, int] = (640, 640)) -> np.ndarray:
     """
     Generate anchor boxes for a given image size.
 
@@ -52,7 +51,7 @@ def generate_anchors(image_size: Tuple[int, int] = (640, 640)) -> torch.Tensor:
         image_size (Tuple[int, int]): Input image size (width, height). Defaults to (640, 640).
 
     Returns:
-        torch.Tensor: Anchor box coordinates as a tensor.
+        np.ndarray: Anchor box coordinates as a NumPy array.
     """
     image_size = image_size
 
@@ -79,7 +78,7 @@ def generate_anchors(image_size: Tuple[int, int] = (640, 640)) -> torch.Tensor:
                 for cy, cx in itertools.product(dense_cy, dense_cx):
                     anchors += [cx, cy, s_kx, s_ky]
 
-    output = torch.Tensor(anchors).view(-1, 4)
+    output = np.array(anchors, dtype=np.float32).reshape(-1, 4)
     return output
 
 
@@ -123,56 +122,57 @@ def nms(dets: List[np.ndarray], threshold: float):
     return keep
 
 
-def decode_boxes(loc, priors, variances=[0.1, 0.2]) -> torch.Tensor:
+def decode_boxes(loc, priors, variances=[0.1, 0.2]) -> np.ndarray:
     """
     Decode locations from predictions using priors to undo
     the encoding done for offset regression at train time.
 
     Args:
-        loc (tensor): Location predictions for loc layers, shape: [num_priors, 4]
-        priors (tensor): Prior boxes in center-offset form, shape: [num_priors, 4]
+        loc (np.ndarray): Location predictions for loc layers, shape: [num_priors, 4]
+        priors (np.ndarray): Prior boxes in center-offset form, shape: [num_priors, 4]
         variances (list[float]): Variances of prior boxes
 
     Returns:
-        tensor: Decoded bounding box predictions
+        np.ndarray: Decoded bounding box predictions
     """
     # Compute centers of predicted boxes
     cxcy = priors[:, :2] + loc[:, :2] * variances[0] * priors[:, 2:]
 
     # Compute widths and heights of predicted boxes
-    wh = priors[:, 2:] * torch.exp(loc[:, 2:] * variances[1])
+    wh = priors[:, 2:] * np.exp(loc[:, 2:] * variances[1])
 
     # Convert center, size to corner coordinates
-    boxes = torch.empty_like(loc)
+    boxes = np.zeros_like(loc)
     boxes[:, :2] = cxcy - wh / 2  # xmin, ymin
     boxes[:, 2:] = cxcy + wh / 2  # xmax, ymax
 
     return boxes
 
 
-def decode_landmarks(predictions, priors, variances=[0.1, 0.2]) -> torch.Tensor:
+def decode_landmarks(predictions, priors, variances=[0.1, 0.2]) -> np.ndarray:
     """
-    Decode landmarks from predictions using prior boxes to reverse the encoding done during training.
+    Decode landmark predictions using prior boxes.
 
     Args:
-        predictions (tensor): Landmark predictions for localization layers.
-            Shape: [num_priors, 10] where each prior contains 5 landmark (x, y) pairs.
-        priors (tensor): Prior boxes in center-offset form.
-            Shape: [num_priors, 4], where each prior has (cx, cy, width, height).
-        variances (list[float]): Variances of the prior boxes to scale the decoded values.
+        predictions (np.ndarray): Landmark predictions, shape: [num_priors, 10]
+        priors (np.ndarray): Prior boxes, shape: [num_priors, 4]
+        variances (list): Scaling factors for landmark offsets.
 
     Returns:
-        landmarks (tensor): Decoded landmark predictions.
-            Shape: [num_priors, 10] where each row contains the decoded (x, y) pairs for 5 landmarks.
+        np.ndarray: Decoded landmarks, shape: [num_priors, 10]
     """
 
-    # Reshape predictions to [num_priors, 5, 2] to handle each pair (x, y) in a batch
-    predictions = predictions.view(predictions.size(0), 5, 2)
+    # Reshape predictions to [num_priors, 5, 2] to process landmark points
+    predictions = predictions.reshape(predictions.shape[0], 5, 2)
 
-    # Perform the same operation on all landmark pairs at once
-    landmarks = priors[:, :2].unsqueeze(1) + predictions * variances[0] * priors[:, 2:].unsqueeze(1)
+    # Expand priors to match (num_priors, 5, 2)
+    priors_xy = np.repeat(priors[:, :2][:, np.newaxis, :], 5, axis=1)  # (num_priors, 5, 2)
+    priors_wh = np.repeat(priors[:, 2:][:, np.newaxis, :], 5, axis=1)  # (num_priors, 5, 2)
+
+    # Compute absolute landmark positions
+    landmarks = priors_xy + predictions * variances[0] * priors_wh
 
     # Flatten back to [num_priors, 10]
-    landmarks = landmarks.view(landmarks.size(0), -1)
+    landmarks = landmarks.reshape(landmarks.shape[0], -1)
 
     return landmarks

@@ -39,7 +39,7 @@ if __name__ == '__main__':
 
     # Initialize and run the ONNX inference
     retinaface_inference = RetinaFace(
-        model="retinaface_mnet_v2",
+        model_name="retinaface_mnet_v2",
         conf_thresh=0.5,
         pre_nms_topk=5000,
         nms_thresh=0.4,
