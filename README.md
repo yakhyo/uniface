@@ -70,7 +70,7 @@ from uniface import RetinaFace
 
 # Initialize the RetinaFace model
 uniface_inference = RetinaFace(
-    model="retinaface_mnet_v2",  # Model name
+    model_name="retinaface_mnet_v2",  # Model name
     conf_thresh=0.5,             # Confidence threshold
     pre_nms_topk=5000,           # Pre-NMS Top-K detections
     nms_thresh=0.4,              # NMS IoU threshold
@@ -94,6 +94,7 @@ original_image = cv2.imread(image_path)
 
 # Perform inference
 boxes, landmarks = uniface_inference.detect(original_image)
+# boxes: [x_min, y_min, x_max, y_max, confidence]
 
 # Visualize results
 draw_detections(original_image, (boxes, landmarks), vis_threshold=0.6)
@@ -126,6 +127,8 @@ while True:
 
     # Perform inference
     boxes, landmarks = uniface_inference.detect(frame)
+    # 'boxes' contains bounding box coordinates and confidence scores:
+    # Format: [x_min, y_min, x_max, y_max, confidence]
 
     # Draw detections on the frame
     draw_detections(frame, (boxes, landmarks), vis_threshold=0.6)
@@ -169,7 +172,7 @@ cv2.destroyAllWindows()
 from typings import Tuple
 
 RetinaFace(
-    model: str,
+    model_name: str,
     conf_thresh: float = 0.5,
     pre_nms_topk: int = 5000,
     nms_thresh: float = 0.4,
@@ -181,7 +184,7 @@ RetinaFace(
 
 **Parameters**:
 
-- `model` _(str)_: Name of the model to use. Supported models:
+- `model_name` _(str)_: Name of the model to use. Supported models:
   - `retinaface_mnet025`, `retinaface_mnet050`, `retinaface_mnet_v1`, `retinaface_mnet_v2`
   - `retinaface_r18`, `retinaface_r34`
 - `conf_thresh` _(float, default=0.5)_: Minimum confidence score for detections.
