@@ -49,9 +49,11 @@ def verify_model_weights(model_name: str, root: str = '~/.uniface/models') -> st
             Logger.error(f"No URL found for model '{model_name}'")
             raise ValueError(f"No URL found for model '{model_name}'")
 
-        Logger.info(f"Downloading '{model_name}' from {url}")
+        Logger.info(f"Downloading model '{model_name}' from {url}")
         download_file(url, model_path)
-        Logger.info(f"Successfully '{model_name}' downloaded to {model_path}")
+        Logger.info(f"Successfully downloaded '{model_name}' to {os.path.normpath(model_path)}")
+    else:
+        Logger.info(f"Model '{model_name}' already exists at {os.path.normpath(model_path)}")
 
     expected_hash = const.MODEL_SHA256.get(model_name)
     if expected_hash and not verify_file_hash(model_path, expected_hash):
@@ -88,14 +90,7 @@ def verify_file_hash(file_path: str, expected_hash: str) -> bool:
 
 
 if __name__ == "__main__":
-    model_names = [
-        'retinaface_mnet025',
-        'retinaface_mnet050',
-        'retinaface_mnet_v1',
-        'retinaface_mnet_v2',
-        'retinaface_r18',
-        'retinaface_r34'
-    ]
+    model_names = [model.value for model in const.RetinaFaceWeights]
 
     # Download each model in the list
     for model_name in model_names:

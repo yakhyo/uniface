@@ -63,21 +63,47 @@ Explore the following example notebooks to learn how to use **UniFace** effectiv
 - [Face Alignment](examples/face_alignment.ipynb): Shows how to align faces using detected landmarks.
 - [Age and Gender Detection](examples/age_gender.ipynb): Example for detecting age and gender from faces. (underdevelopment)
 
-### Initialize the Model
+### 🚀 Initialize the RetinaFace Model
+
+To use the RetinaFace model for face detection, initialize it with either custom or default configuration parameters.
+
+#### Full Initialization (with custom parameters)
+
+```python
+from uniface import RetinaFace
+from uniface.constants import RetinaFaceWeights
+
+# Initialize RetinaFace with custom configuration
+uniface_inference = RetinaFace(
+    model_name=RetinaFaceWeights.MNET_V2,  # Model name from enum
+    conf_thresh=0.5,                       # Confidence threshold for detections
+    pre_nms_topk=5000,                     # Number of top detections before NMS
+    nms_thresh=0.4,                        # IoU threshold for NMS
+    post_nms_topk=750,                     # Number of top detections after NMS
+    dynamic_size=False,                    # Whether to allow arbitrary input sizes
+    input_size=(640, 640)                  # Input image size (HxW)
+)
+```
+
+#### Minimal Initialization (uses default parameters)
 
 ```python
 from uniface import RetinaFace
 
-# Initialize the RetinaFace model
-uniface_inference = RetinaFace(
-    model_name="retinaface_mnet_v2",  # Model name
-    conf_thresh=0.5,             # Confidence threshold
-    pre_nms_topk=5000,           # Pre-NMS Top-K detections
-    nms_thresh=0.4,              # NMS IoU threshold
-    post_nms_topk=750,           # Post-NMS Top-K detections
-    dynamic_size=False,          # Arbitrary image size inference
-    input_size=(640, 640)        # Pre-defined input image size
-)
+# Initialize with default settings
+uniface_inference = RetinaFace()
+```
+
+**Default Parameters:**
+
+```python
+model_name = RetinaFaceWeights.MNET_V2
+conf_thresh = 0.5
+pre_nms_topk = 5000
+nms_thresh = 0.4
+post_nms_topk = 750
+dynamic_size = False
+input_size = (640, 640)
 ```
 
 ### Run Inference
@@ -170,9 +196,11 @@ cv2.destroyAllWindows()
 
 ```python
 from typings import Tuple
+from uniface import RetinaFace
+from uniface.constants import RetinaFaceWeights
 
 RetinaFace(
-    model_name: str,
+    model_name: RetinaFaceWeights,
     conf_thresh: float = 0.5,
     pre_nms_topk: int = 5000,
     nms_thresh: float = 0.4,
@@ -184,9 +212,8 @@ RetinaFace(
 
 **Parameters**:
 
-- `model_name` _(str)_: Name of the model to use. Supported models:
-  - `retinaface_mnet025`, `retinaface_mnet050`, `retinaface_mnet_v1`, `retinaface_mnet_v2`
-  - `retinaface_r18`, `retinaface_r34`
+- `model_name` _(RetinaFaceWeights)_: Enum value for model to use. Supported values:
+  - `MNET_025`, `MNET_050`, `MNET_V1`, `MNET_V2`, `RESNET18`, `RESNET34`
 - `conf_thresh` _(float, default=0.5)_: Minimum confidence score for detections.
 - `pre_nms_topk` _(int, default=5000)_: Max detections to keep before NMS.
 - `nms_thresh` _(float, default=0.4)_: IoU threshold for Non-Maximum Suppression.

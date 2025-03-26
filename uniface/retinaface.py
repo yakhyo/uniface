@@ -11,6 +11,7 @@ from typing import Tuple, List, Optional, Literal
 
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
+from uniface.constants import RetinaFaceWeights
 from uniface.common import (
     nms,
     resize_image,
@@ -25,7 +26,7 @@ class RetinaFace:
     A class for face detection using the RetinaFace model.
 
     Args:
-        model_name (str): Name of the model.
+        model_name (RetinaFaceWeights): Name of the model. Defaults to "retinaface_mnet_v2".
         conf_thresh (float, optional): Confidence threshold for detections. Defaults to 0.5.
         nms_thresh (float, optional): Non-maximum suppression (NMS) threshold. Defaults to 0.4.
         pre_nms_topk (int, optional): Maximum number of detections considered before applying NMS. Defaults to 5000.
@@ -50,7 +51,7 @@ class RetinaFace:
 
     def __init__(
         self,
-        model_name: str,
+        model_name: RetinaFaceWeights = RetinaFaceWeights.MNET_V2,
         conf_thresh: float = 0.5,
         nms_thresh: float = 0.4,
         pre_nms_topk: int = 5000,
