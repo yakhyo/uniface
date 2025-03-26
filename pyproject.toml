@@ -1,0 +1,35 @@
+[project]
+name = "uniface"
+version = "0.1.7"
+description = "UniFace: A Comprehensive Library for Face Detection, Recognition, Landmark Analysis, Age, and Gender Detection"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [
+    { name = "Yakhyokhuja Valikhujaev", email = "yakhyo9696@gmail.com" }
+]
+dependencies = [
+    "numpy",
+    "opencv-python",
+    "onnx",
+    "onnxruntime-gpu",
+    "scikit-image",
+    "requests"
+]
+requires-python = ">=3.8"
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[project.urls]
+Homepage = "https://github.com/yakhyo/uniface"
+Repository = "https://github.com/yakhyo/uniface"
+
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["uniface"]
+
+[tool.setuptools.package-data]
+"uniface" = ["*.txt", "*.md"]

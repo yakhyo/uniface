@@ -1,9 +1,7 @@
-pytest
 numpy
 opencv-python
-opencv-python-headless
 onnx
-onnxruntime
-requests
-torch
+onnxruntime-gpu
 scikit-image
+requests
+pytest

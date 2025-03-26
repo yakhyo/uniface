@@ -7,12 +7,11 @@ import cv2
 import numpy as np
 import onnxruntime as ort
 
-import torch
 from typing import Tuple, List, Optional, Literal
 
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
-
+from uniface.constants import RetinaFaceWeights
 from uniface.common import (
     nms,
     resize_image,
@@ -27,28 +26,32 @@ class RetinaFace:
     A class for face detection using the RetinaFace model.
 
     Args:
-        model (str): Path or identifier of the model weights.
-        conf_thresh (float): Confidence threshold for detections. Defaults to 0.5.
-        nms_thresh (float): Non-maximum suppression threshold. Defaults to 0.4.
-        pre_nms_topk (int): Maximum number of detections before NMS. Defaults to 5000.
-        post_nms_topk (int): Maximum number of detections after NMS. Defaults to 750.
-        dynamic_size (Optional[bool]): Whether to adjust anchor generation dynamically based on image size. Defaults to False.
-        input_size (Optional[Tuple[int, int]]): Static input size for the model (width, height). Defaults to (640, 640).
+        model_name (RetinaFaceWeights): Name of the model. Defaults to "retinaface_mnet_v2".
+        conf_thresh (float, optional): Confidence threshold for detections. Defaults to 0.5.
+        nms_thresh (float, optional): Non-maximum suppression (NMS) threshold. Defaults to 0.4.
+        pre_nms_topk (int, optional): Maximum number of detections considered before applying NMS. Defaults to 5000.
+        post_nms_topk (int, optional): Maximum number of detections retained after NMS. Defaults to 750.
+        dynamic_size (bool, optional): Whether to dynamically adjust anchor generation based on image size. Defaults to False.
+        input_size (Tuple[int, int], optional): Static input size for the model (width, height). Used when `dynamic_size=False`. Defaults to (640, 640).
 
     Attributes:
         conf_thresh (float): Confidence threshold for filtering detections.
-        nms_thresh (float): Threshold for NMS to remove duplicate detections.
-        pre_nms_topk (int): Maximum detections to consider before applying NMS.
-        post_nms_topk (int): Maximum detections retained after applying NMS.
-        dynamic_size (bool): Indicates if input size and anchors are dynamically adjusted.
-        input_size (Tuple[int, int]): The model's input image size.
-        _model_path (str): Path to the model weights.
-        _priors (torch.Tensor): Precomputed anchor boxes for static input size.
+        nms_thresh (float): NMS threshold to remove duplicate detections.
+        pre_nms_topk (int): Number of detections considered before applying NMS.
+        post_nms_topk (int): Maximum number of detections retained after applying NMS.
+        dynamic_size (bool): Whether the model dynamically adjusts input size and anchors.
+        input_size (Tuple[int, int] or None): The model's fixed input size (if `dynamic_size=False`), otherwise None.
+        _model_path (str): Verified path to the model weights.
+        _priors (np.ndarray or None): Precomputed anchor boxes when using static input size. None if `dynamic_size=True`.
+
+    Raises:
+        ValueError: If the model weights cannot be found or verified.
+        RuntimeError: If there is an error initializing the model.
     """
 
     def __init__(
         self,
-        model: str,
+        model_name: RetinaFaceWeights = RetinaFaceWeights.MNET_V2,
         conf_thresh: float = 0.5,
         nms_thresh: float = 0.4,
         pre_nms_topk: int = 5000,
@@ -65,13 +68,13 @@ class RetinaFace:
         self.input_size = input_size
 
         Logger.info(
-            f"Initializing RetinaFace with model={model}, conf_thresh={conf_thresh}, nms_thresh={nms_thresh}, "
+            f"Initializing RetinaFace with model={model_name}, conf_thresh={conf_thresh}, nms_thresh={nms_thresh}, "
             f"pre_nms_topk={pre_nms_topk}, post_nms_topk={post_nms_topk}, dynamic_size={dynamic_size}, "
             f"input_size={input_size}"
         )
 
         # Get path to model weights
-        self._model_path = verify_model_weights(model)
+        self._model_path = verify_model_weights(model_name)
         Logger.info(f"Verified model weights located at: {self._model_path}")
 
         # Precompute anchors if using static size
@@ -217,8 +220,8 @@ class RetinaFace:
         loc, conf, landmarks = outputs[0].squeeze(0), outputs[1].squeeze(0), outputs[2].squeeze(0)
 
         # Decode boxes and landmarks
-        boxes = decode_boxes(torch.tensor(loc), self._priors).cpu().numpy()
-        landmarks = decode_landmarks(torch.tensor(landmarks), self._priors).cpu().numpy()
+        boxes = decode_boxes(loc, self._priors)
+        landmarks = decode_landmarks(landmarks, self._priors)
 
         boxes, landmarks = self._scale_detections(boxes, landmarks, resize_factor, shape=(shape[0], shape[1]))
 

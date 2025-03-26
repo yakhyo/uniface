@@ -1,6 +1,7 @@
 import pytest
 import numpy as np
 from uniface import RetinaFace
+from uniface.constants import RetinaFaceWeights
 
 
 @pytest.fixture
@@ -9,7 +10,7 @@ def retinaface_model():
     Fixture to initialize the RetinaFace model for testing.
     """
     return RetinaFace(
-        model="retinaface_mnet_v2",
+        model_name=RetinaFaceWeights.MNET_V2,
         conf_thresh=0.5,
         pre_nms_topk=5000,
         nms_thresh=0.4,
