@@ -6,16 +6,37 @@ from enum import Enum
 from typing import Dict
 
 # fmt: off
-class FaceEncoderWeights(str, Enum):
+class SphereFaceWeights(str, Enum):
+    """
+    Trained on MS1M V2 dataset with 5.8 million images of 85k identities.
+    https://github.com/yakhyo/face-recognition
+    """
     SPHERE20      = "sphere20"
     SPHERE36      = "sphere36"
+
+class MobileFaceWeights(str, Enum):
+    """
+    Trained on MS1M V2 dataset with 5.8 million images of 85k identities.
+    https://github.com/yakhyo/face-recognition
+    """
     MNET_025      = "mobilenetv1_025"
     MNET_V2       = "mobilenetv2"
     MNET_V3_SMALL = "mobilenetv3_small"
     MNET_V3_LARGE = "mobilenetv3_large"
 
+class ArcFaceWeights(str, Enum):
+    """
+    Pretrained weights from ArcFace model (insightface).
+    https://github.com/deepinsight/insightface
+    """
+    MNET = "arcface_mnet"
+    RESNET = "arcface_resnet"
 
 class RetinaFaceWeights(str, Enum):
+    """
+    Trained on WIDER FACE dataset.
+    https://github.com/yakhyo/retinaface-pytorch
+    """
     MNET_025 =  "retinaface_mnet025"
     MNET_050 =  "retinaface_mnet050"
     MNET_V1  =  "retinaface_mnet_v1"
