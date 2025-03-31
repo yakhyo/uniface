@@ -7,23 +7,26 @@ import cv2
 import numpy as np
 import onnxruntime as ort
 
-from typing import Tuple, List, Optional, Literal
+from typing import Tuple, Optional
+
 
 from uniface.face_utils import compute_similarity, face_alignment
 from uniface.model_store import verify_model_weights
-from uniface.constants import FaceEncoderWeights
+from uniface.constants import SphereFaceWeights, MobileFaceWeights
 from uniface.logger import Logger
 
 
-class FaceEncoder:
+__all__ = ["BaseFaceEncoder"]
+
+
+class BaseFaceEncoder:
     """
-    Face recognition model using ONNX Runtime for inference and OpenCV for image preprocessing,
-    utilizing an external face alignment function.
+    Unified Face Encoder supporting multiple model families (e.g., SphereFace, MobileFace).
     """
 
     def __init__(
         self,
-        model_path: Optional[FaceEncoderWeights] = FaceEncoderWeights.MNET_V2,
+        model_path: Optional[SphereFaceWeights | MobileFaceWeights] = MobileFaceWeights.MNET_V2
     ) -> None:
         """
         Initializes the FaceEncoder model for inference.
@@ -108,7 +111,7 @@ class FaceEncoder:
         Returns:
             np.ndarray: 512-dimensional face embedding.
         """
-        aligned_face = face_alignment(image, landmarks)  # Use your function for alignment
-        blob = self.preprocess(image)  # Convert to blob
+        aligned_face, _ = face_alignment(image, landmarks)  # Use your function for alignment
+        blob = self.preprocess(aligned_face)  # Convert to blob
         embedding = self.session.run(self.output_names, {self.input_name: blob})[0]
         return embedding  # Return the 512-D feature vector
