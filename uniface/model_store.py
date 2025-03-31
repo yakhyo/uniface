@@ -10,6 +10,9 @@ from uniface.log import Logger
 import uniface.constants as const
 
 
+__all__ = ['verify_model_weights']
+
+
 def verify_model_weights(model_name: str, root: str = '~/.uniface/models') -> str:
     """
     Ensures model weights are available by downloading if missing and verifying integrity with a SHA-256 hash.

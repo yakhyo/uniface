@@ -19,7 +19,7 @@ __version__ = "0.1.8"
 from uniface.retinaface import RetinaFace
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
-from uniface.alignment import face_alignment
+from uniface.face_utils import face_alignment, compute_similarity
 from uniface.visualization import draw_detections
 
 __all__ = [
@@ -30,5 +30,6 @@ __all__ = [
     "Logger",
     "verify_model_weights",
     "draw_detections",
-    "face_alignment"
+    "face_alignment",
+    "compute_similarity",
 ]
