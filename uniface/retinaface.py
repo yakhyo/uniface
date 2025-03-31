@@ -96,11 +96,14 @@ class RetinaFace:
             RuntimeError: If the model fails to load, logs an error and raises an exception.
         """
         try:
-            self.session = ort.InferenceSession(model_path)
+            self.session = ort.InferenceSession(
+                model_path,
+                providers=["CUDAExecutionProvider", "CPUExecutionProvider"]
+            )
             self.input_name = self.session.get_inputs()[0].name
             Logger.info(f"Successfully initialized the model from {model_path}")
         except Exception as e:
-            Logger.error(f"Failed to load model from '{model_path}': {e}")
+            Logger.error(f"Failed to load model from '{model_path}': {e}", exc_info=True)
             raise RuntimeError(f"Failed to initialize model session for '{model_path}'") from e
 
     def preprocess(self, image: np.ndarray) -> np.ndarray:

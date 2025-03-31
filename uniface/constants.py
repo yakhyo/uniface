@@ -5,14 +5,25 @@
 from enum import Enum
 from typing import Dict
 
+# fmt: off
+class FaceEncoderWeights(str, Enum):
+    SPHERE20      = "sphere20"
+    SPHERE36      = "sphere36"
+    MNET_025      = "mobilenetv1_025"
+    MNET_V2       = "mobilenetv2"
+    MNET_V3_SMALL = "mobilenetv3_small"
+    MNET_V3_LARGE = "mobilenetv3_large"
+
 
 class RetinaFaceWeights(str, Enum):
-    MNET_025 = "retinaface_mnet025"
-    MNET_050 = "retinaface_mnet050"
-    MNET_V1  = "retinaface_mnet_v1"
-    MNET_V2  = "retinaface_mnet_v2"
-    RESNET18 = "retinaface_r18"
-    RESNET34 = "retinaface_r34"
+    MNET_025 =  "retinaface_mnet025"
+    MNET_050 =  "retinaface_mnet050"
+    MNET_V1  =  "retinaface_mnet_v1"
+    MNET_V2  =  "retinaface_mnet_v2"
+    RESNET18 =  "retinaface_r18"
+    RESNET34 =  "retinaface_r34"
+
+# fmt: on
 
 
 MODEL_URLS: Dict[RetinaFaceWeights, str] = {
