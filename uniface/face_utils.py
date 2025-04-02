@@ -96,3 +96,48 @@ def compute_similarity(feat1: np.ndarray, feat2: np.ndarray) -> np.float32:
     feat2 = feat2.ravel()
     similarity = np.dot(feat1, feat2) / (np.linalg.norm(feat1) * np.linalg.norm(feat2))
     return similarity
+
+
+def bbox_center_alignment(image, center, output_size, scale, rotation):
+    """
+    Apply center-based alignment, scaling, and rotation to an image.
+
+    Args:
+        image (np.ndarray): Input image.
+        center (Tuple[float, float]): Center point (e.g., face center from bbox).
+        output_size (int): Desired output image size (square).
+        scale (float): Scaling factor to zoom in/out.
+        rotation (float): Rotation angle in degrees (clockwise).
+
+    Returns:
+        cropped (np.ndarray): Aligned and cropped image.
+        M (np.ndarray): 2x3 affine transform matrix used.
+    """
+
+    # Convert rotation from degrees to radians
+    rot = float(rotation) * np.pi / 180.0
+
+    # Scale the image
+    t1 = trans.SimilarityTransform(scale=scale)
+
+    # Translate the center point to the origin (after scaling)
+    cx = center[0] * scale
+    cy = center[1] * scale
+    t2 = trans.SimilarityTransform(translation=(-1 * cx, -1 * cy))
+
+    # Apply rotation around origin (center of face)
+    t3 = trans.SimilarityTransform(rotation=rot)
+
+    # Translate origin to center of output image
+    t4 = trans.SimilarityTransform(translation=(output_size / 2, output_size / 2))
+
+    # Combine all transformations in order: scale → center shift → rotate → recentralize
+    t = t1 + t2 + t3 + t4
+
+    # Extract 2x3 affine matrix
+    M = t.params[0:2]
+
+    # Warp the image using OpenCV
+    cropped = cv2.warpAffine(image, M, (output_size, output_size), borderValue=0.0)
+
+    return cropped, M

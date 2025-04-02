@@ -32,7 +32,7 @@ class BaseFaceEncoder:
         Initializes the FaceEncoder model for inference.
 
         Args:
-            model_path (str): Path to the ONNX model file.
+            model_path (Optional[SphereFaceWeights | MobileFaceWeights]): Path to the ONNX model file.
         """
         self.input_mean = 127.5
         self.input_std = 127.5
