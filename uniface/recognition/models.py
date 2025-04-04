@@ -4,7 +4,7 @@
 
 from typing import Optional
 
-from .base import BaseFaceEncoder, PreprocessConfig
+from .base import BaseFaceEncoder, PreprocessCo1nfig
 from uniface.constants import SphereFaceWeights, MobileFaceWeights, ArcFaceWeights
 
 
