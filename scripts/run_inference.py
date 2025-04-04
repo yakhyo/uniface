@@ -4,7 +4,7 @@ import time
 import argparse
 import numpy as np
 
-from uniface import RetinaFace, draw_detections
+from uniface.detection import RetinaFace, draw_detections
 from uniface.constants import RetinaFaceWeights
 
 
