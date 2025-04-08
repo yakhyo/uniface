@@ -159,6 +159,8 @@ class RetinaFace:
                 Shape: (num_detections, 5, 2), where each row contains 5 landmark points (x, y).
         """
 
+        original_height, original_width = image.shape[:2]
+        
         if self.dynamic_size:
             height, width, _ = image.shape
             self._priors = generate_anchors(image_size=(height, width))  # generate anchors for each input image
@@ -180,7 +182,7 @@ class RetinaFace:
             areas = (detections[:, 2] - detections[:, 0]) * (detections[:, 3] - detections[:, 1])
 
             # Calculate offsets from image center
-            center = (height // 2, width // 2)
+            center = (original_height // 2, original_width // 2)
             offsets = np.vstack([
                 (detections[:, 0] + detections[:, 2]) / 2 - center[1],
                 (detections[:, 1] + detections[:, 3]) / 2 - center[0]

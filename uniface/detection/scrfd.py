@@ -3,14 +3,12 @@ import cv2
 import numpy as np
 import onnxruntime
 
-from typing import Tuple
+from typing import Tuple, Optional
 
-from uniface.logger import Logger
-from .utils import non_max_supression, distance2bbox, distance2kps
+# from uniface.logger import Logger
+from .utils import non_max_supression, distance2bbox, distance2kps, resize_image
 
 __all__ = ['SCRFD']
-
-
 
 
 class SCRFD:
@@ -124,37 +122,24 @@ class SCRFD:
                 kpss_list.append(pos_kpss)
         return scores_list, bboxes_list, kpss_list
 
-    def detect(self, image, max_num=0, metric="max"):
-        width, height = self.input_size
+    def detect(self, image, max_num=1, metric="max", center_weight: Optional[float] = 2) -> Tuple[np.ndarray, np.ndarray]:
+        original_height, original_width = image.shape[:2]
+        image, resize_factor = resize_image(image, target_shape=self.input_size)
+        
 
-        im_ratio = float(image.shape[0]) / image.shape[1]
-        model_ratio = height / width
-        if im_ratio > model_ratio:
-            new_height = height
-            new_width = int(new_height / im_ratio)
-        else:
-            new_width = width
-            new_height = int(new_width * im_ratio)
-
-        det_scale = float(new_height) / image.shape[0]
-        resized_image = cv2.resize(image, (new_width, new_height))
-
-        det_image = np.zeros((height, width, 3), dtype=np.uint8)
-        det_image[:new_height, :new_width, :] = resized_image
-
-        scores_list, bboxes_list, kpss_list = self.forward(det_image, self.conf_thres)
+        scores_list, bboxes_list, kpss_list = self.forward(image, self.conf_thres)
 
         scores = np.vstack(scores_list)
         scores_ravel = scores.ravel()
         order = scores_ravel.argsort()[::-1]
-        bboxes = np.vstack(bboxes_list) / det_scale
+        bboxes = np.vstack(bboxes_list) / resize_factor
 
         if self.use_kps:
-            kpss = np.vstack(kpss_list) / det_scale
+            kpss = np.vstack(kpss_list) / resize_factor
 
         pre_det = np.hstack((bboxes, scores)).astype(np.float32, copy=False)
         pre_det = pre_det[order, :]
-        keep = non_max_supression(pre_det, iou_thres=self.iou_thres)
+        keep = non_max_supression(pre_det, threshold=self.iou_thres)
         det = pre_det[keep, :]
         if self.use_kps:
             kpss = kpss[order, :, :]
@@ -163,22 +148,64 @@ class SCRFD:
             kpss = None
         if 0 < max_num < det.shape[0]:
             area = (det[:, 2] - det[:, 0]) * (det[:, 3] - det[:, 1])
-            image_center = image.shape[0] // 2, image.shape[1] // 2
+            center = (original_height // 2, original_width // 2)
+            
             offsets = np.vstack(
                 [
-                    (det[:, 0] + det[:, 2]) / 2 - image_center[1],
-                    (det[:, 1] + det[:, 3]) / 2 - image_center[0],
+                    (det[:, 0] + det[:, 2]) / 2 - center[1],
+                    (det[:, 1] + det[:, 3]) / 2 - center[0],
                 ]
             )
-            offset_dist_squared = np.sum(np.power(offsets, 2.0), 0)
+            offset_dist_squared = np.sum(np.power(offsets, 2.0), axis=0)
             if metric == "max":
                 values = area
             else:
-                values = (area - offset_dist_squared * 2.0)  # some extra weight on the centering
-            bindex = np.argsort(values)[::-1]
-            bindex = bindex[0:max_num]
-            det = det[bindex, :]
+                values = area - offset_dist_squared * center_weight  # some extra weight on the centering
+                
+            sorted_indices = np.argsort(values)[::-1][:max_num]
+            det = det[sorted_indices]
             if kpss is not None:
-                kpss = kpss[bindex, :]
+                kpss = kpss[sorted_indices]
+            
         return det, kpss
 
+def draw_bbox(frame, bbox, color=(0, 255, 0), thickness=2):
+    x1, y1, x2, y2 = bbox[:4].astype(np.int32)
+    cv2.rectangle(frame, (x1, y1), (x2, y2), color, thickness)
+    score = bbox[4]
+    cv2.putText(frame, f"{score:.2f}", (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
+
+def draw_keypoints(frame, points, color=(0, 0, 255), radius=2):
+    for (x, y) in points.astype(np.int32):
+        cv2.circle(frame, (x, y), radius, color, -1)
+
+if __name__ == "__main__":
+    detector = SCRFD(model_path="det_10g.onnx")
+    cap = cv2.VideoCapture(0)
+
+    if not cap.isOpened():
+        print("❌ Failed to open webcam.")
+        exit()
+
+    print("📷 Webcam started. Press 'q' to exit.")
+
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            print("❌ Failed to read frame.")
+            break
+
+        boxes_list, points_list = detector.detect(frame)
+
+        for boxes, points in zip(boxes_list, points_list):
+            draw_bbox(frame, boxes)
+
+            if points is not None:
+                draw_keypoints(frame, points)
+
+        cv2.imshow("FaceDetection", frame)
+        if cv2.waitKey(1) & 0xFF == ord("q"):
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()
