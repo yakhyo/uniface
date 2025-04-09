@@ -100,7 +100,8 @@ class RetinaFace:
                 model_path,
                 providers=["CUDAExecutionProvider", "CPUExecutionProvider"]
             )
-            self.input_name = self.session.get_inputs()[0].name
+            self.input_names = self.session.get_inputs()[0].name
+            self.output_names = [x.name for x in self.session.get_outputs()]
             Logger.info(f"Successfully initialized the model from {model_path}")
         except Exception as e:
             Logger.error(f"Failed to load model from '{model_path}': {e}", exc_info=True)
@@ -129,13 +130,13 @@ class RetinaFace:
         Returns:
             Tuple[np.ndarray, np.ndarray]: Raw model outputs.
         """
-        return self.session.run(None, {self.input_name: input_tensor})
+        return self.session.run(self.output_names, {self.input_names: input_tensor})
 
     def detect(
         self,
         image: np.ndarray,
         max_num: Optional[int] = 0,
-        metric: Literal["default", "max"] = "default",
+        metric: Literal["default", "max"] = "max",
         center_weight: Optional[float] = 2.0
     ) -> Tuple[np.ndarray, np.ndarray]:
         """

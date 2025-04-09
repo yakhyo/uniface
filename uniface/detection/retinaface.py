@@ -100,7 +100,8 @@ class RetinaFace:
                 model_path,
                 providers=["CUDAExecutionProvider", "CPUExecutionProvider"]
             )
-            self.input_name = self.session.get_inputs()[0].name
+            self.input_names = self.session.get_inputs()[0].name
+            self.output_names = [x.name for x in self.session.get_outputs()]
             Logger.info(f"Successfully initialized the model from {model_path}")
         except Exception as e:
             Logger.error(f"Failed to load model from '{model_path}': {e}", exc_info=True)
@@ -129,13 +130,13 @@ class RetinaFace:
         Returns:
             Tuple[np.ndarray, np.ndarray]: Raw model outputs.
         """
-        return self.session.run(None, {self.input_name: input_tensor})
+        return self.session.run(self.output_names, {self.input_names: input_tensor})
 
     def detect(
         self,
         image: np.ndarray,
         max_num: Optional[int] = 0,
-        metric: Literal["default", "max"] = "default",
+        metric: Literal["default", "max"] = "max",
         center_weight: Optional[float] = 2.0
     ) -> Tuple[np.ndarray, np.ndarray]:
         """
@@ -159,6 +160,8 @@ class RetinaFace:
                 Shape: (num_detections, 5, 2), where each row contains 5 landmark points (x, y).
         """
 
+        original_height, original_width = image.shape[:2]
+        
         if self.dynamic_size:
             height, width, _ = image.shape
             self._priors = generate_anchors(image_size=(height, width))  # generate anchors for each input image
@@ -180,7 +183,7 @@ class RetinaFace:
             areas = (detections[:, 2] - detections[:, 0]) * (detections[:, 3] - detections[:, 1])
 
             # Calculate offsets from image center
-            center = (height // 2, width // 2)
+            center = (original_height // 2, original_width // 2)
             offsets = np.vstack([
                 (detections[:, 0] + detections[:, 2]) / 2 - center[1],
                 (detections[:, 1] + detections[:, 3]) / 2 - center[0]
@@ -241,7 +244,7 @@ class RetinaFace:
 
         # Apply NMS
         detections = np.hstack((boxes, scores[:, np.newaxis])).astype(np.float32, copy=False)
-        keep = non_max_supression(detections, self.nms_thresh)
+        keep = nms(detections, self.nms_thresh)
         detections, landmarks = detections[keep], landmarks[keep]
 
         # Keep top-k detections
