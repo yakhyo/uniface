@@ -5,3 +5,4 @@ onnxruntime-gpu
 scikit-image
 requests
 pytest
+tqdm
