@@ -7,7 +7,7 @@ import cv2
 import numpy as np
 import onnxruntime as ort
 
-from typing import Tuple, List, Optional, Literal
+from typing import Tuple, List, Literal
 
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
@@ -23,30 +23,30 @@ from uniface.common import (
 
 class RetinaFace:
     """
-    A class for face detection using the RetinaFace model.
+    Face detector based on the RetinaFace architecture.
 
     Args:
-        model_name (RetinaFaceWeights): Name of the model. Defaults to "retinaface_mnet_v2".
-        conf_thresh (float, optional): Confidence threshold for detections. Defaults to 0.5.
-        nms_thresh (float, optional): Non-maximum suppression (NMS) threshold. Defaults to 0.4.
-        pre_nms_topk (int, optional): Maximum number of detections considered before applying NMS. Defaults to 5000.
-        post_nms_topk (int, optional): Maximum number of detections retained after NMS. Defaults to 750.
-        dynamic_size (bool, optional): Whether to dynamically adjust anchor generation based on image size. Defaults to False.
-        input_size (Tuple[int, int], optional): Static input size for the model (width, height). Used when `dynamic_size=False`. Defaults to (640, 640).
+        model_name (RetinaFaceWeights): Model weights to use. Defaults to `RetinaFaceWeights.MNET_V2`.
+        conf_thresh (float): Confidence threshold for filtering detections. Defaults to 0.5.
+        nms_thresh (float): Non-maximum suppression (NMS) threshold. Defaults to 0.4.
+        pre_nms_topk (int): Number of top-scoring boxes considered before applying NMS. Defaults to 5000.
+        post_nms_topk (int): Maximum number of final detections retained after NMS. Defaults to 750.
+        dynamic_size (bool): If True, anchors are generated dynamically per input image size. Defaults to False.
+        input_size (Tuple[int, int]): Fixed input size (width, height) used when `dynamic_size` is False. Ignored if `dynamic_size=True`.
 
     Attributes:
-        conf_thresh (float): Confidence threshold for filtering detections.
-        nms_thresh (float): NMS threshold to remove duplicate detections.
-        pre_nms_topk (int): Number of detections considered before applying NMS.
-        post_nms_topk (int): Maximum number of detections retained after applying NMS.
-        dynamic_size (bool): Whether the model dynamically adjusts input size and anchors.
-        input_size (Tuple[int, int] or None): The model's fixed input size (if `dynamic_size=False`), otherwise None.
-        _model_path (str): Verified path to the model weights.
-        _priors (np.ndarray or None): Precomputed anchor boxes when using static input size. None if `dynamic_size=True`.
+        conf_thresh (float): Threshold for filtering detections based on confidence score.
+        nms_thresh (float): IoU threshold for NMS.
+        pre_nms_topk (int): Limit on boxes considered before NMS.
+        post_nms_topk (int): Limit on detections kept after NMS.
+        dynamic_size (bool): Whether anchors are generated dynamically.
+        input_size (Tuple[int, int]): Static input size when `dynamic_size` is False.
+        _model_path (str): Path to verified model weights. (Internal)
+        _priors (np.ndarray): Anchor boxes used for detection. Precomputed if static input size is used. (Internal)
 
     Raises:
-        ValueError: If the model weights cannot be found or verified.
-        RuntimeError: If there is an error initializing the model.
+        ValueError: If model weights are invalid or not found.
+        RuntimeError: If the model fails to initialize.
     """
 
     def __init__(
@@ -56,8 +56,8 @@ class RetinaFace:
         nms_thresh: float = 0.4,
         pre_nms_topk: int = 5000,
         post_nms_topk: int = 750,
-        dynamic_size: Optional[bool] = False,
-        input_size: Optional[Tuple[int, int]] = (640, 640),  # Default input size if dynamic_size=False
+        dynamic_size: bool = False,
+        input_size: Tuple[int, int] = (640, 640),  # Default input size if dynamic_size=False
     ) -> None:
 
         self.conf_thresh = conf_thresh
@@ -135,29 +135,26 @@ class RetinaFace:
     def detect(
         self,
         image: np.ndarray,
-        max_num: Optional[int] = 0,
+        max_num: int = 0,
         metric: Literal["default", "max"] = "max",
-        center_weight: Optional[float] = 2.0
+        center_weight: float = 2.0
     ) -> Tuple[np.ndarray, np.ndarray]:
         """
-        Perform face detection on an input image and return bounding boxes and landmarks.
+        Perform face detection on an input image and return bounding boxes and facial landmarks.
 
         Args:
-            image (np.ndarray): Input image as a NumPy array of shape (height, width, channels).
-            max_num (int, optional): Maximum number of detections to return. Defaults to 1.
-            metric (str, optional): Metric for ranking detections when `max_num` is specified. 
-                Options:
+            image (np.ndarray): Input image as a NumPy array of shape (H, W, C).
+            max_num (int): Maximum number of detections to return. Use 0 to return all detections. Defaults to 0.
+            metric (Literal["default", "max"]): Metric for ranking detections when `max_num` is limited.
                 - "default": Prioritize detections closer to the image center.
                 - "max": Prioritize detections with larger bounding box areas.
-            center_weight (float, optional): Weight for penalizing detections farther from the image center 
+            center_weight (float): Weight for penalizing detections farther from the image center 
                 when using the "default" metric. Defaults to 2.0.
 
         Returns:
-            Tuple[np.ndarray, np.ndarray]: Detection results containing:
-                - detections (np.ndarray): Array of detected bounding boxes with confidence scores.
-                Shape: (num_detections, 5), where each row is [x_min, y_min, x_max, y_max, score].
-                - landmarks (np.ndarray): Array of detected facial landmarks.
-                Shape: (num_detections, 5, 2), where each row contains 5 landmark points (x, y).
+            Tuple[np.ndarray, np.ndarray]:
+                - detections: Bounding boxes with confidence scores. Shape (N, 5), each row as [x_min, y_min, x_max, y_max, score].
+                - landmarks: Facial landmark coordinates. Shape (N, 5, 2), where each row contains 5 (x, y) points.
         """
 
         original_height, original_width = image.shape[:2]

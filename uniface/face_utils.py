@@ -82,20 +82,23 @@ def face_alignment(image: np.ndarray, landmark: np.ndarray, image_size: int = 11
     return warped, M_inv
 
 
-def compute_similarity(feat1: np.ndarray, feat2: np.ndarray) -> np.float32:
+def compute_similarity(feat1: np.ndarray, feat2: np.ndarray, normalized: bool=False) -> np.float32:
     """Computing Similarity between two faces.
 
     Args:
-        feat1 (np.ndarray): Face features.
-        feat2 (np.ndarray): Face features.
+        feat1 (np.ndarray): First embedding.
+        feat2 (np.ndarray): Second embedding.
+        normalized (bool): Set True if the embeddings are already L2 normalized.
 
     Returns:
-        np.float32: Cosine similarity between face features.
+        np.float32: Cosine similarity.
     """
     feat1 = feat1.ravel()
     feat2 = feat2.ravel()
-    similarity = np.dot(feat1, feat2) / (np.linalg.norm(feat1) * np.linalg.norm(feat2))
-    return similarity
+    if normalize:
+        return np.dot(feat1, feat2)
+    else:
+        return np.dot(feat1, feat2) / (np.linalg.norm(feat1) * np.linalg.norm(feat2) + 1e-5)
 
 
 def bbox_center_alignment(image, center, output_size, scale, rotation):
