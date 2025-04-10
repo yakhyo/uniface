@@ -4,8 +4,8 @@ import time
 import argparse
 import numpy as np
 
-from uniface.detection import RetinaFace, draw_detections
-from uniface.constants import RetinaFaceWeights
+from uniface.detection import RetinaFace, draw_detections, SCRFD
+from uniface.constants import RetinaFaceWeights, SCRFDWeights
 
 
 def run_inference(model, image_path, vis_threshold=0.6, save_dir="outputs"):

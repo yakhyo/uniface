@@ -161,7 +161,7 @@ class RetinaFace:
         """
 
         original_height, original_width = image.shape[:2]
-        
+
         if self.dynamic_size:
             height, width, _ = image.shape
             self._priors = generate_anchors(image_size=(height, width))  # generate anchors for each input image
@@ -244,7 +244,7 @@ class RetinaFace:
 
         # Apply NMS
         detections = np.hstack((boxes, scores[:, np.newaxis])).astype(np.float32, copy=False)
-        keep = nms(detections, self.nms_thresh)
+        keep = non_max_supression(detections, self.nms_thresh)
         detections, landmarks = detections[keep], landmarks[keep]
 
         # Keep top-k detections
@@ -255,7 +255,7 @@ class RetinaFace:
         return detections, landmarks
 
     def _scale_detections(self, boxes: np.ndarray, landmarks: np.ndarray, resize_factor: float, shape: Tuple[int, int]) -> Tuple[np.ndarray, np.ndarray]:
-        """Scale bounding boxes and landmarks to the original image size."""
+        # Scale bounding boxes and landmarks to the original image size.
         bbox_scale = np.array([shape[0], shape[1]] * 2)
         boxes = boxes * bbox_scale / resize_factor
 
