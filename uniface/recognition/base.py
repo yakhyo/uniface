@@ -1,6 +1,7 @@
 # Copyright 2025 Yakhyokhuja Valikhujaev
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
+# Modified from insightface repository
 
 import os
 import cv2
@@ -10,11 +11,10 @@ import onnxruntime as ort
 from typing import Tuple, Optional, Union, List
 from dataclasses import dataclass
 
-
-from uniface.face_utils import compute_similarity, face_alignment
+from uniface.log import Logger
 from uniface.model_store import verify_model_weights
-from uniface.constants import SphereFaceWeights, MobileFaceWeights
-from uniface.logger import Logger
+from uniface.face_utils import compute_similarity, face_alignment
+from uniface.constants import SphereFaceWeights, MobileFaceWeights, ArcFaceWeights
 
 
 __all__ = ["BaseFaceEncoder", "PreprocessConfig"]
@@ -37,23 +37,30 @@ class BaseFaceEncoder:
 
     def __init__(
         self,
-        model_path: Optional[SphereFaceWeights | MobileFaceWeights] = MobileFaceWeights.MNET_V2,
+        model_name: SphereFaceWeights | MobileFaceWeights | ArcFaceWeights = MobileFaceWeights.MNET_V2,
         preprocessing: PreprocessConfig = PreprocessConfig(),
     ) -> None:
         """
         Initializes the FaceEncoder model for inference.
 
         Args:
-            model_path (Optional[SphereFaceWeights | MobileFaceWeights]): Path to the ONNX model file.
+            model_name (SphereFaceWeights | MobileFaceWeights | ArcFaceWeights): Selected model weight enum.
+            preprocessing (PreprocessConfig): Configuration for input normalization and resizing.
         """
         self.input_mean = preprocessing.input_mean
         self.input_std = preprocessing.input_std
-        self.input_size = input_size.input_size
+        self.input_size = preprocessing.input_size
+
+        Logger.info(
+            f"Initializing Face Recognition with model={model_name}, "
+            f"input_mean={self.input_mean}, input_std={self.input_std}, input_size={self.input_size}"
+        )
 
         # Get path to model weights
-        self._model_path = verify_model_weights(model_path)
+        self._model_path = verify_model_weights(model_name)
         Logger.info(f"Verfied model weights located at: {self._model_path}")
 
+        # Initialize model
         self._initialize_model(self._model_path)
 
     def _initialize_model(self, model_path: str) -> None:

@@ -1,14 +1,14 @@
 # Copyright 2025 Yakhyokhuja Valikhujaev
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
-# Modified from insightface repo
+# Modified from insightface repository
 
 import os
 import cv2
 import numpy as np
 import onnxruntime as ort
 
-from typing import Tuple, Optional, List, Literal
+from typing import Tuple, List, Literal
 
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
@@ -20,29 +20,29 @@ __all__ = ['SCRFD']
 
 class SCRFD:
     """
-    A class for face detection using the SCRFD model.
+    Face detector based on the SCRFD architecture.
 
     Title: "Sample and Computation Redistribution for Efficient Face Detection"
     Paper: https://arxiv.org/abs/2105.04714
 
     Args:
-        model_name (SCRFDWeights): Predefined model enum (e.g., SCRFD_10G_KPS). Specifies which SCRFD variant to load.
+        model_name (SCRFDWeights): Predefined model enum (e.g., `SCRFD_10G_KPS`). Specifies the SCRFD variant to load.
         conf_thresh (float): Confidence threshold for filtering detections. Defaults to 0.5.
-        nms_thresh (float): Non-Maximum Suppression threshold. Defaults to 0.4.
-        input_size (Optional[Tuple[int, int]]): Input resolution (height, width) to which the image is resized. Defaults to (640, 640).
+        nms_thresh (float): Non-Maximum Suppression (NMS) threshold. Defaults to 0.4.
+        input_size (Tuple[int, int]): Target input resolution (width, height) to resize images. Defaults to (640, 640).
 
     Attributes:
-        conf_thresh (float): Confidence threshold used to filter raw detections.
-        nms_thresh (float): NMS threshold to suppress overlapping detections.
-        input_size (Tuple[int, int]): Target resolution for input resizing.
-        _fmc (int): Number of feature map scales used in SCRFD.
-        _feat_stride_fpn (List[int]): Stride values for each feature map.
-        _num_anchors (int): Number of anchors per feature point.
-        _center_cache (Dict): Cache of anchor centers for efficient inference.
-        _model_path (str): Verified path to the downloaded model weights.
+        conf_thresh (float): Threshold used to filter low-confidence detections.
+        nms_thresh (float): Threshold used during NMS to suppress overlapping boxes.
+        input_size (Tuple[int, int]): Image size to which inputs are resized before inference.
+        _fmc (int): Number of feature map levels used in the model.
+        _feat_stride_fpn (List[int]): Feature map strides corresponding to each detection level.
+        _num_anchors (int): Number of anchors per feature location.
+        _center_cache (Dict): Cached anchor centers for efficient forward passes.
+        _model_path (str): Absolute path to the downloaded/verified model weights.
 
     Raises:
-        ValueError: If the model weights cannot be found or verified.
+        ValueError: If the model weights are invalid or not found.
         RuntimeError: If the ONNX model fails to load or initialize.
     """
 
@@ -51,18 +51,17 @@ class SCRFD:
         model_name: SCRFDWeights = SCRFDWeights.SCRFD_10G_KPS,
         conf_thresh: float = 0.5,
         nms_thresh: float = 0.4,
-        input_size: Optional[Tuple[int, int]] = (640, 640),
+        input_size: Tuple[int, int] = (640, 640),
     ) -> None:
 
         self.conf_thresh = conf_thresh
         self.nms_thresh = nms_thresh
         self.input_size = input_size
 
-        # SCRFD model params --------------
+        # ------- SCRFD model params ------
         self._fmc = 3
         self._feat_stride_fpn = [8, 16, 32]
         self._num_anchors = 2
-
         self._center_cache = {}
         # ---------------------------------
 
@@ -176,10 +175,27 @@ class SCRFD:
     def detect(
         self,
         image: np.ndarray,
-        max_num: Optional[int] = 0,
+        max_num: int = 0,
         metric: Literal["default", "max"] = "max",
-        center_weight: Optional[float] = 2
+        center_weight: float = 2
     ) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        Perform face detection on an input image and return bounding boxes and facial landmarks.
+
+        Args:
+            image (np.ndarray): Input image as a NumPy array of shape (H, W, C).
+            max_num (int): Maximum number of detections to return. Use 0 to return all detections. Defaults to 0.
+            metric (Literal["default", "max"]): Metric for ranking detections when `max_num` is limited.
+                - "default": Prioritize detections closer to the image center.
+                - "max": Prioritize detections with larger bounding box areas.
+            center_weight (float): Weight for penalizing detections farther from the image center 
+                when using the "default" metric. Defaults to 2.0.
+
+        Returns:
+            Tuple[np.ndarray, np.ndarray]:
+                - detections: Bounding boxes with confidence scores. Shape (N, 5), each row as [x_min, y_min, x_max, y_max, score].
+                - landmarks: Facial landmark coordinates. Shape (N, 5, 2), where each row contains 5 (x, y) points.
+        """
 
         original_height, original_width = image.shape[:2]
 
@@ -237,6 +253,7 @@ class SCRFD:
 
         return det, landmarks
 
+# TODO: below is only for testing, remove it later
 
 def draw_bbox(frame, bbox, color=(0, 255, 0), thickness=2):
     x1, y1, x2, y2 = bbox[:4].astype(np.int32)
@@ -251,7 +268,7 @@ def draw_keypoints(frame, points, color=(0, 0, 255), radius=2):
 
 
 if __name__ == "__main__":
-    detector = SCRFD()
+    detector = SCRFD(model_name=SCRFDWeights.SCRFD_500M_KPS)
     cap = cv2.VideoCapture(0)
 
     if not cap.isOpened():

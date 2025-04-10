@@ -4,8 +4,8 @@
 
 from typing import Optional
 
-from .base import BaseFaceEncoder, PreprocessCo1nfig
 from uniface.constants import SphereFaceWeights, MobileFaceWeights, ArcFaceWeights
+from .base import BaseFaceEncoder, PreprocessConfig
 
 
 __all__ = ["SphereFace", "MobileFace", "ArcFace"]
@@ -13,7 +13,7 @@ __all__ = ["SphereFace", "MobileFace", "ArcFace"]
 
 class SphereFace(BaseFaceEncoder):
     def __init__(
-        self, model_path: Optional[SphereFaceWeights] = SphereFaceWeights.SPHERE20,
+        self, model_name: SphereFaceWeights = SphereFaceWeights.SPHERE20,
         preprocessing: Optional[PreprocessConfig] = None
     ) -> None:
         if preprocessing is None:
@@ -22,12 +22,12 @@ class SphereFace(BaseFaceEncoder):
                 input_std=127.5,
                 input_size=(112, 112)
             )
-        super().__init__(model_path=model_path, preprocessing=preprocessing)
+        super().__init__(model_name=model_name, preprocessing=preprocessing)
 
 
 class MobileFace(BaseFaceEncoder):
     def __init__(
-        self, model_path: Optional[MobileFaceWeights] = MobileFaceWeights.MNET_V2,
+        self, model_name: MobileFaceWeights = MobileFaceWeights.MNET_V2,
         preprocessing: Optional[PreprocessConfig] = None
     ) -> None:
         if preprocessing is None:
@@ -36,12 +36,12 @@ class MobileFace(BaseFaceEncoder):
                 input_std=127.5,
                 input_size=(112, 112)
             )
-        super().__init__(model_path=model_path)
+        super().__init__(model_name=model_name)
 
 
 class ArcFace(BaseFaceEncoder):
     def __init__(
-        self, model_path: Optional[ArcFaceWeights] = ArcFaceWeights.MNET,
+        self, model_name: ArcFaceWeights = ArcFaceWeights.MNET,
         preprocessing: Optional[PreprocessConfig] = None
     ) -> None:
         if preprocessing is None:
@@ -50,4 +50,4 @@ class ArcFace(BaseFaceEncoder):
                 input_std=127.5,
                 input_size=(112, 112)
             )
-        super().__init__(model_path=model_path)
+        super().__init__(model_name=model_name)
