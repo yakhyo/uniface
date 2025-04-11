@@ -22,7 +22,7 @@ def extract_reference_embedding(detector, recognizer, image_path):
     return embedding
 
 
-def run_video(detector, recognizer, ref_embedding, threshold=0.45):
+def run_video(detector, recognizer, ref_embedding, threshold=0.30):
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
         raise RuntimeError("Webcam could not be opened.")
