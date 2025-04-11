@@ -3,22 +3,32 @@ import numpy as np
 import onnxruntime
 from typing import Tuple
 
+from uniface.log import Logger
 from uniface.face_utils import bbox_center_alignment
+from uniface.model_store import verify_model_weights
+from uniface.constants import AgeGenderWeights
 
-__all__ = ["Attribute"]
+__all__ = ["AgeGender"]
 
 
-class Attribute:
+class AgeGender:
     """
     Age and Gender Prediction Model.
     """
-    def __init__(self, model_path: str) -> None:
+    def __init__(self, model_name: AgeGenderWeights = AgeGenderWeights.DEFAULT, input_size:Tuple[int, int] = (112, 112)) -> None:
         """
         Initializes the Attribute model for inference.
         
         Args:
             model_path (str): Path to the ONNX file.
         """
+        
+        Logger.info(
+            f"Initializing RetinaFace with model={model_name}, conf_thresh={conf_thresh}, nms_thresh={nms_thresh}, "
+            f"pre_nms_topk={pre_nms_topk}, post_nms_topk={post_nms_topk}, dynamic_size={dynamic_size}, "
+            f"input_size={input_size}"
+        )
+        
         self.model_path = model_path
 
         self.input_std = 1.0

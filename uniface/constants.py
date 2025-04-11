@@ -48,10 +48,27 @@ class RetinaFaceWeights(str, Enum):
 class SCRFDWeights(str, Enum):
     """
     Trained on WIDER FACE dataset.
-    https://github.com/deepinsight/insightface/tree/master/detection/scrfd
+    https://github.com/deepinsight/insightface
     """
     SCRFD_10G_KPS  = "scrfd_10g"
     SCRFD_500M_KPS = "scrfd_500m"
+
+
+class DDAMFNWeights(str, Enum):
+    """
+    Trained on AffectNet dataset.
+    https://github.com/SainingZhang/DDAMFN/tree/main/DDAMFN
+    """
+    AFFECNET7 = "affecnet7"
+    AFFECNET8 = "affecnet8"
+
+
+class AgeGenderWeights(str, Enum):
+    """
+    Trained on CelebA dataset.
+    https://github.com/deepinsight/insightface
+    """
+    DEFAULT = "age_gender"
 
 # fmt: on
 
@@ -84,6 +101,14 @@ MODEL_URLS: Dict[Enum, str] = {
     # SCRFD
     SCRFDWeights.SCRFD_10G_KPS:  'https://github.com/yakhyo/uniface/releases/download/v0.1.2/scrfd_10g_kps.onnx',
     SCRFDWeights.SCRFD_500M_KPS: 'https://github.com/yakhyo/uniface/releases/download/v0.1.2/scrfd_500m_kps.onnx',
+
+
+    # DDAFM
+    DDAMFNWeights.AFFECNET7: 'https://github.com/yakhyo/uniface/releases/download/v0.1.2/affecnet7.script',
+    DDAMFNWeights.AFFECNET8: 'https://github.com/yakhyo/uniface/releases/download/v0.1.2/affecnet8.script',
+    
+    # AgeGender
+    AgeGenderWeights.DEFAULT: 'https://github.com/yakhyo/uniface/releases/download/v0.1.2/genderage.onnx',
 }
 
 MODEL_SHA256: Dict[Enum, str] = {
@@ -113,6 +138,13 @@ MODEL_SHA256: Dict[Enum, str] = {
     # SCRFD
     SCRFDWeights.SCRFD_10G_KPS:  '5838f7fe053675b1c7a08b633df49e7af5495cee0493c7dcf6697200b85b5b91',
     SCRFDWeights.SCRFD_500M_KPS: '5e4447f50245bbd7966bd6c0fa52938c61474a04ec7def48753668a9d8b4ea3a',
+
+    # DDAFM
+    DDAMFNWeights.AFFECNET7: '10535bf8b6afe8e9d6ae26cea6c3add9a93036e9addb6adebfd4a972171d015d',
+    DDAMFNWeights.AFFECNET8: '8c66963bc71db42796a14dfcbfcd181b268b65a3fc16e87147d6a3a3d7e0f487',
+    
+    # AgeGender
+    AgeGenderWeights.DEFAULT: '4fde69b1c810857b88c64a335084f1c3fe8f01246c9a191b48c7bb756d6652fb',
 }
 
 CHUNK_SIZE = 8192
