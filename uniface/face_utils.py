@@ -95,7 +95,7 @@ def compute_similarity(feat1: np.ndarray, feat2: np.ndarray, normalized: bool=Fa
     """
     feat1 = feat1.ravel()
     feat2 = feat2.ravel()
-    if normalize:
+    if normalized:
         return np.dot(feat1, feat2)
     else:
         return np.dot(feat1, feat2) / (np.linalg.norm(feat1) * np.linalg.norm(feat2) + 1e-5)
