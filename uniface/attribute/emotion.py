@@ -11,6 +11,7 @@ from typing import Tuple, Union
 
 from uniface.log import Logger
 from uniface import RetinaFace
+from uniface.face_utils import face_alignment
 from uniface.model_store import verify_model_weights
 from uniface.constants import RetinaFaceWeights, DDAMFNWeights
 
@@ -87,10 +88,12 @@ class Emotion:
         Resize, normalize and convert image to tensor manually without torchvision.
 
         Args:
-            image (np.ndarray): RGB image (H, W, 3)
+            image (np.ndarray): BGR image (H, W, 3)
         Returns:
             torch.Tensor: Preprocessed image tensor of shape (1, 3, 112, 112)
         """
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB) # BGR -> RGB
+        
         # Resize to (112, 112)
         image = cv2.resize(image, self.input_size).astype(np.float32) / 255.0
 
@@ -107,12 +110,13 @@ class Emotion:
 
         return tensor
 
-    def predict(self, image: np.ndarray) -> Tuple[Union[str, None], Union[float, None]]:
+    def predict(self, image: np.ndarray, landmark: np.ndarray) -> Tuple[Union[str, None], Union[float, None]]:
         """
-        Predict the emotion from an RGB face image.
+        Predict the emotion from an BGR face image.
 
         Args:
             image (np.ndarray): Input face image in RGB format.
+            landmark (np.ndarray): Facial five point landmark.
 
         Returns:
             Tuple[str, float]: (Predicted emotion label, Confidence score)
@@ -129,6 +133,7 @@ class Emotion:
             raise ValueError("Input image must be in RGB format with shape (H, W, 3).")
 
         try:
+            image, _ = face_alignment(image, landmark)
             tensor = self.preprocess(image)
 
             with torch.no_grad():
@@ -175,17 +180,16 @@ def main():
             print("Frame capture failed.")
             break
 
-        boxes, _ = face_detector.detect(frame)
+        boxes, landmarks = face_detector.detect(frame)
 
-        for box in boxes:
+        for box, landmark in zip(boxes, landmarks):
             x1, y1, x2, y2, score = box.astype(int)
             face_crop = frame[y1:y2, x1:x2]
 
             if face_crop.size == 0:
                 continue
 
-            face_rgb = cv2.cvtColor(face_crop, cv2.COLOR_BGR2RGB)
-            emotion, preds = emotion_detector.predict(face_rgb)
+            emotion, preds = emotion_detector.predict(frame, landmark)
 
             txt = f"{emotion} ({preds:.2f})"
             cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
