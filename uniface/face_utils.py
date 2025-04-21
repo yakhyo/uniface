@@ -121,18 +121,18 @@ def bbox_center_alignment(image, center, output_size, scale, rotation):
     rot = float(rotation) * np.pi / 180.0
 
     # Scale the image
-    t1 = trans.SimilarityTransform(scale=scale)
+    t1 = SimilarityTransform(scale=scale)
 
     # Translate the center point to the origin (after scaling)
     cx = center[0] * scale
     cy = center[1] * scale
-    t2 = trans.SimilarityTransform(translation=(-1 * cx, -1 * cy))
+    t2 = SimilarityTransform(translation=(-1 * cx, -1 * cy))
 
     # Apply rotation around origin (center of face)
-    t3 = trans.SimilarityTransform(rotation=rot)
+    t3 = SimilarityTransform(rotation=rot)
 
     # Translate origin to center of output image
-    t4 = trans.SimilarityTransform(translation=(output_size / 2, output_size / 2))
+    t4 = SimilarityTransform(translation=(output_size / 2, output_size / 2))
 
     # Combine all transformations in order: scale → center shift → rotate → recentralize
     t = t1 + t2 + t3 + t4
