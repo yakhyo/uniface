@@ -37,7 +37,7 @@ class Emotion:
         """
         Initialize the emotion detector with a TorchScript model
         """
-        
+
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         self.emotions = [
@@ -47,7 +47,9 @@ class Emotion:
             self.emotions.append("Contempt")
 
         self.input_size = input_size
-        
+        self.input_std = [0.229, 0.224, 0.225]
+        self.input_mean = [0.485, 0.456, 0.406]
+
         Logger.info(
             f"Initialized Emotion class with model={model_name.name}, "
             f"device={'cuda' if torch.cuda.is_available() else 'cpu'}, "
@@ -92,14 +94,14 @@ class Emotion:
         Returns:
             torch.Tensor: Preprocessed image tensor of shape (1, 3, 112, 112)
         """
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB) # BGR -> RGB
-        
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # BGR -> RGB
+
         # Resize to (112, 112)
         image = cv2.resize(image, self.input_size).astype(np.float32) / 255.0
 
         # Normalize with mean and std
-        mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
-        std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
+        mean = np.array(self.input_mean, dtype=np.float32)
+        std = np.array(self.input_std, dtype=np.float32)
         image_normalized = (image - mean) / std
 
         # HWC to CHW
