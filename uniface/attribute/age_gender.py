@@ -31,7 +31,7 @@ class AgeGender:
             f"Initializing AgeGender with model={model_name}, "
             f"input_size={input_size}"
         )
-        
+
         self.input_size = input_size
         self.input_std = 1.0
         self.input_mean = 0.0
@@ -80,7 +80,7 @@ class AgeGender:
         """
         width, height = bbox[2] - bbox[0], bbox[3] - bbox[1]
         center = (bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2
-        scale = self.input_size[0] / (max(width, height)*1.5)
+        scale = self.input_size[0] / (max(width, height) * 1.5)
         rotation = 0.0
 
         transformed_image, M = bbox_center_alignment(image, center, self.input_size[0], scale, rotation)
@@ -115,8 +115,6 @@ class AgeGender:
         gender, age = self.postprocess(predictions)
 
         return gender, age
-
-
 
 
 # TODO: For testing purposes only, remove later
