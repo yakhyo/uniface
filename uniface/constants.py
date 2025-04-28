@@ -70,6 +70,14 @@ class AgeGenderWeights(str, Enum):
     """
     DEFAULT = "age_gender"
 
+
+class LandmarkWeights(str, Enum):
+    """
+    MobileNet 0.5 from Insightface
+    https://github.com/deepinsight/insightface/tree/master/alignment/coordinate_reg
+    """
+    DEFAULT = "2d_106"
+
 # fmt: on
 
 
@@ -106,9 +114,12 @@ MODEL_URLS: Dict[Enum, str] = {
     # DDAFM
     DDAMFNWeights.AFFECNET7: 'https://github.com/yakhyo/uniface/releases/download/v0.1.2/affecnet7.script',
     DDAMFNWeights.AFFECNET8: 'https://github.com/yakhyo/uniface/releases/download/v0.1.2/affecnet8.script',
-    
+
     # AgeGender
     AgeGenderWeights.DEFAULT: 'https://github.com/yakhyo/uniface/releases/download/v0.1.2/genderage.onnx',
+
+    # Landmarks
+    LandmarkWeights.DEFAULT: 'https://github.com/yakhyo/uniface/releases/download/v0.1.2/2d106det.onnx',
 }
 
 MODEL_SHA256: Dict[Enum, str] = {
@@ -142,9 +153,12 @@ MODEL_SHA256: Dict[Enum, str] = {
     # DDAFM
     DDAMFNWeights.AFFECNET7: '10535bf8b6afe8e9d6ae26cea6c3add9a93036e9addb6adebfd4a972171d015d',
     DDAMFNWeights.AFFECNET8: '8c66963bc71db42796a14dfcbfcd181b268b65a3fc16e87147d6a3a3d7e0f487',
-    
+
     # AgeGender
     AgeGenderWeights.DEFAULT: '4fde69b1c810857b88c64a335084f1c3fe8f01246c9a191b48c7bb756d6652fb',
+
+    # Landmark
+    LandmarkWeights.DEFAULT: 'f001b856447c413801ef5c42091ed0cd516fcd21f2d6b79635b1e733a7109dbf',
 }
 
 CHUNK_SIZE = 8192
