@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-import onnxruntime
+import onnxruntime as ort
 from typing import Tuple
 
 from uniface.log import Logger
@@ -50,7 +50,7 @@ class AgeGender:
             model_path (str): Path to .onnx model.
         """
         try:
-            self.session = onnxruntime.InferenceSession(
+            self.session = ort.InferenceSession(
                 model_path,
                 providers=["CUDAExecutionProvider", "CPUExecutionProvider"]
 
