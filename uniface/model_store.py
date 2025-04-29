@@ -47,19 +47,22 @@ def verify_model_weights(model_name: str, root: str = '~/.uniface/models') -> st
     os.makedirs(root, exist_ok=True)
 
     model_name = model_name.value
-    model_path = os.path.normpath(os.path.join(root, f'{model_name}.onnx'))
+    url = const.MODEL_URLS.get(model_name)
+    if not url:
+        Logger.error(f"No URL found for model '{model_name}'")
+        raise ValueError(f"No URL found for model '{model_name}'")
+    
+    file_ext = os.path.splitext(url)[1]
+    model_path = os.path.normpath(os.path.join(root, f'{model_name}{file_ext}'))
 
     if not os.path.exists(model_path):
-        url = const.MODEL_URLS.get(model_name)
-        if not url:
-            Logger.error(f"No URL found for model '{model_name}'")
-            raise ValueError(f"No URL found for model '{model_name}'")
-
         Logger.info(f"Downloading model '{model_name}' from {url}")
-        download_file(url, model_path)
-        Logger.info(f"Successfully downloaded '{model_name}' to {model_path}")
-    else:
-        Logger.info(f"Model '{model_name}' already exists at {model_path}")
+        try:
+            download_file(url, model_path)
+            Logger.info(f"Successfully downloaded '{model_name}' to {model_path}")
+        except Exception as e:
+            Logger.error(f"Failed to download model '{model_name}': {e}")
+            raise ConnectionError(f"Download failed for '{model_name}'")
 
     expected_hash = const.MODEL_SHA256.get(model_name)
     if expected_hash and not verify_file_hash(model_path, expected_hash):

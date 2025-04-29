@@ -6,7 +6,7 @@ import numpy as np
 from typing import Tuple
 
 from uniface.log import Logger
-from uniface.face_utils import bbox_center_alignment, trans_points
+from uniface.face_utils import bbox_center_alignment, transform_points_2d
 from uniface.model_store import verify_model_weights
 
 from uniface.detection import RetinaFace
@@ -18,14 +18,14 @@ __all__ = ['Landmark']
 class Landmark:
     def __init__(self, model_name: LandmarkWeights = LandmarkWeights.DEFAULT, input_size: Tuple[int, int] = (192, 192)) -> None:
         """
-        Initializes the Attribute model for inference.
+        Initializes the Facial Landmark model for inference.
 
         Args:
             model_path (str): Path to the ONNX file.
         """
 
         Logger.info(
-            f"Initializing Landmark with model={model_name}, "
+            f"Initializing Facial Landmark with model={model_name}, "
             f"input_size={input_size}"
         )
 
@@ -40,8 +40,7 @@ class Landmark:
         # Initialize model
         self._initialize_model(model_path=self._model_path)
 
-        
-    def _initialize_model(self, model_path:str):
+    def _initialize_model(self, model_path: str):
         """ Initialize the model from the given path.
         Args:
             model_path (str): Path to .onnx model.
@@ -95,29 +94,29 @@ class Landmark:
             swapRB=True
         )
         return blob, M
-    
-    def postprocess(self, preds: np.ndarray, M: np.ndarray) -> np.ndarray:
+
+    def postprocess(self, predictions: np.ndarray, M: np.ndarray) -> np.ndarray:
         """
         Postprocess model outputs to get landmarks.
 
         Args:
-            preds (np.ndarray): Raw model predictions.
+            predictions (np.ndarray): Raw model predictions.
             M (np.ndarray): Affine transformation matrix.
 
         Returns:
             np.ndarray: Transformed landmarks.
         """
 
-        preds = preds.reshape((-1, 2))
+        predictions = predictions.reshape((-1, 2))
 
-        preds[:, 0:2] += 1
-        preds[:, 0:2] *= (self.input_size[0] // 2)
+        predictions[:, 0:2] += 1
+        predictions[:, 0:2] *= (self.input_size[0] // 2)
 
         IM = cv2.invertAffineTransform(M)
-        preds = trans_points(preds, IM)
+        predictions = transform_points_2d(predictions, IM)
 
-        return preds
-    
+        return predictions
+
     def predict(self, image: np.ndarray, bbox: np.ndarray) -> np.ndarray:
         """
         Predict facial landmarks for the given image and bounding box.
@@ -136,6 +135,7 @@ class Landmark:
         return landmarks
 
 # TODO: For testing purposes only, remote later
+
 
 if __name__ == "__main__":
 
