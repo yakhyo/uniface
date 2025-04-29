@@ -69,7 +69,6 @@ class RetinaFace:
 
         Logger.info(
             f"Initializing RetinaFace with model={model_name}, conf_thresh={conf_thresh}, nms_thresh={nms_thresh}, "
-            f"pre_nms_topk={pre_nms_topk}, post_nms_topk={post_nms_topk}, dynamic_size={dynamic_size}, "
             f"input_size={input_size}"
         )
 

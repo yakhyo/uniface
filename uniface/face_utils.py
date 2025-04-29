@@ -7,6 +7,10 @@ import numpy as np
 from skimage.transform import SimilarityTransform
 from typing import Tuple
 
+
+__all__ = ["face_alignment", "compute_similarity", "bbox_center_alignment", "transform_points_2d"]
+
+
 # Reference alignment for facial landmarks (ArcFace)
 reference_alignment: np.ndarray = np.array(
     [
@@ -82,7 +86,7 @@ def face_alignment(image: np.ndarray, landmark: np.ndarray, image_size: int = 11
     return warped, M_inv
 
 
-def compute_similarity(feat1: np.ndarray, feat2: np.ndarray, normalized: bool=False) -> np.float32:
+def compute_similarity(feat1: np.ndarray, feat2: np.ndarray, normalized: bool = False) -> np.float32:
     """Computing Similarity between two faces.
 
     Args:
@@ -146,36 +150,21 @@ def bbox_center_alignment(image, center, output_size, scale, rotation):
     return cropped, M
 
 
+def transform_points_2d(points: np.ndarray, transform: np.ndarray) -> np.ndarray:
+    """
+    Apply a 2D affine transformation to an array of 2D points.
 
-def trans_points2d(pts, M):
-    new_pts = np.zeros(shape=pts.shape, dtype=np.float32)
-    for i in range(pts.shape[0]):
-        pt = pts[i]
-        new_pt = np.array([pt[0], pt[1], 1.], dtype=np.float32)
-        new_pt = np.dot(M, new_pt)
-        #print('new_pt', new_pt.shape, new_pt)
-        new_pts[i] = new_pt[0:2]
+    Args:
+        points (np.ndarray): An (N, 2) array of 2D points.
+        transform (np.ndarray): A (2, 3) affine transformation matrix.
 
-    return new_pts
+    Returns:
+        np.ndarray: Transformed (N, 2) array of points.
+    """
+    transformed = np.zeros_like(points, dtype=np.float32)
+    for i in range(points.shape[0]):
+        point = np.array([points[i, 0], points[i, 1], 1.0], dtype=np.float32)
+        result = np.dot(transform, point)
+        transformed[i] = result[:2]
 
-
-def trans_points3d(pts, M):
-    scale = np.sqrt(M[0][0] * M[0][0] + M[0][1] * M[0][1])
-    #print(scale)
-    new_pts = np.zeros(shape=pts.shape, dtype=np.float32)
-    for i in range(pts.shape[0]):
-        pt = pts[i]
-        new_pt = np.array([pt[0], pt[1], 1.], dtype=np.float32)
-        new_pt = np.dot(M, new_pt)
-        #print('new_pt', new_pt.shape, new_pt)
-        new_pts[i][0:2] = new_pt[0:2]
-        new_pts[i][2] = pts[i][2] * scale
-
-    return new_pts
-
-
-def trans_points(pts, M):
-    if pts.shape[1] == 2:
-        return trans_points2d(pts, M)
-    else:
-        return trans_points3d(pts, M)
+    return transformed
