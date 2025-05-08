@@ -10,10 +10,9 @@ from PIL import Image
 from typing import Tuple, Union
 
 from uniface.log import Logger
-from uniface import RetinaFace
+from uniface.constants import DDAMFNWeights
 from uniface.face_utils import face_alignment
 from uniface.model_store import verify_model_weights
-from uniface.constants import RetinaFaceWeights, DDAMFNWeights
 
 
 class Emotion:
@@ -21,10 +20,11 @@ class Emotion:
     Emotion recognition using a TorchScript model.
 
     Args:
-        model_name (DDAMFNWeights): Pretrained model enum. Defaults to AFFECNET7.
+        model_weights (DDAMFNWeights): Pretrained model weights enum. Defaults to AFFECNET7.
+        input_size (Tuple[int, int]): Size of input images. Defaults to (112, 112).
 
     Attributes:
-        emotions (List[str]): Emotion label list.
+        emotion_labels (List[str]): List of emotion labels the model can predict.
         device (torch.device): Inference device (CPU or CUDA).
         model (torch.jit.ScriptModule): Loaded TorchScript model.
 
@@ -33,122 +33,133 @@ class Emotion:
         RuntimeError: If model loading fails.
     """
 
-    def __init__(self, model_name: DDAMFNWeights = DDAMFNWeights.AFFECNET7, input_size: Tuple[int, int] = (112, 112)) -> None:
+    def __init__(
+            self,
+            model_weights: DDAMFNWeights = DDAMFNWeights.AFFECNET7,
+            input_size: Tuple[int, int] = (112, 112)
+    ) -> None:
         """
         Initialize the emotion detector with a TorchScript model
         """
-
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-        self.emotions = [
+        self.emotion_labels = [
             "Neutral", "Happy", "Sad", "Surprise", "Fear", "Disgust", "Angry"
         ]
-        if model_name == DDAMFNWeights.AFFECNET8:
-            self.emotions.append("Contempt")
 
+        # Add contempt for AFFECNET8 model
+        if model_weights == DDAMFNWeights.AFFECNET8:
+            self.emotion_labels.append("Contempt")
+
+        # Initialize image preprocessing parameters
         self.input_size = input_size
-        self.input_std = [0.229, 0.224, 0.225]
-        self.input_mean = [0.485, 0.456, 0.406]
+        self.normalization_std = [0.229, 0.224, 0.225]
+        self.normalization_mean = [0.485, 0.456, 0.406]
 
         Logger.info(
-            f"Initialized Emotion class with model={model_name.name}, "
+            f"Initialized Emotion class with model={model_weights.name}, "
             f"device={'cuda' if torch.cuda.is_available() else 'cpu'}, "
-            f"num_classes={len(self.emotions)}, input_size={self.input_size}"
+            f"num_classes={len(self.emotion_labels)}, input_size={self.input_size}"
         )
 
-        # Get path to model weights
-        self._model_path = verify_model_weights(model_name)
-        Logger.info(f"Verified model weights located at: {self._model_path}")
+        # Get path to model weights and initialize model
+        self.model_path = verify_model_weights(model_weights)
+        Logger.info(f"Verified model weights located at: {self.model_path}")
+        self._load_model()
 
-        # Initialize model
-        self._initialize_model(model_path=self._model_path)
-
-    def _initialize_model(self, model_path: str) -> None:
+    def _load_model(self) -> None:
         """
-        Initializes a TorchScript model for emotion inference.
+        Loads and initializes a TorchScript model for emotion inference.
 
-        Args:
-            model_path (str): Path to the TorchScript (.pt) model.
+        Raises:
+            RuntimeError: If loading the model fails.
         """
         try:
-            self.model = torch.jit.load(model_path, map_location=self.device)
+            self.model = torch.jit.load(self.model_path, map_location=self.device)
             self.model.eval()
-            Logger.info(f"TorchScript model successfully loaded from: {model_path}")
+            Logger.info(f"TorchScript model successfully loaded from: {self.model_path}")
 
-            # Warm-up
-            dummy = torch.randn(1, 3, 112, 112).to(self.device)
+            # Warm-up with dummy input
+            dummy_input = torch.randn(1, 3, *self.input_size).to(self.device)
             with torch.no_grad():
-                _ = self.model(dummy)
+                _ = self.model(dummy_input)
             Logger.info("Emotion model warmed up with dummy input.")
 
         except Exception as e:
-            Logger.error(f"Failed to load TorchScript model from {model_path}: {e}")
-            raise
+            Logger.error(f"Failed to load TorchScript model from {self.model_path}: {e}")
+            raise RuntimeError(f"Model loading failed: {str(e)}")
 
     def preprocess(self, image: np.ndarray) -> torch.Tensor:
         """
-        Resize, normalize and convert image to tensor manually without torchvision.
+        Preprocess image for model inference: resize, normalize and convert to tensor.
 
         Args:
             image (np.ndarray): BGR image (H, W, 3)
-        Returns:
-            torch.Tensor: Preprocessed image tensor of shape (1, 3, 112, 112)
-        """
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # BGR -> RGB
 
-        # Resize to (112, 112)
-        image = cv2.resize(image, self.input_size).astype(np.float32) / 255.0
+        Returns:
+            torch.Tensor: Preprocessed image tensor of shape (1, 3, H, W)
+        """
+        # Convert BGR to RGB
+        rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+        # Resize to target input size
+        resized_image = cv2.resize(rgb_image, self.input_size).astype(np.float32) / 255.0
 
         # Normalize with mean and std
-        mean = np.array(self.input_mean, dtype=np.float32)
-        std = np.array(self.input_std, dtype=np.float32)
-        image_normalized = (image - mean) / std
+        mean_array = np.array(self.normalization_mean, dtype=np.float32)
+        std_array = np.array(self.normalization_std, dtype=np.float32)
+        normalized_image = (resized_image - mean_array) / std_array
 
-        # HWC to CHW
-        image_transposed = image_normalized.transpose((2, 0, 1))
+        # Convert from HWC to CHW format
+        transposed_image = normalized_image.transpose((2, 0, 1))
 
         # Convert to torch tensor and add batch dimension
-        tensor = torch.from_numpy(image_transposed).unsqueeze(0).to(self.device)
-
+        tensor = torch.from_numpy(transposed_image).unsqueeze(0).to(self.device)
         return tensor
 
     def predict(self, image: np.ndarray, landmark: np.ndarray) -> Tuple[Union[str, None], Union[float, None]]:
         """
-        Predict the emotion from an BGR face image.
+        Predict the emotion from a face image.
 
         Args:
-            image (np.ndarray): Input face image in RGB format.
+            image (np.ndarray): Input face image in BGR format.
             landmark (np.ndarray): Facial five point landmark.
 
         Returns:
             Tuple[str, float]: (Predicted emotion label, Confidence score)
+            Returns (None, None) if prediction fails.
 
         Raises:
-            RuntimeError: If the input is invalid or inference fails internally.
+            ValueError: If the input is not a valid BGR image.
         """
+        # Validate input
         if not isinstance(image, np.ndarray):
             Logger.error("Input must be a NumPy ndarray.")
-            raise ValueError("Input must be a NumPy ndarray (RGB image).")
+            raise ValueError("Input must be a NumPy ndarray (BGR image).")
 
         if image.ndim != 3 or image.shape[2] != 3:
-            Logger.error(f"Invalid image shape: {image.shape}. Expected HxWx3 RGB image.")
-            raise ValueError("Input image must be in RGB format with shape (H, W, 3).")
+            Logger.error(f"Invalid image shape: {image.shape}. Expected HxWx3 image.")
+            raise ValueError("Input image must have shape (H, W, 3).")
 
         try:
-            image, _ = face_alignment(image, landmark)
-            tensor = self.preprocess(image)
+            # Align face using landmarks
+            aligned_image, _ = face_alignment(image, landmark)
+
+            # Preprocess and run inference
+            input_tensor = self.preprocess(aligned_image)
 
             with torch.no_grad():
-                output = self.model(tensor)
+                output = self.model(input_tensor)
 
+                # Handle case where model returns a tuple
                 if isinstance(output, tuple):
                     output = output[0]
 
-                probs = torch.nn.functional.softmax(output, dim=1).squeeze(0).cpu().numpy()
-                pred_idx = int(np.argmax(probs))
-                confidence = round(float(probs[pred_idx]), 2)
+                # Get probabilities and prediction
+                probabilities = torch.nn.functional.softmax(output, dim=1).squeeze(0).cpu().numpy()
+                predicted_index = int(np.argmax(probabilities))
+                confidence_score = round(float(probabilities[predicted_index]), 2)
 
-                return self.emotions[pred_idx], confidence
+                return self.emotion_labels[predicted_index], confidence_score
 
         except Exception as e:
             Logger.error(f"Emotion inference failed: {e}")
@@ -158,6 +169,8 @@ class Emotion:
 # TODO: For testing purposes only, remove later
 
 def main():
+    from uniface import RetinaFace
+    from uniface.constants import RetinaFaceWeights
 
     face_detector = RetinaFace(
         model_name=RetinaFaceWeights.MNET_V2,
