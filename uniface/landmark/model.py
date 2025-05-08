@@ -6,131 +6,163 @@ import numpy as np
 from typing import Tuple
 
 from uniface.log import Logger
-from uniface.face_utils import bbox_center_alignment, transform_points_2d
+from uniface.constants import LandmarkWeights
 from uniface.model_store import verify_model_weights
-
-from uniface.detection import RetinaFace
-from uniface.constants import RetinaFaceWeights, LandmarkWeights
+from uniface.face_utils import bbox_center_alignment, transform_points_2d
 
 __all__ = ['Landmark']
 
 
 class Landmark:
-    def __init__(self, model_name: LandmarkWeights = LandmarkWeights.DEFAULT, input_size: Tuple[int, int] = (192, 192)) -> None:
+    """
+    Facial landmark detection model for predicting facial keypoints.
+    """
+    
+    def __init__(
+        self, 
+        model_name: LandmarkWeights = LandmarkWeights.DEFAULT, 
+        input_size: Tuple[int, int] = (192, 192)
+    ) -> None:
         """
         Initializes the Facial Landmark model for inference.
 
         Args:
-            model_path (str): Path to the ONNX file.
+            model_name: Enum specifying which landmark model weights to use
+            input_size: Input resolution for the model (width, height)
         """
-
         Logger.info(
             f"Initializing Facial Landmark with model={model_name}, "
             f"input_size={input_size}"
         )
 
+        # Initialize configuration
         self.input_size = input_size
         self.input_std = 1.0
         self.input_mean = 0.0
 
         # Get path to model weights
-        self._model_path = verify_model_weights(model_name)
-        Logger.info(f"Verfied model weights located at: {self._model_path}")
+        self.model_path = verify_model_weights(model_name)
+        Logger.info(f"Verified model weights located at: {self.model_path}")
 
         # Initialize model
-        self._initialize_model(model_path=self._model_path)
+        self._initialize_model()
 
-    def _initialize_model(self, model_path: str):
-        """ Initialize the model from the given path.
-        Args:
-            model_path (str): Path to .onnx model.
+    def _initialize_model(self):
+        """
+        Initialize the ONNX model from the stored model path.
+        
+        Raises:
+            RuntimeError: If the model fails to load or initialize.
         """
         try:
             self.session = ort.InferenceSession(
-                model_path,
+                self.model_path,
                 providers=["CUDAExecutionProvider", "CPUExecutionProvider"]
             )
 
-            metadata = self.session.get_inputs()[0]
-            input_shape = metadata.shape
-            self.input_size = tuple(input_shape[2:4][::-1])
+            # Get input configuration
+            input_metadata = self.session.get_inputs()[0]
+            input_shape = input_metadata.shape
+            self.input_size = tuple(input_shape[2:4][::-1])  # Update input size from model
 
-            self.input_names = [x.name for x in self.session.get_inputs()]
-            self.output_names = [x.name for x in self.session.get_outputs()]
+            # Get input/output names
+            self.input_names = [input.name for input in self.session.get_inputs()]
+            self.output_names = [output.name for output in self.session.get_outputs()]
 
-            outputs = self.session.get_outputs()
-            output_shape = outputs[0].shape
-            self.lmk_dim = 2
-            self.lmk_num = output_shape[1] // self.lmk_dim
+            # Determine landmark dimensions from output shape
+            output_shape = self.session.get_outputs()[0].shape
+            self.lmk_dim = 2  # x,y coordinates
+            self.lmk_num = output_shape[1] // self.lmk_dim  # Number of landmarks
+            
+            Logger.info(f"Model initialized with {self.lmk_num} landmarks")
 
         except Exception as e:
-            print(f"Failed to load the model: {e}")
-            raise
+            Logger.error(f"Failed to load landmark model from '{self.model_path}'", exc_info=True)
+            raise RuntimeError(f"Failed to initialize landmark model: {e}")
 
     def preprocess(self, image: np.ndarray, bbox: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """
-        Preprocess the input image and bbox for inference.
+        Preprocess the input image and bounding box for inference.
 
         Args:
-            image (np.ndarray): Input image.
-            bbox (np.ndarray): Bounding box [x1, y1, x2, y2].
+            image: Input image in BGR format
+            bbox: Bounding box coordinates [x1, y1, x2, y2]
 
         Returns:
-            Tuple[np.ndarray, np.ndarray]: Preprocessed blob and transformation matrix.
+            Tuple containing:
+                - Preprocessed image blob ready for inference
+                - Transformation matrix for mapping predictions back to original image
         """
+        # Calculate face dimensions and center
         width, height = bbox[2] - bbox[0], bbox[3] - bbox[1]
         center = (bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2
+        
+        # Determine scale to fit face with some margin
         scale = self.input_size[0] / (max(width, height) * 1.5)
         rotation = 0.0
 
-        transformed_image, M = bbox_center_alignment(image, center, self.input_size[0], scale, rotation)
-        input_size = tuple(transformed_image.shape[0:2][::-1])
-
-        blob = cv2.dnn.blobFromImage(
-            transformed_image,
-            1.0/self.input_std,
-            input_size,
-            (self.input_mean, self.input_mean, self.input_mean),
-            swapRB=True
+        # Align face using center, scale and rotation
+        aligned_face, transform_matrix = bbox_center_alignment(
+            image, center, self.input_size[0], scale, rotation
         )
-        return blob, M
+        
+        # Convert to blob format for inference
+        face_blob = cv2.dnn.blobFromImage(
+            aligned_face,
+            1.0 / self.input_std,
+            self.input_size,
+            (self.input_mean, self.input_mean, self.input_mean),
+            swapRB=True  # Convert BGR to RGB
+        )
+        
+        return face_blob, transform_matrix
 
-    def postprocess(self, predictions: np.ndarray, M: np.ndarray) -> np.ndarray:
+    def postprocess(self, predictions: np.ndarray, transform_matrix: np.ndarray) -> np.ndarray:
         """
-        Postprocess model outputs to get landmarks.
+        Convert raw model predictions to image coordinates.
 
         Args:
-            predictions (np.ndarray): Raw model predictions.
-            M (np.ndarray): Affine transformation matrix.
+            predictions: Raw landmark coordinates from model output
+            transform_matrix: Affine transformation matrix from preprocessing
 
         Returns:
-            np.ndarray: Transformed landmarks.
+            Landmarks in original image coordinates
         """
+        # Reshape to pairs of x,y coordinates
+        landmarks = predictions.reshape((-1, 2))
 
-        predictions = predictions.reshape((-1, 2))
+        # Denormalize coordinates to pixel space
+        landmarks[:, 0:2] += 1  # Shift from [-1,1] to [0,2] range
+        landmarks[:, 0:2] *= (self.input_size[0] // 2)  # Scale to pixel coordinates
 
-        predictions[:, 0:2] += 1
-        predictions[:, 0:2] *= (self.input_size[0] // 2)
+        # Invert the transformation to map back to original image
+        inverse_matrix = cv2.invertAffineTransform(transform_matrix)
+        landmarks = transform_points_2d(landmarks, inverse_matrix)
 
-        IM = cv2.invertAffineTransform(M)
-        predictions = transform_points_2d(predictions, IM)
-
-        return predictions
+        return landmarks
 
     def predict(self, image: np.ndarray, bbox: np.ndarray) -> np.ndarray:
         """
-        Predict facial landmarks for the given image and bounding box.
+        Predict facial landmarks for the given image and face bounding box.
 
         Args:
-            image (np.ndarray): Input image.
-            bbox (np.ndarray): Bounding box [x1, y1, x2, y2].
+            image: Input image in BGR format
+            bbox: Face bounding box [x1, y1, x2, y2]
 
         Returns:
-            np.ndarray: Predicted landmarks.
+            Array of facial landmarks in original image coordinates
         """
-        blob, M = self.preprocess(image, bbox)
-        preds = self.session.run(self.output_names, {self.input_names[0]: blob})[0][0]
-        landmarks = self.postprocess(preds, M)
+        # Preprocess image
+        face_blob, transform_matrix = self.preprocess(image, bbox)
+        
+        # Run inference
+        raw_predictions = self.session.run(
+            self.output_names, 
+            {self.input_names[0]: face_blob}
+        )[0][0]
+        
+        # Postprocess to get landmarks in original image space
+        landmarks = self.postprocess(raw_predictions, transform_matrix)
 
         return landmarks
 
@@ -138,7 +170,9 @@ class Landmark:
 
 
 if __name__ == "__main__":
-
+    from uniface.detection import RetinaFace
+    from uniface.constants import RetinaFaceWeights
+    
     face_detector = RetinaFace(
         model_name=RetinaFaceWeights.MNET_V2,
         conf_thresh=0.5,

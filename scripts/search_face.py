@@ -18,7 +18,6 @@ def extract_reference_embedding(detector, recognizer, image_path):
         raise RuntimeError("No faces found in reference image.")
 
     embedding = recognizer.get_embedding(image, landmarks[0])
-    print(f"Reference embedding extracted (L2 norm = {np.linalg.norm(embedding):.4f})")
     return embedding
 
 

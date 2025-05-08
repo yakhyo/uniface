@@ -11,8 +11,9 @@ import onnxruntime as ort
 from typing import Tuple, List, Literal
 
 from uniface.log import Logger
-from uniface.model_store import verify_model_weights
 from uniface.constants import SCRFDWeights
+from uniface.model_store import verify_model_weights
+
 from .utils import non_max_supression, distance2bbox, distance2kps, resize_image
 
 __all__ = ['SCRFD']
@@ -248,12 +249,11 @@ class SCRFD:
             sorted_indices = np.argsort(values)[::-1][:max_num]
             det = det[sorted_indices]
             landmarks = landmarks[sorted_indices]
-            
-            
 
         return det, landmarks
 
 # TODO: below is only for testing, remove it later
+
 
 def draw_bbox(frame, bbox, color=(0, 255, 0), thickness=2):
     x1, y1, x2, y2 = bbox[:4].astype(np.int32)
@@ -266,6 +266,8 @@ def draw_keypoints(frame, points, color=(0, 0, 255), radius=2):
     for (x, y) in points.astype(np.int32):
         cv2.circle(frame, (x, y), radius, color, -1)
 
+
+# TODO: Remove late, just for testing
 
 if __name__ == "__main__":
     detector = SCRFD(model_name=SCRFDWeights.SCRFD_500M_KPS)

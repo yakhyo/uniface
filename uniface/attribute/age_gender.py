@@ -4,12 +4,10 @@ import onnxruntime as ort
 from typing import Tuple
 
 from uniface.log import Logger
+from uniface.constants import AgeGenderWeights
 from uniface.face_utils import bbox_center_alignment
 from uniface.model_store import verify_model_weights
-from uniface.constants import AgeGenderWeights
 
-from uniface.detection import RetinaFace
-from uniface.constants import RetinaFaceWeights
 
 __all__ = ["AgeGender"]
 
@@ -17,109 +15,156 @@ __all__ = ["AgeGender"]
 class AgeGender:
     """
     Age and Gender Prediction Model.
+
+    This model predicts both a person's gender (male/female) and age from a facial image.
+    Gender is returned as an integer (0: female, 1: male) and age as years.
     """
 
-    def __init__(self, model_name: AgeGenderWeights = AgeGenderWeights.DEFAULT, input_size: Tuple[int, int] = (112, 112)) -> None:
+    def __init__(
+        self,
+        model_name: AgeGenderWeights = AgeGenderWeights.DEFAULT,
+        input_size: Tuple[int, int] = (112, 112)
+    ) -> None:
         """
-        Initializes the Attribute model for inference.
+        Initializes the Age and Gender prediction model.
 
         Args:
-            model_path (str): Path to the ONNX file.
+            model_name: Model weights enum to use
+            input_size: Input resolution for the model (width, height)
         """
-
         Logger.info(
             f"Initializing AgeGender with model={model_name}, "
             f"input_size={input_size}"
         )
 
+        # Model configuration
         self.input_size = input_size
         self.input_std = 1.0
         self.input_mean = 0.0
 
         # Get path to model weights
-        self._model_path = verify_model_weights(model_name)
-        Logger.info(f"Verfied model weights located at: {self._model_path}")
+        self.model_path = verify_model_weights(model_name)
+        Logger.info(f"Verified model weights located at: {self.model_path}")
 
         # Initialize model
-        self._initialize_model(model_path=self._model_path)
+        self._initialize_model()
 
-    def _initialize_model(self, model_path: str):
-        """Initialize the model from the given path.
+    def _initialize_model(self):
+        """
+        Initialize the ONNX model for inference.
 
-        Args:
-            model_path (str): Path to .onnx model.
+        Raises:
+            RuntimeError: If the model fails to load or initialize.
         """
         try:
+            # Initialize session with available providers
             self.session = ort.InferenceSession(
-                model_path,
+                self.model_path,
                 providers=["CUDAExecutionProvider", "CPUExecutionProvider"]
-
             )
 
-            # Get model info
-            metadata = self.session.get_inputs()[0]
-            input_shape = metadata.shape
-            self.input_size = tuple(input_shape[2:4][::-1])
+            # Extract model metadata
+            input_metadata = self.session.get_inputs()[0]
+            input_shape = input_metadata.shape
+            self.input_size = tuple(input_shape[2:4][::-1])  # Update from model (width, height)
 
-            self.input_names = [x.name for x in self.session.get_inputs()]
-            self.output_names = [x.name for x in self.session.get_outputs()]
+            # Get input/output names
+            self.input_names = [input.name for input in self.session.get_inputs()]
+            self.output_names = [output.name for output in self.session.get_outputs()]
+
+            Logger.info(f"Successfully initialized AgeGender model")
 
         except Exception as e:
-            print(f"Failed to load the model: {e}")
-            raise
+            Logger.error(f"Failed to load AgeGender model from '{self.model_path}'", exc_info=True)
+            raise RuntimeError(f"Failed to initialize AgeGender model: {e}")
 
-    def preprocess(self, image: np.ndarray, bbox: np.ndarray):
-        """Preprocessing
+    def preprocess(self, image: np.ndarray, bbox: np.ndarray) -> np.ndarray:
+        """
+        Preprocess the input image and face bounding box for inference.
 
         Args:
-            image (np.ndarray): Numpy image
-            bbox (np.ndarray): Bounding box coordinates: [x1, y1, x2, y2]
+            image: Input image in BGR format
+            bbox: Face bounding box coordinates [x1, y1, x2, y2]
 
         Returns:
-            np.ndarray: Transformed image
+            Preprocessed image blob ready for inference
         """
+        # Calculate face dimensions and center
         width, height = bbox[2] - bbox[0], bbox[3] - bbox[1]
         center = (bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2
+
+        # Determine scale to fit face with margin
         scale = self.input_size[0] / (max(width, height) * 1.5)
         rotation = 0.0
 
-        transformed_image, M = bbox_center_alignment(image, center, self.input_size[0], scale, rotation)
-
-        input_size = tuple(transformed_image.shape[0:2][::-1])
-
-        blob = cv2.dnn.blobFromImage(
-            transformed_image,
-            1.0/self.input_std,
-            input_size,
-            (self.input_mean, self.input_mean, self.input_mean),
-            swapRB=True
+        # Align face based on bounding box
+        aligned_face, _ = bbox_center_alignment(
+            image, center, self.input_size[0], scale, rotation
         )
-        return blob
 
-    def postprocess(self, predictions: np.ndarray) -> Tuple[np.int64, int]:
-        """Postprocessing
+        # Convert to blob format for network input
+        face_blob = cv2.dnn.blobFromImage(
+            aligned_face,
+            1.0 / self.input_std,
+            self.input_size,
+            (self.input_mean, self.input_mean, self.input_mean),
+            swapRB=True  # Convert BGR to RGB
+        )
+
+        return face_blob
+
+    def postprocess(self, predictions: np.ndarray) -> Tuple[int, int]:
+        """
+        Process model predictions to extract gender and age.
 
         Args:
-            predictions (np.ndarray): Model predictions, shape: [1, 3]
+            predictions: Raw model output, shape [1, 3] where:
+                         - First two elements represent gender logits
+                         - Third element represents normalized age
 
         Returns:
-            Tuple[np.int64, int]: Gender and Age values
+            Tuple containing:
+                - Gender (0: female, 1: male)
+                - Age in years
         """
-        gender = np.argmax(predictions[:2])
-        age = int(np.round(predictions[2]*100))
-        return gender, age
+        # First two values are gender logits (female/male)
+        gender = int(np.argmax(predictions[:2]))
 
-    def predict(self, image: np.ndarray, bbox: np.ndarray) -> Tuple[np.int64, int]:
-        blob = self.preprocess(image, bbox)
-        predictions = self.session.run(self.output_names, {self.input_names[0]: blob})[0][0]
-        gender, age = self.postprocess(predictions)
+        # Third value is normalized age that needs scaling
+        age = int(np.round(predictions[2] * 100))
 
         return gender, age
+
+    def predict(self, image: np.ndarray, bbox: np.ndarray) -> Tuple[int, int]:
+        """
+        Predict age and gender for a face in the image.
+
+        Args:
+            image: Input image in BGR format
+            bbox: Face bounding box [x1, y1, x2, y2]
+
+        Returns:
+            - 'gender_id': Gender as integer (0: female, 1: male)
+            - 'age': Age in years
+        """
+        # Preprocess and run inference
+        face_blob = self.preprocess(image, bbox)
+        predictions = self.session.run(
+            self.output_names,
+            {self.input_names[0]: face_blob}
+        )[0][0]
+
+        # Extract gender and age from predictions
+        gender_id, age = self.postprocess(predictions)
+
+        return gender_id, age
 
 
 # TODO: For testing purposes only, remove later
 
 def main():
+    from uniface.detection import RetinaFace
+    from uniface.constants import RetinaFaceWeights
 
     face_detector = RetinaFace(
         model_name=RetinaFaceWeights.MNET_V2,
