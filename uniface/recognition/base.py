@@ -2,20 +2,15 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
+from abc import ABC, abstractmethod
 import cv2
 import numpy as np
 import onnxruntime as ort
 from dataclasses import dataclass
-
 from typing import Tuple, Union, List
 
 from uniface.log import Logger
-from uniface.model_store import verify_model_weights
 from uniface.face_utils import face_alignment
-from uniface.constants import SphereFaceWeights, MobileFaceWeights, ArcFaceWeights
-
-
-__all__ = ["BaseModel", "PreprocessConfig"]
 
 
 @dataclass
@@ -28,38 +23,25 @@ class PreprocessConfig:
     input_size: Tuple[int, int] = (112, 112)
 
 
-class BaseModel:
+class BaseRecognizer(ABC):
     """
-    Unified Face Encoder supporting multiple model families (e.g., SphereFace, MobileFace).
+    Abstract Base Class for all face recognition models.
+    It provides the core functionality for preprocessing, inference, and embedding extraction.
     """
-
-    def __init__(
-        self,
-        model_name: Union[SphereFaceWeights, MobileFaceWeights, ArcFaceWeights] = MobileFaceWeights.MNET_V2,
-        preprocessing: PreprocessConfig = PreprocessConfig(),
-    ) -> None:
+    @abstractmethod
+    def __init__(self, model_path: str, preprocessing: PreprocessConfig) -> None:
         """
-        Initializes the FaceEncoder model for inference.
+        Initializes the model. Subclasses must call this.
 
         Args:
-            model_name: Selected model weight enum.
-            preprocessing: Configuration for input normalization and resizing.
+            model_path (str): The direct path to the verified ONNX model.
+            preprocessing (PreprocessConfig): The configuration for preprocessing.
         """
-        # Store preprocessing parameters
         self.input_mean = preprocessing.input_mean
         self.input_std = preprocessing.input_std
         self.input_size = preprocessing.input_size
 
-        Logger.info(
-            f"Initializing Face Recognition with model={model_name}, "
-            f"input_mean={self.input_mean}, input_std={self.input_std}, "
-            f"input_size={self.input_size}"
-        )
-
-        # Get path to model weights and initialize model
-        self.model_path = verify_model_weights(model_name)
-        Logger.info(f"Verified model weights located at: {self.model_path}")
-
+        self.model_path = model_path
         self._initialize_model()
 
     def _initialize_model(self) -> None:
@@ -152,14 +134,15 @@ class BaseModel:
 
     def get_normalized_embedding(self, image: np.ndarray, landmarks: np.ndarray) -> np.ndarray:
         """
-        Extracts l2 normalized face embedding vector from an image
+        Extracts a l2 normalized face embedding vector from an image.
 
         Args:
             image: Input face image (BGR format).
             landmarks: Facial landmarks (5 points for alignment).
 
         Returns:
-            Normalied face embedding vector (typically 512-dimensional).
+            Normalized face embedding vector (typically 512-dimensional).
         """
         embedding = self.get_embedding(image, landmarks)
-        return embedding / np.linalg.norm(embedding)
+        norm = np.linalg.norm(embedding)
+        return embedding / norm if norm > 0 else embedding

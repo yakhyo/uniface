@@ -15,7 +15,10 @@ __license__ = "MIT"
 __author__ = "Yakhyokhuja Valikhujaev"
 __version__ = "0.1.8"
 
+
 from .detection import detect_faces, create_detector, list_available_detectors
+from .recognition import create_recognizer
+from .landmark import create_landmarker
 
 from uniface.face_utils import face_alignment, compute_similarity
 from uniface.model_store import verify_model_weights
@@ -25,22 +28,20 @@ from uniface.log import Logger
 
 
 __all__ = [
-    # Metadata
-    "__version__",
-    "__author__",
-    "__license__",
+    '__author__',
+    '__license__',
+    '__version__',
 
-    # Core functions
-    'detect_faces',
     'create_detector',
+    'create_landmarker',
+    'create_recognizer',
+    'detect_faces',
     'list_available_detectors',
 
-    # Utility functions
-    "face_alignment",
-    "compute_similarity",
-    "verify_model_weights",
-    "draw_detections",
+    'compute_similarity',
+    'draw_detections',
+    'face_alignment',
+    'verify_model_weights',
 
-    # Classes
-    "Logger",
+    'Logger'
 ]
