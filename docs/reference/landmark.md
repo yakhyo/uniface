@@ -2,4 +2,4 @@
 
 # Landmark Model
 
-::: uniface.landmark.model.Landmark
+::: uniface.landmark.models.Landmark106
