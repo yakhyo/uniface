@@ -12,6 +12,6 @@
 
 :::uniface.recognition.models.ArcFace
 
-# BaseFaceEncoder class
+# BaseRecognizer class
 
-:::uniface.recognition.base.BaseFaceEncoder
+:::uniface.recognition.base.BaseRecognizer
