@@ -1,25 +1,24 @@
 # Copyright 2025 Yakhyokhuja Valikhujaev
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
-# Modified from insightface repository
 
-import os
 import cv2
 import numpy as np
 import onnxruntime as ort
 
-from typing import Tuple, List, Literal
+from typing import Tuple, List, Literal, Dict, Any
 
 from uniface.log import Logger
 from uniface.constants import SCRFDWeights
 from uniface.model_store import verify_model_weights
 
+from .base import BaseDetector
 from .utils import non_max_supression, distance2bbox, distance2kps, resize_image
 
 __all__ = ['SCRFD']
 
 
-class SCRFD:
+class SCRFD(BaseDetector):
     """
     Face detector based on the SCRFD architecture.
 
@@ -27,10 +26,12 @@ class SCRFD:
     Paper: https://arxiv.org/abs/2105.04714
 
     Args:
-        model_name (SCRFDWeights): Predefined model enum (e.g., `SCRFD_10G_KPS`). Specifies the SCRFD variant to load.
-        conf_thresh (float): Confidence threshold for filtering detections. Defaults to 0.5.
-        nms_thresh (float): Non-Maximum Suppression (NMS) threshold. Defaults to 0.4.
-        input_size (Tuple[int, int]): Target input resolution (width, height) to resize images. Defaults to (640, 640).
+        **kwargs: Keyword arguments passed to BaseDetector and SCRFD. Supported keys include:
+            model_name (SCRFDWeights, optional): Predefined model enum (e.g., `SCRFD_10G_KPS`). 
+                Specifies the SCRFD variant to load. Defaults to SCRFD_10G_KPS.
+            conf_thresh (float, optional): Confidence threshold for filtering detections. Defaults to 0.5.
+            nms_thresh (float, optional): Non-Maximum Suppression threshold. Defaults to 0.4.
+            input_size (Tuple[int, int], optional): Input image size (width, height). Defaults to (640, 640).
 
     Attributes:
         conf_thresh (float): Threshold used to filter low-confidence detections.
@@ -47,13 +48,14 @@ class SCRFD:
         RuntimeError: If the ONNX model fails to load or initialize.
     """
 
-    def __init__(
-        self,
-        model_name: SCRFDWeights = SCRFDWeights.SCRFD_10G_KPS,
-        conf_thresh: float = 0.5,
-        nms_thresh: float = 0.4,
-        input_size: Tuple[int, int] = (640, 640),
-    ) -> None:
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self._supports_landmarks = True  # SCRFD supports landmarks
+
+        model_name = kwargs.get('model_name', SCRFDWeights.SCRFD_10G_KPS)
+        conf_thresh = kwargs.get('conf_thresh', 0.5)
+        nms_thresh = kwargs.get('nms_thresh', 0.4)
+        input_size = kwargs.get('input_size', (640, 640))
 
         self.conf_thresh = conf_thresh
         self.nms_thresh = nms_thresh
@@ -179,7 +181,7 @@ class SCRFD:
         max_num: int = 0,
         metric: Literal["default", "max"] = "max",
         center_weight: float = 2
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    ) -> List[Dict[str, Any]]:
         """
         Perform face detection on an input image and return bounding boxes and facial landmarks.
 
@@ -193,9 +195,10 @@ class SCRFD:
                 when using the "default" metric. Defaults to 2.0.
 
         Returns:
-            Tuple[np.ndarray, np.ndarray]:
-                - detections: Bounding boxes with confidence scores. Shape (N, 5), each row as [x_min, y_min, x_max, y_max, score].
-                - landmarks: Facial landmark coordinates. Shape (N, 5, 2), where each row contains 5 (x, y) points.
+            List[Dict[str, Any]]: List of face detection dictionaries, each containing:
+                - 'bbox': [x1, y1, x2, y2] - Bounding box coordinates
+                - 'confidence': float - Detection confidence score
+                - 'landmarks': [[x1, y1], [x2, y2], [x3, y3], [x4, y4], [x5, y5]] - 5-point facial landmarks
         """
 
         original_height, original_width = image.shape[:2]
@@ -221,20 +224,20 @@ class SCRFD:
 
         keep = non_max_supression(pre_det, threshold=self.nms_thresh)
 
-        det = pre_det[keep, :]
+        detections = pre_det[keep, :]
         landmarks = landmarks[order, :, :]
         landmarks = landmarks[keep, :, :].astype(np.int32)
 
-        if 0 < max_num < det.shape[0]:
+        if 0 < max_num < detections.shape[0]:
             # Calculate area of detections
-            area = (det[:, 2] - det[:, 0]) * (det[:, 3] - det[:, 1])
+            area = (detections[:, 2] - detections[:, 0]) * (detections[:, 3] - detections[:, 1])
 
             # Calculate offsets from image center
             center = (original_height // 2, original_width // 2)
             offsets = np.vstack(
                 [
-                    (det[:, 0] + det[:, 2]) / 2 - center[1],
-                    (det[:, 1] + det[:, 3]) / 2 - center[0],
+                    (detections[:, 0] + detections[:, 2]) / 2 - center[1],
+                    (detections[:, 1] + detections[:, 3]) / 2 - center[0],
                 ]
             )
 
@@ -247,30 +250,36 @@ class SCRFD:
 
             # Sort by scores and select top `max_num`
             sorted_indices = np.argsort(values)[::-1][:max_num]
-            det = det[sorted_indices]
+            detections = detections[sorted_indices]
             landmarks = landmarks[sorted_indices]
 
-        return det, landmarks
+        faces = []
+        for i in range(detections.shape[0]):
+            face_dict = {
+                'bbox': detections[i, :4].astype(float).tolist(),
+                'confidence': detections[i, 4].item(),
+                'landmarks': landmarks[i].astype(float).tolist()
+            }
+            faces.append(face_dict)
+
+        return faces
+
 
 # TODO: below is only for testing, remove it later
-
-
-def draw_bbox(frame, bbox, color=(0, 255, 0), thickness=2):
-    x1, y1, x2, y2 = bbox[:4].astype(np.int32)
+def draw_bbox(frame, bbox, score, color=(0, 255, 0), thickness=2):
+    x1, y1, x2, y2 = map(int, bbox)  # Unpack 4 bbox values
     cv2.rectangle(frame, (x1, y1), (x2, y2), color, thickness)
-    score = bbox[4]
     cv2.putText(frame, f"{score:.2f}", (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
 
 
 def draw_keypoints(frame, points, color=(0, 0, 255), radius=2):
     for (x, y) in points.astype(np.int32):
-        cv2.circle(frame, (x, y), radius, color, -1)
+        cv2.circle(frame, (int(x), int(y)), radius, color, -1)
 
-
-# TODO: Remove late, just for testing
 
 if __name__ == "__main__":
     detector = SCRFD(model_name=SCRFDWeights.SCRFD_500M_KPS)
+    print(detector.get_info())
     cap = cv2.VideoCapture(0)
 
     if not cap.isOpened():
@@ -285,13 +294,28 @@ if __name__ == "__main__":
             print("❌ Failed to read frame.")
             break
 
-        boxes_list, points_list = detector.detect(frame)
+        # Get face detections as list of dictionaries
+        faces = detector.detect(frame)
 
-        for boxes, points in zip(boxes_list, points_list):
-            draw_bbox(frame, boxes)
+        # Process each detected face
+        for face in faces:
+            # Extract bbox and landmarks from dictionary
+            bbox = face['bbox']  # [x1, y1, x2, y2]
+            landmarks = face['landmarks']  # [[x1, y1], [x2, y2], ...]
+            confidence = face['confidence']
 
-            if points is not None:
+            # Pass bbox and confidence separately
+            draw_bbox(frame, bbox, confidence)
+
+            # Convert landmarks to numpy array format if needed
+            if landmarks is not None and len(landmarks) > 0:
+                # Convert list of [x, y] pairs to numpy array
+                points = np.array(landmarks, dtype=np.float32)  # Shape: (5, 2)
                 draw_keypoints(frame, points)
+
+        # Display face count
+        cv2.putText(frame, f"Faces: {len(faces)}", (10, 30),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
 
         cv2.imshow("FaceDetection", frame)
         if cv2.waitKey(1) & 0xFF == ord("q"):

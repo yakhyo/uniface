@@ -3,9 +3,8 @@
 # GitHub: https://github.com/yakhyo
 
 import cv2
-import numpy as np
 import torch
-from PIL import Image
+import numpy as np
 
 from typing import Tuple, Union
 

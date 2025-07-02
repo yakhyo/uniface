@@ -1,13 +1,17 @@
-# Recognition API Reference
+# Face Recognition API Reference
 
+# SphereFace
 
-# SphereFace Model
 ::: uniface.recognition.models.SphereFace
 
+# MobileFace
 
-# MobileFace Model
 :::uniface.recognition.models.MobileFace
 
+# ArcFace
 
-# Base Face Encoder Model
+:::uniface.recognition.models.ArcFace
+
+# BaseFaceEncoder class
+
 :::uniface.recognition.base.BaseFaceEncoder

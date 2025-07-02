@@ -1,22 +1,21 @@
 # Copyright 2025 Yakhyokhuja Valikhujaev
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
-# Modified from insightface repository
 
-import os
 import cv2
 import numpy as np
 import onnxruntime as ort
-from typing import Tuple, Optional, Union, List
 from dataclasses import dataclass
+
+from typing import Tuple, Union, List
 
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
-from uniface.face_utils import compute_similarity, face_alignment
+from uniface.face_utils import face_alignment
 from uniface.constants import SphereFaceWeights, MobileFaceWeights, ArcFaceWeights
 
 
-__all__ = ["BaseFaceEncoder", "PreprocessConfig"]
+__all__ = ["BaseModel", "PreprocessConfig"]
 
 
 @dataclass
@@ -29,7 +28,7 @@ class PreprocessConfig:
     input_size: Tuple[int, int] = (112, 112)
 
 
-class BaseFaceEncoder:
+class BaseModel:
     """
     Unified Face Encoder supporting multiple model families (e.g., SphereFace, MobileFace).
     """
@@ -133,7 +132,7 @@ class BaseFaceEncoder:
 
     def get_embedding(self, image: np.ndarray, landmarks: np.ndarray) -> np.ndarray:
         """
-        Extracts face embedding from an aligned image.
+        Extracts face embedding from an image.
 
         Args:
             image: Input face image (BGR format).
@@ -150,3 +149,17 @@ class BaseFaceEncoder:
         embedding = self.session.run(self.output_names, {self.input_name: face_blob})[0]
 
         return embedding
+
+    def get_normalized_embedding(self, image: np.ndarray, landmarks: np.ndarray) -> np.ndarray:
+        """
+        Extracts l2 normalized face embedding vector from an image
+
+        Args:
+            image: Input face image (BGR format).
+            landmarks: Facial landmarks (5 points for alignment).
+
+        Returns:
+            Normalied face embedding vector (typically 512-dimensional).
+        """
+        embedding = self.get_embedding(image, landmarks)
+        return embedding / np.linalg.norm(embedding)

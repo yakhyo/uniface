@@ -1,7 +1,10 @@
+# Copyright 2025 Yakhyokhuja Valikhujaev
+# Author: Yakhyokhuja Valikhujaev
+# GitHub: https://github.com/yakhyo
+
 import cv2
-import onnx
-import onnxruntime as ort
 import numpy as np
+import onnxruntime as ort
 
 from typing import Tuple
 
@@ -15,12 +18,32 @@ __all__ = ['Landmark']
 
 class Landmark:
     """
-    Facial landmark detection model for predicting facial keypoints.
-    """
+    Facial landmark detection model for predicting 106 facial keypoints using ONNX model.
+
+    This class wraps a pretrained facial landmark model to detect 106 key facial points
+    such as eyes, eyebrows, nose, lips, and jawline from a given face bounding box.
+    It handles model verification, input preprocessing, ONNX inference execution,
+    and projection of landmark coordinates back to the original image space.
+
+    Attributes:
+        input_size (Tuple[int, int]): Model's expected input resolution (width, height).
+        input_mean (float): Mean value used for input normalization.
+        input_std (float): Standard deviation used for input normalization.
+        model_path (str): Path to the verified ONNX model file.
+        session (onnxruntime.InferenceSession): ONNX Runtime session for inference.
+        input_names (List[str]): List of input node names.
+        output_names (List[str]): List of output node names.
+        lmk_dim (int): Number of dimensions per landmark point (typically 2 for x, y).
+        lmk_num (int): Total number of landmark points predicted by the model (106).
     
+    Args:
+        model_name (LandmarkWeights): Enum specifying the landmark model to load.
+        input_size (Tuple[int, int]): Resolution for model input; defaults to (192, 192).
+    """
+
     def __init__(
-        self, 
-        model_name: LandmarkWeights = LandmarkWeights.DEFAULT, 
+        self,
+        model_name: LandmarkWeights = LandmarkWeights.DEFAULT,
         input_size: Tuple[int, int] = (192, 192)
     ) -> None:
         """
@@ -50,7 +73,7 @@ class Landmark:
     def _initialize_model(self):
         """
         Initialize the ONNX model from the stored model path.
-        
+
         Raises:
             RuntimeError: If the model fails to load or initialize.
         """
@@ -73,7 +96,7 @@ class Landmark:
             output_shape = self.session.get_outputs()[0].shape
             self.lmk_dim = 2  # x,y coordinates
             self.lmk_num = output_shape[1] // self.lmk_dim  # Number of landmarks
-            
+
             Logger.info(f"Model initialized with {self.lmk_num} landmarks")
 
         except Exception as e:
@@ -96,7 +119,7 @@ class Landmark:
         # Calculate face dimensions and center
         width, height = bbox[2] - bbox[0], bbox[3] - bbox[1]
         center = (bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2
-        
+
         # Determine scale to fit face with some margin
         scale = self.input_size[0] / (max(width, height) * 1.5)
         rotation = 0.0
@@ -105,7 +128,7 @@ class Landmark:
         aligned_face, transform_matrix = bbox_center_alignment(
             image, center, self.input_size[0], scale, rotation
         )
-        
+
         # Convert to blob format for inference
         face_blob = cv2.dnn.blobFromImage(
             aligned_face,
@@ -114,7 +137,7 @@ class Landmark:
             (self.input_mean, self.input_mean, self.input_mean),
             swapRB=True  # Convert BGR to RGB
         )
-        
+
         return face_blob, transform_matrix
 
     def postprocess(self, predictions: np.ndarray, transform_matrix: np.ndarray) -> np.ndarray:
@@ -154,13 +177,13 @@ class Landmark:
         """
         # Preprocess image
         face_blob, transform_matrix = self.preprocess(image, bbox)
-        
+
         # Run inference
         raw_predictions = self.session.run(
-            self.output_names, 
+            self.output_names,
             {self.input_names[0]: face_blob}
         )[0][0]
-        
+
         # Postprocess to get landmarks in original image space
         landmarks = self.postprocess(raw_predictions, transform_matrix)
 
@@ -172,7 +195,7 @@ class Landmark:
 if __name__ == "__main__":
     from uniface.detection import RetinaFace
     from uniface.constants import RetinaFaceWeights
-    
+
     face_detector = RetinaFace(
         model_name=RetinaFaceWeights.MNET_V2,
         conf_thresh=0.5,
