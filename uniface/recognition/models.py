@@ -4,27 +4,35 @@
 
 from typing import Optional
 
-from uniface.constants import SphereFaceWeights, MobileFaceWeights, ArcFaceWeights
-from .base import BaseModel, PreprocessConfig
+from uniface.constants import ArcFaceWeights, MobileFaceWeights, SphereFaceWeights
+from uniface.model_store import verify_model_weights
+from .base import BaseRecognizer, PreprocessConfig
+
+__all__ = ["ArcFace", "MobileFace", "SphereFace"]
 
 
-__all__ = ["SphereFace", "MobileFace", "ArcFace"]
+class ArcFace(BaseRecognizer):
+    """ArcFace model for robust face recognition.
 
-
-class SphereFace(BaseModel):
-    """
-    SphereFace face encoder class.
-
-    This class loads a SphereFace model for face embedding extraction.
-    It supports configurable preprocessing, with a default mean/std and input size of 112x112.
+    This class provides a concrete implementation of the BaseRecognizer,
+    pre-configured for ArcFace models. It handles the loading of specific
+    ArcFace weights and sets up the appropriate default preprocessing.
 
     Args:
-        model_name (SphereFaceWeights): Enum value representing the model to load. Defaults to SphereFaceWeights.SPHERE20.
-        preprocessing (Optional[PreprocessConfig]): Preprocessing config (mean, std, size). Defaults to standard 112x112 with normalization.
+        model_name (ArcFaceWeights): The specific ArcFace model variant to use.
+            Defaults to `ArcFaceWeights.MNET`.
+        preprocessing (Optional[PreprocessConfig]): An optional custom preprocessing
+            configuration. If None, a default config for ArcFace is used.
+
+    Example:
+        >>> from uniface.recognition import ArcFace
+        >>> recognizer = ArcFace()
+        >>> # embedding = recognizer.get_normalized_embedding(image, landmarks)
     """
 
     def __init__(
-        self, model_name: SphereFaceWeights = SphereFaceWeights.SPHERE20,
+        self,
+        model_name: ArcFaceWeights = ArcFaceWeights.MNET,
         preprocessing: Optional[PreprocessConfig] = None
     ) -> None:
         if preprocessing is None:
@@ -33,23 +41,32 @@ class SphereFace(BaseModel):
                 input_std=127.5,
                 input_size=(112, 112)
             )
-        super().__init__(model_name=model_name, preprocessing=preprocessing)
+        model_path = verify_model_weights(model_name)
+        super().__init__(model_path=model_path, preprocessing=preprocessing)
 
 
-class MobileFace(BaseModel):
-    """
-    MobileFace face encoder class.
+class MobileFace(BaseRecognizer):
+    """Lightweight MobileFaceNet model for fast face recognition.
 
-    Loads a lightweight MobileFaceNet model for fast face embedding extraction.
-    Default input normalization and resizing applied if preprocessing is not provided.
+    This class provides a concrete implementation of the BaseRecognizer,
+    pre-configured for MobileFaceNet models. It is optimized for speed,
+    making it suitable for edge devices.
 
     Args:
-        model_name (MobileFaceWeights): Enum value specifying the MobileFace model. Defaults to MobileFaceWeights.MNET_V2.
-        preprocessing (Optional[PreprocessConfig]): Preprocessing config. If None, uses standard normalization and 112x112 input size.
+        model_name (MobileFaceWeights): The specific MobileFaceNet model variant to use.
+            Defaults to `MobileFaceWeights.MNET_V2`.
+        preprocessing (Optional[PreprocessConfig]): An optional custom preprocessing
+            configuration. If None, a default config for MobileFaceNet is used.
+
+    Example:
+        >>> from uniface.recognition import MobileFace
+        >>> recognizer = MobileFace()
+        >>> # embedding = recognizer.get_normalized_embedding(image, landmarks)
     """
 
     def __init__(
-        self, model_name: MobileFaceWeights = MobileFaceWeights.MNET_V2,
+        self,
+        model_name: MobileFaceWeights = MobileFaceWeights.MNET_V2,
         preprocessing: Optional[PreprocessConfig] = None
     ) -> None:
         if preprocessing is None:
@@ -58,23 +75,32 @@ class MobileFace(BaseModel):
                 input_std=127.5,
                 input_size=(112, 112)
             )
-        super().__init__(model_name=model_name)
+        model_path = verify_model_weights(model_name)
+        super().__init__(model_path=model_path, preprocessing=preprocessing)
 
 
-class ArcFace(BaseModel):
-    """
-    ArcFace face encoder class.
+class SphereFace(BaseRecognizer):
+    """SphereFace model using angular margin for face recognition.
 
-    Loads an ArcFace model (e.g., ResNet-based) for robust face recognition embedding generation.
-    Applies standard preprocessing unless overridden.
+    This class provides a concrete implementation of the BaseRecognizer,
+    pre-configured for SphereFace models, which were among the first to
+    introduce angular margin loss functions.
 
     Args:
-        model_name (ArcFaceWeights): Enum for the ArcFace model variant. Defaults to ArcFaceWeights.MNET.
-        preprocessing (Optional[PreprocessConfig]): Preprocessing settings. Defaults to standard normalization and resizing if not specified.
+        model_name (SphereFaceWeights): The specific SphereFace model variant to use.
+            Defaults to `SphereFaceWeights.SPHERE20`.
+        preprocessing (Optional[PreprocessConfig]): An optional custom preprocessing
+            configuration. If None, a default config for SphereFace is used.
+
+    Example:
+        >>> from uniface.recognition import SphereFace
+        >>> recognizer = SphereFace()
+        >>> # embedding = recognizer.get_normalized_embedding(image, landmarks)
     """
 
     def __init__(
-        self, model_name: ArcFaceWeights = ArcFaceWeights.MNET,
+        self,
+        model_name: SphereFaceWeights = SphereFaceWeights.SPHERE20,
         preprocessing: Optional[PreprocessConfig] = None
     ) -> None:
         if preprocessing is None:
@@ -83,4 +109,6 @@ class ArcFace(BaseModel):
                 input_std=127.5,
                 input_size=(112, 112)
             )
-        super().__init__(model_name=model_name)
+
+        model_path = verify_model_weights(model_name)
+        super().__init__(model_path=model_path, preprocessing=preprocessing)
