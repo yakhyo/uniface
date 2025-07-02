@@ -70,6 +70,8 @@ nav:
   - API Reference: 
       - Detection: reference/detection.md
       - Recognition: reference/recognition.md
+      - Landmark: reference/landmark.md
+      - Attribute: reference/attribute.md
   - About:
       - Changelog: about/changelog.md
       - License: about/license.md

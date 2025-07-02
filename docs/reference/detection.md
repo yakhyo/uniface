@@ -1,3 +1,10 @@
-# Detection API Reference
+# Face Detection API Reference
 
-::: uniface.RetinaFace
+# RetinaFace
+
+::: uniface.detection.retinaface.RetinaFace
+
+
+# SCRFD
+
+::: uniface.detection.scrfd.SCRFD

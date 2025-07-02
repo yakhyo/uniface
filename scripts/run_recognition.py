@@ -29,11 +29,11 @@ def run_inference(detector, recognizer, image_path):
 
     print(f"Detected {len(boxes)} face(s). Extracting embeddings...")
 
-    for i, landmark in enumerate(landmarks):
+    for i, landmark in enumerate(landmarks[:1]):
         embedding = recognizer.get_embedding(image, landmark)
-        norm = np.linalg.norm(embedding)
-        print(f"\nFace {i} embedding (L2 norm = {norm:.4f}):")
-        print(embedding)
+        norm_embedding = recognizer.get_normalized_embedding(image, landmark)
+        print("embedding:", np.sum(embedding))
+        print("norm embedding:",np.sum(norm_embedding))
 
 
 def main():

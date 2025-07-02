@@ -1,6 +1,11 @@
+# Copyright 2025 Yakhyokhuja Valikhujaev
+# Author: Yakhyokhuja Valikhujaev
+# GitHub: https://github.com/yakhyo
+
 import cv2
 import numpy as np
 import onnxruntime as ort
+
 from typing import Tuple
 
 from uniface.log import Logger
@@ -14,10 +19,24 @@ __all__ = ["AgeGender"]
 
 class AgeGender:
     """
-    Age and Gender Prediction Model.
+    Age and gender prediction model using ONNX Runtime.
 
-    This model predicts both a person's gender (male/female) and age from a facial image.
-    Gender is returned as an integer (0: female, 1: male) and age as years.
+    Loads a pretrained ONNX model to predict both age (in years) and gender 
+    (0: female, 1: male) from a detected face region. Handles model loading,
+    preprocessing, inference, and output interpretation.
+
+    Attributes:
+        input_size (Tuple[int, int]): Model's expected input resolution (width, height).
+        input_mean (float): Mean value used for input normalization.
+        input_std (float): Standard deviation used for input normalization.
+        model_path (str): Path to the verified ONNX model file.
+        session (onnxruntime.InferenceSession): ONNX Runtime session for inference.
+        input_names (List[str]): List of input node names.
+        output_names (List[str]): List of output node names.
+
+    Args:
+        model_name (AgeGenderWeights): Enum specifying the age-gender model to load.
+        input_size (Tuple[int, int]): Resolution for model input; defaults to (112, 112).
     """
 
     def __init__(

@@ -2,16 +2,16 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-import os
-import cv2
 import numpy as np
 import onnxruntime as ort
 
-from typing import Tuple, List, Optional, Literal
+from typing import Tuple, List, Literal, Dict, Any
 
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
 from uniface.constants import RetinaFaceWeights
+
+from .base import BaseDetector
 from .utils import (
     non_max_supression,
     resize_image,
@@ -21,64 +21,64 @@ from .utils import (
 )
 
 
-class RetinaFace:
+class RetinaFace(BaseDetector):
     """
     Face detector based on the RetinaFace architecture.
 
+    Title: "RetinaFace: Single-stage Dense Face Localisation in the Wild"
+    Paper: https://arxiv.org/abs/1905.00641
+
     Args:
-        model_name (RetinaFaceWeights): Model weights to use. Defaults to `RetinaFaceWeights.MNET_V2`.
-        conf_thresh (float): Confidence threshold for filtering detections. Defaults to 0.5.
-        nms_thresh (float): Non-maximum suppression (NMS) threshold. Defaults to 0.4.
-        pre_nms_topk (int): Number of top-scoring boxes considered before applying NMS. Defaults to 5000.
-        post_nms_topk (int): Maximum number of final detections retained after NMS. Defaults to 750.
-        dynamic_size (bool): If True, anchors are generated dynamically per input image size. Defaults to False.
-        input_size (Tuple[int, int]): Fixed input size (width, height) used when `dynamic_size` is False. Ignored if `dynamic_size=True`.
+        **kwargs: Keyword arguments passed to BaseDetector and RetinaFace. Supported keys include:
+            model_name (RetinaFaceWeights, optional): Model weights to use. Defaults to `RetinaFaceWeights.MNET_V2`.
+            conf_thresh (float, optional): Confidence threshold for filtering detections. Defaults to 0.5.
+            nms_thresh (float, optional): Non-maximum suppression (NMS) IoU threshold. Defaults to 0.4.
+            pre_nms_topk (int, optional): Number of top-scoring boxes considered before NMS. Defaults to 5000.
+            post_nms_topk (int, optional): Max number of detections kept after NMS. Defaults to 750.
+            dynamic_size (bool, optional): If True, generate anchors dynamically per input image. Defaults to False.
+            input_size (Tuple[int, int], optional): Fixed input size (width, height) if `dynamic_size=False`. Defaults to (640, 640).
 
     Attributes:
-        conf_thresh (float): Threshold for filtering detections based on confidence score.
-        nms_thresh (float): IoU threshold for NMS.
-        pre_nms_topk (int): Limit on boxes considered before NMS.
-        post_nms_topk (int): Limit on detections kept after NMS.
-        dynamic_size (bool): Whether anchors are generated dynamically.
-        input_size (Tuple[int, int]): Static input size when `dynamic_size` is False.
-        _model_path (str): Path to verified model weights. (Internal)
-        _priors (np.ndarray): Anchor boxes used for detection. Precomputed if static input size is used. (Internal)
+        model_name (RetinaFaceWeights): Selected model variant.
+        conf_thresh (float): Threshold for confidence-based filtering.
+        nms_thresh (float): IoU threshold used for NMS.
+        pre_nms_topk (int): Limit on proposals before applying NMS.
+        post_nms_topk (int): Limit on retained detections after NMS.
+        dynamic_size (bool): Flag indicating dynamic or static input sizing.
+        input_size (Tuple[int, int]): Static input size if `dynamic_size=False`.
+        _model_path (str): Absolute path to the verified model weights.
+        _priors (np.ndarray): Precomputed anchor boxes (if static size).
+        _supports_landmarks (bool): Indicates landmark prediction support.
 
     Raises:
-        ValueError: If model weights are invalid or not found.
-        RuntimeError: If the model fails to initialize.
+        ValueError: If the model weights are invalid or not found.
+        RuntimeError: If the ONNX model fails to load or initialize.
     """
 
-    def __init__(
-        self,
-        model_name: RetinaFaceWeights = RetinaFaceWeights.MNET_V2,
-        conf_thresh: float = 0.5,
-        nms_thresh: float = 0.4,
-        pre_nms_topk: int = 5000,
-        post_nms_topk: int = 750,
-        dynamic_size: bool = False,
-        input_size: Tuple[int, int] = (640, 640),  # Default input size if dynamic_size=False
-    ) -> None:
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self._supports_landmarks = True  # RetinaFace supports landmarks
 
-        self.conf_thresh = conf_thresh
-        self.nms_thresh = nms_thresh
-        self.pre_nms_topk = pre_nms_topk
-        self.post_nms_topk = post_nms_topk
-        self.dynamic_size = dynamic_size
-        self.input_size = input_size
+        self.model_name = kwargs.get('model_name', RetinaFaceWeights.MNET_V2)
+        self.conf_thresh = kwargs.get('conf_thresh', 0.5)
+        self.nms_thresh = kwargs.get('nms_thresh', 0.4)
+        self.pre_nms_topk = kwargs.get('pre_nms_topk', 5000)
+        self.post_nms_topk = kwargs.get('post_nms_topk', 750)
+        self.dynamic_size = kwargs.get('dynamic_size', False)
+        self.input_size = kwargs.get('input_size', (640, 640))
 
         Logger.info(
-            f"Initializing RetinaFace with model={model_name}, conf_thresh={conf_thresh}, nms_thresh={nms_thresh}, "
-            f"input_size={input_size}"
+            f"Initializing RetinaFace with model={self.model_name}, conf_thresh={self.conf_thresh}, nms_thresh={self.nms_thresh}, "
+            f"input_size={self.input_size}"
         )
 
         # Get path to model weights
-        self._model_path = verify_model_weights(model_name)
+        self._model_path = verify_model_weights(self.model_name)
         Logger.info(f"Verified model weights located at: {self._model_path}")
 
         # Precompute anchors if using static size
-        if not dynamic_size and input_size is not None:
-            self._priors = generate_anchors(image_size=input_size)
+        if not self.dynamic_size and self.input_size is not None:
+            self._priors = generate_anchors(image_size=self.input_size)
             Logger.debug("Generated anchors for static input size.")
 
         # Initialize model
@@ -137,7 +137,7 @@ class RetinaFace:
         max_num: int = 0,
         metric: Literal["default", "max"] = "max",
         center_weight: float = 2.0
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    ) -> List[Dict[str, Any]]:
         """
         Perform face detection on an input image and return bounding boxes and facial landmarks.
 
@@ -151,9 +151,10 @@ class RetinaFace:
                 when using the "default" metric. Defaults to 2.0.
 
         Returns:
-            Tuple[np.ndarray, np.ndarray]:
-                - detections: Bounding boxes with confidence scores. Shape (N, 5), each row as [x_min, y_min, x_max, y_max, score].
-                - landmarks: Facial landmark coordinates. Shape (N, 5, 2), where each row contains 5 (x, y) points.
+            List[Dict[str, Any]]: List of face detection dictionaries, each containing:
+                - 'bbox': [x1, y1, x2, y2] - Bounding box coordinates
+                - 'confidence': float - Detection confidence score
+                - 'landmarks': [[x1, y1], [x2, y2], [x3, y3], [x4, y4], [x5, y5]] - 5-point facial landmarks
         """
 
         original_height, original_width = image.shape[:2]
@@ -198,7 +199,16 @@ class RetinaFace:
             detections = detections[sorted_indices]
             landmarks = landmarks[sorted_indices]
 
-        return detections, landmarks
+        faces = []
+        for i in range(detections.shape[0]):
+            face_dict = {
+                'bbox': detections[i, :4].astype(float).tolist(),
+                'confidence': detections[i, 4].item(),
+                'landmarks': landmarks[i].astype(float).tolist()
+            }
+            faces.append(face_dict)
+
+        return faces
 
     def postprocess(self, outputs: List[np.ndarray], resize_factor: float, shape: Tuple[int, int]) -> Tuple[np.ndarray, np.ndarray]:
         """
@@ -259,3 +269,64 @@ class RetinaFace:
         landmarks = landmarks * landmark_scale / resize_factor
 
         return boxes, landmarks
+
+
+# TODO: below is only for testing, remove it later
+def draw_bbox(frame, bbox, score, color=(0, 255, 0), thickness=2):
+    x1, y1, x2, y2 = map(int, bbox)  # Unpack 4 bbox values
+    cv2.rectangle(frame, (x1, y1), (x2, y2), color, thickness)
+    cv2.putText(frame, f"{score:.2f}", (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
+
+
+def draw_keypoints(frame, points, color=(0, 0, 255), radius=2):
+    for (x, y) in points.astype(np.int32):
+        cv2.circle(frame, (int(x), int(y)), radius, color, -1)
+
+
+if __name__ == "__main__":
+    import cv2
+    detector = RetinaFace(model_name=RetinaFaceWeights.MNET_050)
+    print(detector.get_info())
+    cap = cv2.VideoCapture(0)
+
+    if not cap.isOpened():
+        print("❌ Failed to open webcam.")
+        exit()
+
+    print("📷 Webcam started. Press 'q' to exit.")
+
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            print("❌ Failed to read frame.")
+            break
+
+        # Get face detections as list of dictionaries
+        faces = detector.detect(frame)
+
+        # Process each detected face
+        for face in faces:
+            # Extract bbox and landmarks from dictionary
+            bbox = face['bbox']  # [x1, y1, x2, y2]
+            landmarks = face['landmarks']  # [[x1, y1], [x2, y2], ...]
+            confidence = face['confidence']
+
+            # Pass bbox and confidence separately
+            draw_bbox(frame, bbox, confidence)
+
+            # Convert landmarks to numpy array format if needed
+            if landmarks is not None and len(landmarks) > 0:
+                # Convert list of [x, y] pairs to numpy array
+                points = np.array(landmarks, dtype=np.float32)  # Shape: (5, 2)
+                draw_keypoints(frame, points)
+
+        # Display face count
+        cv2.putText(frame, f"Faces: {len(faces)}", (10, 30),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+
+        cv2.imshow("FaceDetection", frame)
+        if cv2.waitKey(1) & 0xFF == ord("q"):
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()

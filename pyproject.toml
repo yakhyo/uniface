@@ -11,14 +11,16 @@ dependencies = [
     "numpy",
     "opencv-python",
     "onnx",
-    "onnxruntime-gpu",
+    "onnxruntime",
     "scikit-image",
-    "requests"
+    "requests",
+    "tqdm"
 ]
 requires-python = ">=3.9"
 
 [project.optional-dependencies]
 dev = ["pytest"]
+gpu = ["onnxruntime-gpu"]
 
 [project.urls]
 Homepage = "https://github.com/yakhyo/uniface"

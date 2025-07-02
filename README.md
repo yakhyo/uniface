@@ -19,14 +19,14 @@
 
 ## Features
 
-| Date       | Feature Description                                                                                             |
-| ---------- | --------------------------------------------------------------------------------------------------------------- |
-| Planned    | 🎭 **Age and Gender Detection**: Planned feature for predicting age and gender from facial images.              |
-| Planned    | 🧩 **Face Recognition**: Upcoming capability to identify and verify faces.                                      |
-| 2024-11-21 | 🔄 **Face Alignment**: Added precise face alignment for better downstream tasks.                                |
-| 2024-11-20 | ⚡ **High-Speed Face Detection**: ONNX model integration for faster and efficient face detection.               |
-| 2024-11-20 | 🎯 **Facial Landmark Localization**: Accurate detection of key facial features like eyes, nose, and mouth.      |
-| 2024-11-20 | 🛠 **API for Inference and Visualization**: Simplified API for seamless inference and visual results generation. |
+| Date       | Feature Description                                                                                                   |
+| ---------- | --------------------------------------------------------------------------------------------------------------------- |
+| Planned    | 🎭**Age and Gender Detection**: Planned feature for predicting age and gender from facial images.               |
+| Planned    | 🧩**Face Recognition**: Upcoming capability to identify and verify faces.                                       |
+| 2024-11-21 | 🔄**Face Alignment**: Added precise face alignment for better downstream tasks.                                 |
+| 2024-11-20 | ⚡**High-Speed Face Detection**: ONNX model integration for faster and efficient face detection.                |
+| 2024-11-20 | 🎯**Facial Landmark Localization**: Accurate detection of key facial features like eyes, nose, and mouth.       |
+| 2024-11-20 | 🛠**API for Inference and Visualization**: Simplified API for seamless inference and visual results generation. |
 
 ---
 
@@ -43,7 +43,7 @@ To work with the latest version of **UniFace**, which may not yet be released on
 ```bash
 git clone https://github.com/yakhyo/uniface.git
 cd uniface
-pip install .
+pip install -e .
 ```
 
 ---
@@ -179,13 +179,13 @@ cv2.destroyAllWindows()
 
 ### Evaluation results of available models on WiderFace
 
-| RetinaFace Models  | Easy       | Medium     | Hard       |
-| ------------------ | ---------- | ---------- | ---------- |
-| retinaface_mnet025 | 88.48%     | 87.02%     | 80.61%     |
-| retinaface_mnet050 | 89.42%     | 87.97%     | 82.40%     |
-| retinaface_mnet_v1 | 90.59%     | 89.14%     | 84.13%     |
-| retinaface_mnet_v2 | 91.70%     | 91.03%     | 86.60%     |
-| retinaface_r18     | 92.50%     | 91.02%     | 86.63%     |
+| RetinaFace Models  | Easy             | Medium           | Hard             |
+| ------------------ | ---------------- | ---------------- | ---------------- |
+| retinaface_mnet025 | 88.48%           | 87.02%           | 80.61%           |
+| retinaface_mnet050 | 89.42%           | 87.97%           | 82.40%           |
+| retinaface_mnet_v1 | 90.59%           | 89.14%           | 84.13%           |
+| retinaface_mnet_v2 | 91.70%           | 91.03%           | 86.60%           |
+| retinaface_r18     | 92.50%           | 91.02%           | 86.63%           |
 | retinaface_r34     | **94.16%** | **93.12%** | **88.90%** |
 
 <div align="center">
