@@ -5,218 +5,166 @@
 import cv2
 import torch
 import numpy as np
+from typing import Tuple, Union, List
 
-from typing import Tuple, Union
-
+from uniface.attribute.base import Attribute
 from uniface.log import Logger
 from uniface.constants import DDAMFNWeights
 from uniface.face_utils import face_alignment
 from uniface.model_store import verify_model_weights
 
+__all__ = ["Emotion"]
 
-class Emotion:
+
+class Emotion(Attribute):
     """
-    Emotion recognition using a TorchScript model.
+    Emotion recognition model using a TorchScript model.
 
-    Args:
-        model_weights (DDAMFNWeights): Pretrained model weights enum. Defaults to AFFECNET7.
-        input_size (Tuple[int, int]): Size of input images. Defaults to (112, 112).
-
-    Attributes:
-        emotion_labels (List[str]): List of emotion labels the model can predict.
-        device (torch.device): Inference device (CPU or CUDA).
-        model (torch.jit.ScriptModule): Loaded TorchScript model.
-
-    Raises:
-        ValueError: If model weights are invalid or not found.
-        RuntimeError: If model loading fails.
+    This class inherits from the base `Attribute` class and implements the
+    functionality for predicting one of several emotion categories from a face
+    image. It requires 5-point facial landmarks for alignment.
     """
 
     def __init__(
-            self,
-            model_weights: DDAMFNWeights = DDAMFNWeights.AFFECNET7,
-            input_size: Tuple[int, int] = (112, 112)
+        self,
+        model_weights: DDAMFNWeights = DDAMFNWeights.AFFECNET7,
+        input_size: Tuple[int, int] = (112, 112),
     ) -> None:
         """
-        Initialize the emotion detector with a TorchScript model
-        """
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.emotion_labels = [
-            "Neutral", "Happy", "Sad", "Surprise", "Fear", "Disgust", "Angry"
-        ]
+        Initializes the emotion recognition model.
 
-        # Add contempt for AFFECNET8 model
+        Args:
+            model_weights (DDAMFNWeights): The enum for the model weights to load.
+            input_size (Tuple[int, int]): The expected input size for the model.
+        """
+        Logger.info(f"Initializing Emotion with model={model_weights.name}")
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.input_size = input_size
+        self.model_path = verify_model_weights(model_weights)
+
+        # Define emotion labels based on the selected model
+        self.emotion_labels = ["Neutral", "Happy", "Sad", "Surprise", "Fear", "Disgust", "Angry"]
         if model_weights == DDAMFNWeights.AFFECNET8:
             self.emotion_labels.append("Contempt")
 
-        # Initialize image preprocessing parameters
-        self.input_size = input_size
-        self.normalization_std = [0.229, 0.224, 0.225]
-        self.normalization_mean = [0.485, 0.456, 0.406]
+        self._initialize_model()
 
-        Logger.info(
-            f"Initialized Emotion class with model={model_weights.name}, "
-            f"device={'cuda' if torch.cuda.is_available() else 'cpu'}, "
-            f"num_classes={len(self.emotion_labels)}, input_size={self.input_size}"
-        )
-
-        # Get path to model weights and initialize model
-        self.model_path = verify_model_weights(model_weights)
-        Logger.info(f"Verified model weights located at: {self.model_path}")
-        self._load_model()
-
-    def _load_model(self) -> None:
+    def _initialize_model(self) -> None:
         """
-        Loads and initializes a TorchScript model for emotion inference.
-
-        Raises:
-            RuntimeError: If loading the model fails.
+        Loads and initializes the TorchScript model for inference.
         """
         try:
             self.model = torch.jit.load(self.model_path, map_location=self.device)
             self.model.eval()
-            Logger.info(f"TorchScript model successfully loaded from: {self.model_path}")
-
-            # Warm-up with dummy input
+            # Warm-up with a dummy input for faster first inference
             dummy_input = torch.randn(1, 3, *self.input_size).to(self.device)
             with torch.no_grad():
-                _ = self.model(dummy_input)
-            Logger.info("Emotion model warmed up with dummy input.")
-
+                self.model(dummy_input)
+            Logger.info(f"Successfully initialized Emotion model on {self.device}")
         except Exception as e:
-            Logger.error(f"Failed to load TorchScript model from {self.model_path}: {e}")
-            raise RuntimeError(f"Model loading failed: {str(e)}")
+            Logger.error(f"Failed to load Emotion model from '{self.model_path}'", exc_info=True)
+            raise RuntimeError(f"Failed to initialize Emotion model: {e}")
 
-    def preprocess(self, image: np.ndarray) -> torch.Tensor:
+    def preprocess(self, image: np.ndarray, landmark: Union[List, np.ndarray]) -> torch.Tensor:
         """
-        Preprocess image for model inference: resize, normalize and convert to tensor.
+        Aligns the face using landmarks and preprocesses it into a tensor.
 
         Args:
-            image (np.ndarray): BGR image (H, W, 3)
+            image (np.ndarray): The full input image in BGR format.
+            landmark (Union[List, np.ndarray]): The 5-point facial landmarks.
 
         Returns:
-            torch.Tensor: Preprocessed image tensor of shape (1, 3, H, W)
+            torch.Tensor: The preprocessed image tensor ready for inference.
         """
-        # Convert BGR to RGB
-        rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        landmark = np.asarray(landmark)
+        
+        aligned_image, _ = face_alignment(image, landmark)
 
-        # Resize to target input size
+        # Convert BGR to RGB, resize, normalize, and convert to a CHW tensor
+        rgb_image = cv2.cvtColor(aligned_image, cv2.COLOR_BGR2RGB)
         resized_image = cv2.resize(rgb_image, self.input_size).astype(np.float32) / 255.0
-
-        # Normalize with mean and std
-        mean_array = np.array(self.normalization_mean, dtype=np.float32)
-        std_array = np.array(self.normalization_std, dtype=np.float32)
-        normalized_image = (resized_image - mean_array) / std_array
-
-        # Convert from HWC to CHW format
+        mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
+        std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
+        normalized_image = (resized_image - mean) / std
         transposed_image = normalized_image.transpose((2, 0, 1))
 
-        # Convert to torch tensor and add batch dimension
-        tensor = torch.from_numpy(transposed_image).unsqueeze(0).to(self.device)
-        return tensor
+        return torch.from_numpy(transposed_image).unsqueeze(0).to(self.device)
 
-    def predict(self, image: np.ndarray, landmark: np.ndarray) -> Tuple[Union[str, None], Union[float, None]]:
+    def postprocess(self, prediction: torch.Tensor) -> Tuple[str, float]:
         """
-        Predict the emotion from a face image.
-
-        Args:
-            image (np.ndarray): Input face image in BGR format.
-            landmark (np.ndarray): Facial five point landmark.
-
-        Returns:
-            Tuple[str, float]: (Predicted emotion label, Confidence score)
-            Returns (None, None) if prediction fails.
-
-        Raises:
-            ValueError: If the input is not a valid BGR image.
+        Processes the raw model output to get the emotion label and confidence score.
         """
-        # Validate input
-        if not isinstance(image, np.ndarray):
-            Logger.error("Input must be a NumPy ndarray.")
-            raise ValueError("Input must be a NumPy ndarray (BGR image).")
+        probabilities = torch.nn.functional.softmax(prediction, dim=1).squeeze().cpu().numpy()
+        pred_index = np.argmax(probabilities)
+        emotion_label = self.emotion_labels[pred_index]
+        confidence = float(probabilities[pred_index])
+        return emotion_label, confidence
 
-        if image.ndim != 3 or image.shape[2] != 3:
-            Logger.error(f"Invalid image shape: {image.shape}. Expected HxWx3 image.")
-            raise ValueError("Input image must have shape (H, W, 3).")
+    def predict(self, image: np.ndarray, landmark: Union[List, np.ndarray]) -> Tuple[str, float]:
+        """
+        Predicts the emotion from a single face specified by its landmarks.
+        """
+        input_tensor = self.preprocess(image, landmark)
+        with torch.no_grad():
+            output = self.model(input_tensor)
+            if isinstance(output, tuple):
+                output = output[0]
 
-        try:
-            # Align face using landmarks
-            aligned_image, _ = face_alignment(image, landmark)
-
-            # Preprocess and run inference
-            input_tensor = self.preprocess(aligned_image)
-
-            with torch.no_grad():
-                output = self.model(input_tensor)
-
-                # Handle case where model returns a tuple
-                if isinstance(output, tuple):
-                    output = output[0]
-
-                # Get probabilities and prediction
-                probabilities = torch.nn.functional.softmax(output, dim=1).squeeze(0).cpu().numpy()
-                predicted_index = int(np.argmax(probabilities))
-                confidence_score = round(float(probabilities[predicted_index]), 2)
-
-                return self.emotion_labels[predicted_index], confidence_score
-
-        except Exception as e:
-            Logger.error(f"Emotion inference failed: {e}")
-            return None, None
+        return self.postprocess(output)
 
 
-# TODO: For testing purposes only, remove later
-
-def main():
-    from uniface import RetinaFace
+# TODO: below is only for testing, remove it later
+if __name__ == "__main__":
+    from uniface.detection import create_detector
     from uniface.constants import RetinaFaceWeights
 
-    face_detector = RetinaFace(
-        model_name=RetinaFaceWeights.MNET_V2,
-        conf_thresh=0.5,
-        pre_nms_topk=5000,
-        nms_thresh=0.4,
-        post_nms_topk=750,
-        dynamic_size=False,
-        input_size=(640, 640)
-    )
-    emotion_detector = Emotion()
+    print("Initializing models for live inference...")
+    # 1. Initialize the face detector
+    # Using a smaller model for faster real-time performance
+    detector = create_detector(model_name=RetinaFaceWeights.MNET_V2)
 
+    # 2. Initialize the attribute predictor
+    emotion_predictor = Emotion()
+
+    # 3. Start webcam capture
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
-        print("Webcam not available.")
-        return
+        print("Error: Could not open webcam.")
+        exit()
 
-    print("Press 'q' to quit.")
+    print("Starting webcam feed. Press 'q' to quit.")
     while True:
         ret, frame = cap.read()
         if not ret:
-            print("Frame capture failed.")
+            print("Error: Failed to capture frame.")
             break
 
-        boxes, landmarks = face_detector.detect(frame)
+        # Detect faces in the current frame.
+        # This method returns a list of dictionaries for each detected face.
+        detections = detector.detect(frame)
 
-        for box, landmark in zip(boxes, landmarks):
-            x1, y1, x2, y2, score = box.astype(int)
-            face_crop = frame[y1:y2, x1:x2]
+        # For each detected face, predict the emotion
+        for detection in detections:
+            box = detection['bbox']
+            landmark = detection['landmarks']
+            x1, y1, x2, y2 = map(int, box)
 
-            if face_crop.size == 0:
-                continue
+            # Predict attributes using the landmark
+            emotion, confidence = emotion_predictor.predict(frame, landmark)
+            
+            # Prepare text and draw on the frame
+            label = f"{emotion} ({confidence:.2f})"
+            cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 0, 0), 2)
+            cv2.putText(frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 0, 0), 2)
 
-            emotion, preds = emotion_detector.predict(frame, landmark)
+        # Display the resulting frame
+        cv2.imshow("Emotion Inference (Press 'q' to quit)", frame)
 
-            txt = f"{emotion} ({preds:.2f})"
-            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-            cv2.putText(frame, txt, (x1, y1 - 10),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
-
-        cv2.imshow("Face + Emotion Detection", frame)
+        # Break the loop if 'q' is pressed
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
+    # Release resources
     cap.release()
     cv2.destroyAllWindows()
-
-
-if __name__ == "__main__":
-    main()
+    print("Inference stopped.")

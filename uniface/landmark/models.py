@@ -168,7 +168,7 @@ if __name__ == "__main__":
 
     # 1. Create the detector and landmarker using the new API
     face_detector = create_detector('retinaface')
-    landmarker = create_landmarker() # Uses the default '106' method
+    landmarker = create_landmarker() # Uses the default '2d106det' method
 
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
