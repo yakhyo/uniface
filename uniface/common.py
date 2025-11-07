@@ -82,7 +82,7 @@ def generate_anchors(image_size: Tuple[int, int] = (640, 640)) -> np.ndarray:
     return output
 
 
-def nms(dets: List[np.ndarray], threshold: float):
+def non_max_supression(dets: List[np.ndarray], threshold: float):
     """
     Apply Non-Maximum Suppression (NMS) to reduce overlapping bounding boxes based on a threshold.
 

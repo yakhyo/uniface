@@ -1,6 +1,6 @@
 [project]
 name = "uniface"
-version = "0.1.8"
+version = "0.1.9"
 description = "UniFace: A Comprehensive Library for Face Detection, Recognition, Landmark Analysis, Age, and Gender Detection"
 readme = "README.md"
 license = { text = "MIT" }
@@ -8,19 +8,20 @@ authors = [
     { name = "Yakhyokhuja Valikhujaev", email = "yakhyo9696@gmail.com" }
 ]
 dependencies = [
-    "numpy",
-    "opencv-python",
-    "onnx",
-    "onnxruntime",
-    "scikit-image",
-    "requests",
-    "tqdm"
+    "numpy>=1.21.0",
+    "opencv-python>=4.5.0",
+    "onnx>=1.12.0",
+    "onnxruntime>=1.16.0",
+    "scikit-image>=0.19.0",
+    "requests>=2.28.0",
+    "tqdm>=4.64.0"
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 
 [project.optional-dependencies]
-dev = ["pytest"]
-gpu = ["onnxruntime-gpu"]
+dev = ["pytest>=7.0.0"]
+gpu = ["onnxruntime-gpu>=1.16.0"]
+silicon = ["onnxruntime-silicon>=1.16.0"]
 
 [project.urls]
 Homepage = "https://github.com/yakhyo/uniface"
@@ -31,7 +32,7 @@ requires = ["setuptools>=64", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["uniface"]
+packages = { find = {} }
 
 [tool.setuptools.package-data]
 "uniface" = ["*.txt", "*.md"]

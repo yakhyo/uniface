@@ -13,22 +13,50 @@
 
 __license__ = "MIT"
 __author__ = "Yakhyokhuja Valikhujaev"
-__version__ = "0.1.8"
+__version__ = "0.1.9"
 
 
-from uniface.retinaface import RetinaFace
-from uniface.log import Logger
+from uniface.face_utils import compute_similarity, face_alignment
+from uniface.log import Logger, enable_logging
 from uniface.model_store import verify_model_weights
-from uniface.alignment import face_alignment
 from uniface.visualization import draw_detections
 
+from .attribute import AgeGender
+try:
+    from .attribute import Emotion
+except ImportError:
+    Emotion = None  # PyTorch not installed
+from .detection import SCRFD, RetinaFace, create_detector, detect_faces, list_available_detectors
+from .landmark import Landmark106, create_landmarker
+from .recognition import ArcFace, MobileFace, SphereFace, create_recognizer
+
 __all__ = [
-    "__version__",
     "__author__",
     "__license__",
+    "__version__",
+    # Factory functions
+    "create_detector",
+    "create_landmarker",
+    "create_recognizer",
+    "detect_faces",
+    "list_available_detectors",
+    # Detection models
     "RetinaFace",
-    "Logger",
-    "verify_model_weights",
+    "SCRFD",
+    # Recognition models
+    "ArcFace",
+    "MobileFace",
+    "SphereFace",
+    # Landmark models
+    "Landmark106",
+    # Attribute models
+    "AgeGender",
+    "Emotion",
+    # Utilities
+    "compute_similarity",
     "draw_detections",
-    "face_alignment"
+    "face_alignment",
+    "verify_model_weights",
+    "Logger",
+    "enable_logging",
 ]

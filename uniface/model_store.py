@@ -5,55 +5,64 @@
 import os
 import hashlib
 import requests
+from tqdm import tqdm
 
 from uniface.log import Logger
 import uniface.constants as const
 
 
+__all__ = ['verify_model_weights']
+
+
 def verify_model_weights(model_name: str, root: str = '~/.uniface/models') -> str:
     """
-    Ensures model weights are available by downloading if missing and verifying integrity with a SHA-256 hash.
+    Ensure model weights are present, downloading and verifying them using SHA-256 if necessary.
 
-    Checks if the specified model weights file exists in `root`. If missing, downloads from a predefined URL.
-    The file is then verified using its SHA-256 hash. If verification fails, the corrupted file is deleted,
+    Given a model identifier from an Enum class (e.g., `RetinaFaceWeights.MNET_V2`), this function checks if
+    the corresponding `.onnx` weight file exists locally. If not, it downloads the file from a predefined URL.
+    After download, the file’s integrity is verified using a SHA-256 hash. If verification fails, the file is deleted
     and an error is raised.
 
     Args:
-        model_name (str): Name of the model weights to verify or download.
-        root (str, optional): Directory to store the model weights. Defaults to '~/.uniface/models'.
+        model_name (Enum): Model weight identifier (e.g., `RetinaFaceWeights.MNET_V2`, `ArcFaceWeights.RESNET`, etc.).
+        root (str, optional): Directory to store or locate the model weights. Defaults to '~/.uniface/models'.
 
     Returns:
-        str: Path to the verified model weights file.
+        str: Absolute path to the verified model weights file.
 
     Raises:
-        ValueError: If the model is not found or if verification fails.
+        ValueError: If the model is unknown or SHA-256 verification fails.
         ConnectionError: If downloading the file fails.
 
     Examples:
-        >>> # Download and verify 'retinaface_mnet025' weights
-        >>> verify_model_weights('retinaface_mnet025')
-        '/home/user/.uniface/models/retinaface_mnet025.onnx'
+        >>> from uniface.models import RetinaFaceWeights, verify_model_weights
+        >>> verify_model_weights(RetinaFaceWeights.MNET_V2)
+        '/home/user/.uniface/models/retinaface_mnet_v2.onnx'
 
-        >>> # Use a custom directory
-        >>> verify_model_weights('retinaface_r34', root='/custom/dir')
+        >>> verify_model_weights(RetinaFaceWeights.RESNET34, root='/custom/dir')
         '/custom/dir/retinaface_r34.onnx'
     """
 
     root = os.path.expanduser(root)
     os.makedirs(root, exist_ok=True)
-    model_path = os.path.join(root, f'{model_name}.onnx')
+
+    # Keep model_name as enum for dictionary lookup
+    url = const.MODEL_URLS.get(model_name)
+    if not url:
+        Logger.error(f"No URL found for model '{model_name}'")
+        raise ValueError(f"No URL found for model '{model_name}'")
+
+    file_ext = os.path.splitext(url)[1]
+    model_path = os.path.normpath(os.path.join(root, f'{model_name.value}{file_ext}'))
 
     if not os.path.exists(model_path):
-        url = const.MODEL_URLS.get(model_name)
-        if not url:
-            Logger.error(f"No URL found for model '{model_name}'")
-            raise ValueError(f"No URL found for model '{model_name}'")
-
         Logger.info(f"Downloading model '{model_name}' from {url}")
-        download_file(url, model_path)
-        Logger.info(f"Successfully downloaded '{model_name}' to {os.path.normpath(model_path)}")
-    else:
-        Logger.info(f"Model '{model_name}' already exists at {os.path.normpath(model_path)}")
+        try:
+            download_file(url, model_path)
+            Logger.info(f"Successfully downloaded '{model_name}' to {model_path}")
+        except Exception as e:
+            Logger.error(f"Failed to download model '{model_name}': {e}")
+            raise ConnectionError(f"Download failed for '{model_name}'")
 
     expected_hash = const.MODEL_SHA256.get(model_name)
     if expected_hash and not verify_file_hash(model_path, expected_hash):
@@ -69,10 +78,16 @@ def download_file(url: str, dest_path: str) -> None:
     try:
         response = requests.get(url, stream=True)
         response.raise_for_status()
-        with open(dest_path, "wb") as file:
+        with open(dest_path, "wb") as file, tqdm(
+            desc=f"Downloading {dest_path}",
+            unit='B',
+            unit_scale=True,
+            unit_divisor=1024
+        ) as progress:
             for chunk in response.iter_content(chunk_size=const.CHUNK_SIZE):
                 if chunk:
                     file.write(chunk)
+                    progress.update(len(chunk))
     except requests.RequestException as e:
         raise ConnectionError(f"Failed to download file from {url}. Error: {e}")
 
