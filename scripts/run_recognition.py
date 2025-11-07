@@ -60,8 +60,13 @@ def main():
         choices=['arcface', 'mobileface', 'sphereface'],
         help="Face recognition method to use."
     )
+    parser.add_argument("--verbose", action="store_true", help="Enable verbose logging")
 
     args = parser.parse_args()
+
+    if args.verbose:
+        from uniface import enable_logging
+        enable_logging()
 
     print(f"Initializing detector: {args.detector}")
     detector = create_detector(method=args.detector)

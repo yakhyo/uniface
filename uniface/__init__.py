@@ -17,7 +17,7 @@ __version__ = "0.1.9"
 
 
 from uniface.face_utils import compute_similarity, face_alignment
-from uniface.log import Logger
+from uniface.log import Logger, enable_logging
 from uniface.model_store import verify_model_weights
 from uniface.visualization import draw_detections
 
@@ -54,4 +54,5 @@ __all__ = [
     "face_alignment",
     "verify_model_weights",
     "Logger",
+    "enable_logging",
 ]

@@ -26,7 +26,7 @@ def run_inference(detector, image_path: str, vis_threshold: float = 0.6, save_di
 
     # 1. Get the list of face dictionaries from the detector
     faces = detector.detect(image)
-    
+
     if faces:
         # 2. Unpack the data into separate lists
         bboxes = [face['bbox'] for face in faces]
@@ -56,8 +56,13 @@ def main():
     parser.add_argument("--threshold", type=float, default=0.6, help="Visualization confidence threshold")
     parser.add_argument("--iterations", type=int, default=1, help="Number of inference runs for benchmarking")
     parser.add_argument("--save_dir", type=str, default="outputs", help="Directory to save output images")
+    parser.add_argument("--verbose", action="store_true", help="Enable verbose logging")
 
     args = parser.parse_args()
+
+    if args.verbose:
+        from uniface import enable_logging
+        enable_logging()
 
     print(f"Initializing detector: {args.method}")
     detector = create_detector(method=args.method)

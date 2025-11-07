@@ -144,7 +144,7 @@ class RetinaFace(BaseDetector):
             metric (Literal["default", "max"]): Metric for ranking detections when `max_num` is limited.
                 - "default": Prioritize detections closer to the image center.
                 - "max": Prioritize detections with larger bounding box areas.
-            center_weight (float): Weight for penalizing detections farther from the image center 
+            center_weight (float): Weight for penalizing detections farther from the image center
                 when using the "default" metric. Defaults to 2.0.
 
         Returns:

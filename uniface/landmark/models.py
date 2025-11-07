@@ -104,7 +104,7 @@ class Landmark106(BaseLandmarker):
         width, height = bbox[2] - bbox[0], bbox[3] - bbox[1]
         center = ((bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2)
         scale = self.input_size[0] / (max(width, height) * 1.5)
-        
+
         aligned_face, transform_matrix = bbox_center_alignment(image, center, self.input_size[0], scale, 0.0)
 
         face_blob = cv2.dnn.blobFromImage(
@@ -130,7 +130,7 @@ class Landmark106(BaseLandmarker):
         landmarks = predictions.reshape((-1, 2))
         landmarks[:, 0:2] += 1
         landmarks[:, 0:2] *= (self.input_size[0] // 2)
-        
+
         inverse_matrix = cv2.invertAffineTransform(transform_matrix)
         landmarks = transform_points_2d(landmarks, inverse_matrix)
         return landmarks
@@ -193,7 +193,7 @@ if __name__ == "__main__":
         for face in faces:
             # Extract the bounding box
             bbox = face['bbox']
-            
+
             # 4. Get landmarks for the current face using its bounding box
             landmarks = landmarker.get_landmarks(frame, bbox)
 

@@ -51,7 +51,7 @@ def verify_model_weights(model_name: str, root: str = '~/.uniface/models') -> st
     if not url:
         Logger.error(f"No URL found for model '{model_name}'")
         raise ValueError(f"No URL found for model '{model_name}'")
-    
+
     file_ext = os.path.splitext(url)[1]
     model_path = os.path.normpath(os.path.join(root, f'{model_name.value}{file_ext}'))
 
