@@ -32,7 +32,7 @@ requires = ["setuptools>=64", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["uniface", "uniface.attribute", "uniface.detection", "uniface.landmark", "uniface.recognition"]
+packages = { find = {} }
 
 [tool.setuptools.package-data]
 "uniface" = ["*.txt", "*.md"]
