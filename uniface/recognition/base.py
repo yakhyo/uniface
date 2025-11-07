@@ -5,12 +5,12 @@
 from abc import ABC, abstractmethod
 import cv2
 import numpy as np
-import onnxruntime as ort
 from dataclasses import dataclass
 from typing import Tuple, Union, List
 
 from uniface.log import Logger
 from uniface.face_utils import face_alignment
+from uniface.onnx_utils import create_onnx_session
 
 
 @dataclass
@@ -53,10 +53,7 @@ class BaseRecognizer(ABC):
         """
         try:
             # Initialize model session with available providers
-            self.session = ort.InferenceSession(
-                self.model_path,
-                providers=["CUDAExecutionProvider", "CPUExecutionProvider"]
-            )
+            self.session = create_onnx_session(self.model_path)
 
             # Extract input configuration
             input_cfg = self.session.get_inputs()[0]

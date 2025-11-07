@@ -46,14 +46,14 @@ def verify_model_weights(model_name: str, root: str = '~/.uniface/models') -> st
     root = os.path.expanduser(root)
     os.makedirs(root, exist_ok=True)
 
-    model_name = model_name.value
+    # Keep model_name as enum for dictionary lookup
     url = const.MODEL_URLS.get(model_name)
     if not url:
         Logger.error(f"No URL found for model '{model_name}'")
         raise ValueError(f"No URL found for model '{model_name}'")
     
     file_ext = os.path.splitext(url)[1]
-    model_path = os.path.normpath(os.path.join(root, f'{model_name}{file_ext}'))
+    model_path = os.path.normpath(os.path.join(root, f'{model_name.value}{file_ext}'))
 
     if not os.path.exists(model_path):
         Logger.info(f"Downloading model '{model_name}' from {url}")

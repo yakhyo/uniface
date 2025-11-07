@@ -6,9 +6,6 @@ import numpy as np
 from uniface.detection import create_detector
 from uniface.recognition import create_recognizer
 
-# Import enums for argument choices
-from uniface.constants import RetinaFaceWeights, ArcFaceWeights, MobileFaceWeights, SphereFaceWeights
-
 
 def run_inference(detector, recognizer, image_path: str):
     """
@@ -67,7 +64,7 @@ def main():
     args = parser.parse_args()
 
     print(f"Initializing detector: {args.detector}")
-    detector = create_detector(method=args.detector, model_name=RetinaFaceWeights.MNET_V2)
+    detector = create_detector(method=args.detector)
 
     print(f"Initializing recognizer: {args.recognizer}")
     recognizer = create_recognizer(method=args.recognizer)

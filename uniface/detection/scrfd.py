@@ -2,20 +2,20 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
+from typing import Any, Dict, List, Literal, Tuple
+
 import cv2
 import numpy as np
-import onnxruntime as ort
 
-from typing import Tuple, List, Literal, Dict, Any
-
-from uniface.log import Logger
 from uniface.constants import SCRFDWeights
+from uniface.log import Logger
 from uniface.model_store import verify_model_weights
+from uniface.onnx_utils import create_onnx_session
 
 from .base import BaseDetector
-from .utils import non_max_supression, distance2bbox, distance2kps, resize_image
+from .utils import distance2bbox, distance2kps, non_max_supression, resize_image
 
-__all__ = ['SCRFD']
+__all__ = ["SCRFD"]
 
 
 class SCRFD(BaseDetector):
@@ -27,7 +27,7 @@ class SCRFD(BaseDetector):
 
     Args:
         **kwargs: Keyword arguments passed to BaseDetector and SCRFD. Supported keys include:
-            model_name (SCRFDWeights, optional): Predefined model enum (e.g., `SCRFD_10G_KPS`). 
+            model_name (SCRFDWeights, optional): Predefined model enum (e.g., `SCRFD_10G_KPS`).
                 Specifies the SCRFD variant to load. Defaults to SCRFD_10G_KPS.
             conf_thresh (float, optional): Confidence threshold for filtering detections. Defaults to 0.5.
             nms_thresh (float, optional): Non-Maximum Suppression threshold. Defaults to 0.4.
@@ -52,10 +52,10 @@ class SCRFD(BaseDetector):
         super().__init__(**kwargs)
         self._supports_landmarks = True  # SCRFD supports landmarks
 
-        model_name = kwargs.get('model_name', SCRFDWeights.SCRFD_10G_KPS)
-        conf_thresh = kwargs.get('conf_thresh', 0.5)
-        nms_thresh = kwargs.get('nms_thresh', 0.4)
-        input_size = kwargs.get('input_size', (640, 640))
+        model_name = kwargs.get("model_name", SCRFDWeights.SCRFD_10G_KPS)
+        conf_thresh = kwargs.get("conf_thresh", 0.5)
+        nms_thresh = kwargs.get("nms_thresh", 0.4)
+        input_size = kwargs.get("input_size", (640, 640))
 
         self.conf_thresh = conf_thresh
         self.nms_thresh = nms_thresh
@@ -91,10 +91,7 @@ class SCRFD(BaseDetector):
             RuntimeError: If the model fails to load, logs an error and raises an exception.
         """
         try:
-            self.session = ort.InferenceSession(
-                model_path,
-                providers=["CUDAExecutionProvider", "CPUExecutionProvider"]
-            )
+            self.session = create_onnx_session(model_path)
             self.input_names = self.session.get_inputs()[0].name
             self.output_names = [x.name for x in self.session.get_outputs()]
             Logger.info(f"Successfully initialized the model from {model_path}")
@@ -140,7 +137,7 @@ class SCRFD(BaseDetector):
         for idx, stride in enumerate(self._feat_stride_fpn):
             scores = outputs[idx]
             bbox_preds = outputs[fmc + idx] * stride
-            kps_preds = outputs[2*fmc + idx] * stride
+            kps_preds = outputs[2 * fmc + idx] * stride
 
             # Generate anchors
             fm_height = image_size[0] // stride
@@ -176,11 +173,7 @@ class SCRFD(BaseDetector):
         return scores_list, bboxes_list, kpss_list
 
     def detect(
-        self,
-        image: np.ndarray,
-        max_num: int = 0,
-        metric: Literal["default", "max"] = "max",
-        center_weight: float = 2
+        self, image: np.ndarray, max_num: int = 0, metric: Literal["default", "max"] = "max", center_weight: float = 2
     ) -> List[Dict[str, Any]]:
         """
         Perform face detection on an input image and return bounding boxes and facial landmarks.
@@ -191,7 +184,7 @@ class SCRFD(BaseDetector):
             metric (Literal["default", "max"]): Metric for ranking detections when `max_num` is limited.
                 - "default": Prioritize detections closer to the image center.
                 - "max": Prioritize detections with larger bounding box areas.
-            center_weight (float): Weight for penalizing detections farther from the image center 
+            center_weight (float): Weight for penalizing detections farther from the image center
                 when using the "default" metric. Defaults to 2.0.
 
         Returns:
@@ -211,6 +204,10 @@ class SCRFD(BaseDetector):
         outputs = self.inference(image_tensor)
 
         scores_list, bboxes_list, kpss_list = self.postprocess(outputs, image_size=image.shape[:2])
+
+        # Handle case when no faces are detected
+        if not scores_list:
+            return []
 
         scores = np.vstack(scores_list)
         scores_ravel = scores.ravel()
@@ -256,9 +253,9 @@ class SCRFD(BaseDetector):
         faces = []
         for i in range(detections.shape[0]):
             face_dict = {
-                'bbox': detections[i, :4].astype(float).tolist(),
-                'confidence': detections[i, 4].item(),
-                'landmarks': landmarks[i].astype(float).tolist()
+                "bbox": detections[i, :4].astype(float).tolist(),
+                "confidence": detections[i, 4].item(),
+                "landmarks": landmarks[i].astype(float).tolist(),
             }
             faces.append(face_dict)
 
@@ -273,7 +270,7 @@ def draw_bbox(frame, bbox, score, color=(0, 255, 0), thickness=2):
 
 
 def draw_keypoints(frame, points, color=(0, 0, 255), radius=2):
-    for (x, y) in points.astype(np.int32):
+    for x, y in points.astype(np.int32):
         cv2.circle(frame, (int(x), int(y)), radius, color, -1)
 
 
@@ -300,9 +297,9 @@ if __name__ == "__main__":
         # Process each detected face
         for face in faces:
             # Extract bbox and landmarks from dictionary
-            bbox = face['bbox']  # [x1, y1, x2, y2]
-            landmarks = face['landmarks']  # [[x1, y1], [x2, y2], ...]
-            confidence = face['confidence']
+            bbox = face["bbox"]  # [x1, y1, x2, y2]
+            landmarks = face["landmarks"]  # [[x1, y1], [x2, y2], ...]
+            confidence = face["confidence"]
 
             # Pass bbox and confidence separately
             draw_bbox(frame, bbox, confidence)
@@ -314,8 +311,7 @@ if __name__ == "__main__":
                 draw_keypoints(frame, points)
 
         # Display face count
-        cv2.putText(frame, f"Faces: {len(faces)}", (10, 30),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+        cv2.putText(frame, f"Faces: {len(faces)}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
 
         cv2.imshow("FaceDetection", frame)
         if cv2.waitKey(1) & 0xFF == ord("q"):

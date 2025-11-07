@@ -16,11 +16,11 @@ def main():
     if args.model:
         weight = RetinaFaceWeights[args.model]
         print(f"📥 Downloading model: {weight.value}")
-        verify_model_weights(weight.value)
+        verify_model_weights(weight)  # Pass enum, not string
     else:
         print("📥 Downloading all models...")
         for weight in RetinaFaceWeights:
-            verify_model_weights(weight.value)
+            verify_model_weights(weight)  # Pass enum, not string
 
     print("✅ All requested weights are ready and verified.")
 

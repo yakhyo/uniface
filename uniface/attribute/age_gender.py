@@ -2,16 +2,17 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
+from typing import List, Tuple, Union
+
 import cv2
 import numpy as np
-import onnxruntime as ort
-from typing import Tuple, Union, List
 
 from uniface.attribute.base import Attribute
-from uniface.log import Logger
 from uniface.constants import AgeGenderWeights
 from uniface.face_utils import bbox_center_alignment
+from uniface.log import Logger
 from uniface.model_store import verify_model_weights
+from uniface.onnx_utils import create_onnx_session
 
 __all__ = ["AgeGender"]
 
@@ -42,10 +43,7 @@ class AgeGender(Attribute):
         Initializes the ONNX model and creates an inference session.
         """
         try:
-            self.session = ort.InferenceSession(
-                self.model_path,
-                providers=["CUDAExecutionProvider", "CPUExecutionProvider"]
-            )
+            self.session = create_onnx_session(self.model_path)
             # Get model input details from the loaded model
             input_meta = self.session.get_inputs()[0]
             self.input_name = input_meta.name
@@ -75,16 +73,10 @@ class AgeGender(Attribute):
 
         # **Rotation parameter restored here**
         rotation = 0.0
-        aligned_face, _ = bbox_center_alignment(
-            image, center, self.input_size[1], scale, rotation
-        )
+        aligned_face, _ = bbox_center_alignment(image, center, self.input_size[1], scale, rotation)
 
         blob = cv2.dnn.blobFromImage(
-            aligned_face,
-            scalefactor=1.0,
-            size=self.input_size[::-1],
-            mean=(0.0, 0.0, 0.0),
-            swapRB=True
+            aligned_face, scalefactor=1.0, size=self.input_size[::-1], mean=(0.0, 0.0, 0.0), swapRB=True
         )
         return blob
 
@@ -127,8 +119,8 @@ class AgeGender(Attribute):
 if __name__ == "__main__":
     # To run this script, you need to have uniface.detection installed
     # or available in your path.
-    from uniface.detection import create_detector
     from uniface.constants import RetinaFaceWeights
+    from uniface.detection import create_detector
 
     print("Initializing models for live inference...")
     # 1. Initialize the face detector
@@ -156,7 +148,7 @@ if __name__ == "__main__":
 
         # For each detected face, predict age and gender
         for detection in detections:
-            box = detection['bbox']
+            box = detection["bbox"]
             x1, y1, x2, y2 = map(int, box)
 
             # Predict attributes
@@ -171,7 +163,7 @@ if __name__ == "__main__":
         cv2.imshow("Age and Gender Inference (Press 'q' to quit)", frame)
 
         # Break the loop if 'q' is pressed
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        if cv2.waitKey(1) & 0xFF == ord("q"):
             break
 
     # Release resources

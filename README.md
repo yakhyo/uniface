@@ -1,44 +1,80 @@
 # UniFace: All-in-One Face Analysis Library
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
 [![PyPI Version](https://img.shields.io/pypi/v/uniface.svg)](https://pypi.org/project/uniface/)
 [![Build Status](https://github.com/yakhyo/uniface/actions/workflows/build.yml/badge.svg)](https://github.com/yakhyo/uniface/actions)
-[![GitHub Repository](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/yakhyo/uniface)
 [![Downloads](https://pepy.tech/badge/uniface)](https://pepy.tech/project/uniface)
-[![Code Style: PEP8](https://img.shields.io/badge/code%20style-PEP8-green.svg)](https://www.python.org/dev/peps/pep-0008/)
-[![GitHub Release Downloads](https://img.shields.io/github/downloads/yakhyo/uniface/total.svg?label=Model%20Downloads)](https://github.com/yakhyo/uniface/releases)
 
 <div align="center">
     <img src=".github/logos/logo_web.webp" width=75%>
 </div>
 
-**uniface** is a lightweight face detection library designed for high-performance face localization, landmark detection and face alignment. The library supports ONNX models and provides utilities for bounding box visualization and landmark plotting. To train RetinaFace model, see https://github.com/yakhyo/retinaface-pytorch.
+**UniFace** is a lightweight, production-ready face analysis library built on ONNX Runtime. It provides high-performance face detection, recognition, landmark detection, and attribute analysis with hardware acceleration support across platforms.
 
 ---
 
 ## Features
 
-| Date       | Feature Description                                                                                                   |
-| ---------- | --------------------------------------------------------------------------------------------------------------------- |
-| Planned    | 🎭**Age and Gender Detection**: Planned feature for predicting age and gender from facial images.               |
-| Planned    | 🧩**Face Recognition**: Upcoming capability to identify and verify faces.                                       |
-| 2024-11-21 | 🔄**Face Alignment**: Added precise face alignment for better downstream tasks.                                 |
-| 2024-11-20 | ⚡**High-Speed Face Detection**: ONNX model integration for faster and efficient face detection.                |
-| 2024-11-20 | 🎯**Facial Landmark Localization**: Accurate detection of key facial features like eyes, nose, and mouth.       |
-| 2024-11-20 | 🛠**API for Inference and Visualization**: Simplified API for seamless inference and visual results generation. |
+- **High-Speed Face Detection**: ONNX-optimized RetinaFace and SCRFD models
+- **Facial Landmark Detection**: Accurate 106-point landmark localization
+- **Face Recognition**: ArcFace, MobileFace, and SphereFace embeddings
+- **Attribute Analysis**: Age, gender, and emotion detection
+- **Face Alignment**: Precise alignment for downstream tasks
+- **Hardware Acceleration**: CoreML (Apple Silicon), CUDA (NVIDIA), CPU fallback
+- **Simple API**: Intuitive factory functions and clean interfaces
+- **Production-Ready**: Type hints, comprehensive logging, PEP8 compliant
 
 ---
 
 ## Installation
 
-The easiest way to install **UniFace** is via [PyPI](https://pypi.org/project/uniface/). This will automatically install the library along with its prerequisites.
+### Quick Install (All Platforms)
 
 ```bash
 pip install uniface
 ```
 
-To work with the latest version of **UniFace**, which may not yet be released on PyPI, you can install it directly from the repository:
+### Platform-Specific Installation
+
+#### macOS (Apple Silicon - M1/M2/M3/M4)
+
+For optimal performance with **CoreML acceleration** (3-5x faster):
+
+```bash
+# Standard installation (CPU only)
+pip install uniface
+
+# With CoreML acceleration (recommended for M-series chips)
+pip install uniface[silicon]
+```
+
+**Verify CoreML is available:**
+```python
+import onnxruntime as ort
+print(ort.get_available_providers())
+# Should show: ['CoreMLExecutionProvider', 'CPUExecutionProvider']
+```
+
+#### Linux/Windows with NVIDIA GPU
+
+```bash
+# With CUDA acceleration
+pip install uniface[gpu]
+```
+
+**Requirements:**
+- CUDA 11.x or 12.x
+- cuDNN 8.x
+- See [ONNX Runtime GPU requirements](https://onnxruntime.ai/docs/execution-providers/CUDA-ExecutionProvider.html)
+
+#### CPU-Only (All Platforms)
+
+```bash
+pip install uniface
+```
+
+### Install from Source
 
 ```bash
 git clone https://github.com/yakhyo/uniface.git
@@ -50,254 +86,362 @@ pip install -e .
 
 ## Quick Start
 
-To get started with face detection using **UniFace**, check out the [example notebook](examples/face_detection.ipynb).
-It demonstrates how to initialize the model, run inference, and visualize the results.
+### Face Detection
+
+```python
+import cv2
+from uniface import RetinaFace
+
+# Initialize detector
+detector = RetinaFace()
+
+# Load image
+image = cv2.imread("image.jpg")
+
+# Detect faces
+faces = detector.detect(image)
+
+# Process results
+for face in faces:
+    bbox = face['bbox']  # [x1, y1, x2, y2]
+    confidence = face['confidence']
+    landmarks = face['landmarks']  # 5-point landmarks
+    print(f"Face detected with confidence: {confidence:.2f}")
+```
+
+### Face Recognition
+
+```python
+from uniface import ArcFace, RetinaFace
+from uniface import compute_similarity
+
+# Initialize models
+detector = RetinaFace()
+recognizer = ArcFace()
+
+# Detect and extract embeddings
+faces1 = detector.detect(image1)
+faces2 = detector.detect(image2)
+
+embedding1 = recognizer.get_normalized_embedding(image1, faces1[0]['landmarks'])
+embedding2 = recognizer.get_normalized_embedding(image2, faces2[0]['landmarks'])
+
+# Compare faces
+similarity = compute_similarity(embedding1, embedding2)
+print(f"Similarity: {similarity:.4f}")
+```
+
+### Facial Landmarks
+
+```python
+from uniface import RetinaFace, Landmark106
+
+detector = RetinaFace()
+landmarker = Landmark106()
+
+faces = detector.detect(image)
+landmarks = landmarker.get_landmarks(image, faces[0]['bbox'])
+# Returns 106 (x, y) landmark points
+```
+
+### Age & Gender Detection
+
+```python
+from uniface import RetinaFace, AgeGender
+
+detector = RetinaFace()
+age_gender = AgeGender()
+
+faces = detector.detect(image)
+gender, age = age_gender.predict(image, faces[0]['bbox'])
+print(f"{gender}, {age} years old")
+```
 
 ---
 
-## Examples
+## Documentation
 
-<div align="center">
-    <img src="assets/alignment_result.png">
-</div>
+- [**QUICKSTART.md**](QUICKSTART.md) - 5-minute getting started guide
+- [**MODELS.md**](MODELS.md) - Model zoo, benchmarks, and selection guide
+- [**Examples**](examples/) - Jupyter notebooks with detailed examples
 
-Explore the following example notebooks to learn how to use **UniFace** effectively:
+---
 
-- [Face Detection](examples/face_detection.ipynb): Demonstrates how to perform face detection, draw bounding boxes, and landmarks on an image.
-- [Face Alignment](examples/face_alignment.ipynb): Shows how to align faces using detected landmarks.
-- [Age and Gender Detection](examples/age_gender.ipynb): Example for detecting age and gender from faces. (underdevelopment)
+## API Overview
 
-### 🚀 Initialize the RetinaFace Model
-
-To use the RetinaFace model for face detection, initialize it with either custom or default configuration parameters.
-
-#### Full Initialization (with custom parameters)
+### Factory Functions (Recommended)
 
 ```python
-from uniface import RetinaFace
+from uniface import create_detector, create_recognizer, create_landmarker
+
+# Create detector with default settings
+detector = create_detector('retinaface')
+
+# Create with custom config
+detector = create_detector(
+    'scrfd',
+    model_name='scrfd_10g_kps',
+    conf_thresh=0.8,
+    input_size=(640, 640)
+)
+
+# Recognition and landmarks
+recognizer = create_recognizer('arcface')
+landmarker = create_landmarker('2d106det')
+```
+
+### Direct Model Instantiation
+
+```python
+from uniface import RetinaFace, SCRFD, ArcFace, MobileFace
 from uniface.constants import RetinaFaceWeights
 
-# Initialize RetinaFace with custom configuration
-uniface_inference = RetinaFace(
-    model_name=RetinaFaceWeights.MNET_V2,  # Model name from enum
-    conf_thresh=0.5,                       # Confidence threshold for detections
-    pre_nms_topk=5000,                     # Number of top detections before NMS
-    nms_thresh=0.4,                        # IoU threshold for NMS
-    post_nms_topk=750,                     # Number of top detections after NMS
-    dynamic_size=False,                    # Whether to allow arbitrary input sizes
-    input_size=(640, 640)                  # Input image size (HxW)
+# Detection
+detector = RetinaFace(
+    model_name=RetinaFaceWeights.MNET_V2,
+    conf_thresh=0.5,
+    nms_thresh=0.4
 )
+
+# Recognition
+recognizer = ArcFace()  # Uses default weights
+recognizer = MobileFace()  # Lightweight alternative
 ```
 
-#### Minimal Initialization (uses default parameters)
+### High-Level Detection API
 
 ```python
-from uniface import RetinaFace
+from uniface import detect_faces
 
-# Initialize with default settings
-uniface_inference = RetinaFace()
-```
-
-**Default Parameters:**
-
-```python
-model_name = RetinaFaceWeights.MNET_V2
-conf_thresh = 0.5
-pre_nms_topk = 5000
-nms_thresh = 0.4
-post_nms_topk = 750
-dynamic_size = False
-input_size = (640, 640)
-```
-
-### Run Inference
-
-Inference on image:
-
-```python
-import cv2
-from uniface.visualization import draw_detections
-
-# Load an image
-image_path = "assets/test.jpg"
-original_image = cv2.imread(image_path)
-
-# Perform inference
-boxes, landmarks = uniface_inference.detect(original_image)
-# boxes: [x_min, y_min, x_max, y_max, confidence]
-
-# Visualize results
-draw_detections(original_image, (boxes, landmarks), vis_threshold=0.6)
-
-# Save the output image
-output_path = "output.jpg"
-cv2.imwrite(output_path, original_image)
-print(f"Saved output image to {output_path}")
-```
-
-Inference on video:
-
-```python
-import cv2
-from uniface.visualization import draw_detections
-
-# Initialize the webcam
-cap = cv2.VideoCapture(0)
-
-if not cap.isOpened():
-    print("Error: Unable to access the webcam.")
-    exit()
-
-while True:
-    # Capture a frame from the webcam
-    ret, frame = cap.read()
-    if not ret:
-        print("Error: Failed to read frame.")
-        break
-
-    # Perform inference
-    boxes, landmarks = uniface_inference.detect(frame)
-    # 'boxes' contains bounding box coordinates and confidence scores:
-    # Format: [x_min, y_min, x_max, y_max, confidence]
-
-    # Draw detections on the frame
-    draw_detections(frame, (boxes, landmarks), vis_threshold=0.6)
-
-    # Display the output
-    cv2.imshow("Webcam Inference", frame)
-
-    # Exit if 'q' is pressed
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-
-# Release the webcam and close all OpenCV windows
-cap.release()
-cv2.destroyAllWindows()
+# One-line face detection
+faces = detect_faces(image, method='retinaface', conf_thresh=0.8)
 ```
 
 ---
 
-### Evaluation results of available models on WiderFace
+## Model Performance
 
-| RetinaFace Models  | Easy             | Medium           | Hard             |
-| ------------------ | ---------------- | ---------------- | ---------------- |
-| retinaface_mnet025 | 88.48%           | 87.02%           | 80.61%           |
-| retinaface_mnet050 | 89.42%           | 87.97%           | 82.40%           |
-| retinaface_mnet_v1 | 90.59%           | 89.14%           | 84.13%           |
-| retinaface_mnet_v2 | 91.70%           | 91.03%           | 86.60%           |
-| retinaface_r18     | 92.50%           | 91.02%           | 86.63%           |
-| retinaface_r34     | **94.16%** | **93.12%** | **88.90%** |
+### Face Detection (WIDER FACE Dataset)
+
+| Model              | Easy   | Medium | Hard   | Use Case                |
+|--------------------|--------|--------|--------|-------------------------|
+| retinaface_mnet025 | 88.48% | 87.02% | 80.61% | Mobile/Edge devices     |
+| retinaface_mnet_v2 | 91.70% | 91.03% | 86.60% | Balanced (recommended)  |
+| retinaface_r34     | 94.16% | 93.12% | 88.90% | High accuracy           |
+| scrfd_500m         | 90.57% | 88.12% | 68.51% | Real-time applications  |
+| scrfd_10g          | 95.16% | 93.87% | 83.05% | Best accuracy/speed     |
+
+*Accuracy values from original papers: [RetinaFace](https://arxiv.org/abs/1905.00641), [SCRFD](https://arxiv.org/abs/2105.04714)*
+
+**Benchmark on your hardware:**
+```bash
+python scripts/run_detection.py --image assets/test.jpg --iterations 100
+```
+
+See [MODELS.md](MODELS.md) for detailed model information and selection guide.
 
 <div align="center">
     <img src="assets/test_result.png">
 </div>
 
-## API Reference
+---
 
-### `RetinaFace` Class
+## Examples
 
-#### Initialization
+### Webcam Face Detection
 
 ```python
-from typings import Tuple
+import cv2
 from uniface import RetinaFace
+from uniface.visualization import draw_detections
+
+detector = RetinaFace()
+cap = cv2.VideoCapture(0)
+
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        break
+
+    faces = detector.detect(frame)
+
+    # Extract data for visualization
+    bboxes = [f['bbox'] for f in faces]
+    scores = [f['confidence'] for f in faces]
+    landmarks = [f['landmarks'] for f in faces]
+
+    draw_detections(frame, bboxes, scores, landmarks, vis_threshold=0.6)
+
+    cv2.imshow("Face Detection", frame)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
+```
+
+### Face Search System
+
+```python
+import numpy as np
+from uniface import RetinaFace, ArcFace
+
+detector = RetinaFace()
+recognizer = ArcFace()
+
+# Build face database
+database = {}
+for person_id, image_path in person_images.items():
+    image = cv2.imread(image_path)
+    faces = detector.detect(image)
+    if faces:
+        embedding = recognizer.get_normalized_embedding(
+            image, faces[0]['landmarks']
+        )
+        database[person_id] = embedding
+
+# Search for a face
+query_image = cv2.imread("query.jpg")
+query_faces = detector.detect(query_image)
+if query_faces:
+    query_embedding = recognizer.get_normalized_embedding(
+        query_image, query_faces[0]['landmarks']
+    )
+
+    # Find best match
+    best_match = None
+    best_similarity = -1
+
+    for person_id, db_embedding in database.items():
+        similarity = np.dot(query_embedding, db_embedding.T)[0][0]
+        if similarity > best_similarity:
+            best_similarity = similarity
+            best_match = person_id
+
+    print(f"Best match: {best_match} (similarity: {best_similarity:.4f})")
+```
+
+More examples in the [examples/](examples/) directory.
+
+---
+
+## Advanced Configuration
+
+### Custom ONNX Runtime Providers
+
+```python
+from uniface.onnx_utils import get_available_providers, create_onnx_session
+
+# Check available providers
+providers = get_available_providers()
+print(f"Available: {providers}")
+
+# Force CPU-only execution
+from uniface import RetinaFace
+detector = RetinaFace()
+# Internally uses create_onnx_session() which auto-selects best provider
+```
+
+### Model Download and Caching
+
+Models are automatically downloaded on first use and cached in `~/.uniface/models/`.
+
+```python
+from uniface.model_store import verify_model_weights
 from uniface.constants import RetinaFaceWeights
 
-RetinaFace(
-    model_name: RetinaFaceWeights,
-    conf_thresh: float = 0.5,
-    pre_nms_topk: int = 5000,
-    nms_thresh: float = 0.4,
-    post_nms_topk: int = 750,
-    dynamic_size: bool = False,
-    input_size: Tuple[int, int] = (640, 640)
+# Manually download and verify a model
+model_path = verify_model_weights(
+    RetinaFaceWeights.MNET_V2,
+    root='./custom_models'  # Custom cache directory
 )
 ```
 
-**Parameters**:
+### Logging Configuration
 
-- `model_name` _(RetinaFaceWeights)_: Enum value for model to use. Supported values:
-  - `MNET_025`, `MNET_050`, `MNET_V1`, `MNET_V2`, `RESNET18`, `RESNET34`
-- `conf_thresh` _(float, default=0.5)_: Minimum confidence score for detections.
-- `pre_nms_topk` _(int, default=5000)_: Max detections to keep before NMS.
-- `nms_thresh` _(float, default=0.4)_: IoU threshold for Non-Maximum Suppression.
-- `post_nms_topk` _(int, default=750)_: Max detections to keep after NMS.
-- `dynamic_size` _(Optional[bool], default=False)_: Use dynamic input size.
-- `input_size` _(Optional[Tuple[int, int]], default=(640, 640))_: Static input size for the model (width, height).
+```python
+from uniface import Logger
+import logging
+
+# Set logging level
+Logger.setLevel(logging.DEBUG)  # DEBUG, INFO, WARNING, ERROR
+
+# Disable logging
+Logger.setLevel(logging.CRITICAL)
+```
 
 ---
 
-### `detect` Method
+## Testing
 
-```python
-detect(
-    image: np.ndarray,
-    max_num: int = 0,
-    metric: str = "default",
-    center_weight: float = 2.0
-) -> Tuple[np.ndarray, np.ndarray]
+```bash
+# Run all tests
+pytest
+
+# Run with coverage
+pytest --cov=uniface --cov-report=html
+
+# Run specific test file
+pytest tests/test_retinaface.py -v
 ```
-
-**Description**:
-Detects faces in the given image and returns bounding boxes and landmarks.
-
-**Parameters**:
-
-- `image` _(np.ndarray)_: Input image in BGR format.
-- `max_num` _(int, default=0)_: Maximum number of faces to return. `0` means return all.
-- `metric` _(str, default="default")_: Metric for prioritizing detections:
-  - `"default"`: Prioritize detections closer to the image center.
-  - `"max"`: Prioritize larger bounding box areas.
-- `center_weight` _(float, default=2.0)_: Weight for prioritizing center-aligned faces.
-
-**Returns**:
-
-- `bounding_boxes` _(np.ndarray)_: Array of detections as `[x_min, y_min, x_max, y_max, confidence]`.
-- `landmarks` _(np.ndarray)_: Array of landmarks as `[(x1, y1), ..., (x5, y5)]`.
 
 ---
 
-### Visualization Utilities
+## Development
 
-#### `draw_detections`
+### Setup Development Environment
 
-```python
-draw_detections(
-    image: np.ndarray,
-    detections: Tuple[np.ndarray, np.ndarray],
-    vis_threshold: float = 0.6
-) -> None
+```bash
+git clone https://github.com/yakhyo/uniface.git
+cd uniface
+
+# Install in editable mode with dev dependencies
+pip install -e ".[dev]"
+
+# Run tests
+pytest
+
+# Format code
+black uniface/
+isort uniface/
 ```
 
-**Description**:
-Draws bounding boxes and landmarks on the given image.
+### Project Structure
 
-**Parameters**:
+```
+uniface/
+├── uniface/
+│   ├── detection/       # Face detection models
+│   ├── recognition/     # Face recognition models
+│   ├── landmark/        # Landmark detection
+│   ├── attribute/       # Age, gender, emotion
+│   ├── onnx_utils.py    # ONNX Runtime utilities
+│   ├── model_store.py   # Model download & caching
+│   └── visualization.py # Drawing utilities
+├── tests/               # Unit tests
+├── examples/            # Example notebooks
+└── scripts/             # Utility scripts
+```
 
-- `image` _(np.ndarray)_: The input image in BGR format.
-- `detections` _(Tuple[np.ndarray, np.ndarray])_: A tuple of bounding boxes and landmarks.
-- `vis_threshold` _(float, default=0.6)_: Minimum confidence score for visualization.
+---
+
+## References
+
+### Model Training & Architectures
+
+- **RetinaFace Training**: [yakhyo/retinaface-pytorch](https://github.com/yakhyo/retinaface-pytorch) - PyTorch implementation and training code
+- **Face Recognition Training**: [yakhyo/face-recognition](https://github.com/yakhyo/face-recognition) - ArcFace, MobileFace, SphereFace training code
+- **InsightFace**: [deepinsight/insightface](https://github.com/deepinsight/insightface) - Model architectures and pretrained weights
+
+### Papers
+
+- **RetinaFace**: [Single-Shot Multi-Level Face Localisation in the Wild](https://arxiv.org/abs/1905.00641)
+- **SCRFD**: [Sample and Computation Redistribution for Efficient Face Detection](https://arxiv.org/abs/2105.04714)
+- **ArcFace**: [Additive Angular Margin Loss for Deep Face Recognition](https://arxiv.org/abs/1801.07698)
 
 ---
 
 ## Contributing
 
-We welcome contributions to enhance the library! Feel free to:
+Contributions are welcome! Please open an issue or submit a pull request on [GitHub](https://github.com/yakhyo/uniface).
 
-- Submit bug reports or feature requests.
-- Fork the repository and create a pull request.
-
----
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
----
-
-## Acknowledgments
-
-- Based on the RetinaFace model for face detection ([https://github.com/yakhyo/retinaface-pytorch](https://github.com/yakhyo/retinaface-pytorch)).
-- Inspired by InsightFace and other face detection projects.
-
----

@@ -4,13 +4,13 @@
 
 import cv2
 import numpy as np
-import onnxruntime as ort
 from typing import Tuple
 
 from uniface.log import Logger
 from uniface.constants import LandmarkWeights
 from uniface.model_store import verify_model_weights
 from uniface.face_utils import bbox_center_alignment, transform_points_2d
+from uniface.onnx_utils import create_onnx_session
 from .base import BaseLandmarker
 
 __all__ = ['Landmark']
@@ -63,10 +63,7 @@ class Landmark106(BaseLandmarker):
             RuntimeError: If the model fails to load or initialize.
         """
         try:
-            self.session = ort.InferenceSession(
-                self.model_path,
-                providers=["CUDAExecutionProvider", "CPUExecutionProvider"]
-            )
+            self.session = create_onnx_session(self.model_path)
 
             # Get input configuration
             input_metadata = self.session.get_inputs()[0]

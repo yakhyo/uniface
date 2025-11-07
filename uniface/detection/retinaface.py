@@ -3,13 +3,13 @@
 # GitHub: https://github.com/yakhyo
 
 import numpy as np
-import onnxruntime as ort
 
 from typing import Tuple, List, Literal, Dict, Any
 
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
 from uniface.constants import RetinaFaceWeights
+from uniface.onnx_utils import create_onnx_session
 
 from .base import BaseDetector
 from .utils import (
@@ -95,10 +95,7 @@ class RetinaFace(BaseDetector):
             RuntimeError: If the model fails to load, logs an error and raises an exception.
         """
         try:
-            self.session = ort.InferenceSession(
-                model_path,
-                providers=["CUDAExecutionProvider", "CPUExecutionProvider"]
-            )
+            self.session = create_onnx_session(model_path)
             self.input_names = self.session.get_inputs()[0].name
             self.output_names = [x.name for x in self.session.get_outputs()]
             Logger.info(f"Successfully initialized the model from {model_path}")
