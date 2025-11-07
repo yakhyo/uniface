@@ -21,7 +21,11 @@ from uniface.log import Logger, enable_logging
 from uniface.model_store import verify_model_weights
 from uniface.visualization import draw_detections
 
-from .attribute import AgeGender, Emotion
+from .attribute import AgeGender
+try:
+    from .attribute import Emotion
+except ImportError:
+    Emotion = None  # PyTorch not installed
 from .detection import SCRFD, RetinaFace, create_detector, detect_faces, list_available_detectors
 from .landmark import Landmark106, create_landmarker
 from .recognition import ArcFace, MobileFace, SphereFace, create_recognizer

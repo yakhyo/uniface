@@ -6,9 +6,16 @@ from typing import Dict, Any, List, Union
 import numpy as np
 
 from uniface.attribute.age_gender import AgeGender
-from uniface.attribute.emotion import Emotion
 from uniface.attribute.base import Attribute
 from uniface.constants import AgeGenderWeights, DDAMFNWeights
+
+# Emotion requires PyTorch - make it optional
+try:
+    from uniface.attribute.emotion import Emotion
+    _EMOTION_AVAILABLE = True
+except ImportError:
+    Emotion = None
+    _EMOTION_AVAILABLE = False
 
 # Public API for the attribute module
 __all__ = [
@@ -21,8 +28,11 @@ __all__ = [
 # A mapping from model enums to their corresponding attribute classes
 _ATTRIBUTE_MODELS = {
     **{model: AgeGender for model in AgeGenderWeights},
-    **{model: Emotion for model in DDAMFNWeights}
 }
+
+# Add Emotion models only if PyTorch is available
+if _EMOTION_AVAILABLE:
+    _ATTRIBUTE_MODELS.update({model: Emotion for model in DDAMFNWeights})
 
 
 def create_attribute_predictor(
