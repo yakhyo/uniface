@@ -7,8 +7,8 @@ Get up and running with UniFace in 5 minutes! This guide covers the most common 
 ## Installation
 
 ```bash
-# macOS (Apple Silicon)
-pip install uniface[silicon]
+# macOS (Apple Silicon) - automatically includes ARM64 optimizations
+pip install uniface
 
 # Linux/Windows with NVIDIA GPU
 pip install uniface[gpu]
@@ -114,9 +114,9 @@ if faces1 and faces2:
 
     # Interpret result
     if similarity > 0.6:
-        print(f"✅ Same person (similarity: {similarity:.3f})")
+        print(f"Same person (similarity: {similarity:.3f})")
     else:
-        print(f"❌ Different people (similarity: {similarity:.3f})")
+        print(f"Different people (similarity: {similarity:.3f})")
 else:
     print("No faces detected")
 ```
@@ -264,29 +264,44 @@ print("Done!")
 
 Choose the right model for your use case:
 
+### Detection Models
+
 ```python
-from uniface import create_detector
+from uniface.detection import RetinaFace, SCRFD
 from uniface.constants import RetinaFaceWeights, SCRFDWeights
 
 # Fast detection (mobile/edge devices)
-detector = create_detector(
-    'retinaface',
+detector = RetinaFace(
     model_name=RetinaFaceWeights.MNET_025,
     conf_thresh=0.7
 )
 
 # Balanced (recommended)
-detector = create_detector(
-    'retinaface',
+detector = RetinaFace(
     model_name=RetinaFaceWeights.MNET_V2
 )
 
 # High accuracy (server/GPU)
-detector = create_detector(
-    'scrfd',
+detector = SCRFD(
     model_name=SCRFDWeights.SCRFD_10G_KPS,
     conf_thresh=0.5
 )
+```
+
+### Recognition Models
+
+```python
+from uniface import ArcFace, MobileFace, SphereFace
+from uniface.constants import MobileFaceWeights, SphereFaceWeights
+
+# ArcFace (recommended for most use cases)
+recognizer = ArcFace()  # Best accuracy
+
+# MobileFace (lightweight for mobile/edge)
+recognizer = MobileFace(model_name=MobileFaceWeights.MNET_V2)  # Fast, small size
+
+# SphereFace (angular margin approach)
+recognizer = SphereFace(model_name=SphereFaceWeights.SPHERE20)  # Alternative method
 ```
 
 ---
@@ -316,20 +331,22 @@ print("Available providers:", ort.get_available_providers())
 
 ### 3. Slow Performance on Mac
 
-Make sure you installed with CoreML support:
+The standard installation includes ARM64 optimizations for Apple Silicon. If performance is slow, verify you're using the ARM64 build of Python:
 
 ```bash
-pip install uniface[silicon]
+python -c "import platform; print(platform.machine())"
+# Should show: arm64 (not x86_64)
 ```
 
 ### 4. Import Errors
 
 ```python
-# ✅ Correct imports
-from uniface import RetinaFace, ArcFace, Landmark106
-from uniface.detection import create_detector
+# Correct imports
+from uniface.detection import RetinaFace
+from uniface.recognition import ArcFace
+from uniface.landmark import Landmark106
 
-# ❌ Wrong imports
+# Wrong imports
 from uniface import retinaface  # Module, not class
 ```
 

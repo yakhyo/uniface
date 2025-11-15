@@ -113,13 +113,15 @@ embedding = recognizer.get_normalized_embedding(image, landmarks)
 
 Lightweight face recognition optimized for mobile devices.
 
-| Model Name      | Backbone        | Params | Size | Use Case           |
-|-----------------|-----------------|--------|------|--------------------|
-| `MNET_025`      | MobileNetV1 0.25| 0.2M   | 1MB  | Ultra-lightweight  |
-| `MNET_V2` ⭐    | MobileNetV2     | 1.0M   | 4MB  | **Mobile/Edge**    |
-| `MNET_V3_SMALL` | MobileNetV3-S   | 0.8M   | 3MB  | Mobile optimized   |
-| `MNET_V3_LARGE` | MobileNetV3-L   | 2.5M   | 10MB | Balanced mobile    |
+| Model Name      | Backbone        | Params | Size | LFW   | CALFW | CPLFW | AgeDB-30 | Use Case           |
+|-----------------|-----------------|--------|------|-------|-------|-------|----------|--------------------|
+| `MNET_025`      | MobileNetV1 0.25| 0.36M  | 1MB  | 98.76%| 92.02%| 82.37%| 90.02%   | Ultra-lightweight  |
+| `MNET_V2` ⭐    | MobileNetV2     | 2.29M  | 4MB  | 99.55%| 94.87%| 86.89%| 95.16%   | **Mobile/Edge**    |
+| `MNET_V3_SMALL` | MobileNetV3-S   | 1.25M  | 3MB  | 99.30%| 93.77%| 85.29%| 92.79%   | Mobile optimized   |
+| `MNET_V3_LARGE` | MobileNetV3-L   | 3.52M  | 10MB | 99.53%| 94.56%| 86.79%| 95.13%   | Balanced mobile    |
 
+**Dataset**: Trained on MS1M-V2 (5.8M images, 85K identities)
+**Accuracy**: Evaluated on LFW, CALFW, CPLFW, and AgeDB-30 benchmarks
 **Note**: These models are lightweight alternatives to ArcFace for resource-constrained environments
 
 #### Usage
@@ -138,12 +140,14 @@ recognizer = MobileFace(model_name=MobileFaceWeights.MNET_V2)
 
 Face recognition using angular softmax loss.
 
-| Model Name  | Backbone | Params | Size | Use Case              |
-|-------------|----------|--------|------|----------------------|
-| `SPHERE20`  | Sphere20 | 13.0M  | 50MB | Research/Comparison  |
-| `SPHERE36`  | Sphere36 | 24.2M  | 92MB | Research/Comparison  |
+| Model Name  | Backbone | Params | Size | LFW   | CALFW | CPLFW | AgeDB-30 | Use Case              |
+|-------------|----------|--------|------|-------|-------|-------|----------|----------------------|
+| `SPHERE20`  | Sphere20 | 24.5M  | 50MB | 99.67%| 95.61%| 88.75%| 96.58%   | Research/Comparison  |
+| `SPHERE36`  | Sphere36 | 34.6M  | 92MB | 99.72%| 95.64%| 89.92%| 96.83%   | Research/Comparison  |
 
-**Note**: SphereFace uses angular softmax loss, an earlier approach before ArcFace
+**Dataset**: Trained on MS1M-V2 (5.8M images, 85K identities)
+**Accuracy**: Evaluated on LFW, CALFW, CPLFW, and AgeDB-30 benchmarks
+**Note**: SphereFace uses angular softmax loss, an earlier approach before ArcFace. These models provide good accuracy with moderate resource requirements.
 
 #### Usage
 
@@ -264,10 +268,10 @@ emotion, confidence = predictor.predict(image, landmarks)
 ### By Hardware
 
 #### Apple Silicon (M1/M2/M3/M4)
-**Recommended**: All models work well with CoreML acceleration
+**Recommended**: All models work well with ARM64 optimizations (automatically included)
 
 ```bash
-pip install uniface[silicon]
+pip install uniface
 ```
 
 **Recommended models**:

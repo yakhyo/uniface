@@ -3,14 +3,12 @@ import argparse
 import cv2
 import numpy as np
 
-# Use the new high-level factory functions
-from uniface.detection import create_detector
+from uniface.detection import RetinaFace, SCRFD
 from uniface.face_utils import compute_similarity
-from uniface.recognition import create_recognizer
+from uniface.recognition import ArcFace, MobileFace, SphereFace
 
 
 def extract_reference_embedding(detector, recognizer, image_path: str) -> np.ndarray:
-    """Extracts a normalized embedding from the first face found in an image."""
     image = cv2.imread(image_path)
     if image is None:
         raise RuntimeError(f"Failed to load image: {image_path}")
@@ -28,7 +26,6 @@ def extract_reference_embedding(detector, recognizer, image_path: str) -> np.nda
 
 
 def run_video(detector, recognizer, ref_embedding: np.ndarray, threshold: float = 0.4):
-    """Run real-time face recognition from a webcam feed."""
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
         raise RuntimeError("Webcam could not be opened.")
@@ -91,8 +88,17 @@ def main():
         enable_logging()
 
     print("Initializing models...")
-    detector = create_detector(method=args.detector)
-    recognizer = create_recognizer(method=args.recognizer)
+    if args.detector == 'retinaface':
+        detector = RetinaFace()
+    else:
+        detector = SCRFD()
+
+    if args.recognizer == 'arcface':
+        recognizer = ArcFace()
+    elif args.recognizer == 'mobileface':
+        recognizer = MobileFace()
+    else:
+        recognizer = SphereFace()
 
     print("Extracting reference embedding...")
     ref_embedding = extract_reference_embedding(detector, recognizer, args.image)

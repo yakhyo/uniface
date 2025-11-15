@@ -21,7 +21,7 @@
 - **Face Recognition**: ArcFace, MobileFace, and SphereFace embeddings
 - **Attribute Analysis**: Age, gender, and emotion detection
 - **Face Alignment**: Precise alignment for downstream tasks
-- **Hardware Acceleration**: CoreML (Apple Silicon), CUDA (NVIDIA), CPU fallback
+- **Hardware Acceleration**: ARM64 optimizations (Apple Silicon), CUDA (NVIDIA), CPU fallback
 - **Simple API**: Intuitive factory functions and clean interfaces
 - **Production-Ready**: Type hints, comprehensive logging, PEP8 compliant
 
@@ -39,27 +39,19 @@ pip install uniface
 
 #### macOS (Apple Silicon - M1/M2/M3/M4)
 
-For optimal performance with **CoreML acceleration** (3-5x faster):
+For Apple Silicon Macs, the standard installation automatically includes optimized ARM64 support:
 
 ```bash
-# Standard installation (CPU only)
 pip install uniface
-
-# With CoreML acceleration (recommended for M-series chips)
-pip install uniface[silicon]
 ```
 
-**Verify CoreML is available:**
-```python
-import onnxruntime as ort
-print(ort.get_available_providers())
-# Should show: ['CoreMLExecutionProvider', 'CPUExecutionProvider']
-```
+The base `onnxruntime` package (included with uniface) has native Apple Silicon support with ARM64 optimizations built-in since version 1.13+.
 
 #### Linux/Windows with NVIDIA GPU
 
+For CUDA acceleration on NVIDIA GPUs:
+
 ```bash
-# With CUDA acceleration
 pip install uniface[gpu]
 ```
 
@@ -172,28 +164,29 @@ print(f"{gender}, {age} years old")
 ### Factory Functions (Recommended)
 
 ```python
-from uniface import create_detector, create_recognizer, create_landmarker
+from uniface.detection import RetinaFace, SCRFD
+from uniface.recognition import ArcFace
+from uniface.landmark import Landmark106
 
 # Create detector with default settings
-detector = create_detector('retinaface')
+detector = RetinaFace()
 
 # Create with custom config
-detector = create_detector(
-    'scrfd',
+detector = SCRFD(
     model_name='scrfd_10g_kps',
     conf_thresh=0.8,
     input_size=(640, 640)
 )
 
 # Recognition and landmarks
-recognizer = create_recognizer('arcface')
-landmarker = create_landmarker('2d106det')
+recognizer = ArcFace()
+landmarker = Landmark106()
 ```
 
 ### Direct Model Instantiation
 
 ```python
-from uniface import RetinaFace, SCRFD, ArcFace, MobileFace
+from uniface import RetinaFace, SCRFD, ArcFace, MobileFace, SphereFace
 from uniface.constants import RetinaFaceWeights
 
 # Detection
@@ -206,6 +199,7 @@ detector = RetinaFace(
 # Recognition
 recognizer = ArcFace()  # Uses default weights
 recognizer = MobileFace()  # Lightweight alternative
+recognizer = SphereFace()  # Angular softmax alternative
 ```
 
 ### High-Level Detection API

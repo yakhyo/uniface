@@ -4,24 +4,14 @@ import time
 import argparse
 import numpy as np
 
-# UPDATED: Use the factory function and import from the new location
-from uniface.detection import create_detector
+from uniface.detection import RetinaFace, SCRFD
 from uniface.visualization import draw_detections
 
 
 def run_inference(detector, image_path: str, vis_threshold: float = 0.6, save_dir: str = "outputs"):
-    """
-    Run face detection on a single image.
-
-    Args:
-        detector: Initialized face detector.
-        image_path (str): Path to input image.
-        vis_threshold (float): Threshold for drawing detections.
-        save_dir (str): Directory to save output image.
-    """
     image = cv2.imread(image_path)
     if image is None:
-        print(f"❌ Error: Failed to load image from '{image_path}'")
+        print(f"Error: Failed to load image from '{image_path}'")
         return
 
     # 1. Get the list of face dictionaries from the detector
@@ -40,7 +30,7 @@ def run_inference(detector, image_path: str, vis_threshold: float = 0.6, save_di
     os.makedirs(save_dir, exist_ok=True)
     output_path = os.path.join(save_dir, f"{os.path.splitext(os.path.basename(image_path))[0]}_out.jpg")
     cv2.imwrite(output_path, image)
-    print(f"✅ Output saved at: {output_path}")
+    print(f"Output saved at: {output_path}")
 
 
 def main():
@@ -65,14 +55,17 @@ def main():
         enable_logging()
 
     print(f"Initializing detector: {args.method}")
-    detector = create_detector(method=args.method)
+    if args.method == 'retinaface':
+        detector = RetinaFace()
+    else:
+        detector = SCRFD()
 
     avg_time = 0
     for i in range(args.iterations):
         start = time.time()
         run_inference(detector, args.image, args.threshold, args.save_dir)
         elapsed = time.time() - start
-        print(f"[{i + 1}/{args.iterations}] ⏱️ Inference time: {elapsed:.4f} seconds")
+        print(f"[{i + 1}/{args.iterations}] Inference time: {elapsed:.4f} seconds")
         if i >= 0:  # Avoid counting the first run if it includes model loading time
             avg_time += elapsed
 
@@ -80,7 +73,7 @@ def main():
         # Adjust average calculation to exclude potential first-run overhead
         effective_iterations = max(1, args.iterations)
         print(
-            f"\n🔥 Average inference time over {effective_iterations} runs: {avg_time / effective_iterations:.4f} seconds")
+            f"\nAverage inference time over {effective_iterations} runs: {avg_time / effective_iterations:.4f} seconds")
 
 
 if __name__ == "__main__":

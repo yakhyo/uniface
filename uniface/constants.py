@@ -29,7 +29,7 @@ class ArcFaceWeights(str, Enum):
     Pretrained weights from ArcFace model (insightface).
     https://github.com/deepinsight/insightface
     """
-    MNET = "arcface_mnet"
+    MNET   = "arcface_mnet"
     RESNET = "arcface_resnet"
 
 class RetinaFaceWeights(str, Enum):
@@ -84,42 +84,42 @@ class LandmarkWeights(str, Enum):
 MODEL_URLS: Dict[Enum, str] = {
 
     # RetinaFace
-    RetinaFaceWeights.MNET_025: 'https://github.com/yakhyo/uniface/releases/download/v0.1.2/retinaface_mv1_0.25.onnx',
-    RetinaFaceWeights.MNET_050: 'https://github.com/yakhyo/uniface/releases/download/v0.1.2/retinaface_mv1_0.50.onnx',
-    RetinaFaceWeights.MNET_V1:  'https://github.com/yakhyo/uniface/releases/download/v0.1.2/retinaface_mv1.onnx',
-    RetinaFaceWeights.MNET_V2:  'https://github.com/yakhyo/uniface/releases/download/v0.1.2/retinaface_mv2.onnx',
-    RetinaFaceWeights.RESNET18: 'https://github.com/yakhyo/uniface/releases/download/v0.1.2/retinaface_r18.onnx',
-    RetinaFaceWeights.RESNET34: 'https://github.com/yakhyo/uniface/releases/download/v0.1.2/retinaface_r34.onnx',
+    RetinaFaceWeights.MNET_025: 'https://github.com/yakhyo/uniface/releases/download/weights/retinaface_mv1_0.25.onnx',
+    RetinaFaceWeights.MNET_050: 'https://github.com/yakhyo/uniface/releases/download/weights/retinaface_mv1_0.50.onnx',
+    RetinaFaceWeights.MNET_V1:  'https://github.com/yakhyo/uniface/releases/download/weights/retinaface_mv1.onnx',
+    RetinaFaceWeights.MNET_V2:  'https://github.com/yakhyo/uniface/releases/download/weights/retinaface_mv2.onnx',
+    RetinaFaceWeights.RESNET18: 'https://github.com/yakhyo/uniface/releases/download/weights/retinaface_r18.onnx',
+    RetinaFaceWeights.RESNET34: 'https://github.com/yakhyo/uniface/releases/download/weights/retinaface_r34.onnx',
 
     # MobileFace
-    MobileFaceWeights.MNET_025:      'https://github.com/yakhyo/uniface/releases/download/v0.1.2/###',
-    MobileFaceWeights.MNET_V2:       'https://github.com/yakhyo/uniface/releases/download/v0.1.2/###',
-    MobileFaceWeights.MNET_V3_SMALL: 'https://github.com/yakhyo/uniface/releases/download/v0.1.2/###',
-    MobileFaceWeights.MNET_V3_LARGE: 'https://github.com/yakhyo/uniface/releases/download/v0.1.2/###',
+    MobileFaceWeights.MNET_025:      'https://github.com/yakhyo/uniface/releases/download/weights/mobilenetv1_0.25.onnx',
+    MobileFaceWeights.MNET_V2:       'https://github.com/yakhyo/uniface/releases/download/weights/mobilenetv2.onnx',
+    MobileFaceWeights.MNET_V3_SMALL: 'https://github.com/yakhyo/uniface/releases/download/weights/mobilenetv3_small.onnx',
+    MobileFaceWeights.MNET_V3_LARGE: 'https://github.com/yakhyo/uniface/releases/download/weights/mobilenetv3_large.onnx',
 
     # SphereFace
-    SphereFaceWeights.SPHERE20: 'https://github.com/yakhyo/uniface/releases/download/v0.1.2/###',
-    SphereFaceWeights.SPHERE36: 'https://github.com/yakhyo/uniface/releases/download/v0.1.2/###',
+    SphereFaceWeights.SPHERE20: 'https://github.com/yakhyo/uniface/releases/download/weights/sphere20.onnx',
+    SphereFaceWeights.SPHERE36: 'https://github.com/yakhyo/uniface/releases/download/weights/sphere36.onnx',
 
 
     # ArcFace
-    ArcFaceWeights.MNET:   'https://github.com/yakhyo/uniface/releases/download/v0.1.2/w600k_mbf.onnx',
-    ArcFaceWeights.RESNET: 'https://github.com/yakhyo/uniface/releases/download/v0.1.2/w600k_r50.onnx',
+    ArcFaceWeights.MNET:   'https://github.com/yakhyo/uniface/releases/download/weights/w600k_mbf.onnx',
+    ArcFaceWeights.RESNET: 'https://github.com/yakhyo/uniface/releases/download/weights/w600k_r50.onnx',
 
     # SCRFD
-    SCRFDWeights.SCRFD_10G_KPS:  'https://github.com/yakhyo/uniface/releases/download/v0.1.2/scrfd_10g_kps.onnx',
-    SCRFDWeights.SCRFD_500M_KPS: 'https://github.com/yakhyo/uniface/releases/download/v0.1.2/scrfd_500m_kps.onnx',
+    SCRFDWeights.SCRFD_10G_KPS:  'https://github.com/yakhyo/uniface/releases/download/weights/scrfd_10g_kps.onnx',
+    SCRFDWeights.SCRFD_500M_KPS: 'https://github.com/yakhyo/uniface/releases/download/weights/scrfd_500m_kps.onnx',
 
 
     # DDAFM
-    DDAMFNWeights.AFFECNET7: 'https://github.com/yakhyo/uniface/releases/download/v0.1.2/affecnet7.script',
-    DDAMFNWeights.AFFECNET8: 'https://github.com/yakhyo/uniface/releases/download/v0.1.2/affecnet8.script',
+    DDAMFNWeights.AFFECNET7: 'https://github.com/yakhyo/uniface/releases/download/weights/affecnet7.script',
+    DDAMFNWeights.AFFECNET8: 'https://github.com/yakhyo/uniface/releases/download/weights/affecnet8.script',
 
     # AgeGender
-    AgeGenderWeights.DEFAULT: 'https://github.com/yakhyo/uniface/releases/download/v0.1.2/genderage.onnx',
+    AgeGenderWeights.DEFAULT: 'https://github.com/yakhyo/uniface/releases/download/weights/genderage.onnx',
 
     # Landmarks
-    LandmarkWeights.DEFAULT: 'https://github.com/yakhyo/uniface/releases/download/v0.1.2/2d106det.onnx',
+    LandmarkWeights.DEFAULT: 'https://github.com/yakhyo/uniface/releases/download/weights/2d106det.onnx',
 }
 
 MODEL_SHA256: Dict[Enum, str] = {
@@ -132,14 +132,14 @@ MODEL_SHA256: Dict[Enum, str] = {
     RetinaFaceWeights.RESNET34: 'bd0263dc2a465d32859555cb1741f2d98991eb0053696e8ee33fec583d30e630',
 
     # MobileFace
-    MobileFaceWeights.MNET_025:      '#',
-    MobileFaceWeights.MNET_V2:       '#',
-    MobileFaceWeights.MNET_V3_SMALL: '#',
-    MobileFaceWeights.MNET_V3_LARGE: '#',
+    MobileFaceWeights.MNET_025:      'eeda7d23d9c2b40cf77fa8da8e895b5697465192648852216074679657f8ee8b',
+    MobileFaceWeights.MNET_V2:       '38b148284dd48cc898d5d4453104252fbdcbacc105fe3f0b80e78954d9d20d89',
+    MobileFaceWeights.MNET_V3_SMALL: 'd4acafa1039a82957aa8a9a1dac278a401c353a749c39df43de0e29cc1c127c3',
+    MobileFaceWeights.MNET_V3_LARGE: '0e48f8e11f070211716d03e5c65a3db35a5e917cfb5bc30552358629775a142a',
 
     # SphereFace
-    SphereFaceWeights.SPHERE20: '#',
-    SphereFaceWeights.SPHERE36: '#',
+    SphereFaceWeights.SPHERE20: 'c02878cf658eb1861f580b7e7144b0d27cc29c440bcaa6a99d466d2854f14c9d',
+    SphereFaceWeights.SPHERE36: '13b3890cd5d7dec2b63f7c36fd7ce07403e5a0bbb701d9647c0289e6cbe7bb20',
 
 
     # ArcFace

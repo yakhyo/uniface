@@ -5,7 +5,7 @@
 import cv2
 import numpy as np
 from skimage.transform import SimilarityTransform
-from typing import Tuple
+from typing import Tuple, Union
 
 
 __all__ = ["face_alignment", "compute_similarity", "bbox_center_alignment", "transform_points_2d"]
@@ -24,13 +24,14 @@ reference_alignment: np.ndarray = np.array(
 )
 
 
-def estimate_norm(landmark: np.ndarray, image_size: int = 112) -> Tuple[np.ndarray, np.ndarray]:
+def estimate_norm(landmark: np.ndarray, image_size: Union[int, Tuple[int, int]] = 112) -> Tuple[np.ndarray, np.ndarray]:
     """
     Estimate the normalization transformation matrix for facial landmarks.
 
     Args:
         landmark (np.ndarray): Array of shape (5, 2) representing the coordinates of the facial landmarks.
-        image_size (int, optional): The size of the output image. Default is 112.
+        image_size (Union[int, Tuple[int, int]], optional): The size of the output image.
+            Can be an integer (for square images) or a tuple (width, height). Default is 112.
 
     Returns:
         np.ndarray: The 2x3 transformation matrix for aligning the landmarks.
@@ -41,13 +42,20 @@ def estimate_norm(landmark: np.ndarray, image_size: int = 112) -> Tuple[np.ndarr
                         or if image_size is not a multiple of 112 or 128.
     """
     assert landmark.shape == (5, 2), "Landmark array must have shape (5, 2)."
-    assert image_size % 112 == 0 or image_size % 128 == 0, "Image size must be a multiple of 112 or 128."
 
-    if image_size % 112 == 0:
-        ratio = float(image_size) / 112.0
+    # Handle both int and tuple inputs
+    if isinstance(image_size, tuple):
+        size = image_size[0]  # Use width for ratio calculation
+    else:
+        size = image_size
+
+    assert size % 112 == 0 or size % 128 == 0, "Image size must be a multiple of 112 or 128."
+
+    if size % 112 == 0:
+        ratio = float(size) / 112.0
         diff_x = 0.0
     else:
-        ratio = float(image_size) / 128.0
+        ratio = float(size) / 128.0
         diff_x = 8.0 * ratio
 
     # Adjust reference alignment based on ratio and diff_x
@@ -64,14 +72,15 @@ def estimate_norm(landmark: np.ndarray, image_size: int = 112) -> Tuple[np.ndarr
     return matrix, inverse_matrix
 
 
-def face_alignment(image: np.ndarray, landmark: np.ndarray, image_size: int = 112) -> Tuple[np.ndarray, np.ndarray]:
+def face_alignment(image: np.ndarray, landmark: np.ndarray, image_size: Union[int, Tuple[int, int]] = 112) -> Tuple[np.ndarray, np.ndarray]:
     """
     Align the face in the input image based on the given facial landmarks.
 
     Args:
         image (np.ndarray): Input image as a NumPy array.
         landmark (np.ndarray): Array of shape (5, 2) representing the coordinates of the facial landmarks.
-        image_size (int, optional): The size of the aligned output image. Default is 112.
+        image_size (Union[int, Tuple[int, int]], optional): The size of the aligned output image.
+            Can be an integer (for square images) or a tuple (width, height). Default is 112.
 
     Returns:
         np.ndarray: The aligned face as a NumPy array.
@@ -80,8 +89,14 @@ def face_alignment(image: np.ndarray, landmark: np.ndarray, image_size: int = 11
     # Get the transformation matrix
     M, M_inv = estimate_norm(landmark, image_size)
 
+    # Handle both int and tuple for warpAffine output size
+    if isinstance(image_size, int):
+        output_size = (image_size, image_size)
+    else:
+        output_size = image_size
+
     # Warp the input image to align the face
-    warped = cv2.warpAffine(image, M, (image_size, image_size), borderValue=0.0)
+    warped = cv2.warpAffine(image, M, output_size, borderValue=0.0)
 
     return warped, M_inv
 

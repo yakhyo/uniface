@@ -280,15 +280,15 @@ if __name__ == "__main__":
     cap = cv2.VideoCapture(0)
 
     if not cap.isOpened():
-        print("❌ Failed to open webcam.")
+        print("Failed to open webcam.")
         exit()
 
-    print("📷 Webcam started. Press 'q' to exit.")
+    print("Webcam started. Press 'q' to exit.")
 
     while True:
         ret, frame = cap.read()
         if not ret:
-            print("❌ Failed to read frame.")
+            print("Failed to read frame.")
             break
 
         # Get face detections as list of dictionaries
