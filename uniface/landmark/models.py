@@ -157,15 +157,13 @@ class Landmark106(BaseLandmarker):
 
 
 
-# TODO: For testing purposes only, remote later
+# Testing code
 if __name__ == "__main__":
-    # UPDATED: Use the high-level factory functions
-    from uniface.detection import create_detector
-    from uniface.landmark import create_landmarker
+    from uniface.detection import RetinaFace
+    from uniface.landmark import Landmark106
 
-    # 1. Create the detector and landmarker using the new API
-    face_detector = create_detector('retinaface')
-    landmarker = create_landmarker() # Uses the default '2d106det' method
+    face_detector = RetinaFace()
+    landmarker = Landmark106()
 
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():

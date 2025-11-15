@@ -109,19 +109,23 @@ class BaseRecognizer(ABC):
 
         return blob
 
-    def get_embedding(self, image: np.ndarray, landmarks: np.ndarray) -> np.ndarray:
+    def get_embedding(self, image: np.ndarray, landmarks: np.ndarray = None) -> np.ndarray:
         """
         Extracts face embedding from an image.
 
         Args:
-            image: Input face image (BGR format).
-            landmarks: Facial landmarks (5 points for alignment).
+            image: Input face image (BGR format). If already aligned (112x112), landmarks can be None.
+            landmarks: Facial landmarks (5 points for alignment). Optional if image is already aligned.
 
         Returns:
             Face embedding vector (typically 512-dimensional).
         """
-        # Align face using landmarks
-        aligned_face, _ = face_alignment(image, landmarks)
+        # If landmarks are provided, align the face first
+        if landmarks is not None:
+            aligned_face, _ = face_alignment(image, landmarks, image_size=self.input_size)
+        else:
+            # Assume image is already aligned
+            aligned_face = image
 
         # Generate embedding from aligned face
         face_blob = self.preprocess(aligned_face)
