@@ -87,7 +87,7 @@ def test_different_image_sizes(landmark_model, mock_bbox):
 
 def test_bbox_list_format(landmark_model, mock_image):
     bbox_list = [100, 100, 300, 300]
-    landmarks = landmark_model.get_landmarks(mock_image, mock_bbox)
+    landmarks = landmark_model.get_landmarks(mock_image, bbox_list)
     assert landmarks.shape == (106, 2), "Should work with bbox as list"
 
 
