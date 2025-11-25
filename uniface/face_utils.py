@@ -2,11 +2,11 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
+from typing import Tuple, Union
+
 import cv2
 import numpy as np
 from skimage.transform import SimilarityTransform
-from typing import Tuple, Union
-
 
 __all__ = ["face_alignment", "compute_similarity", "bbox_center_alignment", "transform_points_2d"]
 

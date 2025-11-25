@@ -2,7 +2,8 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-from typing import Dict, Any, List, Union
+from typing import Any, Dict, List, Union
+
 import numpy as np
 
 from uniface.attribute.age_gender import AgeGender

@@ -2,15 +2,17 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-import cv2
-import numpy as np
 from typing import Tuple
 
-from uniface.log import Logger
+import cv2
+import numpy as np
+
 from uniface.constants import LandmarkWeights
-from uniface.model_store import verify_model_weights
 from uniface.face_utils import bbox_center_alignment, transform_points_2d
+from uniface.log import Logger
+from uniface.model_store import verify_model_weights
 from uniface.onnx_utils import create_onnx_session
+
 from .base import BaseLandmarker
 
 __all__ = ['Landmark']

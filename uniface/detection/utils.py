@@ -2,12 +2,12 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-import cv2
-import math
 import itertools
-import numpy as np
+import math
+from typing import List, Tuple
 
-from typing import Tuple, List
+import cv2
+import numpy as np
 
 
 def resize_image(frame, target_shape: Tuple[int, int] = (640, 640)) -> Tuple[np.ndarray, float]:

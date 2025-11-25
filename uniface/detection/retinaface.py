@@ -2,23 +2,17 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
+from typing import Any, Dict, List, Literal, Tuple
+
 import numpy as np
 
-from typing import Tuple, List, Literal, Dict, Any
-
+from uniface.constants import RetinaFaceWeights
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
-from uniface.constants import RetinaFaceWeights
 from uniface.onnx_utils import create_onnx_session
 
 from .base import BaseDetector
-from .utils import (
-    non_max_supression,
-    resize_image,
-    decode_boxes,
-    generate_anchors,
-    decode_landmarks
-)
+from .utils import decode_boxes, decode_landmarks, generate_anchors, non_max_supression, resize_image
 
 
 class RetinaFace(BaseDetector):

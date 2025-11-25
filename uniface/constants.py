@@ -5,6 +5,7 @@
 from enum import Enum
 from typing import Dict
 
+
 # fmt: off
 class SphereFaceWeights(str, Enum):
     """

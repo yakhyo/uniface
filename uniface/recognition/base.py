@@ -3,13 +3,14 @@
 # GitHub: https://github.com/yakhyo
 
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from typing import List, Tuple, Union
+
 import cv2
 import numpy as np
-from dataclasses import dataclass
-from typing import Tuple, Union, List
 
-from uniface.log import Logger
 from uniface.face_utils import face_alignment
+from uniface.log import Logger
 from uniface.onnx_utils import create_onnx_session
 
 

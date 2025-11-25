@@ -2,9 +2,10 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
+from typing import List, Union
+
 import cv2
 import numpy as np
-from typing import List, Union
 
 
 def draw_detections(
@@ -12,7 +13,7 @@ def draw_detections(
     bboxes: Union[np.ndarray, List[List[float]]],
     scores: Union[np.ndarray, List[float]],
     landmarks: Union[np.ndarray, List[List[List[float]]]],
-    vis_threshold: float = 0.6
+    vis_threshold: float = 0.6,
 ):
     """
     Draws bounding boxes, scores, and landmarks from separate lists onto an image.
@@ -42,8 +43,9 @@ def draw_detections(
         cv2.rectangle(image, tuple(bbox[:2]), tuple(bbox[2:]), (0, 0, 255), thickness)
 
         # Draw score
-        cv2.putText(image, f"{score:.2f}", (bbox[0], bbox[1] - 10),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), thickness)
+        cv2.putText(
+            image, f"{score:.2f}", (bbox[0], bbox[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), thickness
+        )
 
         # Draw landmarks
         for j, point in enumerate(landmark_set):

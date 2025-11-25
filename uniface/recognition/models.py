@@ -6,6 +6,7 @@ from typing import Optional
 
 from uniface.constants import ArcFaceWeights, MobileFaceWeights, SphereFaceWeights
 from uniface.model_store import verify_model_weights
+
 from .base import BaseRecognizer, PreprocessConfig
 
 __all__ = ["ArcFace", "MobileFace", "SphereFace"]

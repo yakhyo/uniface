@@ -2,15 +2,16 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
+from typing import List, Tuple, Union
+
 import cv2
-import torch
 import numpy as np
-from typing import Tuple, Union, List
+import torch
 
 from uniface.attribute.base import Attribute
-from uniface.log import Logger
 from uniface.constants import DDAMFNWeights
 from uniface.face_utils import face_alignment
+from uniface.log import Logger
 from uniface.model_store import verify_model_weights
 
 __all__ = ["Emotion"]
@@ -77,7 +78,7 @@ class Emotion(Attribute):
             torch.Tensor: The preprocessed image tensor ready for inference.
         """
         landmark = np.asarray(landmark)
-        
+
         aligned_image, _ = face_alignment(image, landmark)
 
         # Convert BGR to RGB, resize, normalize, and convert to a CHW tensor
@@ -151,7 +152,7 @@ if __name__ == "__main__":
 
             # Predict attributes using the landmark
             emotion, confidence = emotion_predictor.predict(frame, landmark)
-            
+
             # Prepare text and draw on the frame
             label = f"{emotion} ({confidence:.2f})"
             cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 0, 0), 2)

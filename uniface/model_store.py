@@ -2,14 +2,14 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-import os
 import hashlib
+import os
+
 import requests
 from tqdm import tqdm
 
-from uniface.log import Logger
 import uniface.constants as const
-
+from uniface.log import Logger
 
 __all__ = ['verify_model_weights']
 

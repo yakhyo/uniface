@@ -3,12 +3,13 @@
 # GitHub: https://github.com/yakhyo
 
 
-import numpy as np
-from typing import Tuple, Dict, Any, List
+from typing import Any, Dict, List
 
-from .scrfd import SCRFD
+import numpy as np
+
 from .base import BaseDetector
 from .retinaface import RetinaFace
+from .scrfd import SCRFD
 
 # Global cache for detector instances
 _detector_cache: Dict[str, BaseDetector] = {}
@@ -38,7 +39,7 @@ def detect_faces(image: np.ndarray, method: str = 'retinaface', **kwargs) -> Lis
         ...     print(f"BBox: {face['bbox']}")
     """
     method_name = method.lower()
-    
+
     sorted_kwargs = sorted(kwargs.items())
     cache_key = f"{method_name}_{str(sorted_kwargs)}"
 

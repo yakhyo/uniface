@@ -6,9 +6,10 @@
 Base classes for face detection.
 """
 
-import numpy as np
 from abc import ABC, abstractmethod
-from typing import Tuple, Dict, Any
+from typing import Any, Dict, Tuple
+
+import numpy as np
 
 
 class BaseDetector(ABC):

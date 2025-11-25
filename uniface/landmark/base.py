@@ -3,6 +3,7 @@
 # GitHub: https://github.com/yakhyo
 
 from abc import ABC, abstractmethod
+
 import numpy as np
 
 

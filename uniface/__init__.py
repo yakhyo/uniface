@@ -22,6 +22,7 @@ from uniface.model_store import verify_model_weights
 from uniface.visualization import draw_detections
 
 from .attribute import AgeGender
+
 try:
     from .attribute import Emotion
 except ImportError:
