@@ -21,7 +21,13 @@ def draw_age_gender_label(image, bbox, gender: str, age: int):
     cv2.putText(image, text, (x1 + 5, y1 - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 2)
 
 
-def process_image(detector, age_gender, image_path: str, save_dir: str = "outputs", threshold: float = 0.6):
+def process_image(
+    detector,
+    age_gender,
+    image_path: str,
+    save_dir: str = "outputs",
+    threshold: float = 0.6,
+):
     image = cv2.imread(image_path)
     if image is None:
         print(f"Error: Failed to load image from '{image_path}'")
@@ -75,7 +81,15 @@ def run_webcam(detector, age_gender, threshold: float = 0.6):
             gender, age = age_gender.predict(frame, face["bbox"])  # predict per face
             draw_age_gender_label(frame, face["bbox"], gender, age)
 
-        cv2.putText(frame, f"Faces: {len(faces)}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        cv2.putText(
+            frame,
+            f"Faces: {len(faces)}",
+            (10, 30),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            1,
+            (0, 255, 0),
+            2,
+        )
         cv2.imshow("Age & Gender Detection", frame)
 
         if cv2.waitKey(1) & 0xFF == ord("q"):

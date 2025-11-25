@@ -19,7 +19,7 @@ dependencies = [
 requires-python = ">=3.10"
 
 [project.optional-dependencies]
-dev = ["pytest>=7.0.0"]
+dev = ["pytest>=7.0.0", "ruff>=0.4.0"]
 gpu = ["onnxruntime-gpu>=1.16.0"]
 
 [project.urls]
@@ -35,3 +35,13 @@ packages = { find = {} }
 
 [tool.setuptools.package-data]
 "uniface" = ["*.txt", "*.md"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["uniface"]

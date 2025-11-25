@@ -11,7 +11,13 @@ from uniface import SCRFD, RetinaFace
 from uniface.visualization import draw_detections
 
 
-def process_video(detector, input_path: str, output_path: str, threshold: float = 0.6, show_preview: bool = False):
+def process_video(
+    detector,
+    input_path: str,
+    output_path: str,
+    threshold: float = 0.6,
+    show_preview: bool = False,
+):
     cap = cv2.VideoCapture(input_path)
     if not cap.isOpened():
         print(f"Error: Cannot open video file '{input_path}'")
@@ -51,7 +57,15 @@ def process_video(detector, input_path: str, output_path: str, threshold: float 
         landmarks = [f["landmarks"] for f in faces]
         draw_detections(frame, bboxes, scores, landmarks, vis_threshold=threshold)
 
-        cv2.putText(frame, f"Faces: {len(faces)}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        cv2.putText(
+            frame,
+            f"Faces: {len(faces)}",
+            (10, 30),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            1,
+            (0, 255, 0),
+            2,
+        )
         out.write(frame)
 
         if show_preview:

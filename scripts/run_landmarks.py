@@ -34,7 +34,15 @@ def process_image(detector, landmarker, image_path: str, save_dir: str = "output
         for x, y in landmarks.astype(int):
             cv2.circle(image, (x, y), 1, (0, 255, 0), -1)
 
-        cv2.putText(image, f"Face {i + 1}", (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+        cv2.putText(
+            image,
+            f"Face {i + 1}",
+            (x1, y1 - 10),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.5,
+            (0, 255, 0),
+            2,
+        )
 
     os.makedirs(save_dir, exist_ok=True)
     output_path = os.path.join(save_dir, f"{Path(image_path).stem}_landmarks.jpg")
@@ -67,7 +75,15 @@ def run_webcam(detector, landmarker):
             for x, y in landmarks.astype(int):
                 cv2.circle(frame, (x, y), 1, (0, 255, 0), -1)
 
-        cv2.putText(frame, f"Faces: {len(faces)}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        cv2.putText(
+            frame,
+            f"Faces: {len(faces)}",
+            (10, 30),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            1,
+            (0, 255, 0),
+            2,
+        )
         cv2.imshow("106-Point Landmarks", frame)
 
         if cv2.waitKey(1) & 0xFF == ord("q"):

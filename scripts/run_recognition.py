@@ -79,7 +79,12 @@ def main():
     parser.add_argument("--image2", type=str, help="Second image for comparison")
     parser.add_argument("--threshold", type=float, default=0.35, help="Similarity threshold")
     parser.add_argument("--detector", type=str, default="retinaface", choices=["retinaface", "scrfd"])
-    parser.add_argument("--recognizer", type=str, default="arcface", choices=["arcface", "mobileface", "sphereface"])
+    parser.add_argument(
+        "--recognizer",
+        type=str,
+        default="arcface",
+        choices=["arcface", "mobileface", "sphereface"],
+    )
     args = parser.parse_args()
 
     detector = RetinaFace() if args.detector == "retinaface" else SCRFD()

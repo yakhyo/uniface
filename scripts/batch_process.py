@@ -33,7 +33,15 @@ def process_image(detector, image_path: Path, output_path: Path, threshold: floa
     landmarks = [f["landmarks"] for f in faces]
     draw_detections(image, bboxes, scores, landmarks, vis_threshold=threshold)
 
-    cv2.putText(image, f"Faces: {len(faces)}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+    cv2.putText(
+        image,
+        f"Faces: {len(faces)}",
+        (10, 30),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        1,
+        (0, 255, 0),
+        2,
+    )
     cv2.imwrite(str(output_path), image)
 
     return len(faces)

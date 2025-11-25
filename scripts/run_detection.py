@@ -53,7 +53,15 @@ def run_webcam(detector, threshold: float = 0.6):
         landmarks = [f["landmarks"] for f in faces]
         draw_detections(frame, bboxes, scores, landmarks, vis_threshold=threshold)
 
-        cv2.putText(frame, f"Faces: {len(faces)}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        cv2.putText(
+            frame,
+            f"Faces: {len(faces)}",
+            (10, 30),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            1,
+            (0, 255, 0),
+            2,
+        )
         cv2.imshow("Face Detection", frame)
 
         if cv2.waitKey(1) & 0xFF == ord("q"):
