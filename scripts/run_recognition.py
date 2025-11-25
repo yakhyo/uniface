@@ -1,10 +1,24 @@
-import cv2
+# Face recognition: extract embeddings or compare two faces
+# Usage: python run_recognition.py --image path/to/image.jpg
+#        python run_recognition.py --image1 face1.jpg --image2 face2.jpg
+
 import argparse
+
+import cv2
 import numpy as np
 
-from uniface.detection import RetinaFace, SCRFD
-from uniface.recognition import ArcFace, MobileFace, SphereFace
+from uniface.detection import SCRFD, RetinaFace
 from uniface.face_utils import compute_similarity
+from uniface.recognition import ArcFace, MobileFace, SphereFace
+
+
+def get_recognizer(name: str):
+    if name == "arcface":
+        return ArcFace()
+    elif name == "mobileface":
+        return MobileFace()
+    else:
+        return SphereFace()
 
 
 def run_inference(detector, recognizer, image_path: str):
@@ -14,38 +28,29 @@ def run_inference(detector, recognizer, image_path: str):
         return
 
     faces = detector.detect(image)
-
     if not faces:
         print("No faces detected.")
         return
 
-    print(f"Detected {len(faces)} face(s). Extracting embeddings for the first face...")
+    print(f"Detected {len(faces)} face(s). Extracting embedding for the first face...")
 
-    # Process the first detected face
-    first_face = faces[0]
-    landmarks = np.array(first_face['landmarks'])  # Convert landmarks to numpy array
-
-    # Extract embedding using the landmarks from the face dictionary
+    landmarks = np.array(faces[0]["landmarks"])  # 5-point landmarks for alignment
     embedding = recognizer.get_embedding(image, landmarks)
-    norm_embedding = recognizer.get_normalized_embedding(image, landmarks)
+    norm_embedding = recognizer.get_normalized_embedding(image, landmarks)  # L2 normalized
 
-    # Print some info about the embeddings
-    print(f"  - Embedding shape: {embedding.shape}")
-    print(f"  - L2 norm of unnormalized embedding: {np.linalg.norm(embedding):.4f}")
-    print(f"  - L2 norm of normalized embedding: {np.linalg.norm(norm_embedding):.4f}")
+    print(f"  Embedding shape: {embedding.shape}")
+    print(f"  L2 norm (raw): {np.linalg.norm(embedding):.4f}")
+    print(f"  L2 norm (normalized): {np.linalg.norm(norm_embedding):.4f}")
 
 
 def compare_faces(detector, recognizer, image1_path: str, image2_path: str, threshold: float = 0.35):
-
-    # Load images
     img1 = cv2.imread(image1_path)
     img2 = cv2.imread(image2_path)
 
     if img1 is None or img2 is None:
-        print(f"Error: Failed to load images")
+        print("Error: Failed to load one or both images")
         return
 
-    # Detect faces
     faces1 = detector.detect(img1)
     faces2 = detector.detect(img2)
 
@@ -53,74 +58,39 @@ def compare_faces(detector, recognizer, image1_path: str, image2_path: str, thre
         print("Error: No faces detected in one or both images")
         return
 
-    # Get landmarks for first face in each image
-    landmarks1 = np.array(faces1[0]['landmarks'])
-    landmarks2 = np.array(faces2[0]['landmarks'])
+    landmarks1 = np.array(faces1[0]["landmarks"])
+    landmarks2 = np.array(faces2[0]["landmarks"])
 
-    # Get normalized embeddings
     embedding1 = recognizer.get_normalized_embedding(img1, landmarks1)
     embedding2 = recognizer.get_normalized_embedding(img2, landmarks2)
 
-    # Compute similarity
+    # cosine similarity for normalized embeddings
     similarity = compute_similarity(embedding1, embedding2, normalized=True)
     is_match = similarity > threshold
 
     print(f"Similarity: {similarity:.4f}")
-    print(f"Result: {'Same person' if is_match else 'Different person'}")
-    print(f"Threshold: {threshold}")
+    print(f"Result: {'Same person' if is_match else 'Different person'} (threshold: {threshold})")
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Face recognition and comparison.")
-    parser.add_argument("--image", type=str, help="Path to single image for embedding extraction.")
-    parser.add_argument("--image1", type=str, help="Path to first image for comparison.")
-    parser.add_argument("--image2", type=str, help="Path to second image for comparison.")
-    parser.add_argument("--threshold", type=float, default=0.35, help="Similarity threshold for face matching.")
-    parser.add_argument(
-        "--detector",
-        type=str,
-        default="retinaface",
-        choices=['retinaface', 'scrfd'],
-        help="Face detection method to use."
-    )
-    parser.add_argument(
-        "--recognizer",
-        type=str,
-        default="arcface",
-        choices=['arcface', 'mobileface', 'sphereface'],
-        help="Face recognition method to use."
-    )
-    parser.add_argument("--verbose", action="store_true", help="Enable verbose logging")
-
+    parser = argparse.ArgumentParser(description="Face recognition and comparison")
+    parser.add_argument("--image", type=str, help="Single image for embedding extraction")
+    parser.add_argument("--image1", type=str, help="First image for comparison")
+    parser.add_argument("--image2", type=str, help="Second image for comparison")
+    parser.add_argument("--threshold", type=float, default=0.35, help="Similarity threshold")
+    parser.add_argument("--detector", type=str, default="retinaface", choices=["retinaface", "scrfd"])
+    parser.add_argument("--recognizer", type=str, default="arcface", choices=["arcface", "mobileface", "sphereface"])
     args = parser.parse_args()
 
-    if args.verbose:
-        from uniface import enable_logging
-        enable_logging()
-
-    print(f"Initializing detector: {args.detector}")
-    if args.detector == 'retinaface':
-        detector = RetinaFace()
-    else:
-        detector = SCRFD()
-
-    print(f"Initializing recognizer: {args.recognizer}")
-    if args.recognizer == 'arcface':
-        recognizer = ArcFace()
-    elif args.recognizer == 'mobileface':
-        recognizer = MobileFace()
-    else:
-        recognizer = SphereFace()
+    detector = RetinaFace() if args.detector == "retinaface" else SCRFD()
+    recognizer = get_recognizer(args.recognizer)
 
     if args.image1 and args.image2:
-        # Face comparison mode
-        print(f"Comparing faces: {args.image1} vs {args.image2}")
         compare_faces(detector, recognizer, args.image1, args.image2, args.threshold)
     elif args.image:
-        # Single image embedding extraction mode
         run_inference(detector, recognizer, args.image)
     else:
-        print("Error: Provide either --image for single image processing or --image1 and --image2 for comparison")
+        print("Error: Provide --image or both --image1 and --image2")
         parser.print_help()
 
 
