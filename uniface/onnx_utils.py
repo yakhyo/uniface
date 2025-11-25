@@ -77,10 +77,25 @@ def create_onnx_session(model_path: str, providers: List[str] = None) -> ort.Inf
     if providers is None:
         providers = get_available_providers()
 
+    # Suppress ONNX Runtime warnings (e.g., CoreML partition warnings)
+    # Log levels: 0=VERBOSE, 1=INFO, 2=WARNING, 3=ERROR, 4=FATAL
+    sess_options = ort.SessionOptions()
+    sess_options.log_severity_level = 3  # Only show ERROR and FATAL
+
     try:
-        session = ort.InferenceSession(model_path, providers=providers)
+        session = ort.InferenceSession(model_path, sess_options=sess_options, providers=providers)
         active_provider = session.get_providers()[0]
         Logger.debug(f"Session created with provider: {active_provider}")
+
+        # Show user-friendly message about which provider is being used
+        provider_names = {
+            "CoreMLExecutionProvider": "CoreML (Apple Silicon)",
+            "CUDAExecutionProvider": "CUDA (NVIDIA GPU)",
+            "CPUExecutionProvider": "CPU",
+        }
+        provider_display = provider_names.get(active_provider, active_provider)
+        print(f"Model loaded ({provider_display})")
+
         return session
     except Exception as e:
         Logger.error(f"Failed to create ONNX session: {e}", exc_info=True)
