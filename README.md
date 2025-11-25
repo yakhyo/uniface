@@ -394,11 +394,27 @@ pip install -e ".[dev]"
 
 # Run tests
 pytest
-
-# Format code
-black uniface/
-isort uniface/
 ```
+
+### Code Formatting
+
+This project uses [Ruff](https://docs.astral.sh/ruff/) for linting and formatting.
+
+```bash
+# Format code
+ruff format .
+
+# Check for linting errors
+ruff check .
+
+# Auto-fix linting errors
+ruff check . --fix
+```
+
+Ruff configuration is in `pyproject.toml`. Key settings:
+- Line length: 120
+- Python target: 3.10+
+- Import sorting: `uniface` as first-party
 
 ### Project Structure
 
