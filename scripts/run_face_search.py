@@ -33,7 +33,7 @@ def extract_reference_embedding(detector, recognizer, image_path: str) -> np.nda
     return recognizer.get_normalized_embedding(image, landmarks)
 
 
-def run_video(detector, recognizer, ref_embedding: np.ndarray, threshold: float = 0.4):
+def run_webcam(detector, recognizer, ref_embedding: np.ndarray, threshold: float = 0.4):
     cap = cv2.VideoCapture(0)  # 0 = default webcam
     if not cap.isOpened():
         raise RuntimeError("Webcam could not be opened.")
@@ -82,10 +82,10 @@ def main():
     detector = RetinaFace() if args.detector == "retinaface" else SCRFD()
     recognizer = get_recognizer(args.recognizer)
 
-    print("Extracting reference embedding...")
+    print(f"Loading reference: {args.image}")
     ref_embedding = extract_reference_embedding(detector, recognizer, args.image)
 
-    run_video(detector, recognizer, ref_embedding, args.threshold)
+    run_webcam(detector, recognizer, ref_embedding, args.threshold)
 
 
 if __name__ == "__main__":
