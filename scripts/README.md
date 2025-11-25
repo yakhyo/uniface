@@ -1,97 +1,68 @@
 # Scripts
 
-Collection of example scripts demonstrating UniFace functionality.
+Scripts for testing UniFace features.
 
 ## Available Scripts
 
-- `run_detection.py` - Face detection on images
-- `run_age_gender.py` - Age and gender prediction
-- `run_landmarks.py` - Facial landmark detection
-- `run_recognition.py` - Face recognition and embeddings
-- `run_face_search.py` - Face search and matching
-- `run_video_detection.py` - Video processing with face detection
-- `batch_process.py` - Batch processing of image folders
-- `download_model.py` - Download and manage models
+| Script | Description |
+|--------|-------------|
+| `run_detection.py` | Face detection on image or webcam |
+| `run_age_gender.py` | Age and gender prediction |
+| `run_landmarks.py` | 106-point facial landmark detection |
+| `run_recognition.py` | Face embedding extraction and comparison |
+| `run_face_search.py` | Real-time face matching against reference |
+| `run_video_detection.py` | Face detection on video files |
+| `batch_process.py` | Batch process folder of images |
+| `download_model.py` | Download model weights |
+| `sha256_generate.py` | Generate SHA256 hash for model files |
 
-## Quick Start
+## Usage Examples
 
 ```bash
 # Face detection
 python scripts/run_detection.py --image assets/test.jpg
+python scripts/run_detection.py --webcam
 
-# Age and gender detection
+# Age and gender
 python scripts/run_age_gender.py --image assets/test.jpg
-
-# Webcam demo
 python scripts/run_age_gender.py --webcam
+
+# Landmarks
+python scripts/run_landmarks.py --image assets/test.jpg
+python scripts/run_landmarks.py --webcam
+
+# Face recognition (extract embedding)
+python scripts/run_recognition.py --image assets/test.jpg
+
+# Face comparison
+python scripts/run_recognition.py --image1 face1.jpg --image2 face2.jpg
+
+# Face search (match webcam against reference)
+python scripts/run_face_search.py --image reference.jpg
+
+# Video processing
+python scripts/run_video_detection.py --input video.mp4 --output output.mp4
 
 # Batch processing
 python scripts/batch_process.py --input images/ --output results/
+
+# Download models
+python scripts/download_model.py --model-type retinaface
+python scripts/download_model.py  # downloads all
 ```
-
-## Import Examples
-
-The scripts use direct class imports for better developer experience:
-
-```python
-# Face Detection
-from uniface.detection import RetinaFace, SCRFD
-
-detector = RetinaFace()  # or SCRFD()
-faces = detector.detect(image)
-
-# Face Recognition
-from uniface.recognition import ArcFace, MobileFace, SphereFace
-
-recognizer = ArcFace()  # or MobileFace(), SphereFace()
-embedding = recognizer.get_embedding(image, landmarks)
-
-# Age & Gender
-from uniface.attribute import AgeGender
-
-age_gender = AgeGender()
-gender, age = age_gender.predict(image, bbox)
-
-# Landmarks
-from uniface.landmark import Landmark106
-
-landmarker = Landmark106()
-landmarks = landmarker.get_landmarks(image, bbox)
-```
-
-## Available Classes
-
-**Detection:**
-- `RetinaFace` - High accuracy face detection
-- `SCRFD` - Fast face detection
-
-**Recognition:**
-- `ArcFace` - High accuracy face recognition
-- `MobileFace` - Lightweight face recognition
-- `SphereFace` - Alternative face recognition
-
-**Attributes:**
-- `AgeGender` - Age and gender prediction
-
-**Landmarks:**
-- `Landmark106` - 106-point facial landmarks
 
 ## Common Options
 
-Most scripts support:
-- `--help` - Show usage information
-- `--verbose` - Enable detailed logging
-- `--detector` - Choose detector (retinaface, scrfd)
-- `--threshold` - Set confidence threshold
+| Option | Description |
+|--------|-------------|
+| `--image` | Path to input image |
+| `--webcam` | Use webcam instead of image |
+| `--detector` | Choose detector: `retinaface` or `scrfd` |
+| `--threshold` | Visualization confidence threshold (default: 0.6) |
+| `--save_dir` | Output directory (default: `outputs`) |
 
-## Testing
+## Quick Test
 
-Run basic functionality test:
 ```bash
 python scripts/run_detection.py --image assets/test.jpg
-```
-
-For comprehensive testing, see the main project tests:
-```bash
-pytest tests/
 ```

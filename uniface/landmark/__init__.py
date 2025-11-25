@@ -2,11 +2,11 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-from .models import Landmark106
 from .base import BaseLandmarker
+from .models import Landmark106
 
 
-def create_landmarker(method: str = '2d106det', **kwargs) -> BaseLandmarker:
+def create_landmarker(method: str = "2d106det", **kwargs) -> BaseLandmarker:
     """
     Factory function to create facial landmark predictors.
 
@@ -18,15 +18,11 @@ def create_landmarker(method: str = '2d106det', **kwargs) -> BaseLandmarker:
         Initialized landmarker instance.
     """
     method = method.lower()
-    if method == '2d106det':
+    if method == "2d106det":
         return Landmark106(**kwargs)
     else:
-        available = ['2d106det']
+        available = ["2d106det"]
         raise ValueError(f"Unsupported method: '{method}'. Available: {available}")
 
 
-__all__ = [
-    "create_landmarker",
-    "Landmark106",
-    "BaseLandmarker"
-]
+__all__ = ["create_landmarker", "Landmark106", "BaseLandmarker"]

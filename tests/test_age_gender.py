@@ -31,7 +31,7 @@ def test_prediction_output_format(age_gender_model, mock_image, mock_bbox):
 
 def test_gender_values(age_gender_model, mock_image, mock_bbox):
     gender, age = age_gender_model.predict(mock_image, mock_bbox)
-    assert gender in ['Male', 'Female'], f"Gender should be 'Male' or 'Female', got '{gender}'"
+    assert gender in ["Male", "Female"], f"Gender should be 'Male' or 'Female', got '{gender}'"
 
 
 def test_age_range(age_gender_model, mock_image, mock_bbox):
@@ -48,7 +48,7 @@ def test_different_bbox_sizes(age_gender_model, mock_image):
 
     for bbox in test_bboxes:
         gender, age = age_gender_model.predict(mock_image, bbox)
-        assert gender in ['Male', 'Female'], f"Failed for bbox {bbox}"
+        assert gender in ["Male", "Female"], f"Failed for bbox {bbox}"
         assert 0 <= age <= 120, f"Age out of range for bbox {bbox}"
 
 
@@ -58,7 +58,7 @@ def test_different_image_sizes(age_gender_model, mock_bbox):
     for size in test_sizes:
         mock_image = np.random.randint(0, 255, size, dtype=np.uint8)
         gender, age = age_gender_model.predict(mock_image, mock_bbox)
-        assert gender in ['Male', 'Female'], f"Failed for image size {size}"
+        assert gender in ["Male", "Female"], f"Failed for image size {size}"
         assert 0 <= age <= 120, f"Age out of range for image size {size}"
 
 
@@ -73,14 +73,14 @@ def test_consistency(age_gender_model, mock_image, mock_bbox):
 def test_bbox_list_format(age_gender_model, mock_image):
     bbox_list = [100, 100, 300, 300]
     gender, age = age_gender_model.predict(mock_image, bbox_list)
-    assert gender in ['Male', 'Female'], "Should work with bbox as list"
+    assert gender in ["Male", "Female"], "Should work with bbox as list"
     assert 0 <= age <= 120, "Age should be in valid range"
 
 
 def test_bbox_array_format(age_gender_model, mock_image):
     bbox_array = np.array([100, 100, 300, 300])
     gender, age = age_gender_model.predict(mock_image, bbox_array)
-    assert gender in ['Male', 'Female'], "Should work with bbox as numpy array"
+    assert gender in ["Male", "Female"], "Should work with bbox as numpy array"
     assert 0 <= age <= 120, "Age should be in valid range"
 
 
@@ -98,7 +98,7 @@ def test_multiple_predictions(age_gender_model, mock_image):
 
     assert len(results) == 3, "Should have 3 predictions"
     for gender, age in results:
-        assert gender in ['Male', 'Female']
+        assert gender in ["Male", "Female"]
         assert 0 <= age <= 120
 
 

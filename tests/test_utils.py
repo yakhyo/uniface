@@ -18,13 +18,16 @@ def mock_landmarks():
     Create mock 5-point facial landmarks.
     Standard positions for a face roughly centered at (112/2, 112/2).
     """
-    return np.array([
-        [38.2946, 51.6963],  # Left eye
-        [73.5318, 51.5014],  # Right eye
-        [56.0252, 71.7366],  # Nose
-        [41.5493, 92.3655],  # Left mouth corner
-        [70.7299, 92.2041]   # Right mouth corner
-    ], dtype=np.float32)
+    return np.array(
+        [
+            [38.2946, 51.6963],  # Left eye
+            [73.5318, 51.5014],  # Right eye
+            [56.0252, 71.7366],  # Nose
+            [41.5493, 92.3655],  # Left mouth corner
+            [70.7299, 92.2041],  # Right mouth corner
+        ],
+        dtype=np.float32,
+    )
 
 
 # compute_similarity tests
@@ -166,7 +169,7 @@ def test_face_alignment_landmarks_as_list(mock_image):
         [73.5318, 51.5014],
         [56.0252, 71.7366],
         [41.5493, 92.3655],
-        [70.7299, 92.2041]
+        [70.7299, 92.2041],
     ]
 
     # Convert list to numpy array before passing to face_alignment
@@ -201,9 +204,18 @@ def test_face_alignment_from_different_positions(mock_image):
     """
     # Landmarks at different positions
     positions = [
-        np.array([[100, 100], [150, 100], [125, 130], [110, 150], [140, 150]], dtype=np.float32),
-        np.array([[300, 200], [350, 200], [325, 230], [310, 250], [340, 250]], dtype=np.float32),
-        np.array([[500, 400], [550, 400], [525, 430], [510, 450], [540, 450]], dtype=np.float32),
+        np.array(
+            [[100, 100], [150, 100], [125, 130], [110, 150], [140, 150]],
+            dtype=np.float32,
+        ),
+        np.array(
+            [[300, 200], [350, 200], [325, 230], [310, 250], [340, 250]],
+            dtype=np.float32,
+        ),
+        np.array(
+            [[500, 400], [550, 400], [525, 430], [510, 450], [540, 450]],
+            dtype=np.float32,
+        ),
     ]
 
     for landmarks in positions:
@@ -216,13 +228,16 @@ def test_face_alignment_landmark_count(mock_image):
     Test that face_alignment works specifically with 5-point landmarks.
     """
     # Standard 5-point landmarks
-    landmarks_5pt = np.array([
-        [38.2946, 51.6963],
-        [73.5318, 51.5014],
-        [56.0252, 71.7366],
-        [41.5493, 92.3655],
-        [70.7299, 92.2041]
-    ], dtype=np.float32)
+    landmarks_5pt = np.array(
+        [
+            [38.2946, 51.6963],
+            [73.5318, 51.5014],
+            [56.0252, 71.7366],
+            [41.5493, 92.3655],
+            [70.7299, 92.2041],
+        ],
+        dtype=np.float32,
+    )
 
     aligned, _ = face_alignment(mock_image, landmarks_5pt, image_size=(112, 112))
     assert aligned.shape == (112, 112, 3), "Should work with 5-point landmarks"

@@ -12,15 +12,8 @@ def compute_sha256(file_path: Path, chunk_size: int = 8192) -> str:
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Compute SHA256 hash of a model weight file."
-    )
-    parser.add_argument(
-        "file",
-        type=Path,
-        help="Path to the model weight file (.onnx, .pth, etc)."
-    )
-
+    parser = argparse.ArgumentParser(description="Compute SHA256 hash of a file")
+    parser.add_argument("file", type=Path, help="Path to file")
     args = parser.parse_args()
 
     if not args.file.exists() or not args.file.is_file():
@@ -28,7 +21,7 @@ def main():
         return
 
     sha256 = compute_sha256(args.file)
-    print(f"`SHA256 hash for '{args.file.name}':\n{sha256}")
+    print(f"SHA256 hash for '{args.file.name}':\n{sha256}")
 
 
 if __name__ == "__main__":

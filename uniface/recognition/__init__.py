@@ -2,12 +2,12 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-from typing import Dict
-from .models import ArcFace, MobileFace, SphereFace
-from .base import BaseRecognizer
-from uniface.constants import ArcFaceWeights, MobileFaceWeights, SphereFaceWeights
 
-def create_recognizer(method: str = 'arcface', **kwargs) -> BaseRecognizer:
+from .base import BaseRecognizer
+from .models import ArcFace, MobileFace, SphereFace
+
+
+def create_recognizer(method: str = "arcface", **kwargs) -> BaseRecognizer:
     """
     Factory function to create face recognizers.
 
@@ -44,15 +44,16 @@ def create_recognizer(method: str = 'arcface', **kwargs) -> BaseRecognizer:
     """
     method = method.lower()
 
-    if method == 'arcface':
+    if method == "arcface":
         return ArcFace(**kwargs)
-    elif method == 'mobileface':
+    elif method == "mobileface":
         return MobileFace(**kwargs)
-    elif method == 'sphereface':
+    elif method == "sphereface":
         return SphereFace(**kwargs)
     else:
-        available = ['arcface', 'mobileface', 'sphereface']
+        available = ["arcface", "mobileface", "sphereface"]
         raise ValueError(f"Unsupported method: '{method}'. Available: {available}")
+
 
 __all__ = [
     "create_recognizer",

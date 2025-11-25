@@ -6,6 +6,7 @@ from typing import Optional
 
 from uniface.constants import ArcFaceWeights, MobileFaceWeights, SphereFaceWeights
 from uniface.model_store import verify_model_weights
+
 from .base import BaseRecognizer, PreprocessConfig
 
 __all__ = ["ArcFace", "MobileFace", "SphereFace"]
@@ -33,14 +34,10 @@ class ArcFace(BaseRecognizer):
     def __init__(
         self,
         model_name: ArcFaceWeights = ArcFaceWeights.MNET,
-        preprocessing: Optional[PreprocessConfig] = None
+        preprocessing: Optional[PreprocessConfig] = None,
     ) -> None:
         if preprocessing is None:
-            preprocessing = PreprocessConfig(
-                input_mean=127.5,
-                input_std=127.5,
-                input_size=(112, 112)
-            )
+            preprocessing = PreprocessConfig(input_mean=127.5, input_std=127.5, input_size=(112, 112))
         model_path = verify_model_weights(model_name)
         super().__init__(model_path=model_path, preprocessing=preprocessing)
 
@@ -67,14 +64,10 @@ class MobileFace(BaseRecognizer):
     def __init__(
         self,
         model_name: MobileFaceWeights = MobileFaceWeights.MNET_V2,
-        preprocessing: Optional[PreprocessConfig] = None
+        preprocessing: Optional[PreprocessConfig] = None,
     ) -> None:
         if preprocessing is None:
-            preprocessing = PreprocessConfig(
-                input_mean=127.5,
-                input_std=127.5,
-                input_size=(112, 112)
-            )
+            preprocessing = PreprocessConfig(input_mean=127.5, input_std=127.5, input_size=(112, 112))
         model_path = verify_model_weights(model_name)
         super().__init__(model_path=model_path, preprocessing=preprocessing)
 
@@ -101,14 +94,10 @@ class SphereFace(BaseRecognizer):
     def __init__(
         self,
         model_name: SphereFaceWeights = SphereFaceWeights.SPHERE20,
-        preprocessing: Optional[PreprocessConfig] = None
+        preprocessing: Optional[PreprocessConfig] = None,
     ) -> None:
         if preprocessing is None:
-            preprocessing = PreprocessConfig(
-                input_mean=127.5,
-                input_std=127.5,
-                input_size=(112, 112)
-            )
+            preprocessing = PreprocessConfig(input_mean=127.5, input_std=127.5, input_size=(112, 112))
 
         model_path = verify_model_weights(model_name)
         super().__init__(model_path=model_path, preprocessing=preprocessing)

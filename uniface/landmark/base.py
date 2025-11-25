@@ -3,6 +3,7 @@
 # GitHub: https://github.com/yakhyo
 
 from abc import ABC, abstractmethod
+
 import numpy as np
 
 
@@ -10,6 +11,7 @@ class BaseLandmarker(ABC):
     """
     Abstract Base Class for all facial landmark models.
     """
+
     @abstractmethod
     def get_landmarks(self, image: np.ndarray, bbox: np.ndarray) -> np.ndarray:
         """

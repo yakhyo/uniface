@@ -41,13 +41,16 @@ def mock_landmarks():
     """
     Create mock 5-point facial landmarks.
     """
-    return np.array([
-        [38.2946, 51.6963],
-        [73.5318, 51.5014],
-        [56.0252, 71.7366],
-        [41.5493, 92.3655],
-        [70.7299, 92.2041]
-    ], dtype=np.float32)
+    return np.array(
+        [
+            [38.2946, 51.6963],
+            [73.5318, 51.5014],
+            [56.0252, 71.7366],
+            [41.5493, 92.3655],
+            [70.7299, 92.2041],
+        ],
+        dtype=np.float32,
+    )
 
 
 # ArcFace Tests
@@ -173,8 +176,7 @@ def test_different_models_different_embeddings(arcface_model, mobileface_model, 
 
     # Embeddings should be different (with high probability for random input)
     # We check that they're not identical
-    assert not np.allclose(arcface_emb, mobileface_emb), \
-        "Different models should produce different embeddings"
+    assert not np.allclose(arcface_emb, mobileface_emb), "Different models should produce different embeddings"
 
 
 def test_embedding_similarity_computation(arcface_model, mock_aligned_face):
@@ -191,6 +193,7 @@ def test_embedding_similarity_computation(arcface_model, mock_aligned_face):
 
     # Compute cosine similarity
     from uniface import compute_similarity
+
     similarity = compute_similarity(emb1, emb2)
 
     # Similarity should be between -1 and 1
@@ -205,6 +208,7 @@ def test_same_face_high_similarity(arcface_model, mock_aligned_face):
     emb2 = arcface_model.get_embedding(mock_aligned_face)
 
     from uniface import compute_similarity
+
     similarity = compute_similarity(emb1, emb2)
 
     # Same image should have similarity close to 1.0
