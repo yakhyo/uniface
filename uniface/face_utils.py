@@ -8,7 +8,12 @@ import cv2
 import numpy as np
 from skimage.transform import SimilarityTransform
 
-__all__ = ["face_alignment", "compute_similarity", "bbox_center_alignment", "transform_points_2d"]
+__all__ = [
+    "face_alignment",
+    "compute_similarity",
+    "bbox_center_alignment",
+    "transform_points_2d",
+]
 
 
 # Reference alignment for facial landmarks (ArcFace)
@@ -18,9 +23,9 @@ reference_alignment: np.ndarray = np.array(
         [73.5318, 51.5014],
         [56.0252, 71.7366],
         [41.5493, 92.3655],
-        [70.7299, 92.2041]
+        [70.7299, 92.2041],
     ],
-    dtype=np.float32
+    dtype=np.float32,
 )
 
 
@@ -72,7 +77,11 @@ def estimate_norm(landmark: np.ndarray, image_size: Union[int, Tuple[int, int]] 
     return matrix, inverse_matrix
 
 
-def face_alignment(image: np.ndarray, landmark: np.ndarray, image_size: Union[int, Tuple[int, int]] = 112) -> Tuple[np.ndarray, np.ndarray]:
+def face_alignment(
+    image: np.ndarray,
+    landmark: np.ndarray,
+    image_size: Union[int, Tuple[int, int]] = 112,
+) -> Tuple[np.ndarray, np.ndarray]:
     """
     Align the face in the input image based on the given facial landmarks.
 

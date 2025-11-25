@@ -11,6 +11,7 @@ class BaseLandmarker(ABC):
     """
     Abstract Base Class for all facial landmark models.
     """
+
     @abstractmethod
     def get_landmarks(self, image: np.ndarray, bbox: np.ndarray) -> np.ndarray:
         """

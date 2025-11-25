@@ -19,6 +19,7 @@ class PreprocessConfig:
     """
     Configuration for preprocessing images before feeding them into the model.
     """
+
     input_mean: Union[float, List[float]] = 127.5
     input_std: Union[float, List[float]] = 127.5
     input_size: Tuple[int, int] = (112, 112)
@@ -29,6 +30,7 @@ class BaseRecognizer(ABC):
     Abstract Base Class for all face recognition models.
     It provides the core functionality for preprocessing, inference, and embedding extraction.
     """
+
     @abstractmethod
     def __init__(self, model_path: str, preprocessing: PreprocessConfig) -> None:
         """
@@ -74,7 +76,10 @@ class BaseRecognizer(ABC):
             Logger.info(f"Successfully initialized face encoder from {self.model_path}")
 
         except Exception as e:
-            Logger.error(f"Failed to load face encoder model from '{self.model_path}'", exc_info=True)
+            Logger.error(
+                f"Failed to load face encoder model from '{self.model_path}'",
+                exc_info=True,
+            )
             raise RuntimeError(f"Failed to initialize model session for '{self.model_path}'") from e
 
     def preprocess(self, face_img: np.ndarray) -> np.ndarray:
@@ -92,8 +97,9 @@ class BaseRecognizer(ABC):
         if isinstance(self.input_std, (list, tuple)):
             # Per-channel normalization
             rgb_img = cv2.cvtColor(resized_img, cv2.COLOR_BGR2RGB).astype(np.float32)
-            normalized_img = (rgb_img - np.array(self.input_mean, dtype=np.float32)) / \
-                np.array(self.input_std, dtype=np.float32)
+            normalized_img = (rgb_img - np.array(self.input_mean, dtype=np.float32)) / np.array(
+                self.input_std, dtype=np.float32
+            )
 
             # Change to NCHW (batch, channels, height, width)
             blob = np.transpose(normalized_img, (2, 0, 1))  # CHW
@@ -105,7 +111,7 @@ class BaseRecognizer(ABC):
                 scalefactor=1.0 / self.input_std,
                 size=self.input_size,
                 mean=(self.input_mean, self.input_mean, self.input_mean),
-                swapRB=True  # Convert BGR to RGB
+                swapRB=True,  # Convert BGR to RGB
             )
 
         return blob

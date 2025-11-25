@@ -85,7 +85,7 @@ class BaseDetector(ABC):
         Returns:
             bool: True if landmarks are supported, False otherwise
         """
-        return hasattr(self, '_supports_landmarks') and self._supports_landmarks
+        return hasattr(self, "_supports_landmarks") and self._supports_landmarks
 
     def get_info(self) -> Dict[str, Any]:
         """
@@ -95,7 +95,7 @@ class BaseDetector(ABC):
             Dict[str, Any]: Detector information
         """
         return {
-            'name': self.__class__.__name__,
-            'supports_landmarks': self._supports_landmarks,
-            'config': self.config
+            "name": self.__class__.__name__,
+            "supports_landmarks": self._supports_landmarks,
+            "config": self.config,
         }

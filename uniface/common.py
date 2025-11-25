@@ -59,12 +59,7 @@ def generate_anchors(image_size: Tuple[int, int] = (640, 640)) -> np.ndarray:
     min_sizes = [[16, 32], [64, 128], [256, 512]]
 
     anchors = []
-    feature_maps = [
-        [
-            math.ceil(image_size[0] / step),
-            math.ceil(image_size[1] / step)
-        ] for step in steps
-    ]
+    feature_maps = [[math.ceil(image_size[0] / step), math.ceil(image_size[1] / step)] for step in steps]
 
     for k, (map_height, map_width) in enumerate(feature_maps):
         step = steps[k]

@@ -44,7 +44,15 @@ class Emotion(Attribute):
         self.model_path = verify_model_weights(model_weights)
 
         # Define emotion labels based on the selected model
-        self.emotion_labels = ["Neutral", "Happy", "Sad", "Surprise", "Fear", "Disgust", "Angry"]
+        self.emotion_labels = [
+            "Neutral",
+            "Happy",
+            "Sad",
+            "Surprise",
+            "Fear",
+            "Disgust",
+            "Angry",
+        ]
         if model_weights == DDAMFNWeights.AFFECNET8:
             self.emotion_labels.append("Contempt")
 
@@ -64,7 +72,7 @@ class Emotion(Attribute):
             Logger.info(f"Successfully initialized Emotion model on {self.device}")
         except Exception as e:
             Logger.error(f"Failed to load Emotion model from '{self.model_path}'", exc_info=True)
-            raise RuntimeError(f"Failed to initialize Emotion model: {e}")
+            raise RuntimeError(f"Failed to initialize Emotion model: {e}") from e
 
     def preprocess(self, image: np.ndarray, landmark: Union[List, np.ndarray]) -> torch.Tensor:
         """
@@ -116,8 +124,8 @@ class Emotion(Attribute):
 
 # TODO: below is only for testing, remove it later
 if __name__ == "__main__":
-    from uniface.detection import create_detector
     from uniface.constants import RetinaFaceWeights
+    from uniface.detection import create_detector
 
     print("Initializing models for live inference...")
     # 1. Initialize the face detector
@@ -146,8 +154,8 @@ if __name__ == "__main__":
 
         # For each detected face, predict the emotion
         for detection in detections:
-            box = detection['bbox']
-            landmark = detection['landmarks']
+            box = detection["bbox"]
+            landmark = detection["landmarks"]
             x1, y1, x2, y2 = map(int, box)
 
             # Predict attributes using the landmark
@@ -156,13 +164,21 @@ if __name__ == "__main__":
             # Prepare text and draw on the frame
             label = f"{emotion} ({confidence:.2f})"
             cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 0, 0), 2)
-            cv2.putText(frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 0, 0), 2)
+            cv2.putText(
+                frame,
+                label,
+                (x1, y1 - 10),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.8,
+                (255, 0, 0),
+                2,
+            )
 
         # Display the resulting frame
         cv2.imshow("Emotion Inference (Press 'q' to quit)", frame)
 
         # Break the loop if 'q' is pressed
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        if cv2.waitKey(1) & 0xFF == ord("q"):
             break
 
     # Release resources

@@ -51,8 +51,11 @@ class AgeGender(Attribute):
             self.output_names = [output.name for output in self.session.get_outputs()]
             Logger.info(f"Successfully initialized AgeGender model with input size {self.input_size}")
         except Exception as e:
-            Logger.error(f"Failed to load AgeGender model from '{self.model_path}'", exc_info=True)
-            raise RuntimeError(f"Failed to initialize AgeGender model: {e}")
+            Logger.error(
+                f"Failed to load AgeGender model from '{self.model_path}'",
+                exc_info=True,
+            )
+            raise RuntimeError(f"Failed to initialize AgeGender model: {e}") from e
 
     def preprocess(self, image: np.ndarray, bbox: Union[List, np.ndarray]) -> np.ndarray:
         """
@@ -76,7 +79,11 @@ class AgeGender(Attribute):
         aligned_face, _ = bbox_center_alignment(image, center, self.input_size[1], scale, rotation)
 
         blob = cv2.dnn.blobFromImage(
-            aligned_face, scalefactor=1.0, size=self.input_size[::-1], mean=(0.0, 0.0, 0.0), swapRB=True
+            aligned_face,
+            scalefactor=1.0,
+            size=self.input_size[::-1],
+            mean=(0.0, 0.0, 0.0),
+            swapRB=True,
         )
         return blob
 
@@ -157,7 +164,15 @@ if __name__ == "__main__":
             # Prepare text and draw on the frame
             label = f"{gender}, {age}"
             cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-            cv2.putText(frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
+            cv2.putText(
+                frame,
+                label,
+                (x1, y1 - 10),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.8,
+                (0, 255, 0),
+                2,
+            )
 
         # Display the resulting frame
         cv2.imshow("Age and Gender Inference (Press 'q' to quit)", frame)

@@ -44,7 +44,13 @@ def draw_detections(
 
         # Draw score
         cv2.putText(
-            image, f"{score:.2f}", (bbox[0], bbox[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), thickness
+            image,
+            f"{score:.2f}",
+            (bbox[0], bbox[1] - 10),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.5,
+            (255, 255, 255),
+            thickness,
         )
 
         # Draw landmarks

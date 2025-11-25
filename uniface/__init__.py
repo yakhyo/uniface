@@ -27,7 +27,13 @@ try:
     from .attribute import Emotion
 except ImportError:
     Emotion = None  # PyTorch not installed
-from .detection import SCRFD, RetinaFace, create_detector, detect_faces, list_available_detectors
+from .detection import (
+    SCRFD,
+    RetinaFace,
+    create_detector,
+    detect_faces,
+    list_available_detectors,
+)
 from .landmark import Landmark106, create_landmarker
 from .recognition import ArcFace, MobileFace, SphereFace, create_recognizer
 

@@ -173,7 +173,11 @@ class SCRFD(BaseDetector):
         return scores_list, bboxes_list, kpss_list
 
     def detect(
-        self, image: np.ndarray, max_num: int = 0, metric: Literal["default", "max"] = "max", center_weight: float = 2
+        self,
+        image: np.ndarray,
+        max_num: int = 0,
+        metric: Literal["default", "max"] = "max",
+        center_weight: float = 2,
     ) -> List[Dict[str, Any]]:
         """
         Perform face detection on an input image and return bounding boxes and facial landmarks.
@@ -311,7 +315,15 @@ if __name__ == "__main__":
                 draw_keypoints(frame, points)
 
         # Display face count
-        cv2.putText(frame, f"Faces: {len(faces)}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+        cv2.putText(
+            frame,
+            f"Faces: {len(faces)}",
+            (10, 30),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.7,
+            (255, 255, 255),
+            2,
+        )
 
         cv2.imshow("FaceDetection", frame)
         if cv2.waitKey(1) & 0xFF == ord("q"):

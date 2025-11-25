@@ -11,10 +11,10 @@ from tqdm import tqdm
 import uniface.constants as const
 from uniface.log import Logger
 
-__all__ = ['verify_model_weights']
+__all__ = ["verify_model_weights"]
 
 
-def verify_model_weights(model_name: str, root: str = '~/.uniface/models') -> str:
+def verify_model_weights(model_name: str, root: str = "~/.uniface/models") -> str:
     """
     Ensure model weights are present, downloading and verifying them using SHA-256 if necessary.
 
@@ -53,7 +53,7 @@ def verify_model_weights(model_name: str, root: str = '~/.uniface/models') -> st
         raise ValueError(f"No URL found for model '{model_name}'")
 
     file_ext = os.path.splitext(url)[1]
-    model_path = os.path.normpath(os.path.join(root, f'{model_name.value}{file_ext}'))
+    model_path = os.path.normpath(os.path.join(root, f"{model_name.value}{file_ext}"))
 
     if not os.path.exists(model_path):
         Logger.info(f"Downloading model '{model_name}' from {url}")
@@ -62,7 +62,7 @@ def verify_model_weights(model_name: str, root: str = '~/.uniface/models') -> st
             Logger.info(f"Successfully downloaded '{model_name}' to {model_path}")
         except Exception as e:
             Logger.error(f"Failed to download model '{model_name}': {e}")
-            raise ConnectionError(f"Download failed for '{model_name}'")
+            raise ConnectionError(f"Download failed for '{model_name}'") from e
 
     expected_hash = const.MODEL_SHA256.get(model_name)
     if expected_hash and not verify_file_hash(model_path, expected_hash):
@@ -78,18 +78,21 @@ def download_file(url: str, dest_path: str) -> None:
     try:
         response = requests.get(url, stream=True)
         response.raise_for_status()
-        with open(dest_path, "wb") as file, tqdm(
-            desc=f"Downloading {dest_path}",
-            unit='B',
-            unit_scale=True,
-            unit_divisor=1024
-        ) as progress:
+        with (
+            open(dest_path, "wb") as file,
+            tqdm(
+                desc=f"Downloading {dest_path}",
+                unit="B",
+                unit_scale=True,
+                unit_divisor=1024,
+            ) as progress,
+        ):
             for chunk in response.iter_content(chunk_size=const.CHUNK_SIZE):
                 if chunk:
                     file.write(chunk)
                     progress.update(len(chunk))
     except requests.RequestException as e:
-        raise ConnectionError(f"Failed to download file from {url}. Error: {e}")
+        raise ConnectionError(f"Failed to download file from {url}. Error: {e}") from e
 
 
 def verify_file_hash(file_path: str, expected_hash: str) -> bool:
