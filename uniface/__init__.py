@@ -13,7 +13,7 @@
 
 __license__ = 'MIT'
 __author__ = 'Yakhyokhuja Valikhujaev'
-__version__ = '1.1.1'
+__version__ = '1.1.2'
 
 
 from uniface.face_utils import compute_similarity, face_alignment
@@ -21,7 +21,9 @@ from uniface.log import Logger, enable_logging
 from uniface.model_store import verify_model_weights
 from uniface.visualization import draw_detections
 
+from .analyzer import FaceAnalyzer
 from .attribute import AgeGender
+from .face import Face
 
 try:
     from .attribute import Emotion
@@ -41,6 +43,9 @@ __all__ = [
     '__author__',
     '__license__',
     '__version__',
+    # Core classes
+    'Face',
+    'FaceAnalyzer',
     # Factory functions
     'create_detector',
     'create_landmarker',
