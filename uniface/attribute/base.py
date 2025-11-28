@@ -27,7 +27,7 @@ class Attribute(ABC):
         inference session (e.g., ONNX Runtime, PyTorch), and any necessary
         warm-up procedures to prepare the model for prediction.
         """
-        raise NotImplementedError("Subclasses must implement the _initialize_model method.")
+        raise NotImplementedError('Subclasses must implement the _initialize_model method.')
 
     @abstractmethod
     def preprocess(self, image: np.ndarray, *args: Any) -> Any:
@@ -47,7 +47,7 @@ class Attribute(ABC):
         Returns:
             The preprocessed data ready for model inference.
         """
-        raise NotImplementedError("Subclasses must implement the preprocess method.")
+        raise NotImplementedError('Subclasses must implement the preprocess method.')
 
     @abstractmethod
     def postprocess(self, prediction: Any) -> Any:
@@ -64,7 +64,7 @@ class Attribute(ABC):
         Returns:
             The final, processed attributes.
         """
-        raise NotImplementedError("Subclasses must implement the postprocess method.")
+        raise NotImplementedError('Subclasses must implement the postprocess method.')
 
     @abstractmethod
     def predict(self, image: np.ndarray, *args: Any) -> Any:
@@ -83,7 +83,7 @@ class Attribute(ABC):
         Returns:
             The final predicted attributes.
         """
-        raise NotImplementedError("Subclasses must implement the predict method.")
+        raise NotImplementedError('Subclasses must implement the predict method.')
 
     def __call__(self, *args, **kwargs) -> Any:
         """

@@ -7,7 +7,7 @@ Base classes for face detection.
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, List
 
 import numpy as np
 
@@ -25,7 +25,7 @@ class BaseDetector(ABC):
         self.config = kwargs
 
     @abstractmethod
-    def detect(self, image: np.ndarray, **kwargs) -> Tuple[np.ndarray, np.ndarray]:
+    def detect(self, image: np.ndarray, **kwargs) -> List[Dict[str, Any]]:
         """
         Detect faces in an image.
 
@@ -34,11 +34,18 @@ class BaseDetector(ABC):
             **kwargs: Additional detection parameters
 
         Returns:
-            Tuple[np.ndarray, np.ndarray]: (detections, landmarks)
-                - detections: Bounding boxes with confidence scores, shape (N, 5)
-                  Format: [x_min, y_min, x_max, y_max, confidence]
-                - landmarks: Facial landmark points, shape (N, 5, 2) for 5-point landmarks
-                  or (N, 68, 2) for 68-point landmarks. Empty array if not supported.
+            List[Dict[str, Any]]: List of detected faces, where each dictionary contains:
+                - 'bbox' (np.ndarray): Bounding box coordinates with shape (4,) as [x1, y1, x2, y2]
+                - 'confidence' (float): Detection confidence score (0.0 to 1.0)
+                - 'landmarks' (np.ndarray): Facial landmarks with shape (5, 2) for 5-point landmarks
+                  or (68, 2) for 68-point landmarks. Empty array if not supported.
+
+        Example:
+            >>> faces = detector.detect(image)
+            >>> for face in faces:
+            ...     bbox = face['bbox']  # np.ndarray with shape (4,)
+            ...     confidence = face['confidence']  # float
+            ...     landmarks = face['landmarks']  # np.ndarray with shape (5, 2)
         """
         pass
 
@@ -56,7 +63,7 @@ class BaseDetector(ABC):
         pass
 
     @abstractmethod
-    def postprocess(self, outputs, **kwargs) -> Tuple[np.ndarray, np.ndarray]:
+    def postprocess(self, outputs, **kwargs) -> Any:
         """
         Postprocess model outputs to get final detections.
 
@@ -65,13 +72,13 @@ class BaseDetector(ABC):
             **kwargs: Additional postprocessing parameters
 
         Returns:
-            Tuple[np.ndarray, np.ndarray]: (detections, landmarks)
+            Any: Processed outputs (implementation-specific format, typically tuple of arrays)
         """
         pass
 
     def __str__(self) -> str:
         """String representation of the detector."""
-        return f"{self.__class__.__name__}({self.config})"
+        return f'{self.__class__.__name__}({self.config})'
 
     def __repr__(self) -> str:
         """Detailed string representation."""
@@ -85,7 +92,7 @@ class BaseDetector(ABC):
         Returns:
             bool: True if landmarks are supported, False otherwise
         """
-        return hasattr(self, "_supports_landmarks") and self._supports_landmarks
+        return hasattr(self, '_supports_landmarks') and self._supports_landmarks
 
     def get_info(self) -> Dict[str, Any]:
         """
@@ -95,7 +102,7 @@ class BaseDetector(ABC):
             Dict[str, Any]: Detector information
         """
         return {
-            "name": self.__class__.__name__,
-            "supports_landmarks": self._supports_landmarks,
-            "config": self.config,
+            'name': self.__class__.__name__,
+            'supports_landmarks': self._supports_landmarks,
+            'config': self.config,
         }

@@ -15,7 +15,7 @@ from .scrfd import SCRFD
 _detector_cache: Dict[str, BaseDetector] = {}
 
 
-def detect_faces(image: np.ndarray, method: str = "retinaface", **kwargs) -> List[Dict[str, Any]]:
+def detect_faces(image: np.ndarray, method: str = 'retinaface', **kwargs) -> List[Dict[str, Any]]:
     """
     High-level face detection function.
 
@@ -41,7 +41,7 @@ def detect_faces(image: np.ndarray, method: str = "retinaface", **kwargs) -> Lis
     method_name = method.lower()
 
     sorted_kwargs = sorted(kwargs.items())
-    cache_key = f"{method_name}_{str(sorted_kwargs)}"
+    cache_key = f'{method_name}_{str(sorted_kwargs)}'
 
     if cache_key not in _detector_cache:
         # Pass kwargs to create the correctly configured detector
@@ -51,7 +51,7 @@ def detect_faces(image: np.ndarray, method: str = "retinaface", **kwargs) -> Lis
     return detector.detect(image)
 
 
-def create_detector(method: str = "retinaface", **kwargs) -> BaseDetector:
+def create_detector(method: str = 'retinaface', **kwargs) -> BaseDetector:
     """
     Factory function to create face detectors.
 
@@ -89,14 +89,14 @@ def create_detector(method: str = "retinaface", **kwargs) -> BaseDetector:
     """
     method = method.lower()
 
-    if method == "retinaface":
+    if method == 'retinaface':
         return RetinaFace(**kwargs)
 
-    elif method == "scrfd":
+    elif method == 'scrfd':
         return SCRFD(**kwargs)
 
     else:
-        available_methods = ["retinaface", "scrfd"]
+        available_methods = ['retinaface', 'scrfd']
         raise ValueError(f"Unsupported detection method: '{method}'. Available methods: {available_methods}")
 
 
@@ -108,36 +108,36 @@ def list_available_detectors() -> Dict[str, Dict[str, Any]]:
         Dict[str, Dict[str, Any]]: Dictionary of detector information
     """
     return {
-        "retinaface": {
-            "description": "RetinaFace detector with high accuracy",
-            "supports_landmarks": True,
-            "paper": "https://arxiv.org/abs/1905.00641",
-            "default_params": {
-                "model_name": "mnet_v2",
-                "conf_thresh": 0.5,
-                "nms_thresh": 0.4,
-                "input_size": (640, 640),
+        'retinaface': {
+            'description': 'RetinaFace detector with high accuracy',
+            'supports_landmarks': True,
+            'paper': 'https://arxiv.org/abs/1905.00641',
+            'default_params': {
+                'model_name': 'mnet_v2',
+                'conf_thresh': 0.5,
+                'nms_thresh': 0.4,
+                'input_size': (640, 640),
             },
         },
-        "scrfd": {
-            "description": "SCRFD detector - fast and accurate with efficient architecture",
-            "supports_landmarks": True,
-            "paper": "https://arxiv.org/abs/2105.04714",
-            "default_params": {
-                "model_name": "scrfd_10g_kps",
-                "conf_thresh": 0.5,
-                "nms_thresh": 0.4,
-                "input_size": (640, 640),
+        'scrfd': {
+            'description': 'SCRFD detector - fast and accurate with efficient architecture',
+            'supports_landmarks': True,
+            'paper': 'https://arxiv.org/abs/2105.04714',
+            'default_params': {
+                'model_name': 'scrfd_10g_kps',
+                'conf_thresh': 0.5,
+                'nms_thresh': 0.4,
+                'input_size': (640, 640),
             },
         },
     }
 
 
 __all__ = [
-    "detect_faces",
-    "create_detector",
-    "list_available_detectors",
-    "SCRFD",
-    "RetinaFace",
-    "BaseDetector",
+    'detect_faces',
+    'create_detector',
+    'list_available_detectors',
+    'SCRFD',
+    'RetinaFace',
+    'BaseDetector',
 ]

@@ -66,14 +66,14 @@ class BaseRecognizer(ABC):
             input_shape = input_cfg.shape
             model_input_size = tuple(input_shape[2:4][::-1])  # (width, height)
             if model_input_size != self.input_size:
-                Logger.warning(f"Model input size {model_input_size} differs from configured size {self.input_size}")
+                Logger.warning(f'Model input size {model_input_size} differs from configured size {self.input_size}')
 
             # Extract output configuration
             self.output_names = [output.name for output in self.session.get_outputs()]
             self.output_shape = self.session.get_outputs()[0].shape
 
-            assert len(self.output_names) == 1, "Expected only one output node."
-            Logger.info(f"Successfully initialized face encoder from {self.model_path}")
+            assert len(self.output_names) == 1, 'Expected only one output node.'
+            Logger.info(f'Successfully initialized face encoder from {self.model_path}')
 
         except Exception as e:
             Logger.error(

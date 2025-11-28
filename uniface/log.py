@@ -1,7 +1,7 @@
 import logging
 
 # Create logger for uniface
-Logger = logging.getLogger("uniface")
+Logger = logging.getLogger('uniface')
 Logger.setLevel(logging.WARNING)  # Only show warnings/errors by default
 Logger.addHandler(logging.NullHandler())
 
@@ -19,7 +19,7 @@ def enable_logging(level=logging.INFO):
     """
     Logger.handlers.clear()
     handler = logging.StreamHandler()
-    handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s", datefmt="%Y-%m-%d %H:%M:%S"))
+    handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S'))
     Logger.addHandler(handler)
     Logger.setLevel(level)
     Logger.propagate = False

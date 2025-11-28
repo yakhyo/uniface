@@ -4,9 +4,38 @@ version = "1.1.1"
 description = "UniFace: A Comprehensive Library for Face Detection, Recognition, Landmark Analysis, Age, and Gender Detection"
 readme = "README.md"
 license = { text = "MIT" }
-authors = [
-    { name = "Yakhyokhuja Valikhujaev", email = "yakhyo9696@gmail.com" }
+authors = [{ name = "Yakhyokhuja Valikhujaev", email = "yakhyo9696@gmail.com" }]
+maintainers = [
+    { name = "Yakhyokhuja Valikhujaev", email = "yakhyo9696@gmail.com" },
 ]
+
+requires-python = ">=3.10,<3.14"
+keywords = [
+    "face-detection",
+    "face-recognition",
+    "facial-landmarks",
+    "age-detection",
+    "gender-detection",
+    "computer-vision",
+    "deep-learning",
+    "onnx",
+    "onnxruntime",
+    "face-analysis",
+]
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+
 dependencies = [
     "numpy>=1.21.0",
     "opencv-python>=4.5.0",
@@ -14,9 +43,8 @@ dependencies = [
     "onnxruntime>=1.16.0",
     "scikit-image>=0.19.0",
     "requests>=2.28.0",
-    "tqdm>=4.64.0"
+    "tqdm>=4.64.0",
 ]
-requires-python = ">=3.10"
 
 [project.optional-dependencies]
 dev = ["pytest>=7.0.0", "ruff>=0.4.0"]
@@ -25,23 +53,46 @@ gpu = ["onnxruntime-gpu>=1.16.0"]
 [project.urls]
 Homepage = "https://github.com/yakhyo/uniface"
 Repository = "https://github.com/yakhyo/uniface"
+Documentation = "https://github.com/yakhyo/uniface/blob/main/README.md"
+"Quick Start" = "https://github.com/yakhyo/uniface/blob/main/QUICKSTART.md"
+"Model Zoo" = "https://github.com/yakhyo/uniface/blob/main/MODELS.md"
 
 [build-system]
 requires = ["setuptools>=64", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = { find = {} }
+packages = { find = { where = ["."], include = ["uniface*"] } }
 
 [tool.setuptools.package-data]
-"uniface" = ["*.txt", "*.md"]
+uniface = ["py.typed"]
 
 [tool.ruff]
 line-length = 120
 target-version = "py310"
+exclude = [
+    ".git",
+    ".ruff_cache",
+    "__pycache__",
+    "build",
+    "dist",
+    "*.egg-info",
+    ".venv",
+    "venv",
+    ".pytest_cache",
+    ".mypy_cache",
+    "*.ipynb",
+]
+
+[tool.ruff.format]
+quote-style = "single"
+
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "W"]
+
+[tool.ruff.lint.flake8-quotes]
+docstring-quotes = "double"
 
 [tool.ruff.lint.isort]
 known-first-party = ["uniface"]

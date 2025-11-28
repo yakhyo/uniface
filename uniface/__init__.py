@@ -11,9 +11,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-__license__ = "MIT"
-__author__ = "Yakhyokhuja Valikhujaev"
-__version__ = "1.1.1"
+__license__ = 'MIT'
+__author__ = 'Yakhyokhuja Valikhujaev'
+__version__ = '1.1.1'
 
 
 from uniface.face_utils import compute_similarity, face_alignment
@@ -38,32 +38,32 @@ from .landmark import Landmark106, create_landmarker
 from .recognition import ArcFace, MobileFace, SphereFace, create_recognizer
 
 __all__ = [
-    "__author__",
-    "__license__",
-    "__version__",
+    '__author__',
+    '__license__',
+    '__version__',
     # Factory functions
-    "create_detector",
-    "create_landmarker",
-    "create_recognizer",
-    "detect_faces",
-    "list_available_detectors",
+    'create_detector',
+    'create_landmarker',
+    'create_recognizer',
+    'detect_faces',
+    'list_available_detectors',
     # Detection models
-    "RetinaFace",
-    "SCRFD",
+    'RetinaFace',
+    'SCRFD',
     # Recognition models
-    "ArcFace",
-    "MobileFace",
-    "SphereFace",
+    'ArcFace',
+    'MobileFace',
+    'SphereFace',
     # Landmark models
-    "Landmark106",
+    'Landmark106',
     # Attribute models
-    "AgeGender",
-    "Emotion",
+    'AgeGender',
+    'Emotion',
     # Utilities
-    "compute_similarity",
-    "draw_detections",
-    "face_alignment",
-    "verify_model_weights",
-    "Logger",
-    "enable_logging",
+    'compute_similarity',
+    'draw_detections',
+    'face_alignment',
+    'verify_model_weights',
+    'Logger',
+    'enable_logging',
 ]

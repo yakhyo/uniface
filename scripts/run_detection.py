@@ -11,7 +11,7 @@ from uniface.detection import SCRFD, RetinaFace
 from uniface.visualization import draw_detections
 
 
-def process_image(detector, image_path: str, threshold: float = 0.6, save_dir: str = "outputs"):
+def process_image(detector, image_path: str, threshold: float = 0.6, save_dir: str = 'outputs'):
     image = cv2.imread(image_path)
     if image is None:
         print(f"Error: Failed to load image from '{image_path}'")
@@ -20,21 +20,21 @@ def process_image(detector, image_path: str, threshold: float = 0.6, save_dir: s
     faces = detector.detect(image)
 
     if faces:
-        bboxes = [face["bbox"] for face in faces]
-        scores = [face["confidence"] for face in faces]
-        landmarks = [face["landmarks"] for face in faces]
+        bboxes = [face['bbox'] for face in faces]
+        scores = [face['confidence'] for face in faces]
+        landmarks = [face['landmarks'] for face in faces]
         draw_detections(image, bboxes, scores, landmarks, vis_threshold=threshold)
 
     os.makedirs(save_dir, exist_ok=True)
-    output_path = os.path.join(save_dir, f"{os.path.splitext(os.path.basename(image_path))[0]}_out.jpg")
+    output_path = os.path.join(save_dir, f'{os.path.splitext(os.path.basename(image_path))[0]}_out.jpg')
     cv2.imwrite(output_path, image)
-    print(f"Output saved: {output_path}")
+    print(f'Output saved: {output_path}')
 
 
 def run_webcam(detector, threshold: float = 0.6):
     cap = cv2.VideoCapture(0)  # 0 = default webcam
     if not cap.isOpened():
-        print("Cannot open webcam")
+        print('Cannot open webcam')
         return
 
     print("Press 'q' to quit")
@@ -48,23 +48,23 @@ def run_webcam(detector, threshold: float = 0.6):
         faces = detector.detect(frame)
 
         # unpack face data for visualization
-        bboxes = [f["bbox"] for f in faces]
-        scores = [f["confidence"] for f in faces]
-        landmarks = [f["landmarks"] for f in faces]
+        bboxes = [f['bbox'] for f in faces]
+        scores = [f['confidence'] for f in faces]
+        landmarks = [f['landmarks'] for f in faces]
         draw_detections(frame, bboxes, scores, landmarks, vis_threshold=threshold)
 
         cv2.putText(
             frame,
-            f"Faces: {len(faces)}",
+            f'Faces: {len(faces)}',
             (10, 30),
             cv2.FONT_HERSHEY_SIMPLEX,
             1,
             (0, 255, 0),
             2,
         )
-        cv2.imshow("Face Detection", frame)
+        cv2.imshow('Face Detection', frame)
 
-        if cv2.waitKey(1) & 0xFF == ord("q"):
+        if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
     cap.release()
@@ -72,18 +72,18 @@ def run_webcam(detector, threshold: float = 0.6):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Run face detection")
-    parser.add_argument("--image", type=str, help="Path to input image")
-    parser.add_argument("--webcam", action="store_true", help="Use webcam")
-    parser.add_argument("--method", type=str, default="retinaface", choices=["retinaface", "scrfd"])
-    parser.add_argument("--threshold", type=float, default=0.6, help="Visualization threshold")
-    parser.add_argument("--save_dir", type=str, default="outputs")
+    parser = argparse.ArgumentParser(description='Run face detection')
+    parser.add_argument('--image', type=str, help='Path to input image')
+    parser.add_argument('--webcam', action='store_true', help='Use webcam')
+    parser.add_argument('--method', type=str, default='retinaface', choices=['retinaface', 'scrfd'])
+    parser.add_argument('--threshold', type=float, default=0.6, help='Visualization threshold')
+    parser.add_argument('--save_dir', type=str, default='outputs')
     args = parser.parse_args()
 
     if not args.image and not args.webcam:
-        parser.error("Either --image or --webcam must be specified")
+        parser.error('Either --image or --webcam must be specified')
 
-    detector = RetinaFace() if args.method == "retinaface" else SCRFD()
+    detector = RetinaFace() if args.method == 'retinaface' else SCRFD()
 
     if args.webcam:
         run_webcam(detector, args.threshold)
@@ -91,5 +91,5 @@ def main():
         process_image(detector, args.image, args.threshold, args.save_dir)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

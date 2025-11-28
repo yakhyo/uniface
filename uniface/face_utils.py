@@ -9,10 +9,10 @@ import numpy as np
 from skimage.transform import SimilarityTransform
 
 __all__ = [
-    "face_alignment",
-    "compute_similarity",
-    "bbox_center_alignment",
-    "transform_points_2d",
+    'face_alignment',
+    'compute_similarity',
+    'bbox_center_alignment',
+    'transform_points_2d',
 ]
 
 
@@ -46,7 +46,7 @@ def estimate_norm(landmark: np.ndarray, image_size: Union[int, Tuple[int, int]] 
         AssertionError: If the input landmark array does not have the shape (5, 2)
                         or if image_size is not a multiple of 112 or 128.
     """
-    assert landmark.shape == (5, 2), "Landmark array must have shape (5, 2)."
+    assert landmark.shape == (5, 2), 'Landmark array must have shape (5, 2).'
 
     # Handle both int and tuple inputs
     if isinstance(image_size, tuple):
@@ -54,7 +54,7 @@ def estimate_norm(landmark: np.ndarray, image_size: Union[int, Tuple[int, int]] 
     else:
         size = image_size
 
-    assert size % 112 == 0 or size % 128 == 0, "Image size must be a multiple of 112 or 128."
+    assert size % 112 == 0 or size % 128 == 0, 'Image size must be a multiple of 112 or 128.'
 
     if size % 112 == 0:
         ratio = float(size) / 112.0

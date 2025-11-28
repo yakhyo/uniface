@@ -39,7 +39,7 @@ def test_compute_similarity_same_embedding():
     embedding = embedding / np.linalg.norm(embedding)  # Normalize
 
     similarity = compute_similarity(embedding, embedding)
-    assert np.isclose(similarity, 1.0, atol=1e-5), f"Self-similarity should be 1.0, got {similarity}"
+    assert np.isclose(similarity, 1.0, atol=1e-5), f'Self-similarity should be 1.0, got {similarity}'
 
 
 def test_compute_similarity_range():
@@ -56,7 +56,7 @@ def test_compute_similarity_range():
         emb2 = emb2 / np.linalg.norm(emb2)
 
         similarity = compute_similarity(emb1, emb2)
-        assert -1.0 <= similarity <= 1.0, f"Similarity should be in [-1, 1], got {similarity}"
+        assert -1.0 <= similarity <= 1.0, f'Similarity should be in [-1, 1], got {similarity}'
 
 
 def test_compute_similarity_orthogonal():
@@ -71,7 +71,7 @@ def test_compute_similarity_orthogonal():
     emb2[0, 1] = 1.0  # [0, 1, 0, ..., 0]
 
     similarity = compute_similarity(emb1, emb2)
-    assert np.isclose(similarity, 0.0, atol=1e-5), f"Orthogonal embeddings should have similarity 0.0, got {similarity}"
+    assert np.isclose(similarity, 0.0, atol=1e-5), f'Orthogonal embeddings should have similarity 0.0, got {similarity}'
 
 
 def test_compute_similarity_opposite():
@@ -84,7 +84,7 @@ def test_compute_similarity_opposite():
     emb2 = -emb1  # Opposite direction
 
     similarity = compute_similarity(emb1, emb2)
-    assert np.isclose(similarity, -1.0, atol=1e-5), f"Opposite embeddings should have similarity -1.0, got {similarity}"
+    assert np.isclose(similarity, -1.0, atol=1e-5), f'Opposite embeddings should have similarity -1.0, got {similarity}'
 
 
 def test_compute_similarity_symmetry():
@@ -101,7 +101,7 @@ def test_compute_similarity_symmetry():
     sim_12 = compute_similarity(emb1, emb2)
     sim_21 = compute_similarity(emb2, emb1)
 
-    assert np.isclose(sim_12, sim_21), "Similarity should be symmetric"
+    assert np.isclose(sim_12, sim_21), 'Similarity should be symmetric'
 
 
 def test_compute_similarity_dtype():
@@ -116,7 +116,7 @@ def test_compute_similarity_dtype():
     emb2 = emb2 / np.linalg.norm(emb2)
 
     similarity = compute_similarity(emb1, emb2)
-    assert isinstance(similarity, (float, np.floating)), f"Similarity should be float, got {type(similarity)}"
+    assert isinstance(similarity, (float, np.floating)), f'Similarity should be float, got {type(similarity)}'
 
 
 # face_alignment tests
@@ -126,7 +126,7 @@ def test_face_alignment_output_shape(mock_image, mock_landmarks):
     """
     aligned, _ = face_alignment(mock_image, mock_landmarks, image_size=(112, 112))
 
-    assert aligned.shape == (112, 112, 3), f"Expected shape (112, 112, 3), got {aligned.shape}"
+    assert aligned.shape == (112, 112, 3), f'Expected shape (112, 112, 3), got {aligned.shape}'
 
 
 def test_face_alignment_dtype(mock_image, mock_landmarks):
@@ -135,7 +135,7 @@ def test_face_alignment_dtype(mock_image, mock_landmarks):
     """
     aligned, _ = face_alignment(mock_image, mock_landmarks, image_size=(112, 112))
 
-    assert aligned.dtype == np.uint8, f"Expected uint8, got {aligned.dtype}"
+    assert aligned.dtype == np.uint8, f'Expected uint8, got {aligned.dtype}'
 
 
 def test_face_alignment_different_sizes(mock_image, mock_landmarks):
@@ -147,7 +147,7 @@ def test_face_alignment_different_sizes(mock_image, mock_landmarks):
 
     for size in test_sizes:
         aligned, _ = face_alignment(mock_image, mock_landmarks, image_size=size)
-        assert aligned.shape == (*size, 3), f"Failed for size {size}"
+        assert aligned.shape == (*size, 3), f'Failed for size {size}'
 
 
 def test_face_alignment_consistency(mock_image, mock_landmarks):
@@ -157,7 +157,7 @@ def test_face_alignment_consistency(mock_image, mock_landmarks):
     aligned1, _ = face_alignment(mock_image, mock_landmarks, image_size=(112, 112))
     aligned2, _ = face_alignment(mock_image, mock_landmarks, image_size=(112, 112))
 
-    assert np.allclose(aligned1, aligned2), "Same input should produce same aligned face"
+    assert np.allclose(aligned1, aligned2), 'Same input should produce same aligned face'
 
 
 def test_face_alignment_landmarks_as_list(mock_image):
@@ -175,7 +175,7 @@ def test_face_alignment_landmarks_as_list(mock_image):
     # Convert list to numpy array before passing to face_alignment
     landmarks_array = np.array(landmarks_list, dtype=np.float32)
     aligned, _ = face_alignment(mock_image, landmarks_array, image_size=(112, 112))
-    assert aligned.shape == (112, 112, 3), "Should work with landmarks as array"
+    assert aligned.shape == (112, 112, 3), 'Should work with landmarks as array'
 
 
 def test_face_alignment_value_range(mock_image, mock_landmarks):
@@ -184,8 +184,8 @@ def test_face_alignment_value_range(mock_image, mock_landmarks):
     """
     aligned, _ = face_alignment(mock_image, mock_landmarks, image_size=(112, 112))
 
-    assert np.all(aligned >= 0), "Pixel values should be >= 0"
-    assert np.all(aligned <= 255), "Pixel values should be <= 255"
+    assert np.all(aligned >= 0), 'Pixel values should be >= 0'
+    assert np.all(aligned <= 255), 'Pixel values should be <= 255'
 
 
 def test_face_alignment_not_all_zeros(mock_image, mock_landmarks):
@@ -195,7 +195,7 @@ def test_face_alignment_not_all_zeros(mock_image, mock_landmarks):
     aligned, _ = face_alignment(mock_image, mock_landmarks, image_size=(112, 112))
 
     # At least some pixels should be non-zero
-    assert np.any(aligned > 0), "Aligned face should have some non-zero pixels"
+    assert np.any(aligned > 0), 'Aligned face should have some non-zero pixels'
 
 
 def test_face_alignment_from_different_positions(mock_image):
@@ -220,7 +220,7 @@ def test_face_alignment_from_different_positions(mock_image):
 
     for landmarks in positions:
         aligned, _ = face_alignment(mock_image, landmarks, image_size=(112, 112))
-        assert aligned.shape == (112, 112, 3), f"Failed for landmarks at {landmarks[0]}"
+        assert aligned.shape == (112, 112, 3), f'Failed for landmarks at {landmarks[0]}'
 
 
 def test_face_alignment_landmark_count(mock_image):
@@ -240,7 +240,7 @@ def test_face_alignment_landmark_count(mock_image):
     )
 
     aligned, _ = face_alignment(mock_image, landmarks_5pt, image_size=(112, 112))
-    assert aligned.shape == (112, 112, 3), "Should work with 5-point landmarks"
+    assert aligned.shape == (112, 112, 3), 'Should work with 5-point landmarks'
 
 
 def test_compute_similarity_with_recognition_embeddings():

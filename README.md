@@ -1,10 +1,11 @@
 # UniFace: All-in-One Face Analysis Library
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
-[![PyPI Version](https://img.shields.io/pypi/v/uniface.svg)](https://pypi.org/project/uniface/)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://www.python.org/)
+[![PyPI](https://img.shields.io/pypi/v/uniface.svg)](https://pypi.org/project/uniface/)
 [![CI](https://github.com/yakhyo/uniface/actions/workflows/ci.yml/badge.svg)](https://github.com/yakhyo/uniface/actions)
 [![Downloads](https://pepy.tech/badge/uniface)](https://pepy.tech/project/uniface)
+[![Ruff](https://img.shields.io/badge/Ruff-Checked-red)](https://github.com/astral-sh/ruff)
 
 <div align="center">
     <img src=".github/logos/logo_web.webp" width=75%>
@@ -56,6 +57,7 @@ pip install uniface[gpu]
 ```
 
 **Requirements:**
+
 - CUDA 11.x or 12.x
 - cuDNN 8.x
 - See [ONNX Runtime GPU requirements](https://onnxruntime.ai/docs/execution-providers/CUDA-ExecutionProvider.html)
@@ -217,17 +219,18 @@ faces = detect_faces(image, method='retinaface', conf_thresh=0.8)
 
 ### Face Detection (WIDER FACE Dataset)
 
-| Model              | Easy   | Medium | Hard   | Use Case                |
-|--------------------|--------|--------|--------|-------------------------|
-| retinaface_mnet025 | 88.48% | 87.02% | 80.61% | Mobile/Edge devices     |
-| retinaface_mnet_v2 | 91.70% | 91.03% | 86.60% | Balanced (recommended)  |
-| retinaface_r34     | 94.16% | 93.12% | 88.90% | High accuracy           |
-| scrfd_500m         | 90.57% | 88.12% | 68.51% | Real-time applications  |
-| scrfd_10g          | 95.16% | 93.87% | 83.05% | Best accuracy/speed     |
+| Model              | Easy   | Medium | Hard   | Use Case               |
+| ------------------ | ------ | ------ | ------ | ---------------------- |
+| retinaface_mnet025 | 88.48% | 87.02% | 80.61% | Mobile/Edge devices    |
+| retinaface_mnet_v2 | 91.70% | 91.03% | 86.60% | Balanced (recommended) |
+| retinaface_r34     | 94.16% | 93.12% | 88.90% | High accuracy          |
+| scrfd_500m         | 90.57% | 88.12% | 68.51% | Real-time applications |
+| scrfd_10g          | 95.16% | 93.87% | 83.05% | Best accuracy/speed    |
 
-*Accuracy values from original papers: [RetinaFace](https://arxiv.org/abs/1905.00641), [SCRFD](https://arxiv.org/abs/2105.04714)*
+_Accuracy values from original papers: [RetinaFace](https://arxiv.org/abs/1905.00641), [SCRFD](https://arxiv.org/abs/2105.04714)_
 
 **Benchmark on your hardware:**
+
 ```bash
 python scripts/run_detection.py --image assets/test.jpg --iterations 100
 ```
@@ -412,6 +415,7 @@ ruff check . --fix
 ```
 
 Ruff configuration is in `pyproject.toml`. Key settings:
+
 - Line length: 120
 - Python target: 3.10+
 - Import sorting: `uniface` as first-party
@@ -454,4 +458,3 @@ uniface/
 ## Contributing
 
 Contributions are welcome! Please open an issue or submit a pull request on [GitHub](https://github.com/yakhyo/uniface).
-

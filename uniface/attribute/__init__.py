@@ -20,7 +20,7 @@ except ImportError:
     _EMOTION_AVAILABLE = False
 
 # Public API for the attribute module
-__all__ = ["AgeGender", "Emotion", "create_attribute_predictor", "predict_attributes"]
+__all__ = ['AgeGender', 'Emotion', 'create_attribute_predictor', 'predict_attributes']
 
 # A mapping from model enums to their corresponding attribute classes
 _ATTRIBUTE_MODELS = {
@@ -54,7 +54,7 @@ def create_attribute_predictor(model_name: Union[AgeGenderWeights, DDAMFNWeights
 
     if model_class is None:
         raise ValueError(
-            f"Unsupported attribute model: {model_name}. Please choose from AgeGenderWeights or DDAMFNWeights."
+            f'Unsupported attribute model: {model_name}. Please choose from AgeGenderWeights or DDAMFNWeights.'
         )
 
     # Pass model_name to the constructor, as some classes might need it
@@ -84,16 +84,16 @@ def predict_attributes(
     """
     for face in detections:
         # Initialize attributes dict if it doesn't exist
-        if "attributes" not in face:
-            face["attributes"] = {}
+        if 'attributes' not in face:
+            face['attributes'] = {}
 
         if isinstance(predictor, AgeGender):
-            gender, age = predictor(image, face["bbox"])
-            face["attributes"]["gender"] = gender
-            face["attributes"]["age"] = age
+            gender, age = predictor(image, face['bbox'])
+            face['attributes']['gender'] = gender
+            face['attributes']['age'] = age
         elif isinstance(predictor, Emotion):
-            emotion, confidence = predictor(image, face["landmark"])
-            face["attributes"]["emotion"] = emotion
-            face["attributes"]["confidence"] = confidence
+            emotion, confidence = predictor(image, face['landmark'])
+            face['attributes']['emotion'] = emotion
+            face['attributes']['confidence'] = confidence
 
     return detections
