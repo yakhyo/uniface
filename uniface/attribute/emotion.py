@@ -39,7 +39,14 @@ class Emotion(Attribute):
             input_size (Tuple[int, int]): The expected input size for the model.
         """
         Logger.info(f'Initializing Emotion with model={model_weights.name}')
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+        if torch.backends.mps.is_available():
+            self.device = torch.device('mps')
+        elif torch.cuda.is_available():
+            self.device = torch.device('cuda')
+        else:
+            self.device = torch.device('cpu')
+
         self.input_size = input_size
         self.model_path = verify_model_weights(model_weights)
 
