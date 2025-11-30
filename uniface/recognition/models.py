@@ -9,7 +9,7 @@ from uniface.model_store import verify_model_weights
 
 from .base import BaseRecognizer, PreprocessConfig
 
-__all__ = ["ArcFace", "MobileFace", "SphereFace"]
+__all__ = ['ArcFace', 'MobileFace', 'SphereFace']
 
 
 class ArcFace(BaseRecognizer):

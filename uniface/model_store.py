@@ -11,10 +11,10 @@ from tqdm import tqdm
 import uniface.constants as const
 from uniface.log import Logger
 
-__all__ = ["verify_model_weights"]
+__all__ = ['verify_model_weights']
 
 
-def verify_model_weights(model_name: str, root: str = "~/.uniface/models") -> str:
+def verify_model_weights(model_name: str, root: str = '~/.uniface/models') -> str:
     """
     Ensure model weights are present, downloading and verifying them using SHA-256 if necessary.
 
@@ -53,7 +53,7 @@ def verify_model_weights(model_name: str, root: str = "~/.uniface/models") -> st
         raise ValueError(f"No URL found for model '{model_name}'")
 
     file_ext = os.path.splitext(url)[1]
-    model_path = os.path.normpath(os.path.join(root, f"{model_name.value}{file_ext}"))
+    model_path = os.path.normpath(os.path.join(root, f'{model_name.value}{file_ext}'))
 
     if not os.path.exists(model_path):
         Logger.info(f"Downloading model '{model_name}' from {url}")
@@ -67,7 +67,7 @@ def verify_model_weights(model_name: str, root: str = "~/.uniface/models") -> st
     expected_hash = const.MODEL_SHA256.get(model_name)
     if expected_hash and not verify_file_hash(model_path, expected_hash):
         os.remove(model_path)  # Remove corrupted file
-        Logger.warning("Corrupted weight detected. Removing...")
+        Logger.warning('Corrupted weight detected. Removing...')
         raise ValueError(f"Hash mismatch for '{model_name}'. The file may be corrupted; please try downloading again.")
 
     return model_path
@@ -79,10 +79,10 @@ def download_file(url: str, dest_path: str) -> None:
         response = requests.get(url, stream=True)
         response.raise_for_status()
         with (
-            open(dest_path, "wb") as file,
+            open(dest_path, 'wb') as file,
             tqdm(
-                desc=f"Downloading {dest_path}",
-                unit="B",
+                desc=f'Downloading {dest_path}',
+                unit='B',
                 unit_scale=True,
                 unit_divisor=1024,
             ) as progress,
@@ -92,22 +92,22 @@ def download_file(url: str, dest_path: str) -> None:
                     file.write(chunk)
                     progress.update(len(chunk))
     except requests.RequestException as e:
-        raise ConnectionError(f"Failed to download file from {url}. Error: {e}") from e
+        raise ConnectionError(f'Failed to download file from {url}. Error: {e}') from e
 
 
 def verify_file_hash(file_path: str, expected_hash: str) -> bool:
     """Compute the SHA-256 hash of the file and compare it with the expected hash."""
     file_hash = hashlib.sha256()
-    with open(file_path, "rb") as f:
-        for chunk in iter(lambda: f.read(const.CHUNK_SIZE), b""):
+    with open(file_path, 'rb') as f:
+        for chunk in iter(lambda: f.read(const.CHUNK_SIZE), b''):
             file_hash.update(chunk)
     actual_hash = file_hash.hexdigest()
     if actual_hash != expected_hash:
-        Logger.warning(f"Expected hash: {expected_hash}, but got: {actual_hash}")
+        Logger.warning(f'Expected hash: {expected_hash}, but got: {actual_hash}')
     return actual_hash == expected_hash
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     model_names = [model.value for model in const.RetinaFaceWeights]
 
     # Download each model in the list

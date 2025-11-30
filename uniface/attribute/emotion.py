@@ -14,7 +14,7 @@ from uniface.face_utils import face_alignment
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
 
-__all__ = ["Emotion"]
+__all__ = ['Emotion']
 
 
 class Emotion(Attribute):
@@ -38,23 +38,30 @@ class Emotion(Attribute):
             model_weights (DDAMFNWeights): The enum for the model weights to load.
             input_size (Tuple[int, int]): The expected input size for the model.
         """
-        Logger.info(f"Initializing Emotion with model={model_weights.name}")
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        Logger.info(f'Initializing Emotion with model={model_weights.name}')
+
+        if torch.backends.mps.is_available():
+            self.device = torch.device('mps')
+        elif torch.cuda.is_available():
+            self.device = torch.device('cuda')
+        else:
+            self.device = torch.device('cpu')
+
         self.input_size = input_size
         self.model_path = verify_model_weights(model_weights)
 
         # Define emotion labels based on the selected model
         self.emotion_labels = [
-            "Neutral",
-            "Happy",
-            "Sad",
-            "Surprise",
-            "Fear",
-            "Disgust",
-            "Angry",
+            'Neutral',
+            'Happy',
+            'Sad',
+            'Surprise',
+            'Fear',
+            'Disgust',
+            'Angry',
         ]
         if model_weights == DDAMFNWeights.AFFECNET8:
-            self.emotion_labels.append("Contempt")
+            self.emotion_labels.append('Contempt')
 
         self._initialize_model()
 
@@ -69,10 +76,10 @@ class Emotion(Attribute):
             dummy_input = torch.randn(1, 3, *self.input_size).to(self.device)
             with torch.no_grad():
                 self.model(dummy_input)
-            Logger.info(f"Successfully initialized Emotion model on {self.device}")
+            Logger.info(f'Successfully initialized Emotion model on {self.device}')
         except Exception as e:
             Logger.error(f"Failed to load Emotion model from '{self.model_path}'", exc_info=True)
-            raise RuntimeError(f"Failed to initialize Emotion model: {e}") from e
+            raise RuntimeError(f'Failed to initialize Emotion model: {e}') from e
 
     def preprocess(self, image: np.ndarray, landmark: Union[List, np.ndarray]) -> torch.Tensor:
         """
@@ -123,11 +130,11 @@ class Emotion(Attribute):
 
 
 # TODO: below is only for testing, remove it later
-if __name__ == "__main__":
+if __name__ == '__main__':
     from uniface.constants import RetinaFaceWeights
     from uniface.detection import create_detector
 
-    print("Initializing models for live inference...")
+    print('Initializing models for live inference...')
     # 1. Initialize the face detector
     # Using a smaller model for faster real-time performance
     detector = create_detector(model_name=RetinaFaceWeights.MNET_V2)
@@ -138,14 +145,14 @@ if __name__ == "__main__":
     # 3. Start webcam capture
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
-        print("Error: Could not open webcam.")
+        print('Error: Could not open webcam.')
         exit()
 
     print("Starting webcam feed. Press 'q' to quit.")
     while True:
         ret, frame = cap.read()
         if not ret:
-            print("Error: Failed to capture frame.")
+            print('Error: Failed to capture frame.')
             break
 
         # Detect faces in the current frame.
@@ -154,15 +161,15 @@ if __name__ == "__main__":
 
         # For each detected face, predict the emotion
         for detection in detections:
-            box = detection["bbox"]
-            landmark = detection["landmarks"]
+            box = detection['bbox']
+            landmark = detection['landmarks']
             x1, y1, x2, y2 = map(int, box)
 
             # Predict attributes using the landmark
             emotion, confidence = emotion_predictor.predict(frame, landmark)
 
             # Prepare text and draw on the frame
-            label = f"{emotion} ({confidence:.2f})"
+            label = f'{emotion} ({confidence:.2f})'
             cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 0, 0), 2)
             cv2.putText(
                 frame,
@@ -178,10 +185,10 @@ if __name__ == "__main__":
         cv2.imshow("Emotion Inference (Press 'q' to quit)", frame)
 
         # Break the loop if 'q' is pressed
-        if cv2.waitKey(1) & 0xFF == ord("q"):
+        if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
     # Release resources
     cap.release()
     cv2.destroyAllWindows()
-    print("Inference stopped.")
+    print('Inference stopped.')

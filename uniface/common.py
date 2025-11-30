@@ -4,10 +4,20 @@
 
 import itertools
 import math
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 import cv2
 import numpy as np
+
+__all__ = [
+    'resize_image',
+    'generate_anchors',
+    'non_max_suppression',
+    'decode_boxes',
+    'decode_landmarks',
+    'distance2bbox',
+    'distance2kps',
+]
 
 
 def resize_image(frame, target_shape: Tuple[int, int] = (640, 640)) -> Tuple[np.ndarray, float]:
@@ -45,16 +55,14 @@ def resize_image(frame, target_shape: Tuple[int, int] = (640, 640)) -> Tuple[np.
 
 def generate_anchors(image_size: Tuple[int, int] = (640, 640)) -> np.ndarray:
     """
-    Generate anchor boxes for a given image size.
+    Generate anchor boxes for a given image size (RetinaFace specific).
 
     Args:
         image_size (Tuple[int, int]): Input image size (width, height). Defaults to (640, 640).
 
     Returns:
-        np.ndarray: Anchor box coordinates as a NumPy array.
+        np.ndarray: Anchor box coordinates as a NumPy array with shape (num_anchors, 4).
     """
-    image_size = image_size
-
     steps = [8, 16, 32]
     min_sizes = [[16, 32], [64, 128], [256, 512]]
 
@@ -77,16 +85,16 @@ def generate_anchors(image_size: Tuple[int, int] = (640, 640)) -> np.ndarray:
     return output
 
 
-def non_max_supression(dets: List[np.ndarray], threshold: float):
+def non_max_suppression(dets: np.ndarray, threshold: float) -> List[int]:
     """
     Apply Non-Maximum Suppression (NMS) to reduce overlapping bounding boxes based on a threshold.
 
     Args:
-        dets (numpy.ndarray): Array of detections with each row as [x1, y1, x2, y2, score].
+        dets (np.ndarray): Array of detections with each row as [x1, y1, x2, y2, score].
         threshold (float): IoU threshold for suppression.
 
     Returns:
-        list: Indices of bounding boxes retained after suppression.
+        List[int]: Indices of bounding boxes retained after suppression.
     """
     x1 = dets[:, 0]
     y1 = dets[:, 1]
@@ -117,19 +125,21 @@ def non_max_supression(dets: List[np.ndarray], threshold: float):
     return keep
 
 
-def decode_boxes(loc, priors, variances=[0.1, 0.2]) -> np.ndarray:
+def decode_boxes(loc: np.ndarray, priors: np.ndarray, variances: Optional[List[float]] = None) -> np.ndarray:
     """
     Decode locations from predictions using priors to undo
-    the encoding done for offset regression at train time.
+    the encoding done for offset regression at train time (RetinaFace specific).
 
     Args:
         loc (np.ndarray): Location predictions for loc layers, shape: [num_priors, 4]
         priors (np.ndarray): Prior boxes in center-offset form, shape: [num_priors, 4]
-        variances (list[float]): Variances of prior boxes
+        variances (Optional[List[float]]): Variances of prior boxes. Defaults to [0.1, 0.2].
 
     Returns:
-        np.ndarray: Decoded bounding box predictions
+        np.ndarray: Decoded bounding box predictions with shape [num_priors, 4]
     """
+    if variances is None:
+        variances = [0.1, 0.2]
     # Compute centers of predicted boxes
     cxcy = priors[:, :2] + loc[:, :2] * variances[0] * priors[:, 2:]
 
@@ -144,18 +154,22 @@ def decode_boxes(loc, priors, variances=[0.1, 0.2]) -> np.ndarray:
     return boxes
 
 
-def decode_landmarks(predictions, priors, variances=[0.1, 0.2]) -> np.ndarray:
+def decode_landmarks(
+    predictions: np.ndarray, priors: np.ndarray, variances: Optional[List[float]] = None
+) -> np.ndarray:
     """
-    Decode landmark predictions using prior boxes.
+    Decode landmark predictions using prior boxes (RetinaFace specific).
 
     Args:
         predictions (np.ndarray): Landmark predictions, shape: [num_priors, 10]
         priors (np.ndarray): Prior boxes, shape: [num_priors, 4]
-        variances (list): Scaling factors for landmark offsets.
+        variances (Optional[List[float]]): Scaling factors for landmark offsets. Defaults to [0.1, 0.2].
 
     Returns:
         np.ndarray: Decoded landmarks, shape: [num_priors, 10]
     """
+    if variances is None:
+        variances = [0.1, 0.2]
 
     # Reshape predictions to [num_priors, 5, 2] to process landmark points
     predictions = predictions.reshape(predictions.shape[0], 5, 2)
@@ -171,3 +185,59 @@ def decode_landmarks(predictions, priors, variances=[0.1, 0.2]) -> np.ndarray:
     landmarks = landmarks.reshape(landmarks.shape[0], -1)
 
     return landmarks
+
+
+def distance2bbox(points: np.ndarray, distance: np.ndarray, max_shape: Optional[Tuple[int, int]] = None) -> np.ndarray:
+    """
+    Decode distance prediction to bounding box (SCRFD specific).
+
+    Args:
+        points (np.ndarray): Anchor points with shape (n, 2), [x, y].
+        distance (np.ndarray): Distance from the given point to 4
+            boundaries (left, top, right, bottom) with shape (n, 4).
+        max_shape (Optional[Tuple[int, int]]): Shape of the image (height, width) for clipping.
+
+    Returns:
+        np.ndarray: Decoded bounding boxes with shape (n, 4) as [x1, y1, x2, y2].
+    """
+    x1 = points[:, 0] - distance[:, 0]
+    y1 = points[:, 1] - distance[:, 1]
+    x2 = points[:, 0] + distance[:, 2]
+    y2 = points[:, 1] + distance[:, 3]
+
+    if max_shape is not None:
+        x1 = np.clip(x1, 0, max_shape[1])
+        y1 = np.clip(y1, 0, max_shape[0])
+        x2 = np.clip(x2, 0, max_shape[1])
+        y2 = np.clip(y2, 0, max_shape[0])
+    else:
+        x1 = np.maximum(x1, 0)
+        y1 = np.maximum(y1, 0)
+        x2 = np.maximum(x2, 0)
+        y2 = np.maximum(y2, 0)
+
+    return np.stack([x1, y1, x2, y2], axis=-1)
+
+
+def distance2kps(points: np.ndarray, distance: np.ndarray, max_shape: Optional[Tuple[int, int]] = None) -> np.ndarray:
+    """
+    Decode distance prediction to keypoints (SCRFD specific).
+
+    Args:
+        points (np.ndarray): Anchor points with shape (n, 2), [x, y].
+        distance (np.ndarray): Distance from the given point to keypoints with shape (n, 2k).
+        max_shape (Optional[Tuple[int, int]]): Shape of the image (height, width) for clipping.
+
+    Returns:
+        np.ndarray: Decoded keypoints with shape (n, 2k).
+    """
+    preds = []
+    for i in range(0, distance.shape[1], 2):
+        px = points[:, i % 2] + distance[:, i]
+        py = points[:, i % 2 + 1] + distance[:, i + 1]
+        if max_shape is not None:
+            px = np.clip(px, 0, max_shape[1])
+            py = np.clip(py, 0, max_shape[0])
+        preds.append(px)
+        preds.append(py)
+    return np.stack(preds, axis=-1)

@@ -15,7 +15,7 @@ from uniface.onnx_utils import create_onnx_session
 
 from .base import BaseLandmarker
 
-__all__ = ["Landmark"]
+__all__ = ['Landmark106']
 
 
 class Landmark106(BaseLandmarker):
@@ -48,7 +48,7 @@ class Landmark106(BaseLandmarker):
         model_name: LandmarkWeights = LandmarkWeights.DEFAULT,
         input_size: Tuple[int, int] = (192, 192),
     ) -> None:
-        Logger.info(f"Initializing Facial Landmark with model={model_name}, input_size={input_size}")
+        Logger.info(f'Initializing Facial Landmark with model={model_name}, input_size={input_size}')
         self.input_size = input_size
         self.input_std = 1.0
         self.input_mean = 0.0
@@ -79,11 +79,11 @@ class Landmark106(BaseLandmarker):
             self.lmk_dim = 2  # x,y coordinates
             self.lmk_num = output_shape[1] // self.lmk_dim  # Number of landmarks
 
-            Logger.info(f"Model initialized with {self.lmk_num} landmarks")
+            Logger.info(f'Model initialized with {self.lmk_num} landmarks')
 
         except Exception as e:
             Logger.error(f"Failed to load landmark model from '{self.model_path}'", exc_info=True)
-            raise RuntimeError(f"Failed to initialize landmark model: {e}") from e
+            raise RuntimeError(f'Failed to initialize landmark model: {e}') from e
 
     def preprocess(self, image: np.ndarray, bbox: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """Prepares a face crop for inference.
@@ -158,7 +158,7 @@ class Landmark106(BaseLandmarker):
 
 
 # Testing code
-if __name__ == "__main__":
+if __name__ == '__main__':
     from uniface.detection import RetinaFace
     from uniface.landmark import Landmark106
 
@@ -167,7 +167,7 @@ if __name__ == "__main__":
 
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
-        print("Webcam not available.")
+        print('Webcam not available.')
         exit()
 
     print("Press 'q' to quit.")
@@ -175,22 +175,22 @@ if __name__ == "__main__":
     while True:
         ret, frame = cap.read()
         if not ret:
-            print("Frame capture failed.")
+            print('Frame capture failed.')
             break
 
         # 2. The detect method returns a list of dictionaries
         faces = face_detector.detect(frame)
 
         if not faces:
-            cv2.imshow("Facial Landmark Detection", frame)
-            if cv2.waitKey(1) & 0xFF == ord("q"):
+            cv2.imshow('Facial Landmark Detection', frame)
+            if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
             continue
 
         # 3. Loop through the list of face dictionaries
         for face in faces:
             # Extract the bounding box
-            bbox = face["bbox"]
+            bbox = face['bbox']
 
             # 4. Get landmarks for the current face using its bounding box
             landmarks = landmarker.get_landmarks(frame, bbox)
@@ -204,8 +204,8 @@ if __name__ == "__main__":
             x1, y1, x2, y2 = map(int, bbox)
             cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 0, 0), 2)
 
-        cv2.imshow("Facial Landmark Detection", frame)
-        if cv2.waitKey(1) & 0xFF == ord("q"):
+        cv2.imshow('Facial Landmark Detection', frame)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
     cap.release()

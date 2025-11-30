@@ -45,6 +45,7 @@ for i, face in enumerate(faces):
 ```
 
 **Output:**
+
 ```
 Face 1:
   Confidence: 0.99
@@ -122,6 +123,7 @@ else:
 ```
 
 **Similarity thresholds:**
+
 - `> 0.6`: Same person (high confidence)
 - `0.4 - 0.6`: Uncertain (manual review)
 - `< 0.4`: Different people
@@ -186,11 +188,13 @@ faces = detector.detect(image)
 
 # Predict attributes
 for i, face in enumerate(faces):
-    gender, age = age_gender.predict(image, face['bbox'])
+    gender_id, age = age_gender.predict(image, face['bbox'])
+    gender = 'Female' if gender_id == 0 else 'Male'
     print(f"Face {i+1}: {gender}, {age} years old")
 ```
 
 **Output:**
+
 ```
 Face 1: Male, 32 years old
 Face 2: Female, 28 years old
@@ -369,4 +373,3 @@ from uniface import retinaface  # Module, not class
 ---
 
 Happy coding! 🚀
-
