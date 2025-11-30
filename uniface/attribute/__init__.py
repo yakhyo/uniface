@@ -88,8 +88,8 @@ def predict_attributes(
             face['attributes'] = {}
 
         if isinstance(predictor, AgeGender):
-            gender, age = predictor(image, face['bbox'])
-            face['attributes']['gender'] = gender
+            gender_id, age = predictor(image, face['bbox'])
+            face['attributes']['gender_id'] = gender_id
             face['attributes']['age'] = age
         elif isinstance(predictor, Emotion):
             emotion, confidence = predictor(image, face['landmark'])

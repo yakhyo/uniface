@@ -22,8 +22,8 @@ class AgeGender(Attribute):
     Age and gender prediction model using ONNX Runtime.
 
     This class inherits from the base `Attribute` class and implements the
-    functionality for predicting age (in years) and gender (0 for female,
-    1 for male) from a face image. It requires a bounding box to locate the face.
+    functionality for predicting age (in years) and gender ID (0 for Female,
+    1 for Male) from a face image. It requires a bounding box to locate the face.
     """
 
     def __init__(self, model_name: AgeGenderWeights = AgeGenderWeights.DEFAULT) -> None:
@@ -87,7 +87,7 @@ class AgeGender(Attribute):
         )
         return blob
 
-    def postprocess(self, prediction: np.ndarray) -> Tuple[str, int]:
+    def postprocess(self, prediction: np.ndarray) -> Tuple[int, int]:
         """
         Processes the raw model output to extract gender and age.
 
@@ -95,17 +95,16 @@ class AgeGender(Attribute):
             prediction (np.ndarray): The raw output from the model inference.
 
         Returns:
-            Tuple[str, int]: A tuple containing the predicted gender label ("Female" or "Male")
+            Tuple[int, int]: A tuple containing the predicted gender ID (0 for Female, 1 for Male)
                              and age (in years).
         """
         # First two values are gender logits
         gender_id = int(np.argmax(prediction[:2]))
-        gender = 'Female' if gender_id == 0 else 'Male'
         # Third value is normalized age, scaled by 100
         age = int(np.round(prediction[2] * 100))
-        return gender, age
+        return gender_id, age
 
-    def predict(self, image: np.ndarray, bbox: Union[List, np.ndarray]) -> Tuple[str, int]:
+    def predict(self, image: np.ndarray, bbox: Union[List, np.ndarray]) -> Tuple[int, int]:
         """
         Predicts age and gender for a single face specified by a bounding box.
 
@@ -114,12 +113,12 @@ class AgeGender(Attribute):
             bbox (Union[List, np.ndarray]): The face bounding box coordinates [x1, y1, x2, y2].
 
         Returns:
-            Tuple[str, int]: A tuple containing the predicted gender label and age.
+            Tuple[int, int]: A tuple containing the predicted gender ID (0 for Female, 1 for Male) and age.
         """
         face_blob = self.preprocess(image, bbox)
         prediction = self.session.run(self.output_names, {self.input_name: face_blob})[0][0]
-        gender, age = self.postprocess(prediction)
-        return gender, age
+        gender_id, age = self.postprocess(prediction)
+        return gender_id, age
 
 
 # TODO: below is only for testing, remove it later
@@ -159,10 +158,11 @@ if __name__ == '__main__':
             x1, y1, x2, y2 = map(int, box)
 
             # Predict attributes
-            gender, age = age_gender_predictor.predict(frame, box)
+            gender_id, age = age_gender_predictor.predict(frame, box)
+            gender_str = 'Female' if gender_id == 0 else 'Male'
 
             # Prepare text and draw on the frame
-            label = f'{gender}, {age}'
+            label = f'{gender_str}, {age}'
             cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
             cv2.putText(
                 frame,
