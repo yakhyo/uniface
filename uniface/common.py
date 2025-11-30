@@ -2,8 +2,6 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-"""Common utility functions for face detection models."""
-
 import itertools
 import math
 from typing import List, Optional, Tuple

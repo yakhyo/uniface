@@ -2,10 +2,6 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-"""
-Utilities for ONNX Runtime configuration and provider selection.
-"""
-
 from typing import List
 
 import onnxruntime as ort

@@ -2,10 +2,6 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-"""
-Base classes for face detection.
-"""
-
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List
 

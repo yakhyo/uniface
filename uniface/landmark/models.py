@@ -15,7 +15,7 @@ from uniface.onnx_utils import create_onnx_session
 
 from .base import BaseLandmarker
 
-__all__ = ['Landmark']
+__all__ = ['Landmark106']
 
 
 class Landmark106(BaseLandmarker):
