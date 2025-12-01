@@ -10,6 +10,7 @@ import numpy as np
 from .base import BaseDetector
 from .retinaface import RetinaFace
 from .scrfd import SCRFD
+from .yolov5 import YOLOv5Face
 
 # Global cache for detector instances
 _detector_cache: Dict[str, BaseDetector] = {}
@@ -59,6 +60,7 @@ def create_detector(method: str = 'retinaface', **kwargs) -> BaseDetector:
         method (str): Detection method. Options:
             - 'retinaface': RetinaFace detector (default)
             - 'scrfd': SCRFD detector (fast and accurate)
+            - 'yolov5face': YOLOv5-Face detector (accurate with landmarks)
         **kwargs: Detector-specific parameters
 
     Returns:
@@ -86,6 +88,14 @@ def create_detector(method: str = 'retinaface', **kwargs) -> BaseDetector:
         ...     conf_thresh=0.8,
         ...     nms_thresh=0.4
         ... )
+
+        >>> # YOLOv5-Face detector
+        >>> detector = create_detector(
+        ...     'yolov5face',
+        ...     model_name=YOLOv5FaceWeights.YOLOV5S,
+        ...     conf_thresh=0.25,
+        ...     nms_thresh=0.45
+        ... )
     """
     method = method.lower()
 
@@ -95,8 +105,11 @@ def create_detector(method: str = 'retinaface', **kwargs) -> BaseDetector:
     elif method == 'scrfd':
         return SCRFD(**kwargs)
 
+    elif method == 'yolov5face':
+        return YOLOv5Face(**kwargs)
+
     else:
-        available_methods = ['retinaface', 'scrfd']
+        available_methods = ['retinaface', 'scrfd', 'yolov5face']
         raise ValueError(f"Unsupported detection method: '{method}'. Available methods: {available_methods}")
 
 
@@ -130,6 +143,17 @@ def list_available_detectors() -> Dict[str, Dict[str, Any]]:
                 'input_size': (640, 640),
             },
         },
+        'yolov5face': {
+            'description': 'YOLOv5-Face detector - accurate face detection with landmarks',
+            'supports_landmarks': True,
+            'paper': 'https://arxiv.org/abs/2105.12931',
+            'default_params': {
+                'model_name': 'yolov5s_face',
+                'conf_thresh': 0.25,
+                'nms_thresh': 0.45,
+                'input_size': 640,
+            },
+        },
     }
 
 
@@ -139,5 +163,6 @@ __all__ = [
     'list_available_detectors',
     'SCRFD',
     'RetinaFace',
+    'YOLOv5Face',
     'BaseDetector',
 ]
