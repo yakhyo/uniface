@@ -31,7 +31,9 @@ class SCRFD(BaseDetector):
                 Specifies the SCRFD variant to load. Defaults to SCRFD_10G_KPS.
             conf_thresh (float, optional): Confidence threshold for filtering detections. Defaults to 0.5.
             nms_thresh (float, optional): Non-Maximum Suppression threshold. Defaults to 0.4.
-            input_size (Tuple[int, int], optional): Input image size (width, height). Defaults to (640, 640).
+            input_size (Tuple[int, int], optional): Input image size (width, height).
+                Defaults to (640, 640).
+                Note: Non-default sizes may cause slower inference and CoreML compatibility issues.
 
     Attributes:
         conf_thresh (float): Threshold used to filter low-confidence detections.

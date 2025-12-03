@@ -58,7 +58,12 @@ class SCRFDWeights(str, Enum):
 class YOLOv5FaceWeights(str, Enum):
     """
     Trained on WIDER FACE dataset.
-    Exported to ONNX from https://github.com/deepcam-cn/yolov5-face
+    Original implementation: https://github.com/deepcam-cn/yolov5-face
+    Exported to ONNX from: https://github.com/yakhyo/yolov5-face-onnx-inference
+
+    Model Performance (WIDER FACE):
+    - YOLOV5S: 7.1M params, 28MB, 94.33% Easy / 92.61% Medium / 83.15% Hard
+    - YOLOV5M: 21.1M params, 84MB, 95.30% Easy / 93.76% Medium / 85.28% Hard
     """
     YOLOV5S = "yolov5s_face"
     YOLOV5M = "yolov5m_face"
@@ -146,8 +151,8 @@ MODEL_SHA256: Dict[Enum, str] = {
     SCRFDWeights.SCRFD_10G_KPS:      '5838f7fe053675b1c7a08b633df49e7af5495cee0493c7dcf6697200b85b5b91',
     SCRFDWeights.SCRFD_500M_KPS:     '5e4447f50245bbd7966bd6c0fa52938c61474a04ec7def48753668a9d8b4ea3a',
     # YOLOv5-Face
-    YOLOv5FaceWeights.YOLOV5S:       'c09cc2b7a12b54973cb68a2280a8b3460cdc0221a36340df2050e1daad80c756',
-    YOLOv5FaceWeights.YOLOV5M:       '8304e4ff2d76ad44cc57404233314b8f004fc3fc3c8fd3d74d7b52bc44db1919',
+    YOLOv5FaceWeights.YOLOV5S:       'fc682801cd5880e1e296184a14aea0035486b5146ec1a1389d2e7149cb134bb2',
+    YOLOv5FaceWeights.YOLOV5M:       '04302ce27a15bde3e20945691b688e2dd018a10e92dd8932146bede6a49207b2',
     # DDAFM
     DDAMFNWeights.AFFECNET7:         '10535bf8b6afe8e9d6ae26cea6c3add9a93036e9addb6adebfd4a972171d015d',
     DDAMFNWeights.AFFECNET8:         '8c66963bc71db42796a14dfcbfcd181b268b65a3fc16e87147d6a3a3d7e0f487',

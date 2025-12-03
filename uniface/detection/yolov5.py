@@ -22,8 +22,8 @@ class YOLOv5Face(BaseDetector):
     """
     Face detector based on the YOLOv5-Face architecture.
 
-    Title: "YOLOv5-Face: Why Reinventing a Face Detector"
     Paper: https://arxiv.org/abs/2105.12931
+    Original Implementation: https://github.com/deepcam-cn/yolov5-face
 
     Args:
         **kwargs: Keyword arguments passed to BaseDetector and YOLOv5Face. Supported keys include:
@@ -32,7 +32,8 @@ class YOLOv5Face(BaseDetector):
             conf_thresh (float, optional): Confidence threshold for filtering detections. Defaults to 0.25.
             nms_thresh (float, optional): Non-Maximum Suppression threshold. Defaults to 0.45.
             input_size (int, optional): Input image size. Defaults to 640.
-            max_det (int, optional): Maximum number of detections to return. Defaults to 300.
+                Note: ONNX model is fixed at 640. Changing this will cause inference errors.
+            max_det (int, optional): Maximum number of detections to return. Defaults to 750.
 
     Attributes:
         conf_thresh (float): Threshold used to filter low-confidence detections.
@@ -51,10 +52,16 @@ class YOLOv5Face(BaseDetector):
         self._supports_landmarks = True  # YOLOv5-Face supports landmarks
 
         model_name = kwargs.get('model_name', YOLOv5FaceWeights.YOLOV5S)
-        conf_thresh = kwargs.get('conf_thresh', 0.25)
-        nms_thresh = kwargs.get('nms_thresh', 0.45)
+        conf_thresh = kwargs.get('conf_thresh', 0.6)  # 0.6 is default from original YOLOv5-Face repository
+        nms_thresh = kwargs.get('nms_thresh', 0.5)  # 0.5 is default from original YOLOv5-Face repository
         input_size = kwargs.get('input_size', 640)
-        max_det = kwargs.get('max_det', 300)
+        max_det = kwargs.get('max_det', 750)
+
+        # Validate input size
+        if input_size != 640:
+            raise ValueError(
+                f'YOLOv5Face only supports input_size=640 (got {input_size}). The ONNX model has a fixed input shape.'
+            )
 
         self.conf_thresh = conf_thresh
         self.nms_thresh = nms_thresh
