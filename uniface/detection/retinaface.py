@@ -38,6 +38,7 @@ class RetinaFace(BaseDetector):
             dynamic_size (bool, optional): If True, generate anchors dynamically per input image. Defaults to False.
             input_size (Tuple[int, int], optional): Fixed input size (width, height) if `dynamic_size=False`.
                 Defaults to (640, 640).
+                Note: Non-default sizes may cause slower inference and CoreML compatibility issues.
 
     Attributes:
         model_name (RetinaFaceWeights): Selected model variant.

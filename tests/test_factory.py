@@ -263,7 +263,7 @@ def test_factory_returns_correct_types():
     """
     Test that factory functions return instances of the correct types.
     """
-    from uniface import RetinaFace, ArcFace, Landmark106
+    from uniface import ArcFace, Landmark106, RetinaFace
 
     detector = create_detector('retinaface')
     recognizer = create_recognizer('arcface')

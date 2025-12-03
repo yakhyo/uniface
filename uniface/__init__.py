@@ -13,7 +13,7 @@
 
 __license__ = 'MIT'
 __author__ = 'Yakhyokhuja Valikhujaev'
-__version__ = '1.1.2'
+__version__ = '1.2.0'
 
 
 from uniface.face_utils import compute_similarity, face_alignment
@@ -32,6 +32,7 @@ except ImportError:
 from .detection import (
     SCRFD,
     RetinaFace,
+    YOLOv5Face,
     create_detector,
     detect_faces,
     list_available_detectors,
@@ -55,6 +56,7 @@ __all__ = [
     # Detection models
     'RetinaFace',
     'SCRFD',
+    'YOLOv5Face',
     # Recognition models
     'ArcFace',
     'MobileFace',

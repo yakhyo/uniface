@@ -55,6 +55,20 @@ class SCRFDWeights(str, Enum):
     SCRFD_500M_KPS = "scrfd_500m"
 
 
+class YOLOv5FaceWeights(str, Enum):
+    """
+    Trained on WIDER FACE dataset.
+    Original implementation: https://github.com/deepcam-cn/yolov5-face
+    Exported to ONNX from: https://github.com/yakhyo/yolov5-face-onnx-inference
+
+    Model Performance (WIDER FACE):
+    - YOLOV5S: 7.1M params, 28MB, 94.33% Easy / 92.61% Medium / 83.15% Hard
+    - YOLOV5M: 21.1M params, 84MB, 95.30% Easy / 93.76% Medium / 85.28% Hard
+    """
+    YOLOV5S = "yolov5s_face"
+    YOLOV5M = "yolov5m_face"
+
+
 class DDAMFNWeights(str, Enum):
     """
     Trained on AffectNet dataset.
@@ -102,6 +116,9 @@ MODEL_URLS: Dict[Enum, str] = {
     # SCRFD
     SCRFDWeights.SCRFD_10G_KPS:      'https://github.com/yakhyo/uniface/releases/download/weights/scrfd_10g_kps.onnx',
     SCRFDWeights.SCRFD_500M_KPS:     'https://github.com/yakhyo/uniface/releases/download/weights/scrfd_500m_kps.onnx',
+    # YOLOv5-Face
+    YOLOv5FaceWeights.YOLOV5S:       'https://github.com/yakhyo/yolov5-face-onnx-inference/releases/download/weights/yolov5s_face.onnx',
+    YOLOv5FaceWeights.YOLOV5M:       'https://github.com/yakhyo/yolov5-face-onnx-inference/releases/download/weights/yolov5m_face.onnx',
     # DDAFM
     DDAMFNWeights.AFFECNET7:         'https://github.com/yakhyo/uniface/releases/download/weights/affecnet7.script',
     DDAMFNWeights.AFFECNET8:         'https://github.com/yakhyo/uniface/releases/download/weights/affecnet8.script',
@@ -133,6 +150,9 @@ MODEL_SHA256: Dict[Enum, str] = {
     # SCRFD
     SCRFDWeights.SCRFD_10G_KPS:      '5838f7fe053675b1c7a08b633df49e7af5495cee0493c7dcf6697200b85b5b91',
     SCRFDWeights.SCRFD_500M_KPS:     '5e4447f50245bbd7966bd6c0fa52938c61474a04ec7def48753668a9d8b4ea3a',
+    # YOLOv5-Face
+    YOLOv5FaceWeights.YOLOV5S:       'fc682801cd5880e1e296184a14aea0035486b5146ec1a1389d2e7149cb134bb2',
+    YOLOv5FaceWeights.YOLOV5M:       '04302ce27a15bde3e20945691b688e2dd018a10e92dd8932146bede6a49207b2',
     # DDAFM
     DDAMFNWeights.AFFECNET7:         '10535bf8b6afe8e9d6ae26cea6c3add9a93036e9addb6adebfd4a972171d015d',
     DDAMFNWeights.AFFECNET8:         '8c66963bc71db42796a14dfcbfcd181b268b65a3fc16e87147d6a3a3d7e0f487',
