@@ -271,8 +271,8 @@ Choose the right model for your use case:
 ### Detection Models
 
 ```python
-from uniface.detection import RetinaFace, SCRFD
-from uniface.constants import RetinaFaceWeights, SCRFDWeights
+from uniface.detection import RetinaFace, SCRFD, YOLOv5Face
+from uniface.constants import RetinaFaceWeights, SCRFDWeights, YOLOv5FaceWeights
 
 # Fast detection (mobile/edge devices)
 detector = RetinaFace(
@@ -283,6 +283,13 @@ detector = RetinaFace(
 # Balanced (recommended)
 detector = RetinaFace(
     model_name=RetinaFaceWeights.MNET_V2
+)
+
+# Real-time with high accuracy
+detector = YOLOv5Face(
+    model_name=YOLOv5FaceWeights.YOLOV5S,
+    conf_thresh=0.6,
+    nms_thresh=0.5
 )
 
 # High accuracy (server/GPU)
@@ -367,9 +374,7 @@ from uniface import retinaface  # Module, not class
 ## References
 
 - **RetinaFace Training**: [yakhyo/retinaface-pytorch](https://github.com/yakhyo/retinaface-pytorch)
+- **YOLOv5-Face Original**: [deepcam-cn/yolov5-face](https://github.com/deepcam-cn/yolov5-face)
+- **YOLOv5-Face ONNX**: [yakhyo/yolov5-face-onnx-inference](https://github.com/yakhyo/yolov5-face-onnx-inference)
 - **Face Recognition Training**: [yakhyo/face-recognition](https://github.com/yakhyo/face-recognition)
 - **InsightFace**: [deepinsight/insightface](https://github.com/deepinsight/insightface)
-
----
-
-Happy coding! 🚀
