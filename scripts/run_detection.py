@@ -7,7 +7,7 @@ import os
 
 import cv2
 
-from uniface.detection import SCRFD, RetinaFace
+from uniface.detection import SCRFD, RetinaFace, YOLOv5Face
 from uniface.visualization import draw_detections
 
 
@@ -75,15 +75,21 @@ def main():
     parser = argparse.ArgumentParser(description='Run face detection')
     parser.add_argument('--image', type=str, help='Path to input image')
     parser.add_argument('--webcam', action='store_true', help='Use webcam')
-    parser.add_argument('--method', type=str, default='retinaface', choices=['retinaface', 'scrfd'])
-    parser.add_argument('--threshold', type=float, default=0.6, help='Visualization threshold')
+    parser.add_argument('--method', type=str, default='retinaface', choices=['retinaface', 'scrfd', 'yolov5face'])
+    parser.add_argument('--threshold', type=float, default=0.25, help='Visualization threshold')
     parser.add_argument('--save_dir', type=str, default='outputs')
     args = parser.parse_args()
 
     if not args.image and not args.webcam:
         parser.error('Either --image or --webcam must be specified')
 
-    detector = RetinaFace() if args.method == 'retinaface' else SCRFD()
+    if args.method == 'retinaface':
+        detector = RetinaFace()
+    elif args.method == 'scrfd':
+        detector = SCRFD()
+    else:
+        from uniface.constants import YOLOv5FaceWeights
+        detector = YOLOv5Face(model_name=YOLOv5FaceWeights.YOLOV5M)
 
     if args.webcam:
         run_webcam(detector, args.threshold)
