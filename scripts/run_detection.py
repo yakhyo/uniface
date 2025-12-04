@@ -89,6 +89,7 @@ def main():
         detector = SCRFD()
     else:
         from uniface.constants import YOLOv5FaceWeights
+
         detector = YOLOv5Face(model_name=YOLOv5FaceWeights.YOLOV5M)
 
     if args.webcam:
