@@ -27,6 +27,7 @@ class RetinaFace(BaseDetector):
 
     Title: "RetinaFace: Single-stage Dense Face Localisation in the Wild"
     Paper: https://arxiv.org/abs/1905.00641
+    Code: https://github.com/yakhyo/retinaface-pytorch
 
     Args:
         **kwargs: Keyword arguments passed to BaseDetector and RetinaFace. Supported keys include:

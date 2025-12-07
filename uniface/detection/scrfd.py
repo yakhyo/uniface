@@ -24,6 +24,7 @@ class SCRFD(BaseDetector):
 
     Title: "Sample and Computation Redistribution for Efficient Face Detection"
     Paper: https://arxiv.org/abs/2105.04714
+    Code: https://github.com/insightface/insightface
 
     Args:
         **kwargs: Keyword arguments passed to BaseDetector and SCRFD. Supported keys include:

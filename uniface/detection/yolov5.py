@@ -22,8 +22,9 @@ class YOLOv5Face(BaseDetector):
     """
     Face detector based on the YOLOv5-Face architecture.
 
+    Title: "YOLO5Face: Why Reinventing a Face Detector"
     Paper: https://arxiv.org/abs/2105.12931
-    Original Implementation: https://github.com/deepcam-cn/yolov5-face
+    Code: https://github.com/yakhyo/yolov5-face-onnx-inference (ONNX inference implementation)
 
     Args:
         **kwargs: Keyword arguments passed to BaseDetector and YOLOv5Face. Supported keys include:
