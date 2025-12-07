@@ -22,7 +22,7 @@ def detect_faces(image: np.ndarray, method: str = 'retinaface', **kwargs) -> Lis
 
     Args:
         image (np.ndarray): Input image as numpy array.
-        method (str): Detection method to use. Options: 'retinaface', 'scrfd'.
+        method (str): Detection method to use. Options: 'retinaface', 'scrfd', 'yolov5face'.
         **kwargs: Additional arguments passed to the detector.
 
     Returns:

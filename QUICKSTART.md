@@ -75,7 +75,13 @@ scores = [f['confidence'] for f in faces]
 landmarks = [f['landmarks'] for f in faces]
 
 # Draw on image
-draw_detections(image, bboxes, scores, landmarks, vis_threshold=0.6)
+draw_detections(
+    image=image,
+    bboxes=bboxes,
+    scores=scores,
+    landmarks=landmarks,
+    vis_threshold=0.6,
+)
 
 # Save result
 cv2.imwrite("output.jpg", image)
@@ -156,7 +162,12 @@ while True:
     bboxes = [f['bbox'] for f in faces]
     scores = [f['confidence'] for f in faces]
     landmarks = [f['landmarks'] for f in faces]
-    draw_detections(frame, bboxes, scores, landmarks)
+    draw_detections(
+        image=frame,
+        bboxes=bboxes,
+        scores=scores,
+        landmarks=landmarks,
+    )
 
     # Show frame
     cv2.imshow("UniFace - Press 'q' to quit", frame)
@@ -365,7 +376,20 @@ from uniface import retinaface  # Module, not class
 
 ## Next Steps
 
-- **Detailed Examples**: Check the [examples/](examples/) folder for Jupyter notebooks
+### Jupyter Notebook Examples
+
+Explore interactive examples for common tasks:
+
+| Example | Description | Notebook |
+|---------|-------------|----------|
+| **Face Detection** | Detect faces and facial landmarks | [face_detection.ipynb](examples/face_detection.ipynb) |
+| **Face Alignment** | Align and crop faces for recognition | [face_alignment.ipynb](examples/face_alignment.ipynb) |
+| **Face Recognition** | Extract face embeddings and compare faces | [face_analyzer.ipynb](examples/face_analyzer.ipynb) |
+| **Face Verification** | Compare two faces to verify identity | [face_verification.ipynb](examples/face_verification.ipynb) |
+| **Face Search** | Find a person in a group photo | [face_search.ipynb](examples/face_search.ipynb) |
+
+### Additional Resources
+
 - **Model Benchmarks**: See [MODELS.md](MODELS.md) for performance comparisons
 - **Full Documentation**: Read [README.md](README.md) for complete API reference
 
@@ -374,7 +398,6 @@ from uniface import retinaface  # Module, not class
 ## References
 
 - **RetinaFace Training**: [yakhyo/retinaface-pytorch](https://github.com/yakhyo/retinaface-pytorch)
-- **YOLOv5-Face Original**: [deepcam-cn/yolov5-face](https://github.com/deepcam-cn/yolov5-face)
 - **YOLOv5-Face ONNX**: [yakhyo/yolov5-face-onnx-inference](https://github.com/yakhyo/yolov5-face-onnx-inference)
 - **Face Recognition Training**: [yakhyo/face-recognition](https://github.com/yakhyo/face-recognition)
 - **InsightFace**: [deepinsight/insightface](https://github.com/deepinsight/insightface)

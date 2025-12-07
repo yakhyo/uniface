@@ -17,7 +17,7 @@
 
 ## Features
 
-- **High-Speed Face Detection**: ONNX-optimized RetinaFace and SCRFD models
+- **High-Speed Face Detection**: ONNX-optimized RetinaFace, SCRFD, and YOLOv5-Face models
 - **Facial Landmark Detection**: Accurate 106-point landmark localization
 - **Face Recognition**: ArcFace, MobileFace, and SphereFace embeddings
 - **Attribute Analysis**: Age, gender, and emotion detection
@@ -218,8 +218,34 @@ recognizer = SphereFace()  # Angular softmax alternative
 from uniface import detect_faces
 
 # One-line face detection
-faces = detect_faces(image, method='retinaface', conf_thresh=0.8)
+faces = detect_faces(image, method='retinaface', conf_thresh=0.8)  # methods: retinaface, scrfd, yolov5face
 ```
+
+### Key Parameters (quick reference)
+
+**Detection**
+
+| Class          | Key params (defaults)                                                                                                                | Notes                                          |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------- |
+| `RetinaFace` | `model_name=RetinaFaceWeights.MNET_V2`, `conf_thresh=0.5`, `nms_thresh=0.4`, `input_size=(640, 640)`, `dynamic_size=False` | Supports 5-point landmarks                     |
+| `SCRFD`      | `model_name=SCRFDWeights.SCRFD_10G_KPS`, `conf_thresh=0.5`, `nms_thresh=0.4`, `input_size=(640, 640)`                        | Supports 5-point landmarks                     |
+| `YOLOv5Face` | `model_name=YOLOv5FaceWeights.YOLOV5S`, `conf_thresh=0.6`, `nms_thresh=0.5`, `input_size=640` (fixed)                        | Landmarks supported;`input_size` must be 640 |
+
+**Recognition**
+
+| Class          | Key params (defaults)                     | Notes                                 |
+| -------------- | ----------------------------------------- | ------------------------------------- |
+| `ArcFace`    | `model_name=ArcFaceWeights.MNET`        | Returns 512-dim normalized embeddings |
+| `MobileFace` | `model_name=MobileFaceWeights.MNET_V2`  | Lightweight embeddings                |
+| `SphereFace` | `model_name=SphereFaceWeights.SPHERE20` | Angular softmax variant               |
+
+**Landmark & Attributes**
+
+| Class           | Key params (defaults)                                                 | Notes                                   |
+| --------------- | --------------------------------------------------------------------- | --------------------------------------- |
+| `Landmark106` | No required params                                                    | 106-point landmarks                     |
+| `AgeGender`   | `model_name=AgeGenderWeights.DEFAULT`; `input_size` auto-detected | Requires bbox; ONNXRuntime              |
+| `Emotion`     | `model_weights=DDAMFNWeights.AFFECNET7`, `input_size=(112, 112)`  | Requires 5-point landmarks; TorchScript |
 
 ---
 
@@ -255,6 +281,18 @@ See [MODELS.md](MODELS.md) for detailed model information and selection guide.
 
 ## Examples
 
+### Jupyter Notebooks
+
+Interactive examples covering common face analysis tasks:
+
+| Example | Description | Notebook |
+|---------|-------------|----------|
+| **Face Detection** | Detect faces and facial landmarks | [face_detection.ipynb](examples/face_detection.ipynb) |
+| **Face Alignment** | Align and crop faces for recognition | [face_alignment.ipynb](examples/face_alignment.ipynb) |
+| **Face Recognition** | Extract face embeddings and compare faces | [face_analyzer.ipynb](examples/face_analyzer.ipynb) |
+| **Face Verification** | Compare two faces to verify identity | [face_verification.ipynb](examples/face_verification.ipynb) |
+| **Face Search** | Find a person in a group photo | [face_search.ipynb](examples/face_search.ipynb) |
+
 ### Webcam Face Detection
 
 ```python
@@ -277,7 +315,13 @@ while True:
     scores = [f['confidence'] for f in faces]
     landmarks = [f['landmarks'] for f in faces]
 
-    draw_detections(frame, bboxes, scores, landmarks, vis_threshold=0.6)
+    draw_detections(
+        image=frame,
+        bboxes=bboxes,
+        scores=scores,
+        landmarks=landmarks,
+        vis_threshold=0.6,
+    )
 
     cv2.imshow("Face Detection", frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -452,7 +496,6 @@ uniface/
 ## References
 
 - **RetinaFace Training**: [yakhyo/retinaface-pytorch](https://github.com/yakhyo/retinaface-pytorch) - PyTorch implementation and training code
-- **YOLOv5-Face Original**: [deepcam-cn/yolov5-face](https://github.com/deepcam-cn/yolov5-face) - Original PyTorch implementation
 - **YOLOv5-Face ONNX**: [yakhyo/yolov5-face-onnx-inference](https://github.com/yakhyo/yolov5-face-onnx-inference) - ONNX inference implementation
 - **Face Recognition Training**: [yakhyo/face-recognition](https://github.com/yakhyo/face-recognition) - ArcFace, MobileFace, SphereFace training code
 - **InsightFace**: [deepinsight/insightface](https://github.com/deepinsight/insightface) - Model architectures and pretrained weights

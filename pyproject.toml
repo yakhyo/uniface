@@ -1,6 +1,6 @@
 [project]
 name = "uniface"
-version = "1.2.0"
+version = "1.3.0"
 description = "UniFace: A Comprehensive Library for Face Detection, Recognition, Landmark Analysis, Age, and Gender Detection"
 readme = "README.md"
 license = { text = "MIT" }

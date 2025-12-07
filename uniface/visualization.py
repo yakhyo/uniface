@@ -86,7 +86,6 @@ def draw_detections(
 
 
 def draw_fancy_bbox(
-    *,
     image: np.ndarray,
     bbox: np.ndarray,
     color: Tuple[int, int, int] = (0, 255, 0),
