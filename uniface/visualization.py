@@ -2,19 +2,21 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-from typing import List, Union
+from typing import List, Tuple, Union
 
 import cv2
 import numpy as np
 
 
 def draw_detections(
+    *,
     image: np.ndarray,
     bboxes: Union[List[np.ndarray], List[List[float]]],
     scores: Union[np.ndarray, List[float]],
     landmarks: Union[List[np.ndarray], List[List[List[float]]]],
     vis_threshold: float = 0.6,
     draw_score: bool = False,
+    fancy_bbox: bool = True,
 ):
     """
     Draws bounding boxes, landmarks, and optional scores on an image.
@@ -46,7 +48,10 @@ def draw_detections(
         font_thickness = 2
 
         # Draw bounding box
-        cv2.rectangle(image, tuple(bbox[:2]), tuple(bbox[2:]), (0, 0, 255), line_thickness)
+        if fancy_bbox:
+            draw_fancy_bbox(image, bbox, color=(0, 255, 0), thickness=line_thickness, proportion=0.2)
+        else:
+            cv2.rectangle(image, tuple(bbox[:2]), tuple(bbox[2:]), (0, 255, 0), line_thickness)
 
         # Draw confidence score with background
         if draw_score:
@@ -78,3 +83,47 @@ def draw_detections(
         # Draw landmarks
         for j, point in enumerate(landmark_set):
             cv2.circle(image, tuple(point), line_thickness + 1, colors[j], -1)
+
+
+def draw_fancy_bbox(
+    *,
+    image: np.ndarray,
+    bbox: np.ndarray,
+    color: Tuple[int, int, int] = (0, 255, 0),
+    thickness: int = 3,
+    proportion: float = 0.2,
+):
+    """
+    Draws a bounding box with fancy corners on an image.
+
+    Args:
+        image: Input image to draw on.
+        bbox: Bounding box coordinates [x1, y1, x2, y2].
+        color: Color of the bounding box. Defaults to green.
+        thickness: Thickness of the bounding box lines. Defaults to 3.
+        proportion: Proportion of the corner length to the width/height of the bounding box. Defaults to 0.2.
+    """
+    x1, y1, x2, y2 = map(int, bbox)
+    width = x2 - x1
+    height = y2 - y1
+
+    corner_length = int(proportion * min(width, height))
+
+    # Draw the rectangle
+    cv2.rectangle(image, (x1, y1), (x2, y2), color, 1)
+
+    # Top-left corner
+    cv2.line(image, (x1, y1), (x1 + corner_length, y1), color, thickness)
+    cv2.line(image, (x1, y1), (x1, y1 + corner_length), color, thickness)
+
+    # Top-right corner
+    cv2.line(image, (x2, y1), (x2 - corner_length, y1), color, thickness)
+    cv2.line(image, (x2, y1), (x2, y1 + corner_length), color, thickness)
+
+    # Bottom-left corner
+    cv2.line(image, (x1, y2), (x1, y2 - corner_length), color, thickness)
+    cv2.line(image, (x1, y2), (x1 + corner_length, y2), color, thickness)
+
+    # Bottom-right corner
+    cv2.line(image, (x2, y2), (x2, y2 - corner_length), color, thickness)
+    cv2.line(image, (x2, y2), (x2 - corner_length, y2), color, thickness)
