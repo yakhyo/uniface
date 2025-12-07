@@ -63,8 +63,8 @@ python scripts/download_model.py  # downloads all
 |--------|-------------|
 | `--image` | Path to input image |
 | `--webcam` | Use webcam instead of image |
-| `--detector` | Choose detector: `retinaface` or `scrfd` |
-| `--threshold` | Visualization confidence threshold (default: 0.6) |
+| `--method` | Choose detector: `retinaface`, `scrfd`, `yolov5face` |
+| `--threshold` | Visualization confidence threshold (default: 0.25) |
 | `--save_dir` | Output directory (default: `outputs`) |
 
 ## Quick Test

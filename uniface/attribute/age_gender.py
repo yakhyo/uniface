@@ -2,7 +2,7 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-from typing import List, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 import cv2
 import numpy as np
@@ -24,18 +24,30 @@ class AgeGender(Attribute):
     This class inherits from the base `Attribute` class and implements the
     functionality for predicting age (in years) and gender ID (0 for Female,
     1 for Male) from a face image. It requires a bounding box to locate the face.
+
+    Args:
+        model_name (AgeGenderWeights): The enum specifying the model weights to load.
+            Defaults to `AgeGenderWeights.DEFAULT`.
+        input_size (Optional[Tuple[int, int]]): Input size (height, width).
+            If None, automatically detected from model metadata. Defaults to None.
     """
 
-    def __init__(self, model_name: AgeGenderWeights = AgeGenderWeights.DEFAULT) -> None:
+    def __init__(
+        self,
+        model_name: AgeGenderWeights = AgeGenderWeights.DEFAULT,
+        input_size: Optional[Tuple[int, int]] = None,
+    ) -> None:
         """
         Initializes the AgeGender prediction model.
 
         Args:
-            model_name (AgeGenderWeights): The enum specifying the model weights
-                                           to load.
+            model_name (AgeGenderWeights): The enum specifying the model weights to load.
+            input_size (Optional[Tuple[int, int]]): Input size (height, width).
+                If None, automatically detected from model metadata. Defaults to None.
         """
         Logger.info(f'Initializing AgeGender with model={model_name.name}')
         self.model_path = verify_model_weights(model_name)
+        self._user_input_size = input_size  # Store user preference
         self._initialize_model()
 
     def _initialize_model(self) -> None:
@@ -47,7 +59,19 @@ class AgeGender(Attribute):
             # Get model input details from the loaded model
             input_meta = self.session.get_inputs()[0]
             self.input_name = input_meta.name
-            self.input_size = tuple(input_meta.shape[2:4])  # (height, width)
+
+            # Use user-provided size if given, otherwise auto-detect from model
+            model_input_size = tuple(input_meta.shape[2:4])  # (height, width)
+            if self._user_input_size is not None:
+                self.input_size = self._user_input_size
+                if self._user_input_size != model_input_size:
+                    Logger.warning(
+                        f'Using custom input_size {self.input_size}, '
+                        f'but model expects {model_input_size}. This may affect accuracy.'
+                    )
+            else:
+                self.input_size = model_input_size
+
             self.output_names = [output.name for output in self.session.get_outputs()]
             Logger.info(f'Successfully initialized AgeGender model with input size {self.input_size}')
         except Exception as e:
