@@ -27,16 +27,17 @@ class YOLOv5Face(BaseDetector):
     Code: https://github.com/yakhyo/yolov5-face-onnx-inference (ONNX inference implementation)
 
     Args:
-        **kwargs: Keyword arguments passed to BaseDetector and YOLOv5Face. Supported keys include:
-            model_name (YOLOv5FaceWeights, optional): Predefined model enum (e.g., `YOLOV5S`).
-                Specifies the YOLOv5-Face variant to load. Defaults to YOLOV5S.
-            conf_thresh (float, optional): Confidence threshold for filtering detections. Defaults to 0.25.
-            nms_thresh (float, optional): Non-Maximum Suppression threshold. Defaults to 0.45.
-            input_size (int, optional): Input image size. Defaults to 640.
-                Note: ONNX model is fixed at 640. Changing this will cause inference errors.
-            max_det (int, optional): Maximum number of detections to return. Defaults to 750.
+        model_name (YOLOv5FaceWeights): Predefined model enum (e.g., `YOLOV5S`).
+            Specifies the YOLOv5-Face variant to load. Defaults to YOLOV5S.
+        conf_thresh (float): Confidence threshold for filtering detections. Defaults to 0.6.
+        nms_thresh (float): Non-Maximum Suppression threshold. Defaults to 0.5.
+        input_size (int): Input image size. Defaults to 640.
+            Note: ONNX model is fixed at 640. Changing this will cause inference errors.
+        **kwargs: Advanced options:
+            max_det (int): Maximum number of detections to return. Defaults to 750.
 
     Attributes:
+        model_name (YOLOv5FaceWeights): Selected model variant.
         conf_thresh (float): Threshold used to filter low-confidence detections.
         nms_thresh (float): Threshold used during NMS to suppress overlapping boxes.
         input_size (int): Image size to which inputs are resized before inference.
@@ -48,15 +49,23 @@ class YOLOv5Face(BaseDetector):
         RuntimeError: If the ONNX model fails to load or initialize.
     """
 
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
+    def __init__(
+        self,
+        *,
+        model_name: YOLOv5FaceWeights = YOLOv5FaceWeights.YOLOV5S,
+        conf_thresh: float = 0.6,
+        nms_thresh: float = 0.5,
+        input_size: int = 640,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(
+            model_name=model_name,
+            conf_thresh=conf_thresh,
+            nms_thresh=nms_thresh,
+            input_size=input_size,
+            **kwargs,
+        )
         self._supports_landmarks = True  # YOLOv5-Face supports landmarks
-
-        model_name = kwargs.get('model_name', YOLOv5FaceWeights.YOLOV5S)
-        conf_thresh = kwargs.get('conf_thresh', 0.6)  # 0.6 is default from original YOLOv5-Face repository
-        nms_thresh = kwargs.get('nms_thresh', 0.5)  # 0.5 is default from original YOLOv5-Face repository
-        input_size = kwargs.get('input_size', 640)
-        max_det = kwargs.get('max_det', 750)
 
         # Validate input size
         if input_size != 640:
@@ -64,18 +73,21 @@ class YOLOv5Face(BaseDetector):
                 f'YOLOv5Face only supports input_size=640 (got {input_size}). The ONNX model has a fixed input shape.'
             )
 
+        self.model_name = model_name
         self.conf_thresh = conf_thresh
         self.nms_thresh = nms_thresh
         self.input_size = input_size
-        self.max_det = max_det
+
+        # Advanced options from kwargs
+        self.max_det = kwargs.get('max_det', 750)
 
         Logger.info(
-            f'Initializing YOLOv5Face with model={model_name}, conf_thresh={conf_thresh}, '
-            f'nms_thresh={nms_thresh}, input_size={input_size}'
+            f'Initializing YOLOv5Face with model={self.model_name}, conf_thresh={self.conf_thresh}, '
+            f'nms_thresh={self.nms_thresh}, input_size={self.input_size}'
         )
 
         # Get path to model weights
-        self._model_path = verify_model_weights(model_name)
+        self._model_path = verify_model_weights(self.model_name)
         Logger.info(f'Verified model weights located at: {self._model_path}')
 
         # Initialize model
@@ -243,6 +255,7 @@ class YOLOv5Face(BaseDetector):
     def detect(
         self,
         image: np.ndarray,
+        *,
         max_num: int = 0,
         metric: Literal['default', 'max'] = 'max',
         center_weight: float = 2.0,

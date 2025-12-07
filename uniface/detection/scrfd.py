@@ -27,16 +27,17 @@ class SCRFD(BaseDetector):
     Code: https://github.com/insightface/insightface
 
     Args:
-        **kwargs: Keyword arguments passed to BaseDetector and SCRFD. Supported keys include:
-            model_name (SCRFDWeights, optional): Predefined model enum (e.g., `SCRFD_10G_KPS`).
-                Specifies the SCRFD variant to load. Defaults to SCRFD_10G_KPS.
-            conf_thresh (float, optional): Confidence threshold for filtering detections. Defaults to 0.5.
-            nms_thresh (float, optional): Non-Maximum Suppression threshold. Defaults to 0.4.
-            input_size (Tuple[int, int], optional): Input image size (width, height).
-                Defaults to (640, 640).
-                Note: Non-default sizes may cause slower inference and CoreML compatibility issues.
+        model_name (SCRFDWeights): Predefined model enum (e.g., `SCRFD_10G_KPS`).
+            Specifies the SCRFD variant to load. Defaults to SCRFD_10G_KPS.
+        conf_thresh (float): Confidence threshold for filtering detections. Defaults to 0.5.
+        nms_thresh (float): Non-Maximum Suppression threshold. Defaults to 0.4.
+        input_size (Tuple[int, int]): Input image size (width, height).
+            Defaults to (640, 640).
+            Note: Non-default sizes may cause slower inference and CoreML compatibility issues.
+        **kwargs: Reserved for future advanced options.
 
     Attributes:
+        model_name (SCRFDWeights): Selected model variant.
         conf_thresh (float): Threshold used to filter low-confidence detections.
         nms_thresh (float): Threshold used during NMS to suppress overlapping boxes.
         input_size (Tuple[int, int]): Image size to which inputs are resized before inference.
@@ -51,15 +52,25 @@ class SCRFD(BaseDetector):
         RuntimeError: If the ONNX model fails to load or initialize.
     """
 
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
+    def __init__(
+        self,
+        *,
+        model_name: SCRFDWeights = SCRFDWeights.SCRFD_10G_KPS,
+        conf_thresh: float = 0.5,
+        nms_thresh: float = 0.4,
+        input_size: Tuple[int, int] = (640, 640),
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(
+            model_name=model_name,
+            conf_thresh=conf_thresh,
+            nms_thresh=nms_thresh,
+            input_size=input_size,
+            **kwargs,
+        )
         self._supports_landmarks = True  # SCRFD supports landmarks
 
-        model_name = kwargs.get('model_name', SCRFDWeights.SCRFD_10G_KPS)
-        conf_thresh = kwargs.get('conf_thresh', 0.5)
-        nms_thresh = kwargs.get('nms_thresh', 0.4)
-        input_size = kwargs.get('input_size', (640, 640))
-
+        self.model_name = model_name
         self.conf_thresh = conf_thresh
         self.nms_thresh = nms_thresh
         self.input_size = input_size
@@ -72,12 +83,12 @@ class SCRFD(BaseDetector):
         # ---------------------------------
 
         Logger.info(
-            f'Initializing SCRFD with model={model_name}, conf_thresh={conf_thresh}, nms_thresh={nms_thresh}, '
-            f'input_size={input_size}'
+            f'Initializing SCRFD with model={self.model_name}, conf_thresh={self.conf_thresh}, '
+            f'nms_thresh={self.nms_thresh}, input_size={self.input_size}'
         )
 
         # Get path to model weights
-        self._model_path = verify_model_weights(model_name)
+        self._model_path = verify_model_weights(self.model_name)
         Logger.info(f'Verified model weights located at: {self._model_path}')
 
         # Initialize model
@@ -178,9 +189,10 @@ class SCRFD(BaseDetector):
     def detect(
         self,
         image: np.ndarray,
+        *,
         max_num: int = 0,
         metric: Literal['default', 'max'] = 'max',
-        center_weight: float = 2,
+        center_weight: float = 2.0,
     ) -> List[Dict[str, Any]]:
         """
         Perform face detection on an input image and return bounding boxes and facial landmarks.
