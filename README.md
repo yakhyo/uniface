@@ -171,15 +171,18 @@ from uniface.detection import RetinaFace, SCRFD
 from uniface.recognition import ArcFace
 from uniface.landmark import Landmark106
 
+from uniface.constants import SCRFDWeights
+
 # Create detector with default settings
 detector = RetinaFace()
 
 # Create with custom config
 detector = SCRFD(
-    model_name='scrfd_10g_kps',
-    conf_thresh=0.8,
+    model_name=SCRFDWeights.SCRFD_10G_KPS, # SCRFDWeights.SCRFD_500M_KPS
+    conf_thresh=0.4,
     input_size=(640, 640)
 )
+# Or with defaults settings: detector = SCRFD()
 
 # Recognition and landmarks
 recognizer = ArcFace()
@@ -198,6 +201,7 @@ detector = RetinaFace(
     conf_thresh=0.5,
     nms_thresh=0.4
 )
+# Or detector = RetinaFace()
 
 # YOLOv5-Face detection
 detector = YOLOv5Face(
@@ -205,6 +209,7 @@ detector = YOLOv5Face(
     conf_thresh=0.6,
     nms_thresh=0.5
 )
+# Or detector = YOLOv5Face
 
 # Recognition
 recognizer = ArcFace()  # Uses default weights
