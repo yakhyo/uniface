@@ -16,8 +16,8 @@ def draw_face_info(image, face, face_id):
     """Draw face ID and attributes above bounding box."""
     x1, y1, x2, y2 = map(int, face.bbox)
     lines = [f'ID: {face_id}', f'Conf: {face.confidence:.2f}']
-    if face.age and face.gender:
-        lines.append(f'{face.gender}, {face.age}y')
+    if face.age and face.sex:
+        lines.append(f'{face.sex}, {face.age}y')
 
     for i, line in enumerate(lines):
         y_pos = y1 - 10 - (len(lines) - 1 - i) * 25
@@ -41,7 +41,7 @@ def process_image(analyzer, image_path: str, save_dir: str = 'outputs', show_sim
         return
 
     for i, face in enumerate(faces, 1):
-        info = f'  Face {i}: {face.gender}, {face.age}y' if face.age and face.gender else f'  Face {i}'
+        info = f'  Face {i}: {face.sex}, {face.age}y' if face.age and face.sex else f'  Face {i}'
         if face.embedding is not None:
             info += f' (embedding: {face.embedding.shape})'
         print(info)
@@ -82,7 +82,7 @@ def process_image(analyzer, image_path: str, save_dir: str = 'outputs', show_sim
     bboxes = [f.bbox for f in faces]
     scores = [f.confidence for f in faces]
     landmarks = [f.landmarks for f in faces]
-    draw_detections(image, bboxes, scores, landmarks)
+    draw_detections(image=image, bboxes=bboxes, scores=scores, landmarks=landmarks,fancy_bbox=True)
 
     for i, face in enumerate(faces, 1):
         draw_face_info(image, face, i)

@@ -230,9 +230,9 @@ class RetinaFace(BaseDetector):
         faces = []
         for i in range(detections.shape[0]):
             face_dict = {
-                'bbox': detections[i, :4].astype(np.float32),
+                'bbox': detections[i, :4],
                 'confidence': float(detections[i, 4]),
-                'landmarks': landmarks[i].astype(np.float32),
+                'landmarks': landmarks[i],
             }
             faces.append(face_dict)
 
@@ -293,7 +293,7 @@ class RetinaFace(BaseDetector):
             landmarks[: self.post_nms_topk],
         )
 
-        landmarks = landmarks.reshape(-1, 5, 2).astype(np.int32)
+        landmarks = landmarks.reshape(-1, 5, 2).astype(np.float32)
 
         return detections, landmarks
 

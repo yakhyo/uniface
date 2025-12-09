@@ -147,9 +147,9 @@ detector = RetinaFace()
 age_gender = AgeGender()
 
 faces = detector.detect(image)
-gender_id, age = age_gender.predict(image, faces[0]['bbox'])
-gender = 'Female' if gender_id == 0 else 'Male'
-print(f"{gender}, {age} years old")
+gender, age = age_gender.predict(image, faces[0]['bbox'])
+gender_str = 'Female' if gender == 0 else 'Male'
+print(f"{gender_str}, {age} years old")
 ```
 
 ---

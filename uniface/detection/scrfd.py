@@ -251,7 +251,7 @@ class SCRFD(BaseDetector):
 
         detections = pre_det[keep, :]
         landmarks = landmarks[order, :, :]
-        landmarks = landmarks[keep, :, :].astype(np.int32)
+        landmarks = landmarks[keep, :, :].astype(np.float32)
 
         if 0 < max_num < detections.shape[0]:
             # Calculate area of detections
@@ -281,9 +281,9 @@ class SCRFD(BaseDetector):
         faces = []
         for i in range(detections.shape[0]):
             face_dict = {
-                'bbox': detections[i, :4].astype(np.float32),
+                'bbox': detections[i, :4],
                 'confidence': float(detections[i, 4]),
-                'landmarks': landmarks[i].astype(np.float32),
+                'landmarks': landmarks[i],
             }
             faces.append(face_dict)
 

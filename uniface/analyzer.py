@@ -53,12 +53,11 @@ class FaceAnalyzer:
                 except Exception as e:
                     Logger.warning(f'  Face {idx + 1}: Failed to extract embedding: {e}')
 
-            age, gender_id = None, None
+            age, gender = None, None
             if self.age_gender is not None:
                 try:
-                    gender_id, age = self.age_gender.predict(image, bbox)
-                    gender_str = 'Female' if gender_id == 0 else 'Male'
-                    Logger.debug(f'  Face {idx + 1}: Age={age}, Gender={gender_str}')
+                    gender, age = self.age_gender.predict(image, bbox)
+                    Logger.debug(f'  Face {idx + 1}: Age={age}, Gender={gender}')
                 except Exception as e:
                     Logger.warning(f'  Face {idx + 1}: Failed to predict age/gender: {e}')
 
@@ -68,7 +67,7 @@ class FaceAnalyzer:
                 landmarks=landmarks,
                 embedding=embedding,
                 age=age,
-                gender_id=gender_id,
+                gender=gender,
             )
             faces.append(face)
 
