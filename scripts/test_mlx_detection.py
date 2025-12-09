@@ -162,71 +162,72 @@ def detect_faces_onnx(session, image, conf_thresh=0.5, nms_thresh=0.4):
 
 
 def main():
-    print("=" * 70)
-    print("End-to-End Face Detection Test: MLX vs ONNX")
-    print("=" * 70)
+    print('=' * 70)
+    print('End-to-End Face Detection Test: MLX vs ONNX')
+    print('=' * 70)
 
     # Load test image
-    test_image_path = Path(__file__).parent.parent / "assets" / "test.jpg"
+    test_image_path = Path(__file__).parent.parent / 'assets' / 'test.jpg'
     if not test_image_path.exists():
-        test_image_path = Path("/tmp/test_face.jpg")
+        test_image_path = Path('/tmp/test_face.jpg')
     if not test_image_path.exists():
-        print("No test image found. Downloading a sample...")
+        print('No test image found. Downloading a sample...')
         import urllib.request
-        url = "https://raw.githubusercontent.com/deepinsight/insightface/master/python-package/insightface/data/images/t1.jpg"
-        urllib.request.urlretrieve(url, "/tmp/test_face.jpg")
-        test_image_path = Path("/tmp/test_face.jpg")
+
+        url = 'https://raw.githubusercontent.com/deepinsight/insightface/master/python-package/insightface/data/images/t1.jpg'
+        urllib.request.urlretrieve(url, '/tmp/test_face.jpg')
+        test_image_path = Path('/tmp/test_face.jpg')
 
     image = cv2.imread(str(test_image_path))
-    print(f"Test image: {test_image_path}")
-    print(f"Image size: {image.shape}")
+    print(f'Test image: {test_image_path}')
+    print(f'Image size: {image.shape}')
 
     # Load ONNX model
-    print("\nLoading ONNX model...")
+    print('\nLoading ONNX model...')
     onnx_path = verify_model_weights(RetinaFaceWeights.MNET_V2)
     onnx_session = create_onnx_session(onnx_path)
 
     # Load MLX model
-    print("Loading MLX model...")
+    print('Loading MLX model...')
     mlx_model = RetinaFaceNetworkFused(backbone_type='mobilenetv2', width_mult=1.0)
-    weights_path = Path(__file__).parent.parent / "weights_mlx_fused" / "retinaface_mnet_v2.safetensors"
+    weights_path = Path(__file__).parent.parent / 'weights_mlx_fused' / 'retinaface_mnet_v2.safetensors'
 
     if weights_path.exists():
         load_mlx_fused_weights(mlx_model, str(weights_path))
     else:
-        print(f"ERROR: Fused weights not found at {weights_path}")
+        print(f'ERROR: Fused weights not found at {weights_path}')
         return
 
     mlx_model.train(False)
 
     # Run detection
-    print("\nRunning ONNX detection...")
+    print('\nRunning ONNX detection...')
     onnx_faces = detect_faces_onnx(onnx_session, image)
 
-    print("Running MLX detection...")
+    print('Running MLX detection...')
     mlx_faces = detect_faces_mlx(mlx_model, image)
 
     # Compare results
-    print("\n" + "=" * 70)
-    print("Detection Results")
-    print("=" * 70)
+    print('\n' + '=' * 70)
+    print('Detection Results')
+    print('=' * 70)
 
-    print(f"\nONNX detected: {len(onnx_faces)} face(s)")
-    print(f"MLX detected:  {len(mlx_faces)} face(s)")
+    print(f'\nONNX detected: {len(onnx_faces)} face(s)')
+    print(f'MLX detected:  {len(mlx_faces)} face(s)')
 
     if len(onnx_faces) > 0 and len(mlx_faces) > 0:
-        print("\nONNX faces:")
+        print('\nONNX faces:')
         for i, face in enumerate(onnx_faces[:5]):
-            print(f"  Face {i+1}: bbox={face['bbox'].astype(int)}, conf={face['confidence']:.4f}")
+            print(f'  Face {i + 1}: bbox={face["bbox"].astype(int)}, conf={face["confidence"]:.4f}')
 
-        print("\nMLX faces:")
+        print('\nMLX faces:')
         for i, face in enumerate(mlx_faces[:5]):
-            print(f"  Face {i+1}: bbox={face['bbox'].astype(int)}, conf={face['confidence']:.4f}")
+            print(f'  Face {i + 1}: bbox={face["bbox"].astype(int)}, conf={face["confidence"]:.4f}')
 
         # Compare detections
-        print("\n" + "=" * 70)
-        print("Comparison (first detection)")
-        print("=" * 70)
+        print('\n' + '=' * 70)
+        print('Comparison (first detection)')
+        print('=' * 70)
 
         onnx_bbox = onnx_faces[0]['bbox']
         mlx_bbox = mlx_faces[0]['bbox']
@@ -238,17 +239,17 @@ def main():
 
         conf_diff = abs(onnx_faces[0]['confidence'] - mlx_faces[0]['confidence'])
 
-        print(f"\nBBox max diff: {bbox_diff:.4f} pixels")
-        print(f"Landmark max diff: {lmk_diff:.4f} pixels")
-        print(f"Confidence diff: {conf_diff:.6f}")
+        print(f'\nBBox max diff: {bbox_diff:.4f} pixels')
+        print(f'Landmark max diff: {lmk_diff:.4f} pixels')
+        print(f'Confidence diff: {conf_diff:.6f}')
 
         if bbox_diff < 1.0 and lmk_diff < 1.0:
-            print("\n✓ SUCCESS: MLX detections match ONNX!")
+            print('\n✓ SUCCESS: MLX detections match ONNX!')
         else:
-            print("\n✗ WARNING: Detections differ more than expected")
+            print('\n✗ WARNING: Detections differ more than expected')
 
     # Save visualization
-    output_dir = Path(__file__).parent.parent / "assets"
+    output_dir = Path(__file__).parent.parent / 'assets'
     output_dir.mkdir(exist_ok=True)
 
     # Draw MLX detections
@@ -256,15 +257,22 @@ def main():
     for face in mlx_faces:
         bbox = face['bbox'].astype(int)
         cv2.rectangle(viz_image, (bbox[0], bbox[1]), (bbox[2], bbox[3]), (0, 255, 0), 2)
-        cv2.putText(viz_image, f"{face['confidence']:.2f}",
-                    (bbox[0], bbox[1] - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
+        cv2.putText(
+            viz_image,
+            f'{face["confidence"]:.2f}',
+            (bbox[0], bbox[1] - 5),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.5,
+            (0, 255, 0),
+            1,
+        )
         for lmk in face['landmarks']:
             cv2.circle(viz_image, (int(lmk[0]), int(lmk[1])), 2, (0, 0, 255), -1)
 
-    output_path = output_dir / "mlx_detection_result.jpg"
+    output_path = output_dir / 'mlx_detection_result.jpg'
     cv2.imwrite(str(output_path), viz_image)
-    print(f"\nVisualization saved to: {output_path}")
+    print(f'\nVisualization saved to: {output_path}')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

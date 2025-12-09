@@ -17,8 +17,6 @@ from typing import List, Tuple
 import mlx.core as mx
 import mlx.nn as nn
 
-from uniface.nn.conv import ConvBN, ConvBNReLU
-
 __all__ = [
     'FPN',
     'FPNFused',

@@ -26,7 +26,7 @@ from uniface.onnx_utils import create_onnx_session
 def compare_arrays(name, mlx_arr, onnx_arr, detailed=False):
     """Compare two arrays and print statistics."""
     if mlx_arr.shape != onnx_arr.shape:
-        print(f"  {name}: SHAPE MISMATCH - MLX {mlx_arr.shape} vs ONNX {onnx_arr.shape}")
+        print(f'  {name}: SHAPE MISMATCH - MLX {mlx_arr.shape} vs ONNX {onnx_arr.shape}')
         return False
 
     mlx_flat = mlx_arr.flatten()
@@ -40,34 +40,34 @@ def compare_arrays(name, mlx_arr, onnx_arr, detailed=False):
     else:
         corr = 0.0
 
-    match = "✓" if corr > 0.999 else "✗"
-    print(f"  {name}: max_diff={max_diff:.6f}, mean_diff={mean_diff:.6f}, corr={corr:.6f} {match}")
+    match = '✓' if corr > 0.999 else '✗'
+    print(f'  {name}: max_diff={max_diff:.6f}, mean_diff={mean_diff:.6f}, corr={corr:.6f} {match}')
 
     if detailed:
-        print(f"    MLX range: [{mlx_arr.min():.4f}, {mlx_arr.max():.4f}]")
-        print(f"    ONNX range: [{onnx_arr.min():.4f}, {onnx_arr.max():.4f}]")
+        print(f'    MLX range: [{mlx_arr.min():.4f}, {mlx_arr.max():.4f}]')
+        print(f'    ONNX range: [{onnx_arr.min():.4f}, {onnx_arr.max():.4f}]')
 
     return corr > 0.999
 
 
 def main():
-    print("=" * 70)
-    print("Numerical Parity Verification: MLX vs ONNX RetinaFace")
-    print("=" * 70)
+    print('=' * 70)
+    print('Numerical Parity Verification: MLX vs ONNX RetinaFace')
+    print('=' * 70)
 
     # Load test image
-    test_image_path = Path(__file__).parent.parent / "assets" / "test.jpg"
+    test_image_path = Path(__file__).parent.parent / 'assets' / 'test.jpg'
     if not test_image_path.exists():
-        test_image_path = Path("/tmp/test_face.jpg")
+        test_image_path = Path('/tmp/test_face.jpg')
     if not test_image_path.exists():
-        print("Creating synthetic input...")
+        print('Creating synthetic input...')
         np.random.seed(42)
         image = np.random.randint(0, 256, (640, 640, 3), dtype=np.uint8)
     else:
         image = cv2.imread(str(test_image_path))
         image = cv2.resize(image, (640, 640))
 
-    print(f"Input image shape: {image.shape}")
+    print(f'Input image shape: {image.shape}')
 
     # Preprocess for ONNX (NCHW format)
     onnx_input = np.float32(image) - np.array([104, 117, 123], dtype=np.float32)
@@ -80,12 +80,12 @@ def main():
     mlx_tensor = mx.array(mlx_input)
 
     # Load ONNX model
-    print("\nLoading ONNX model...")
+    print('\nLoading ONNX model...')
     onnx_path = verify_model_weights(RetinaFaceWeights.MNET_V2)
     onnx_session = create_onnx_session(onnx_path)
 
     # Run ONNX inference
-    print("Running ONNX inference...")
+    print('Running ONNX inference...')
     input_name = onnx_session.get_inputs()[0].name
     onnx_outputs = onnx_session.run(None, {input_name: onnx_input})
     onnx_bbox = onnx_outputs[0]
@@ -93,20 +93,20 @@ def main():
     onnx_landmarks = onnx_outputs[2]
 
     # Load MLX model
-    print("Loading MLX model...")
+    print('Loading MLX model...')
     mlx_model = RetinaFaceNetworkFused(backbone_type='mobilenetv2', width_mult=1.0)
-    weights_path = Path(__file__).parent.parent / "weights_mlx_fused" / "retinaface_mnet_v2.safetensors"
+    weights_path = Path(__file__).parent.parent / 'weights_mlx_fused' / 'retinaface_mnet_v2.safetensors'
 
     if weights_path.exists():
         load_mlx_fused_weights(mlx_model, str(weights_path))
     else:
-        print(f"ERROR: Fused weights not found at {weights_path}")
+        print(f'ERROR: Fused weights not found at {weights_path}')
         return
 
     mlx_model.train(False)
 
     # Run MLX inference
-    print("Running MLX inference...")
+    print('Running MLX inference...')
     cls_preds, bbox_preds, landmark_preds = mlx_model(mlx_tensor)
     synchronize(cls_preds, bbox_preds, landmark_preds)
 
@@ -117,63 +117,63 @@ def main():
     # Apply softmax to MLX cls (ONNX already has softmax applied)
     mlx_cls_softmax = np.exp(mlx_cls) / np.exp(mlx_cls).sum(axis=-1, keepdims=True)
 
-    print("\n" + "=" * 70)
-    print("Final Output Comparison")
-    print("=" * 70)
+    print('\n' + '=' * 70)
+    print('Final Output Comparison')
+    print('=' * 70)
 
-    print(f"\nOutput shapes:")
-    print(f"  bbox: MLX {mlx_bbox.shape}, ONNX {onnx_bbox.shape}")
-    print(f"  cls: MLX {mlx_cls_softmax.shape}, ONNX {onnx_cls.shape}")
-    print(f"  landmarks: MLX {mlx_landmarks.shape}, ONNX {onnx_landmarks.shape}")
+    print('\nOutput shapes:')
+    print(f'  bbox: MLX {mlx_bbox.shape}, ONNX {onnx_bbox.shape}')
+    print(f'  cls: MLX {mlx_cls_softmax.shape}, ONNX {onnx_cls.shape}')
+    print(f'  landmarks: MLX {mlx_landmarks.shape}, ONNX {onnx_landmarks.shape}')
 
-    print("\nOverall comparison:")
-    cls_match = compare_arrays("Classification", mlx_cls_softmax, onnx_cls, detailed=True)
-    bbox_match = compare_arrays("BBox regression", mlx_bbox, onnx_bbox, detailed=True)
-    lmk_match = compare_arrays("Landmarks", mlx_landmarks, onnx_landmarks, detailed=True)
+    print('\nOverall comparison:')
+    compare_arrays('Classification', mlx_cls_softmax, onnx_cls, detailed=True)
+    compare_arrays('BBox regression', mlx_bbox, onnx_bbox, detailed=True)
+    compare_arrays('Landmarks', mlx_landmarks, onnx_landmarks, detailed=True)
 
     # Per-level comparison
-    print("\n" + "=" * 70)
-    print("Per-Level Comparison")
-    print("=" * 70)
+    print('\n' + '=' * 70)
+    print('Per-Level Comparison')
+    print('=' * 70)
 
-    level_sizes = [80*80*2, 40*40*2, 20*20*2]
+    level_sizes = [80 * 80 * 2, 40 * 40 * 2, 20 * 20 * 2]
     level_names = ['P1 (80x80, stride 8)', 'P2 (40x40, stride 16)', 'P3 (20x20, stride 32)']
 
     all_match = True
     start = 0
     for level_name, size in zip(level_names, level_sizes):
         end = start + size
-        print(f"\n{level_name}:")
-        cls_ok = compare_arrays("  cls", mlx_cls_softmax[:, start:end, :], onnx_cls[:, start:end, :])
-        bbox_ok = compare_arrays("  bbox", mlx_bbox[:, start:end, :], onnx_bbox[:, start:end, :])
-        lmk_ok = compare_arrays("  landmarks", mlx_landmarks[:, start:end, :], onnx_landmarks[:, start:end, :])
+        print(f'\n{level_name}:')
+        cls_ok = compare_arrays('  cls', mlx_cls_softmax[:, start:end, :], onnx_cls[:, start:end, :])
+        bbox_ok = compare_arrays('  bbox', mlx_bbox[:, start:end, :], onnx_bbox[:, start:end, :])
+        lmk_ok = compare_arrays('  landmarks', mlx_landmarks[:, start:end, :], onnx_landmarks[:, start:end, :])
         all_match = all_match and cls_ok and bbox_ok and lmk_ok
         start = end
 
     # Summary
-    print("\n" + "=" * 70)
-    print("SUMMARY")
-    print("=" * 70)
+    print('\n' + '=' * 70)
+    print('SUMMARY')
+    print('=' * 70)
 
     if all_match:
-        print("\n✓ SUCCESS: MLX and ONNX outputs match within tolerance!")
-        print("  All outputs have correlation > 0.999")
+        print('\n✓ SUCCESS: MLX and ONNX outputs match within tolerance!')
+        print('  All outputs have correlation > 0.999')
     else:
-        print("\n✗ FAILURE: Some outputs do not match")
+        print('\n✗ FAILURE: Some outputs do not match')
 
     # Show sample predictions
-    print("\n" + "=" * 70)
-    print("Sample Predictions (first 5 anchors)")
-    print("=" * 70)
+    print('\n' + '=' * 70)
+    print('Sample Predictions (first 5 anchors)')
+    print('=' * 70)
 
-    print("\nBBox (first 5):")
-    print(f"  ONNX: {onnx_bbox[0, :5, :]}")
-    print(f"  MLX:  {mlx_bbox[0, :5, :]}")
+    print('\nBBox (first 5):')
+    print(f'  ONNX: {onnx_bbox[0, :5, :]}')
+    print(f'  MLX:  {mlx_bbox[0, :5, :]}')
 
-    print("\nConfidence (first 5, face class):")
-    print(f"  ONNX: {onnx_cls[0, :5, 1]}")
-    print(f"  MLX:  {mlx_cls_softmax[0, :5, 1]}")
+    print('\nConfidence (first 5, face class):')
+    print(f'  ONNX: {onnx_cls[0, :5, 1]}')
+    print(f'  MLX:  {mlx_cls_softmax[0, :5, 1]}')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

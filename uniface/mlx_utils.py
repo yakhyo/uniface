@@ -221,7 +221,6 @@ def load_mlx_weights(model: Any, weights_path: str, strict: bool = False) -> Any
     # Build a mapping from model keys to weight keys
     weight_keys = list(weights.keys())
     matched_weights = []
-    unmatched_model_keys = []
     unmatched_weight_keys = set(weight_keys)
 
     # Flatten model parameters to get all keys

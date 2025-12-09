@@ -108,6 +108,12 @@ docstring-quotes = "double"
 [tool.ruff.lint.isort]
 known-first-party = ["uniface"]
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
 [dependency-groups]
 dev = [
     "ipykernel>=7.1.0",

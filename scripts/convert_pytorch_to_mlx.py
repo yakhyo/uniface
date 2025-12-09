@@ -25,7 +25,7 @@ import os
 import re
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, Optional, Tuple
 
 import numpy as np
 
@@ -89,11 +89,11 @@ class RetinaFaceMNetV2KeyMapper:
 
     # MobileNetV2 configuration: (expand_ratio, out_channels, num_blocks, stride)
     INVERTED_RESIDUAL_SETTING = [
-        (1, 16, 1, 1),   # Stage 1 (features 1)
-        (6, 24, 2, 2),   # Stage 2 (features 2-3)
-        (6, 32, 3, 2),   # Stage 3 (features 4-6)
-        (6, 64, 4, 2),   # Stage 4 (features 7-10)
-        (6, 96, 3, 1),   # Stage 5 (features 11-13)
+        (1, 16, 1, 1),  # Stage 1 (features 1)
+        (6, 24, 2, 2),  # Stage 2 (features 2-3)
+        (6, 32, 3, 2),  # Stage 3 (features 4-6)
+        (6, 64, 4, 2),  # Stage 4 (features 7-10)
+        (6, 96, 3, 1),  # Stage 5 (features 11-13)
         (6, 160, 3, 2),  # Stage 6 (features 14-16)
         (6, 320, 1, 1),  # Stage 7 (features 17)
     ]
@@ -112,7 +112,7 @@ class RetinaFaceMNetV2KeyMapper:
 
         # Stem: fx.features.0.0 -> backbone.stem.conv, fx.features.0.1 -> backbone.stem.bn
         if pytorch_key.startswith('fx.features.0.'):
-            rest = pytorch_key[len('fx.features.0.'):]
+            rest = pytorch_key[len('fx.features.0.') :]
             if rest.startswith('0.'):
                 # Conv weight
                 return 'backbone.stem.conv.' + rest[2:]
@@ -168,7 +168,7 @@ class RetinaFaceMNetV2KeyMapper:
         # fx.features.18.0.weight -> backbone.final_conv.conv.weight
         # fx.features.18.1.* -> backbone.final_conv.bn.*
         if pytorch_key.startswith('fx.features.18.'):
-            rest = pytorch_key[len('fx.features.18.'):]
+            rest = pytorch_key[len('fx.features.18.') :]
             if rest.startswith('0.'):
                 return 'backbone.final_conv.conv.' + rest[2:]
             elif rest.startswith('1.'):
@@ -276,7 +276,7 @@ def convert_retinaface_mnetv2(
         mlx_weights[mlx_key] = weight
         mapped_count += 1
 
-    print(f'\nConversion summary:')
+    print('\nConversion summary:')
     print(f'  Mapped: {mapped_count}')
     print(f'  Transposed: {transposed_count}')
     print(f'  Skipped: {skipped_count}')

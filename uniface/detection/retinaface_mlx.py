@@ -30,7 +30,7 @@ from uniface.log import Logger
 from uniface.mlx_utils import load_mlx_weights, synchronize, to_numpy
 from uniface.model_store import get_weights_path
 from uniface.nn.backbone import MobileNetV1, MobileNetV2, MobileNetV2Fused
-from uniface.nn.fpn import FPN, FPNFused, SSH, SSHFused
+from uniface.nn.fpn import FPN, SSH, FPNFused, SSHFused
 from uniface.nn.head import BboxHeadWrapper, ClassHeadWrapper, LandmarkHeadWrapper
 
 __all__ = ['RetinaFaceMLX']

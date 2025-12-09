@@ -21,9 +21,8 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import cv2
-import onnx
-from onnx import numpy_helper
 import mlx.core as mx
+import onnx
 
 from uniface.constants import RetinaFaceWeights
 from uniface.detection.retinaface_mlx import RetinaFaceNetworkFused
@@ -40,13 +39,10 @@ def get_onnx_intermediate(onnx_path, input_data, output_names):
     for name in output_names:
         existing_names = [o.name for o in model.graph.output]
         if name not in existing_names:
-            model.graph.output.append(
-                onnx.helper.make_tensor_value_info(name, onnx.TensorProto.FLOAT, None)
-            )
+            model.graph.output.append(onnx.helper.make_tensor_value_info(name, onnx.TensorProto.FLOAT, None))
 
     session = ort.InferenceSession(
-        model.SerializeToString(),
-        providers=['CoreMLExecutionProvider', 'CPUExecutionProvider']
+        model.SerializeToString(), providers=['CoreMLExecutionProvider', 'CPUExecutionProvider']
     )
 
     input_name = session.get_inputs()[0].name
@@ -59,9 +55,9 @@ def trace_onnx_fpn_order(onnx_path):
     """Trace the exact order of FPN operations in ONNX."""
     model = onnx.load(onnx_path)
 
-    print("\n" + "=" * 70)
-    print("ONNX FPN Operation Order")
-    print("=" * 70)
+    print('\n' + '=' * 70)
+    print('ONNX FPN Operation Order')
+    print('=' * 70)
 
     # Find all FPN nodes in order
     fpn_nodes = []
@@ -74,9 +70,9 @@ def trace_onnx_fpn_order(onnx_path):
         if node.op_type in ['Conv', 'Add', 'Resize', 'LeakyRelu']:
             inputs_str = ', '.join(node.input[:3])
             outputs_str = ', '.join(node.output)
-            print(f"  {node.op_type}: {node.name[:60]}")
-            print(f"    inputs: {inputs_str}")
-            print(f"    output: {outputs_str}")
+            print(f'  {node.op_type}: {node.name[:60]}')
+            print(f'    inputs: {inputs_str}')
+            print(f'    output: {outputs_str}')
 
     return model
 
@@ -84,7 +80,7 @@ def trace_onnx_fpn_order(onnx_path):
 def compare_arrays(name, mlx_arr, onnx_arr, detailed=False):
     """Compare two arrays and print statistics."""
     if mlx_arr.shape != onnx_arr.shape:
-        print(f"  {name}: SHAPE MISMATCH - MLX {mlx_arr.shape} vs ONNX {onnx_arr.shape}")
+        print(f'  {name}: SHAPE MISMATCH - MLX {mlx_arr.shape} vs ONNX {onnx_arr.shape}')
         return False
 
     mlx_flat = mlx_arr.flatten()
@@ -98,40 +94,40 @@ def compare_arrays(name, mlx_arr, onnx_arr, detailed=False):
     else:
         corr = 0.0
 
-    match = "✓" if corr > 0.99 else "✗"
-    print(f"  {name}: max_diff={max_diff:.6f}, mean_diff={mean_diff:.6f}, corr={corr:.6f} {match}")
+    match = '✓' if corr > 0.99 else '✗'
+    print(f'  {name}: max_diff={max_diff:.6f}, mean_diff={mean_diff:.6f}, corr={corr:.6f} {match}')
 
     if detailed:
-        print(f"    MLX range: [{mlx_arr.min():.4f}, {mlx_arr.max():.4f}]")
-        print(f"    ONNX range: [{onnx_arr.min():.4f}, {onnx_arr.max():.4f}]")
+        print(f'    MLX range: [{mlx_arr.min():.4f}, {mlx_arr.max():.4f}]')
+        print(f'    ONNX range: [{onnx_arr.min():.4f}, {onnx_arr.max():.4f}]')
 
     return corr > 0.99
 
 
 def main():
-    print("=" * 70)
-    print("FPN Add Pathway Debug: MLX vs ONNX")
-    print("=" * 70)
+    print('=' * 70)
+    print('FPN Add Pathway Debug: MLX vs ONNX')
+    print('=' * 70)
 
     # Load test image
-    test_image_path = Path(__file__).parent.parent / "assets" / "test.jpg"
+    test_image_path = Path(__file__).parent.parent / 'assets' / 'test.jpg'
     if not test_image_path.exists():
-        test_image_path = Path("/tmp/test_face.jpg")
+        test_image_path = Path('/tmp/test_face.jpg')
     if not test_image_path.exists():
-        print("Creating synthetic input...")
+        print('Creating synthetic input...')
         np.random.seed(42)
         image = np.random.randint(0, 256, (640, 640, 3), dtype=np.uint8)
     else:
         image = cv2.imread(str(test_image_path))
         image = cv2.resize(image, (640, 640))
 
-    print(f"Input image shape: {image.shape}")
+    print(f'Input image shape: {image.shape}')
 
     # Load ONNX model path
     onnx_path = verify_model_weights(RetinaFaceWeights.MNET_V2)
 
     # Trace ONNX FPN order to understand the computation graph
-    onnx_model = trace_onnx_fpn_order(onnx_path)
+    trace_onnx_fpn_order(onnx_path)
 
     # Preprocess for ONNX (NCHW format)
     onnx_input = np.float32(image) - np.array([104, 117, 123], dtype=np.float32)
@@ -144,41 +140,41 @@ def main():
     mlx_tensor = mx.array(mlx_input)
 
     # Get ONNX add pathway outputs
-    print("\n" + "=" * 70)
-    print("Getting ONNX Add Pathway Outputs")
-    print("=" * 70)
+    print('\n' + '=' * 70)
+    print('Getting ONNX Add Pathway Outputs')
+    print('=' * 70)
 
     intermediate_names = [
-        "/fpn/output1/output1.2/LeakyRelu_output_0",  # P1 lateral
-        "/fpn/output2/output2.2/LeakyRelu_output_0",  # P2 lateral
-        "/fpn/output3/output3.2/LeakyRelu_output_0",  # P3 lateral
-        "/fpn/Resize_output_0",  # P3 upsampled to 40x40
-        "/fpn/Add_output_0",  # P2 after add (P2_lat + upsample(P3))
-        "/fpn/merge2/merge2.2/LeakyRelu_output_0",  # P2 merged
-        "/fpn/Resize_1_output_0",  # P2_merged upsampled to 80x80
-        "/fpn/Add_1_output_0",  # P1 after add
-        "/fpn/merge1/merge1.2/LeakyRelu_output_0",  # P1 merged (final P1)
+        '/fpn/output1/output1.2/LeakyRelu_output_0',  # P1 lateral
+        '/fpn/output2/output2.2/LeakyRelu_output_0',  # P2 lateral
+        '/fpn/output3/output3.2/LeakyRelu_output_0',  # P3 lateral
+        '/fpn/Resize_output_0',  # P3 upsampled to 40x40
+        '/fpn/Add_output_0',  # P2 after add (P2_lat + upsample(P3))
+        '/fpn/merge2/merge2.2/LeakyRelu_output_0',  # P2 merged
+        '/fpn/Resize_1_output_0',  # P2_merged upsampled to 80x80
+        '/fpn/Add_1_output_0',  # P1 after add
+        '/fpn/merge1/merge1.2/LeakyRelu_output_0',  # P1 merged (final P1)
     ]
 
     onnx_outputs = get_onnx_intermediate(onnx_path, onnx_input, intermediate_names)
 
-    print("\nONNX intermediate outputs:")
+    print('\nONNX intermediate outputs:')
     for name, arr in onnx_outputs.items():
         short_name = name.split('/')[-1]
-        print(f"  {short_name}: {arr.shape}, range=[{arr.min():.4f}, {arr.max():.4f}]")
+        print(f'  {short_name}: {arr.shape}, range=[{arr.min():.4f}, {arr.max():.4f}]')
 
     # Load MLX model
-    print("\n" + "=" * 70)
-    print("Running MLX FPN Step by Step")
-    print("=" * 70)
+    print('\n' + '=' * 70)
+    print('Running MLX FPN Step by Step')
+    print('=' * 70)
 
     mlx_model = RetinaFaceNetworkFused(backbone_type='mobilenetv2', width_mult=1.0)
-    weights_path = Path(__file__).parent.parent / "weights_mlx_fused" / "retinaface_mnet_v2.safetensors"
+    weights_path = Path(__file__).parent.parent / 'weights_mlx_fused' / 'retinaface_mnet_v2.safetensors'
 
     if weights_path.exists():
         load_mlx_fused_weights(mlx_model, str(weights_path))
     else:
-        print(f"ERROR: Fused weights not found at {weights_path}")
+        print(f'ERROR: Fused weights not found at {weights_path}')
         return
 
     mlx_model.train(False)
@@ -230,52 +226,54 @@ def main():
     synchronize(p1_merged_a, p1_merged_b)
 
     # Compare with ONNX
-    print("\n" + "=" * 70)
-    print("Comparison: MLX vs ONNX")
-    print("=" * 70)
+    print('\n' + '=' * 70)
+    print('Comparison: MLX vs ONNX')
+    print('=' * 70)
 
-    onnx_p1_lat = onnx_outputs["/fpn/output1/output1.2/LeakyRelu_output_0"].transpose(0, 2, 3, 1)
-    onnx_p2_lat = onnx_outputs["/fpn/output2/output2.2/LeakyRelu_output_0"].transpose(0, 2, 3, 1)
-    onnx_p3_lat = onnx_outputs["/fpn/output3/output3.2/LeakyRelu_output_0"].transpose(0, 2, 3, 1)
-    onnx_p3_up = onnx_outputs["/fpn/Resize_output_0"].transpose(0, 2, 3, 1)
-    onnx_p2_add = onnx_outputs["/fpn/Add_output_0"].transpose(0, 2, 3, 1)
-    onnx_p2_merged = onnx_outputs["/fpn/merge2/merge2.2/LeakyRelu_output_0"].transpose(0, 2, 3, 1)
-    onnx_p2_up = onnx_outputs["/fpn/Resize_1_output_0"].transpose(0, 2, 3, 1)
-    onnx_p1_add = onnx_outputs["/fpn/Add_1_output_0"].transpose(0, 2, 3, 1)
-    onnx_p1_merged = onnx_outputs["/fpn/merge1/merge1.2/LeakyRelu_output_0"].transpose(0, 2, 3, 1)
+    onnx_p1_lat = onnx_outputs['/fpn/output1/output1.2/LeakyRelu_output_0'].transpose(0, 2, 3, 1)
+    onnx_p2_lat = onnx_outputs['/fpn/output2/output2.2/LeakyRelu_output_0'].transpose(0, 2, 3, 1)
+    onnx_p3_lat = onnx_outputs['/fpn/output3/output3.2/LeakyRelu_output_0'].transpose(0, 2, 3, 1)
+    onnx_p3_up = onnx_outputs['/fpn/Resize_output_0'].transpose(0, 2, 3, 1)
+    onnx_p2_add = onnx_outputs['/fpn/Add_output_0'].transpose(0, 2, 3, 1)
+    onnx_p2_merged = onnx_outputs['/fpn/merge2/merge2.2/LeakyRelu_output_0'].transpose(0, 2, 3, 1)
+    onnx_p2_up = onnx_outputs['/fpn/Resize_1_output_0'].transpose(0, 2, 3, 1)
+    onnx_p1_add = onnx_outputs['/fpn/Add_1_output_0'].transpose(0, 2, 3, 1)
+    onnx_p1_merged = onnx_outputs['/fpn/merge1/merge1.2/LeakyRelu_output_0'].transpose(0, 2, 3, 1)
 
-    print("\n1. Lateral connections:")
-    compare_arrays("P1 lateral", np.array(p1_lat), onnx_p1_lat)
-    compare_arrays("P2 lateral", np.array(p2_lat), onnx_p2_lat)
-    compare_arrays("P3 lateral", np.array(p3_lat), onnx_p3_lat)
+    print('\n1. Lateral connections:')
+    compare_arrays('P1 lateral', np.array(p1_lat), onnx_p1_lat)
+    compare_arrays('P2 lateral', np.array(p2_lat), onnx_p2_lat)
+    compare_arrays('P3 lateral', np.array(p3_lat), onnx_p3_lat)
 
-    print("\n2. P3 upsampled (to P2 size):")
-    compare_arrays("P3 upsampled", np.array(p3_up), onnx_p3_up, detailed=True)
+    print('\n2. P3 upsampled (to P2 size):')
+    compare_arrays('P3 upsampled', np.array(p3_up), onnx_p3_up, detailed=True)
 
-    print("\n3. P2 after add:")
-    compare_arrays("P2 add", np.array(p2_add), onnx_p2_add, detailed=True)
+    print('\n3. P2 after add:')
+    compare_arrays('P2 add', np.array(p2_add), onnx_p2_add, detailed=True)
 
-    print("\n4. P2 merged:")
-    compare_arrays("P2 merged", np.array(p2_merged), onnx_p2_merged, detailed=True)
+    print('\n4. P2 merged:')
+    compare_arrays('P2 merged', np.array(p2_merged), onnx_p2_merged, detailed=True)
 
-    print("\n5. What gets upsampled to P1?")
-    print(f"   ONNX Resize_1 shape: {onnx_p2_up.shape}, range=[{onnx_p2_up.min():.4f}, {onnx_p2_up.max():.4f}]")
-    print(f"   MLX p2_add_up shape: {np.array(p2_add_up).shape}, range=[{np.array(p2_add_up).min():.4f}, {np.array(p2_add_up).max():.4f}]")
-    print(f"   MLX p2_merged_up shape: {np.array(p2_merged_up).shape}, range=[{np.array(p2_merged_up).min():.4f}, {np.array(p2_merged_up).max():.4f}]")
+    print('\n5. What gets upsampled to P1?')
+    print(f'   ONNX Resize_1 shape: {onnx_p2_up.shape}, range=[{onnx_p2_up.min():.4f}, {onnx_p2_up.max():.4f}]')
+    p2_add_arr = np.array(p2_add_up)
+    p2_merged_arr = np.array(p2_merged_up)
+    print(f'   MLX p2_add_up shape: {p2_add_arr.shape}, range=[{p2_add_arr.min():.4f}, {p2_add_arr.max():.4f}]')
+    print(f'   MLX p2_merged_up: {p2_merged_arr.shape}, range=[{p2_merged_arr.min():.4f}, {p2_merged_arr.max():.4f}]')
 
     # Check which one matches
-    compare_arrays("ONNX_p2_up vs MLX_p2_add_up", np.array(p2_add_up), onnx_p2_up, detailed=True)
-    compare_arrays("ONNX_p2_up vs MLX_p2_merged_up", np.array(p2_merged_up), onnx_p2_up, detailed=True)
+    compare_arrays('ONNX_p2_up vs MLX_p2_add_up', np.array(p2_add_up), onnx_p2_up, detailed=True)
+    compare_arrays('ONNX_p2_up vs MLX_p2_merged_up', np.array(p2_merged_up), onnx_p2_up, detailed=True)
 
-    print("\n6. P1 after add:")
-    print(f"   ONNX P1 add: range=[{onnx_p1_add.min():.4f}, {onnx_p1_add.max():.4f}]")
-    compare_arrays("P1 add (from p2_add)", np.array(p1_add_from_p2_add), onnx_p1_add, detailed=True)
-    compare_arrays("P1 add (from p2_merged)", np.array(p1_add_from_p2_merged), onnx_p1_add, detailed=True)
+    print('\n6. P1 after add:')
+    print(f'   ONNX P1 add: range=[{onnx_p1_add.min():.4f}, {onnx_p1_add.max():.4f}]')
+    compare_arrays('P1 add (from p2_add)', np.array(p1_add_from_p2_add), onnx_p1_add, detailed=True)
+    compare_arrays('P1 add (from p2_merged)', np.array(p1_add_from_p2_merged), onnx_p1_add, detailed=True)
 
-    print("\n7. P1 merged (final):")
-    compare_arrays("P1 merged (from p2_add)", np.array(p1_merged_a), onnx_p1_merged, detailed=True)
-    compare_arrays("P1 merged (from p2_merged)", np.array(p1_merged_b), onnx_p1_merged, detailed=True)
+    print('\n7. P1 merged (final):')
+    compare_arrays('P1 merged (from p2_add)', np.array(p1_merged_a), onnx_p1_merged, detailed=True)
+    compare_arrays('P1 merged (from p2_merged)', np.array(p1_merged_b), onnx_p1_merged, detailed=True)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

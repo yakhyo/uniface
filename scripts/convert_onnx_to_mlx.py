@@ -47,8 +47,8 @@ except ImportError:
     print('safetensors is required. Install with: pip install safetensors')
     sys.exit(1)
 
-from uniface.model_store import verify_model_weights
 from uniface.constants import RetinaFaceWeights
+from uniface.model_store import verify_model_weights
 
 
 def compute_sha256(filepath: str) -> str:
@@ -83,8 +83,7 @@ class ONNXGraphTracer:
 
     def __init__(self, model: onnx.ModelProto):
         self.model = model
-        self.initializers = {init.name: numpy_helper.to_array(init)
-                           for init in model.graph.initializer}
+        self.initializers = {init.name: numpy_helper.to_array(init) for init in model.graph.initializer}
 
         # Build node input/output maps
         self.node_by_output = {}
@@ -201,10 +200,10 @@ class ONNXGraphTracer:
 
         # Map features index to stage/layer
         stage_mapping = [
-            (1, 1, 1),   # features 1: stage 1, 1 block
-            (2, 2, 2),   # features 2-3: stage 2, 2 blocks
-            (4, 3, 3),   # features 4-6: stage 3, 3 blocks
-            (7, 4, 4),   # features 7-10: stage 4, 4 blocks
+            (1, 1, 1),  # features 1: stage 1, 1 block
+            (2, 2, 2),  # features 2-3: stage 2, 2 blocks
+            (4, 3, 3),  # features 4-6: stage 3, 3 blocks
+            (7, 4, 4),  # features 7-10: stage 4, 4 blocks
             (11, 5, 3),  # features 11-13: stage 5, 3 blocks
             (14, 6, 3),  # features 14-16: stage 6, 3 blocks
             (17, 7, 1),  # features 17: stage 7, 1 block
@@ -317,7 +316,7 @@ def convert_retinaface_mnetv2_from_onnx(
 
         mlx_weights[mlx_name] = weight
 
-    print(f'\nConversion summary:')
+    print('\nConversion summary:')
     print(f'  Mapped: {len(mlx_weights)}')
     print(f'  Transposed: {transposed_count}')
 
@@ -335,11 +334,9 @@ def convert_retinaface_mnetv2_from_onnx(
 
 def main():
     parser = argparse.ArgumentParser(description='Convert ONNX weights to MLX format')
-    parser.add_argument('--model', '-m', type=str, default='retinaface_mnet_v2',
-                       help='Model to convert')
+    parser.add_argument('--model', '-m', type=str, default='retinaface_mnet_v2', help='Model to convert')
     parser.add_argument('--output', '-o', type=str, help='Output .safetensors file')
-    parser.add_argument('--output-dir', type=str, default='weights_mlx_fused',
-                       help='Output directory')
+    parser.add_argument('--output-dir', type=str, default='weights_mlx_fused', help='Output directory')
     parser.add_argument('--verbose', '-v', action='store_true', help='Verbose output')
 
     args = parser.parse_args()

@@ -279,9 +279,6 @@ class MobileNetV2(nn.Module):
         # Each stage contains multiple blocks, and we track each block's output
         feature_idx = 1
 
-        # MobileNetV2 inverted_residual_setting for block counts
-        block_counts = [1, 2, 3, 4, 3, 3, 1]  # n values from settings
-
         for stage_idx in range(self._num_stages):
             stage = getattr(self, f'stage{stage_idx + 1}')
             # Process each layer in the stage individually to get intermediate features
