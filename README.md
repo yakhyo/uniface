@@ -10,6 +10,20 @@
 > **This is a fork of [yakhyo/uniface](https://github.com/yakhyo/uniface) with added MLX backend support for Apple Silicon Macs.**
 
 ![alt text](Gemini_Generated_Image_tigitztigitztigi.jpg)
+
+---
+
+## Demo: Face Detection
+
+| Original Image | Detected Faces |
+|:---:|:---:|
+| ![Original](images/image.png) | ![Detected](images/image_detected.png) |
+
+**Results on Apple Silicon (M2 Pro):**
+- **Faces Detected:** 4
+- **Detection Time:** 14.4ms
+- **FPS:** 69.5
+
 ---
 
 ## Why MLX-UniFace?
