@@ -43,7 +43,7 @@ def process_image(
     bboxes = [f['bbox'] for f in faces]
     scores = [f['confidence'] for f in faces]
     landmarks = [f['landmarks'] for f in faces]
-    draw_detections(image, bboxes, scores, landmarks, vis_threshold=threshold)
+    draw_detections(image=image, bboxes=bboxes, scores=scores, landmarks=landmarks, vis_threshold=threshold, fancy_bbox=True)
 
     for i, face in enumerate(faces):
         gender_id, age = age_gender.predict(image, face['bbox'])
