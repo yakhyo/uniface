@@ -17,6 +17,7 @@ class Face:
     """
     Detected face with analysis results.
     """
+
     # Required attributes
     bbox: np.ndarray
     confidence: float

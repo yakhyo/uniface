@@ -82,7 +82,7 @@ def process_image(analyzer, image_path: str, save_dir: str = 'outputs', show_sim
     bboxes = [f.bbox for f in faces]
     scores = [f.confidence for f in faces]
     landmarks = [f.landmarks for f in faces]
-    draw_detections(image=image, bboxes=bboxes, scores=scores, landmarks=landmarks,fancy_bbox=True)
+    draw_detections(image=image, bboxes=bboxes, scores=scores, landmarks=landmarks, fancy_bbox=True)
 
     for i, face in enumerate(faces, 1):
         draw_face_info(image, face, i)

@@ -6,11 +6,12 @@ from typing import List, Optional
 
 import numpy as np
 
-from uniface.attribute.age_gender import AgeGender
+# Import backend-aware versions
+from uniface.attribute import AgeGender
 from uniface.detection.base import BaseDetector
 from uniface.face import Face
 from uniface.log import Logger
-from uniface.recognition.base import BaseRecognizer
+from uniface.recognition import BaseRecognizer
 
 __all__ = ['FaceAnalyzer']
 

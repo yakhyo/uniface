@@ -2,8 +2,15 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
+from uniface.backend import use_mlx
+
 from .base import BaseLandmarker
-from .models import Landmark106
+
+# Import appropriate implementation based on backend
+if use_mlx():
+    from .models_mlx import Landmark106MLX as Landmark106
+else:
+    from .models import Landmark106
 
 
 def create_landmarker(method: str = '2d106det', **kwargs) -> BaseLandmarker:

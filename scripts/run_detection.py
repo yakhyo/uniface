@@ -51,7 +51,15 @@ def run_webcam(detector, threshold: float = 0.6):
         bboxes = [f['bbox'] for f in faces]
         scores = [f['confidence'] for f in faces]
         landmarks = [f['landmarks'] for f in faces]
-        draw_detections(image=frame, bboxes=bboxes, scores=scores, landmarks=landmarks, vis_threshold=threshold, draw_score=True, fancy_bbox=True)
+        draw_detections(
+            image=frame,
+            bboxes=bboxes,
+            scores=scores,
+            landmarks=landmarks,
+            vis_threshold=threshold,
+            draw_score=True,
+            fancy_bbox=True,
+        )
 
         cv2.putText(
             frame,

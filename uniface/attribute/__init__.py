@@ -6,18 +6,27 @@ from typing import Any, Dict, List, Union
 
 import numpy as np
 
-from uniface.attribute.age_gender import AgeGender
 from uniface.attribute.base import Attribute
+from uniface.backend import use_mlx
 from uniface.constants import AgeGenderWeights, DDAMFNWeights
 
-# Emotion requires PyTorch - make it optional
-try:
-    from uniface.attribute.emotion import Emotion
+# Import appropriate implementations based on backend
+if use_mlx():
+    from uniface.attribute.age_gender_mlx import AgeGenderMLX as AgeGender
+    from uniface.attribute.emotion_mlx import EmotionMLX as Emotion
 
     _EMOTION_AVAILABLE = True
-except ImportError:
-    Emotion = None
-    _EMOTION_AVAILABLE = False
+else:
+    from uniface.attribute.age_gender import AgeGender
+
+    # Emotion requires PyTorch - make it optional
+    try:
+        from uniface.attribute.emotion import Emotion
+
+        _EMOTION_AVAILABLE = True
+    except ImportError:
+        Emotion = None
+        _EMOTION_AVAILABLE = False
 
 # Public API for the attribute module
 __all__ = ['AgeGender', 'Emotion', 'create_attribute_predictor', 'predict_attributes']

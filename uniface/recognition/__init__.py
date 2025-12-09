@@ -2,9 +2,17 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
+from uniface.backend import use_mlx
 
-from .base import BaseRecognizer
-from .models import ArcFace, MobileFace, SphereFace
+# Import appropriate implementations based on backend
+if use_mlx():
+    from .base_mlx import BaseRecognizerMLX as BaseRecognizer
+    from .models_mlx import ArcFaceMLX as ArcFace
+    from .models_mlx import MobileFaceMLX as MobileFace
+    from .models_mlx import SphereFaceMLX as SphereFace
+else:
+    from .base import BaseRecognizer
+    from .models import ArcFace, MobileFace, SphereFace
 
 
 def create_recognizer(method: str = 'arcface', **kwargs) -> BaseRecognizer:

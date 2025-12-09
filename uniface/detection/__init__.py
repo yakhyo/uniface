@@ -7,10 +7,19 @@ from typing import Any, Dict, List
 
 import numpy as np
 
+from uniface.backend import use_mlx
+
 from .base import BaseDetector
-from .retinaface import RetinaFace
-from .scrfd import SCRFD
-from .yolov5 import YOLOv5Face
+
+# Import appropriate implementations based on backend
+if use_mlx():
+    from .retinaface_mlx import RetinaFaceMLX as RetinaFace
+    from .scrfd_mlx import SCRFDMLX as SCRFD
+    from .yolov5_mlx import YOLOv5FaceMLX as YOLOv5Face
+else:
+    from .retinaface import RetinaFace
+    from .scrfd import SCRFD
+    from .yolov5 import YOLOv5Face
 
 # Global cache for detector instances
 _detector_cache: Dict[str, BaseDetector] = {}

@@ -11,18 +11,23 @@
     <img src=".github/logos/logo_web.webp" width=75%>
 </div>
 
-**UniFace** is a lightweight, production-ready face analysis library built on ONNX Runtime. It provides high-performance face detection, recognition, landmark detection, and attribute analysis with hardware acceleration support across platforms.
+**UniFace** is a lightweight, production-ready face analysis library with dual backend support. It provides high-performance face detection, recognition, landmark detection, and attribute analysis with hardware acceleration support across platforms.
+
+- **MLX Backend** (NEW): Blazing fast inference on Apple Silicon (M1/M2/M3/M4)
+- **ONNX Backend**: Cross-platform support with CUDA, CoreML, and CPU execution
 
 ---
 
 ## Features
 
-- **High-Speed Face Detection**: ONNX-optimized RetinaFace, SCRFD, and YOLOv5-Face models
+- **High-Speed Face Detection**: RetinaFace, SCRFD, and YOLOv5-Face models
 - **Facial Landmark Detection**: Accurate 106-point landmark localization
 - **Face Recognition**: ArcFace, MobileFace, and SphereFace embeddings
 - **Attribute Analysis**: Age, gender, and emotion detection
 - **Face Alignment**: Precise alignment for downstream tasks
-- **Hardware Acceleration**: ARM64 optimizations (Apple Silicon), CUDA (NVIDIA), CPU fallback
+- **Dual Backend Support**:
+  - **MLX** (Apple Silicon): Native M1/M2/M3/M4 acceleration with unified memory
+  - **ONNX Runtime**: CUDA (NVIDIA), CoreML (macOS), CPU fallback
 - **Simple API**: Intuitive factory functions and clean interfaces
 - **Production-Ready**: Type hints, comprehensive logging, PEP8 compliant
 
@@ -38,15 +43,23 @@ pip install uniface
 
 ### Platform-Specific Installation
 
-#### macOS (Apple Silicon - M1/M2/M3/M4)
+#### macOS (Apple Silicon - M1/M2/M3/M4) with MLX
 
-For Apple Silicon Macs, the standard installation automatically includes optimized ARM64 support:
+For **blazing fast** inference on Apple Silicon using the MLX backend:
 
 ```bash
-pip install uniface
+pip install uniface[mlx]
 ```
 
-The base `onnxruntime` package (included with uniface) has native Apple Silicon support with ARM64 optimizations built-in since version 1.13+.
+This installs MLX and safetensors for native Apple Silicon acceleration. The library automatically detects Apple Silicon and uses MLX when available.
+
+#### macOS (Apple Silicon) with ONNX
+
+For ONNX Runtime on Apple Silicon (still fast, cross-platform compatible):
+
+```bash
+pip install uniface[onnx]
+```
 
 #### Linux/Windows with NVIDIA GPU
 
@@ -65,7 +78,7 @@ pip install uniface[gpu]
 #### CPU-Only (All Platforms)
 
 ```bash
-pip install uniface
+pip install uniface[onnx]
 ```
 
 ### Install from Source
@@ -73,7 +86,27 @@ pip install uniface
 ```bash
 git clone https://github.com/yakhyo/uniface.git
 cd uniface
-pip install -e .
+pip install -e ".[mlx]"  # For Apple Silicon with MLX
+# or
+pip install -e ".[onnx]"  # For ONNX Runtime
+```
+
+### Backend Selection
+
+UniFace automatically selects the best backend:
+
+1. **Apple Silicon + MLX installed** → Uses MLX (fastest)
+2. **Otherwise** → Uses ONNX Runtime
+
+You can force a specific backend:
+
+```python
+import os
+os.environ['UNIFACE_BACKEND'] = 'mlx'   # Force MLX
+os.environ['UNIFACE_BACKEND'] = 'onnx'  # Force ONNX
+
+from uniface import RetinaFace
+detector = RetinaFace()  # Uses the specified backend
 ```
 
 ---
@@ -484,16 +517,70 @@ Ruff configuration is in `pyproject.toml`. Key settings:
 ```
 uniface/
 ├── uniface/
-│   ├── detection/       # Face detection models
-│   ├── recognition/     # Face recognition models
-│   ├── landmark/        # Landmark detection
-│   ├── attribute/       # Age, gender, emotion
+│   ├── detection/       # Face detection models (MLX + ONNX)
+│   ├── recognition/     # Face recognition models (MLX + ONNX)
+│   ├── landmark/        # Landmark detection (MLX + ONNX)
+│   ├── attribute/       # Age, gender, emotion (MLX + ONNX)
+│   ├── nn/              # MLX neural network building blocks
+│   ├── mlx_utils.py     # MLX utilities
+│   ├── backend.py       # Backend auto-selection
 │   ├── onnx_utils.py    # ONNX Runtime utilities
 │   ├── model_store.py   # Model download & caching
 │   └── visualization.py # Drawing utilities
 ├── tests/               # Unit tests
 ├── examples/            # Example notebooks
 └── scripts/             # Utility scripts
+```
+
+---
+
+## MLX Backend (Apple Silicon)
+
+UniFace includes native MLX implementations for blazing fast inference on Apple Silicon Macs.
+
+### Supported Models (MLX)
+
+| Category | Models |
+|----------|--------|
+| **Detection** | RetinaFace, SCRFD, YOLOv5-Face |
+| **Recognition** | ArcFace, MobileFace, SphereFace |
+| **Landmarks** | Landmark106 (106-point) |
+| **Attributes** | AgeGender, Emotion (DDAMFN) |
+
+### MLX vs ONNX Performance
+
+Run benchmarks on your hardware:
+
+```bash
+# Benchmark a specific model
+python scripts/benchmark_mlx_vs_onnx.py --model retinaface --iterations 100
+
+# Benchmark all models
+python scripts/benchmark_mlx_vs_onnx.py --all
+```
+
+### Validating MLX Accuracy
+
+Ensure MLX outputs match ONNX:
+
+```bash
+# Check that all MLX modules can be imported
+python scripts/validate_mlx_accuracy.py --imports-only
+
+# Full validation with test image
+python scripts/validate_mlx_accuracy.py --image test.jpg
+```
+
+### Converting Weights to MLX Format
+
+To convert PyTorch weights to MLX-compatible safetensors:
+
+```bash
+# Convert all models
+python scripts/convert_weights_to_mlx.py --all --input-dir weights_pytorch/
+
+# Convert a single model
+python scripts/convert_weights_to_mlx.py -i model.pth -o model.safetensors
 ```
 
 ---

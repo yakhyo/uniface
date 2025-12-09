@@ -11,7 +11,7 @@ from tqdm import tqdm
 import uniface.constants as const
 from uniface.log import Logger
 
-__all__ = ['verify_model_weights']
+__all__ = ['verify_model_weights', 'verify_model_weights_mlx', 'get_weights_path']
 
 
 def verify_model_weights(model_name: str, root: str = '~/.uniface/models') -> str:
@@ -105,6 +105,96 @@ def verify_file_hash(file_path: str, expected_hash: str) -> bool:
     if actual_hash != expected_hash:
         Logger.warning(f'Expected hash: {expected_hash}, but got: {actual_hash}')
     return actual_hash == expected_hash
+
+
+def verify_model_weights_mlx(model_name: str, root: str = '~/.uniface/models') -> str:
+    """
+    Ensure MLX model weights (.safetensors) are present, downloading and verifying if necessary.
+
+    This function is similar to verify_model_weights but uses MLX-specific weight files
+    in .safetensors format optimized for Apple Silicon.
+
+    Args:
+        model_name (Enum): Model weight identifier (e.g., `RetinaFaceWeights.MNET_V2`).
+        root (str, optional): Directory to store or locate the model weights. Defaults to '~/.uniface/models'.
+
+    Returns:
+        str: Absolute path to the verified MLX model weights file (.safetensors).
+
+    Raises:
+        ValueError: If the model is unknown or SHA-256 verification fails.
+        ConnectionError: If downloading the file fails.
+    """
+    root = os.path.expanduser(root)
+    os.makedirs(root, exist_ok=True)
+
+    # Look up MLX-specific URL
+    url = const.MODEL_URLS_MLX.get(model_name)
+    if not url:
+        Logger.error(f"No MLX URL found for model '{model_name}'")
+        raise ValueError(f"No MLX URL found for model '{model_name}'")
+
+    file_ext = os.path.splitext(url)[1]
+    model_path = os.path.normpath(os.path.join(root, f'{model_name.value}_mlx{file_ext}'))
+
+    if not os.path.exists(model_path):
+        Logger.info(f"Downloading MLX model '{model_name}' from {url}")
+        try:
+            download_file(url, model_path)
+            Logger.info(f"Successfully downloaded '{model_name}' (MLX) to {model_path}")
+        except Exception as e:
+            Logger.error(f"Failed to download MLX model '{model_name}': {e}")
+            raise ConnectionError(f"Download failed for '{model_name}' (MLX)") from e
+
+    expected_hash = const.MODEL_SHA256_MLX.get(model_name)
+    if expected_hash and not verify_file_hash(model_path, expected_hash):
+        os.remove(model_path)
+        Logger.warning('Corrupted MLX weight detected. Removing...')
+        raise ValueError(f"Hash mismatch for '{model_name}' (MLX). The file may be corrupted.")
+
+    return model_path
+
+
+def get_weights_path(
+    model_name: str,
+    backend: str = 'auto',
+    root: str = '~/.uniface/models',
+) -> str:
+    """
+    Get the path to model weights for the specified backend.
+
+    This is the recommended function for loading model weights as it automatically
+    selects the appropriate format based on the backend.
+
+    Args:
+        model_name (Enum): Model weight identifier.
+        backend (str): Backend to use ('mlx', 'onnx', or 'auto').
+        root (str, optional): Directory for model weights. Defaults to '~/.uniface/models'.
+
+    Returns:
+        str: Absolute path to the verified model weights file.
+
+    Raises:
+        ValueError: If backend is invalid or model weights not available.
+    """
+    if backend == 'auto':
+        # Import here to avoid circular imports
+        from uniface.backend import get_backend
+
+        selected_backend = get_backend()
+        backend = selected_backend.value
+
+    if backend == 'mlx':
+        # Check if MLX weights are available
+        if hasattr(const, 'MODEL_URLS_MLX') and model_name in const.MODEL_URLS_MLX:
+            return verify_model_weights_mlx(model_name, root)
+        else:
+            Logger.warning(f"No MLX weights for '{model_name}', falling back to ONNX")
+            return verify_model_weights(model_name, root)
+    elif backend == 'onnx':
+        return verify_model_weights(model_name, root)
+    else:
+        raise ValueError(f"Unknown backend: {backend}. Use 'mlx', 'onnx', or 'auto'.")
 
 
 if __name__ == '__main__':
