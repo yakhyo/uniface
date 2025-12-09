@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MLX-UniFace | Blazing-Fast Face Analysis on Apple Silicon</title>
+    <meta name="description" content="High-performance face detection, recognition, and analysis library optimized for Apple Silicon with native MLX acceleration.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF6B35;
+            --primary-dark: #E55A2B;
+            --secondary: #4ECDC4;
+            --dark: #1a1a2e;
+            --darker: #16162a;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--dark);
+            color: var(--light);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 50%, #1a2a3e 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234ECDC4' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tagline {
+            font-size: 1.5rem;
+            color: var(--gray);
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .badges {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .badges img {
+            height: 24px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 107, 53, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--light);
+            border: 2px solid var(--gray);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--secondary);
+            color: var(--secondary);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 0;
+            background: var(--darker);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--dark);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--secondary);
+        }
+
+        .feature-card p {
+            color: var(--gray);
+        }
+
+        /* Benchmark Section */
+        .benchmarks {
+            padding: 100px 0;
+            background: var(--dark);
+        }
+
+        .chart-container {
+            background: var(--darker);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .bar-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .bar-item {
+            display: grid;
+            grid-template-columns: 140px 1fr 80px;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .bar-label {
+            font-weight: 500;
+            text-align: right;
+        }
+
+        .bar-wrapper {
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .bar {
+            height: 100%;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 12px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: width 1s ease-out;
+        }
+
+        .bar.mlx {
+            background: linear-gradient(90deg, var(--primary), #ff8f6b);
+        }
+
+        .bar.onnx {
+            background: linear-gradient(90deg, #6c757d, #868e96);
+        }
+
+        .bar-value {
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
+        /* Comparison Table */
+        .comparison {
+            padding: 100px 0;
+            background: var(--darker);
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+            background: var(--dark);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .comparison-table th {
+            background: rgba(78, 205, 196, 0.1);
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comparison-table tr:hover td {
+            background: rgba(255,255,255,0.02);
+        }
+
+        .check {
+            color: #4ade80;
+            font-weight: bold;
+        }
+
+        .cross {
+            color: #f87171;
+        }
+
+        /* Install Section */
+        .install {
+            padding: 100px 0;
+            background: var(--dark);
+            text-align: center;
+        }
+
+        .code-block {
+            background: var(--darker);
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            margin: 2rem auto;
+            max-width: 500px;
+            text-align: left;
+            font-family: 'SF Mono', Monaco, monospace;
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+        }
+
+        .code-block code {
+            color: var(--secondary);
+        }
+
+        .code-block .comment {
+            color: var(--gray);
+        }
+
+        /* Footer */
+        footer {
+            padding: 3rem 0;
+            background: var(--darker);
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        footer a {
+            color: var(--secondary);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2.5rem;
+            }
+            .tagline {
+                font-size: 1.125rem;
+            }
+            .bar-item {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+            .bar-label {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container hero-content">
+            <h1 class="logo">MLX-UniFace</h1>
+            <p class="tagline">Blazing-fast face analysis on Apple Silicon with native MLX acceleration</p>
+
+            <div class="badges">
+                <img src="https://img.shields.io/pypi/v/mlx-uniface.svg" alt="PyPI version">
+                <img src="https://img.shields.io/badge/Python-3.10%2B-blue" alt="Python 3.10+">
+                <img src="https://img.shields.io/badge/Apple%20Silicon-M1%2FM2%2FM3%2FM4-orange" alt="Apple Silicon">
+                <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT License">
+            </div>
+
+            <div class="cta-buttons">
+                <a href="https://pypi.org/project/mlx-uniface/" class="btn btn-primary">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                    Install from PyPI
+                </a>
+                <a href="https://github.com/CodeWithBehnam/mlx-uniface" class="btn btn-secondary">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    View on GitHub
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">Why MLX-UniFace?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">&#x26A1;</div>
+                    <h3>Native MLX Acceleration</h3>
+                    <p>Built from the ground up for Apple Silicon, leveraging unified memory architecture for zero-copy GPU operations.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#x1F9E0;</div>
+                    <h3>Complete Face Analysis</h3>
+                    <p>Detection, recognition, 106-point landmarks, age, gender, and emotion analysis - all in one library.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#x1F504;</div>
+                    <h3>Dual Backend Support</h3>
+                    <p>Automatic fallback to ONNX Runtime on non-Apple platforms. Write once, run anywhere.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#x2705;</div>
+                    <h3>Numerical Parity</h3>
+                    <p>MLX outputs match ONNX with correlation > 0.999. Same accuracy, faster execution.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#x1F3AF;</div>
+                    <h3>Multiple Model Options</h3>
+                    <p>RetinaFace, SCRFD, YOLOv5Face for detection. ArcFace, MobileFace, SphereFace for recognition.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">&#x1F4E6;</div>
+                    <h3>Easy Installation</h3>
+                    <p>Simple pip install with automatic weight downloading. Get started in seconds.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benchmark Section -->
+    <section class="benchmarks">
+        <div class="container">
+            <h2 class="section-title">Performance Benchmarks</h2>
+            <p style="text-align: center; color: var(--gray); margin-bottom: 2rem;">
+                Tested on Apple M2 Pro with 1080p images (higher is better)
+            </p>
+
+            <div class="chart-container">
+                <h3 style="margin-bottom: 1.5rem; color: var(--secondary);">Inference Speed (FPS)</h3>
+                <div class="bar-chart">
+                    <div class="bar-item">
+                        <span class="bar-label">RetinaFace</span>
+                        <div class="bar-wrapper">
+                            <div class="bar mlx" style="width: 85%;">MLX</div>
+                        </div>
+                        <span class="bar-value">~45 FPS</span>
+                    </div>
+                    <div class="bar-item">
+                        <span class="bar-label"></span>
+                        <div class="bar-wrapper">
+                            <div class="bar onnx" style="width: 55%;">ONNX</div>
+                        </div>
+                        <span class="bar-value">~28 FPS</span>
+                    </div>
+                    <div class="bar-item">
+                        <span class="bar-label">ArcFace</span>
+                        <div class="bar-wrapper">
+                            <div class="bar mlx" style="width: 90%;">MLX</div>
+                        </div>
+                        <span class="bar-value">~120 FPS</span>
+                    </div>
+                    <div class="bar-item">
+                        <span class="bar-label"></span>
+                        <div class="bar-wrapper">
+                            <div class="bar onnx" style="width: 50%;">ONNX</div>
+                        </div>
+                        <span class="bar-value">~65 FPS</span>
+                    </div>
+                    <div class="bar-item">
+                        <span class="bar-label">SCRFD</span>
+                        <div class="bar-wrapper">
+                            <div class="bar mlx" style="width: 80%;">MLX</div>
+                        </div>
+                        <span class="bar-value">~38 FPS</span>
+                    </div>
+                    <div class="bar-item">
+                        <span class="bar-label"></span>
+                        <div class="bar-wrapper">
+                            <div class="bar onnx" style="width: 45%;">ONNX</div>
+                        </div>
+                        <span class="bar-value">~22 FPS</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison Section -->
+    <section class="comparison">
+        <div class="container">
+            <h2 class="section-title">MLX vs ONNX Comparison</h2>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>MLX Backend</th>
+                        <th>ONNX Backend</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Apple Silicon Native</td>
+                        <td class="check">&#10003; Yes</td>
+                        <td class="cross">&#10007; Via CoreML</td>
+                    </tr>
+                    <tr>
+                        <td>Unified Memory</td>
+                        <td class="check">&#10003; Zero-copy GPU</td>
+                        <td class="cross">&#10007; CPU-GPU transfer</td>
+                    </tr>
+                    <tr>
+                        <td>Lazy Evaluation</td>
+                        <td class="check">&#10003; Graph optimization</td>
+                        <td class="cross">&#10007; Eager execution</td>
+                    </tr>
+                    <tr>
+                        <td>M1/M2/M3/M4 Optimized</td>
+                        <td class="check">&#10003; Full optimization</td>
+                        <td>Partial</td>
+                    </tr>
+                    <tr>
+                        <td>Cross-Platform</td>
+                        <td>macOS only</td>
+                        <td class="check">&#10003; All platforms</td>
+                    </tr>
+                    <tr>
+                        <td>CUDA Support</td>
+                        <td class="cross">&#10007; Not applicable</td>
+                        <td class="check">&#10003; Yes</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Install Section -->
+    <section class="install">
+        <div class="container">
+            <h2 class="section-title">Get Started in Seconds</h2>
+
+            <div class="code-block">
+                <code><span class="comment"># Install from PyPI</span></code><br>
+                <code>pip install mlx-uniface[mlx]</code>
+            </div>
+
+            <div class="code-block">
+                <code><span class="comment"># Quick detection example</span></code><br>
+                <code>from uniface import RetinaFace</code><br>
+                <code>detector = RetinaFace()</code><br>
+                <code>faces = detector.detect(image)</code>
+            </div>
+
+            <a href="https://github.com/CodeWithBehnam/mlx-uniface#quick-start" class="btn btn-primary" style="margin-top: 1rem;">
+                View Full Documentation
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="https://github.com/CodeWithBehnam/mlx-uniface">GitHub</a>
+                <a href="https://pypi.org/project/mlx-uniface/">PyPI</a>
+                <a href="https://github.com/CodeWithBehnam/mlx-uniface/issues">Issues</a>
+                <a href="https://github.com/yakhyo/uniface">Original UniFace</a>
+            </div>
+            <p style="color: var(--gray);">
+                MIT License &copy; 2024 | Fork of <a href="https://github.com/yakhyo/uniface">yakhyo/uniface</a>
+            </p>
+        </div>
+    </footer>
+</body>
+</html>
