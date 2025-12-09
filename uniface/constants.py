@@ -216,7 +216,7 @@ MODEL_SHA256_MLX: Dict[Enum, str] = {
     RetinaFaceWeights.MNET_025:      'a11feb4dae7824424fbb6a280c63825d3b61492a93e7d9206c5bb35d2db77337',
     RetinaFaceWeights.MNET_050:      'e4499a10b5c73e980ecb0d3d9d09cd08dd458d218f874bf4fb187ed73a085d61',
     RetinaFaceWeights.MNET_V1:       '62b06a8497d523e74f05a5bf9eb4a097ddaa1a99bf7e417b14046c33fb81c2ca',
-    RetinaFaceWeights.MNET_V2:       'f7740c556ac328a35a3073a724b583eabc8802e9ea3e30337cf67a2515e55ecc',
+    RetinaFaceWeights.MNET_V2:       'f619c9a726ca0c88333faf43abe98c8e132fc4bf8bafdd5de664b0ef16577058',
     RetinaFaceWeights.RESNET18:      'fee321aba1cd6f746591c74781a0b8e259d0d183fc1e674236fbbcc7a142bce6',
     RetinaFaceWeights.RESNET34:      '16fb7b1ec89d0f743b838ca880ed382ab451b80234b97935af7e0bbf8a07981a',
     # MobileFace

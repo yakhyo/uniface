@@ -13,19 +13,6 @@
 
 ---
 
-## Demo: Face Detection
-
-| Original Image | Detected Faces |
-|:---:|:---:|
-| ![Original](images/image.png) | ![Detected](images/image_detected.png) |
-
-**Results on Apple Silicon (M2 Pro):**
-- **Faces Detected:** 4
-- **Detection Time:** 14.4ms
-- **FPS:** 69.5
-
----
-
 ## Why MLX-UniFace?
 
 | Feature | MLX-UniFace | Original UniFace |
@@ -41,6 +28,108 @@
 - **Native Acceleration**: Optimized for Apple's Neural Engine and GPU
 - **Lazy Evaluation**: Automatic graph optimization
 - **Numerical Parity**: Identical results to ONNX (correlation = 1.0)
+
+### Architecture Overview
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4A90D9', 'primaryTextColor': '#fff', 'primaryBorderColor': '#2E6BA8', 'lineColor': '#5C6BC0', 'secondaryColor': '#81C784', 'tertiaryColor': '#FFB74D', 'background': '#fafafa'}}}%%
+flowchart TB
+    subgraph Input["📷 Input"]
+        IMG[/"Image/Video Frame"/]
+    end
+
+    subgraph Detection["🔍 Face Detection"]
+        direction TB
+        RF["RetinaFace"]
+        SCRFD["SCRFD"]
+        YOLO["YOLOv5Face"]
+    end
+
+    subgraph Output1["Detection Output"]
+        BBOX["📦 Bounding Boxes"]
+        LM5["📍 5-Point Landmarks"]
+        CONF["📊 Confidence Scores"]
+    end
+
+    subgraph Recognition["🎭 Face Recognition"]
+        ARC["ArcFace"]
+        MOB["MobileFace"]
+        SPH["SphereFace"]
+    end
+
+    subgraph Attributes["📋 Attributes"]
+        AG["Age & Gender"]
+        EMO["Emotion"]
+        LM106["106 Landmarks"]
+    end
+
+    subgraph Output2["Final Output"]
+        EMB["🔐 512-dim Embedding"]
+        ATTR["👤 Face Attributes"]
+    end
+
+    IMG --> Detection
+    RF & SCRFD & YOLO --> BBOX & LM5 & CONF
+    BBOX --> Recognition
+    LM5 --> Recognition
+    BBOX --> Attributes
+    Recognition --> EMB
+    Attributes --> ATTR
+
+    style Input fill:#E3F2FD,stroke:#1976D2,stroke-width:2px
+    style Detection fill:#FFF3E0,stroke:#F57C00,stroke-width:2px
+    style Output1 fill:#E8F5E9,stroke:#388E3C,stroke-width:2px
+    style Recognition fill:#F3E5F5,stroke:#7B1FA2,stroke-width:2px
+    style Attributes fill:#FFF8E1,stroke:#FFA000,stroke-width:2px
+    style Output2 fill:#E0F7FA,stroke:#0097A7,stroke-width:2px
+```
+
+### RetinaFace Neural Network Architecture
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#7E57C2', 'primaryTextColor': '#fff', 'lineColor': '#5C6BC0'}}}%%
+flowchart LR
+    subgraph Backbone["🦴 Backbone (MobileNetV2)"]
+        direction TB
+        INPUT["📷 Input<br/>640×640×3"]
+        S8["Stage 1<br/>stride=8"]
+        S16["Stage 2<br/>stride=16"]
+        S32["Stage 3<br/>stride=32"]
+        INPUT --> S8 --> S16 --> S32
+    end
+
+    subgraph FPN["🔺 Feature Pyramid Network"]
+        direction TB
+        P3["P3<br/>80×80"]
+        P4["P4<br/>40×40"]
+        P5["P5<br/>20×20"]
+    end
+
+    subgraph Heads["🎯 Detection Heads"]
+        direction TB
+        CLS["Classification<br/>(face/bg)"]
+        BOX["Bounding Box<br/>(x,y,w,h)"]
+        LMK["Landmarks<br/>(5 points)"]
+    end
+
+    subgraph Output["📤 Output"]
+        FACES["Detected Faces<br/>+ Landmarks"]
+    end
+
+    S8 --> P3
+    S16 --> P4
+    S32 --> P5
+
+    P3 & P4 & P5 --> CLS & BOX & LMK
+
+    CLS & BOX & LMK --> NMS["NMS"] --> FACES
+
+    style Backbone fill:#EDE7F6,stroke:#5E35B1,stroke-width:2px
+    style FPN fill:#E8F5E9,stroke:#43A047,stroke-width:2px
+    style Heads fill:#FFF3E0,stroke:#FB8C00,stroke-width:2px
+    style Output fill:#E3F2FD,stroke:#1E88E5,stroke-width:2px
+    style NMS fill:#FFEBEE,stroke:#E53935,stroke-width:2px
+```
 
 ### Performance Benchmarks (Apple M2 Pro)
 
@@ -127,6 +216,34 @@ for face in faces:
 
 ### Face Recognition
 
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#00897B', 'primaryTextColor': '#fff', 'lineColor': '#546E7A', 'actorBkg': '#E0F2F1', 'actorBorder': '#00695C'}}}%%
+sequenceDiagram
+    autonumber
+    participant U as 👤 User
+    participant D as 🔍 Detector
+    participant A as 🔐 Aligner
+    participant R as 🎭 Recognizer
+    participant DB as 💾 Database
+
+    U->>D: Input Image
+    D->>D: Detect Faces
+    D-->>U: Bounding Boxes + Landmarks
+
+    U->>A: Face Region + Landmarks
+    A->>A: Affine Transform (112×112)
+    A-->>R: Aligned Face
+
+    R->>R: Extract Features (CNN)
+    R-->>U: 512-dim Embedding
+
+    U->>DB: Query Embedding
+    DB->>DB: Cosine Similarity Search
+    DB-->>U: Match Result (ID + Score)
+
+    Note over D,R: Pipeline runs in ~15ms on Apple Silicon
+```
+
 ```python
 from uniface import ArcFace, RetinaFace
 from uniface import compute_similarity
@@ -190,6 +307,37 @@ print(f"{'Female' if gender == 0 else 'Male'}, {age} years old")
 
 MLX-UniFace automatically selects the best backend:
 
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#2196F3', 'primaryTextColor': '#fff', 'lineColor': '#607D8B', 'secondaryColor': '#4CAF50', 'tertiaryColor': '#FF9800'}}}%%
+flowchart LR
+    START(["🚀 Initialize Model"]) --> CHECK{"Apple Silicon?"}
+
+    CHECK -->|Yes| MLX_CHECK{"MLX Installed?"}
+    CHECK -->|No| ONNX_PATH
+
+    MLX_CHECK -->|Yes| ENV{"UNIFACE_BACKEND<br/>env var?"}
+    MLX_CHECK -->|No| ONNX_PATH
+
+    ENV -->|'mlx'| MLX_BACKEND["⚡ MLX Backend<br/><i>Fastest on Apple Silicon</i>"]
+    ENV -->|'onnx'| ONNX_BACKEND["🔧 ONNX Backend<br/><i>Cross-platform</i>"]
+    ENV -->|Not set| MLX_BACKEND
+
+    ONNX_PATH["ONNX Fallback"] --> ONNX_BACKEND
+
+    MLX_BACKEND --> READY(["✅ Model Ready"])
+    ONNX_BACKEND --> READY
+
+    style START fill:#E8EAF6,stroke:#3F51B5,stroke-width:2px
+    style CHECK fill:#FFF9C4,stroke:#F9A825,stroke-width:2px
+    style MLX_CHECK fill:#FFF9C4,stroke:#F9A825,stroke-width:2px
+    style ENV fill:#FFF9C4,stroke:#F9A825,stroke-width:2px
+    style MLX_BACKEND fill:#C8E6C9,stroke:#388E3C,stroke-width:2px
+    style ONNX_BACKEND fill:#BBDEFB,stroke:#1976D2,stroke-width:2px
+    style ONNX_PATH fill:#FFCCBC,stroke:#E64A19,stroke-width:2px
+    style READY fill:#A5D6A7,stroke:#2E7D32,stroke-width:2px
+```
+
+**Summary:**
 1. **Apple Silicon + MLX installed** → Uses MLX (fastest)
 2. **Otherwise** → Uses ONNX Runtime
 
@@ -267,6 +415,81 @@ ruff check . --fix
 ---
 
 ## Project Structure
+
+### Class Hierarchy
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#5C6BC0', 'primaryTextColor': '#fff', 'lineColor': '#78909C', 'secondaryColor': '#26A69A'}}}%%
+classDiagram
+    class BaseDetector {
+        <<abstract>>
+        +conf_thresh: float
+        +nms_thresh: float
+        +detect(image) List~Dict~
+        +preprocess(image) ndarray
+        +postprocess(outputs) List~Dict~
+    }
+
+    class BaseRecognizer {
+        <<abstract>>
+        +get_embedding(image, landmarks) ndarray
+        +get_normalized_embedding(image, landmarks) ndarray
+    }
+
+    class RetinaFace {
+        +model_name: RetinaFaceWeights
+        +input_size: tuple
+        +detect(image) List~Dict~
+    }
+
+    class SCRFD {
+        +model_name: SCRFDWeights
+        +detect(image) List~Dict~
+    }
+
+    class YOLOv5Face {
+        +model_name: YOLOv5FaceWeights
+        +detect(image) List~Dict~
+    }
+
+    class ArcFace {
+        +model_name: ArcFaceWeights
+        +get_embedding(image, landmarks) ndarray
+    }
+
+    class MobileFace {
+        +model_name: MobileFaceWeights
+        +get_embedding(image, landmarks) ndarray
+    }
+
+    class FaceAnalyzer {
+        +detector: BaseDetector
+        +recognizer: BaseRecognizer
+        +age_gender: AgeGender
+        +analyze(image) List~Face~
+    }
+
+    class Face {
+        <<dataclass>>
+        +bbox: ndarray
+        +confidence: float
+        +landmarks: ndarray
+        +embedding: ndarray
+        +age: int
+        +gender: int
+    }
+
+    BaseDetector <|-- RetinaFace
+    BaseDetector <|-- SCRFD
+    BaseDetector <|-- YOLOv5Face
+    BaseRecognizer <|-- ArcFace
+    BaseRecognizer <|-- MobileFace
+    FaceAnalyzer --> BaseDetector
+    FaceAnalyzer --> BaseRecognizer
+    FaceAnalyzer --> Face
+```
+
+### Directory Structure
 
 ```
 mlx-uniface/

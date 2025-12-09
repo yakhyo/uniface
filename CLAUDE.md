@@ -10,21 +10,24 @@ UniFace is a production-ready face analysis library built on ONNX Runtime. It pr
 
 ```bash
 # Install for development
-pip install -e ".[dev]"
+uv pip install -e ".[dev]"
 
 # Run all tests
-pytest
+uv run pytest
 
 # Run specific test file
-pytest tests/test_retinaface.py -v
+uv run pytest tests/test_retinaface.py -v
 
 # Run with coverage
-pytest --cov=uniface --cov-report=html
+uv run pytest --cov=uniface --cov-report=html
 
 # Lint and format code
-ruff check .           # Check for linting errors
-ruff check . --fix     # Auto-fix linting errors
-ruff format .          # Format code
+uv run ruff check .           # Check for linting errors
+uv run ruff check . --fix     # Auto-fix linting errors
+uv run ruff format .          # Format code
+
+# Run a script
+uv run python scripts/face_detection_demo.py images/image1.png
 ```
 
 ## Code Architecture
