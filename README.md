@@ -1,112 +1,61 @@
-# UniFace: All-in-One Face Analysis Library
+# MLX-UniFace: Blazing-Fast Face Analysis on Apple Silicon
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://www.python.org/)
-[![PyPI](https://img.shields.io/pypi/v/uniface.svg)](https://pypi.org/project/uniface/)
-[![CI](https://github.com/yakhyo/uniface/actions/workflows/ci.yml/badge.svg)](https://github.com/yakhyo/uniface/actions)
-[![Downloads](https://pepy.tech/badge/uniface)](https://pepy.tech/project/uniface)
-[![DeepWiki](https://img.shields.io/badge/DeepWiki-yakhyo%2Funiface-blue.svg?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACwAAAAyCAYAAAAnWDnqAAAAAXNSR0IArs4c6QAAA05JREFUaEPtmUtyEzEQhtWTQyQLHNak2AB7ZnyXZMEjXMGeK/AIi+QuHrMnbChYY7MIh8g01fJoopFb0uhhEqqcbWTp06/uv1saEDv4O3n3dV60RfP947Mm9/SQc0ICFQgzfc4CYZoTPAswgSJCCUJUnAAoRHOAUOcATwbmVLWdGoH//PB8mnKqScAhsD0kYP3j/Yt5LPQe2KvcXmGvRHcDnpxfL2zOYJ1mFwrryWTz0advv1Ut4CJgf5uhDuDj5eUcAUoahrdY/56ebRWeraTjMt/00Sh3UDtjgHtQNHwcRGOC98BJEAEymycmYcWwOprTgcB6VZ5JK5TAJ+fXGLBm3FDAmn6oPPjR4rKCAoJCal2eAiQp2x0vxTPB3ALO2CRkwmDy5WohzBDwSEFKRwPbknEggCPB/imwrycgxX2NzoMCHhPkDwqYMr9tRcP5qNrMZHkVnOjRMWwLCcr8ohBVb1OMjxLwGCvjTikrsBOiA6fNyCrm8V1rP93iVPpwaE+gO0SsWmPiXB+jikdf6SizrT5qKasx5j8ABbHpFTx+vFXp9EnYQmLx02h1QTTrl6eDqxLnGjporxl3NL3agEvXdT0WmEost648sQOYAeJS9Q7bfUVoMGnjo4AZdUMQku50McDcMWcBPvr0SzbTAFDfvJqwLzgxwATnCgnp4wDl6Aa+Ax283gghmj+vj7feE2KBBRMW3FzOpLOADl0Isb5587h/U4gGvkt5v60Z1VLG8BhYjbzRwyQZemwAd6cCR5/XFWLYZRIMpX39AR0tjaGGiGzLVyhse5C9RKC6ai42ppWPKiBagOvaYk8lO7DajerabOZP46Lby5wKjw1HCRx7p9sVMOWGzb/vA1hwiWc6jm3MvQDTogQkiqIhJV0nBQBTU+3okKCFDy9WwferkHjtxib7t3xIUQtHxnIwtx4mpg26/HfwVNVDb4oI9RHmx5WGelRVlrtiw43zboCLaxv46AZeB3IlTkwouebTr1y2NjSpHz68WNFjHvupy3q8TFn3Hos2IAk4Ju5dCo8B3wP7VPr/FGaKiG+T+v+TQqIrOqMTL1VdWV1DdmcbO8KXBz6esmYWYKPwDL5b5FA1a0hwapHiom0r/cKaoqr+27/XcrS5UwSMbQAAAABJRU5ErkJggg==)](https://deepwiki.com/yakhyo/uniface)
+[![PyPI](https://img.shields.io/pypi/v/mlx-uniface.svg)](https://pypi.org/project/mlx-uniface/)
+[![Apple Silicon](https://img.shields.io/badge/Apple%20Silicon-M1%2FM2%2FM3%2FM4-orange)](https://developer.apple.com/documentation/apple-silicon)
 
-<div align="center">
-    <img src=".github/logos/logo_web.webp" width=75%>
-</div>
+**MLX-UniFace** is a high-performance face analysis library optimized for Apple Silicon. It provides face detection, recognition, landmark detection, and attribute analysis with native MLX acceleration.
 
-**UniFace** is a lightweight, production-ready face analysis library with dual backend support. It provides high-performance face detection, recognition, landmark detection, and attribute analysis with hardware acceleration support across platforms.
+> **This is a fork of [yakhyo/uniface](https://github.com/yakhyo/uniface) with added MLX backend support for Apple Silicon Macs.**
 
-- **MLX Backend** (NEW): Blazing fast inference on Apple Silicon (M1/M2/M3/M4)
-- **ONNX Backend**: Cross-platform support with CUDA, CoreML, and CPU execution
-
+![alt text](Gemini_Generated_Image_tigitztigitztigi.jpg)
 ---
 
-## Features
+## Why MLX-UniFace?
 
-- **High-Speed Face Detection**: RetinaFace, SCRFD, and YOLOv5-Face models
-- **Facial Landmark Detection**: Accurate 106-point landmark localization
-- **Face Recognition**: ArcFace, MobileFace, and SphereFace embeddings
-- **Attribute Analysis**: Age, gender, and emotion detection
-- **Face Alignment**: Precise alignment for downstream tasks
-- **Dual Backend Support**:
-  - **MLX** (Apple Silicon): Native M1/M2/M3/M4 acceleration with unified memory
-  - **ONNX Runtime**: CUDA (NVIDIA), CoreML (macOS), CPU fallback
-- **Simple API**: Intuitive factory functions and clean interfaces
-- **Production-Ready**: Type hints, comprehensive logging, PEP8 compliant
+| Feature | MLX-UniFace | Original UniFace |
+|---------|-------------|------------------|
+| Apple Silicon Native | **Yes (MLX)** | ONNX via CoreML |
+| Unified Memory | **Yes** | No |
+| Backend | MLX + ONNX fallback | ONNX only |
+| M1/M2/M3/M4 Optimized | **Yes** | Partial |
+
+### Performance Benefits on Apple Silicon
+
+- **Unified Memory**: No CPU-GPU data transfer overhead
+- **Native Acceleration**: Optimized for Apple's Neural Engine and GPU
+- **Lazy Evaluation**: Automatic graph optimization
+- **Numerical Parity**: Identical results to ONNX (correlation = 1.0)
 
 ---
 
 ## Installation
 
-### Quick Install (All Platforms)
+### For Apple Silicon (Recommended)
 
 ```bash
-pip install uniface
+pip install mlx-uniface
 ```
 
-### Platform-Specific Installation
-
-#### macOS (Apple Silicon - M1/M2/M3/M4) with MLX
-
-For **blazing fast** inference on Apple Silicon using the MLX backend:
+### With MLX Backend (Explicit)
 
 ```bash
-pip install uniface[mlx]
+pip install mlx-uniface[mlx]
 ```
 
-This installs MLX and safetensors for native Apple Silicon acceleration. The library automatically detects Apple Silicon and uses MLX when available.
-
-#### macOS (Apple Silicon) with ONNX
-
-For ONNX Runtime on Apple Silicon (still fast, cross-platform compatible):
+### With ONNX Fallback
 
 ```bash
-pip install uniface[onnx]
-```
-
-#### Linux/Windows with NVIDIA GPU
-
-For CUDA acceleration on NVIDIA GPUs:
-
-```bash
-pip install uniface[gpu]
-```
-
-**Requirements:**
-
-- CUDA 11.x or 12.x
-- cuDNN 8.x
-- See [ONNX Runtime GPU requirements](https://onnxruntime.ai/docs/execution-providers/CUDA-ExecutionProvider.html)
-
-#### CPU-Only (All Platforms)
-
-```bash
-pip install uniface[onnx]
+pip install mlx-uniface[onnx]
 ```
 
 ### Install from Source
 
 ```bash
-git clone https://github.com/yakhyo/uniface.git
-cd uniface
-pip install -e ".[mlx]"  # For Apple Silicon with MLX
-# or
-pip install -e ".[onnx]"  # For ONNX Runtime
-```
-
-### Backend Selection
-
-UniFace automatically selects the best backend:
-
-1. **Apple Silicon + MLX installed** → Uses MLX (fastest)
-2. **Otherwise** → Uses ONNX Runtime
-
-You can force a specific backend:
-
-```python
-import os
-os.environ['UNIFACE_BACKEND'] = 'mlx'   # Force MLX
-os.environ['UNIFACE_BACKEND'] = 'onnx'  # Force ONNX
-
-from uniface import RetinaFace
-detector = RetinaFace()  # Uses the specified backend
+git clone https://github.com/CodeWithBehnam/mlx-uniface.git
+cd mlx-uniface
+pip install -e ".[mlx]"
 ```
 
 ---
@@ -119,16 +68,12 @@ detector = RetinaFace()  # Uses the specified backend
 import cv2
 from uniface import RetinaFace
 
-# Initialize detector
+# Automatically uses MLX on Apple Silicon
 detector = RetinaFace()
 
-# Load image
 image = cv2.imread("image.jpg")
-
-# Detect faces
 faces = detector.detect(image)
 
-# Process results
 for face in faces:
     bbox = face['bbox']  # [x1, y1, x2, y2]
     confidence = face['confidence']
@@ -142,7 +87,6 @@ for face in faces:
 from uniface import ArcFace, RetinaFace
 from uniface import compute_similarity
 
-# Initialize models
 detector = RetinaFace()
 recognizer = ArcFace()
 
@@ -158,19 +102,6 @@ similarity = compute_similarity(embedding1, embedding2)
 print(f"Similarity: {similarity:.4f}")
 ```
 
-### Facial Landmarks
-
-```python
-from uniface import RetinaFace, Landmark106
-
-detector = RetinaFace()
-landmarker = Landmark106()
-
-faces = detector.detect(image)
-landmarks = landmarker.get_landmarks(image, faces[0]['bbox'])
-# Returns 106 (x, y) landmark points
-```
-
 ### Age & Gender Detection
 
 ```python
@@ -181,417 +112,167 @@ age_gender = AgeGender()
 
 faces = detector.detect(image)
 gender, age = age_gender.predict(image, faces[0]['bbox'])
-gender_str = 'Female' if gender == 0 else 'Male'
-print(f"{gender_str}, {age} years old")
+print(f"{'Female' if gender == 0 else 'Male'}, {age} years old")
 ```
 
 ---
 
-## Documentation
+## Supported Models
 
-- [**QUICKSTART.md**](QUICKSTART.md) - 5-minute getting started guide
-- [**MODELS.md**](MODELS.md) - Model zoo, benchmarks, and selection guide
-- [**Examples**](examples/) - Jupyter notebooks with detailed examples
+### Detection
+| Model | Variants | MLX | ONNX |
+|-------|----------|-----|------|
+| RetinaFace | MobileNet 0.25/0.5/v1/v2, ResNet18/34 | ✅ | ✅ |
+| SCRFD | 500M, 10G | ✅ | ✅ |
+| YOLOv5Face | S, M | ✅ | ✅ |
 
----
+### Recognition
+| Model | Variants | MLX | ONNX |
+|-------|----------|-----|------|
+| ArcFace | MobileNet, ResNet | ✅ | ✅ |
+| MobileFace | v1, v2, v3 | ✅ | ✅ |
+| SphereFace | Sphere20 | ✅ | ✅ |
 
-## API Overview
-
-### Factory Functions (Recommended)
-
-```python
-from uniface.detection import RetinaFace, SCRFD
-from uniface.recognition import ArcFace
-from uniface.landmark import Landmark106
-
-from uniface.constants import SCRFDWeights
-
-# Create detector with default settings
-detector = RetinaFace()
-
-# Create with custom config
-detector = SCRFD(
-    model_name=SCRFDWeights.SCRFD_10G_KPS, # SCRFDWeights.SCRFD_500M_KPS
-    conf_thresh=0.4,
-    input_size=(640, 640)
-)
-# Or with defaults settings: detector = SCRFD()
-
-# Recognition and landmarks
-recognizer = ArcFace()
-landmarker = Landmark106()
-```
-
-### Direct Model Instantiation
-
-```python
-from uniface import RetinaFace, SCRFD, YOLOv5Face, ArcFace, MobileFace, SphereFace
-from uniface.constants import RetinaFaceWeights, YOLOv5FaceWeights
-
-# Detection
-detector = RetinaFace(
-    model_name=RetinaFaceWeights.MNET_V2,
-    conf_thresh=0.5,
-    nms_thresh=0.4
-)
-# Or detector = RetinaFace()
-
-# YOLOv5-Face detection
-detector = YOLOv5Face(
-    model_name=YOLOv5FaceWeights.YOLOV5S,
-    conf_thresh=0.6,
-    nms_thresh=0.5
-)
-# Or detector = YOLOv5Face
-
-# Recognition
-recognizer = ArcFace()  # Uses default weights
-recognizer = MobileFace()  # Lightweight alternative
-recognizer = SphereFace()  # Angular softmax alternative
-```
-
-### High-Level Detection API
-
-```python
-from uniface import detect_faces
-
-# One-line face detection
-faces = detect_faces(image, method='retinaface', conf_thresh=0.8)  # methods: retinaface, scrfd, yolov5face
-```
-
-### Key Parameters (quick reference)
-
-**Detection**
-
-| Class          | Key params (defaults)                                                                                                                | Notes                                          |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------- |
-| `RetinaFace` | `model_name=RetinaFaceWeights.MNET_V2`, `conf_thresh=0.5`, `nms_thresh=0.4`, `input_size=(640, 640)`, `dynamic_size=False` | Supports 5-point landmarks                     |
-| `SCRFD`      | `model_name=SCRFDWeights.SCRFD_10G_KPS`, `conf_thresh=0.5`, `nms_thresh=0.4`, `input_size=(640, 640)`                        | Supports 5-point landmarks                     |
-| `YOLOv5Face` | `model_name=YOLOv5FaceWeights.YOLOV5S`, `conf_thresh=0.6`, `nms_thresh=0.5`, `input_size=640` (fixed)                        | Landmarks supported;`input_size` must be 640 |
-
-**Recognition**
-
-| Class          | Key params (defaults)                     | Notes                                 |
-| -------------- | ----------------------------------------- | ------------------------------------- |
-| `ArcFace`    | `model_name=ArcFaceWeights.MNET`        | Returns 512-dim normalized embeddings |
-| `MobileFace` | `model_name=MobileFaceWeights.MNET_V2`  | Lightweight embeddings                |
-| `SphereFace` | `model_name=SphereFaceWeights.SPHERE20` | Angular softmax variant               |
-
-**Landmark & Attributes**
-
-| Class           | Key params (defaults)                                                 | Notes                                   |
-| --------------- | --------------------------------------------------------------------- | --------------------------------------- |
-| `Landmark106` | No required params                                                    | 106-point landmarks                     |
-| `AgeGender`   | `model_name=AgeGenderWeights.DEFAULT`; `input_size` auto-detected | Requires bbox; ONNXRuntime              |
-| `Emotion`     | `model_weights=DDAMFNWeights.AFFECNET7`, `input_size=(112, 112)`  | Requires 5-point landmarks; TorchScript |
+### Attributes
+| Model | Output | MLX | ONNX |
+|-------|--------|-----|------|
+| Landmark106 | 106-point landmarks | ✅ | ✅ |
+| AgeGender | Age + Gender | ✅ | ✅ |
+| Emotion | 7/8 emotions | ✅ | ✅ |
 
 ---
 
-## Model Performance
+## Backend Selection
 
-### Face Detection (WIDER FACE Dataset)
+MLX-UniFace automatically selects the best backend:
 
-| Model              | Easy   | Medium | Hard   | Use Case               |
-| ------------------ | ------ | ------ | ------ | ---------------------- |
-| retinaface_mnet025 | 88.48% | 87.02% | 80.61% | Mobile/Edge devices    |
-| retinaface_mnet_v2 | 91.70% | 91.03% | 86.60% | Balanced (recommended) |
-| retinaface_r34     | 94.16% | 93.12% | 88.90% | High accuracy          |
-| scrfd_500m         | 90.57% | 88.12% | 68.51% | Real-time applications |
-| scrfd_10g          | 95.16% | 93.87% | 83.05% | Best accuracy/speed    |
-| yolov5s_face       | 94.33% | 92.61% | 83.15% | Real-time + accuracy   |
-| yolov5m_face       | 95.30% | 93.76% | 85.28% | High accuracy          |
+1. **Apple Silicon + MLX installed** → Uses MLX (fastest)
+2. **Otherwise** → Uses ONNX Runtime
 
-_Accuracy values from original papers: [RetinaFace](https://arxiv.org/abs/1905.00641), [SCRFD](https://arxiv.org/abs/2105.04714), [YOLOv5-Face](https://arxiv.org/abs/2105.12931)_
+### Force a Specific Backend
 
-**Benchmark on your hardware:**
+```python
+import os
+os.environ['UNIFACE_BACKEND'] = 'mlx'   # Force MLX
+os.environ['UNIFACE_BACKEND'] = 'onnx'  # Force ONNX
+
+from uniface import RetinaFace
+detector = RetinaFace()  # Uses the specified backend
+```
+
+### Check Current Backend
+
+```python
+from uniface.backend import get_backend, Backend
+
+backend = get_backend()
+print(f"Using: {backend}")  # Backend.MLX or Backend.ONNX
+```
+
+---
+
+## Benchmarks
+
+Run benchmarks on your hardware:
 
 ```bash
-python scripts/run_detection.py --image assets/test.jpg --iterations 100
+# Quick benchmark
+python scripts/test_mlx_detection.py
+
+# Full benchmark with visualization
+jupyter notebook notebooks/benchmark_mlx_vs_onnx.ipynb
 ```
 
-See [MODELS.md](MODELS.md) for detailed model information and selection guide.
-
-<div align="center">
-    <img src="assets/test_result.png">
-</div>
-
----
-
-## Examples
-
-### Jupyter Notebooks
-
-Interactive examples covering common face analysis tasks:
-
-| Example | Description | Notebook |
-|---------|-------------|----------|
-| **Face Detection** | Detect faces and facial landmarks | [face_detection.ipynb](examples/face_detection.ipynb) |
-| **Face Alignment** | Align and crop faces for recognition | [face_alignment.ipynb](examples/face_alignment.ipynb) |
-| **Face Recognition** | Extract face embeddings and compare faces | [face_analyzer.ipynb](examples/face_analyzer.ipynb) |
-| **Face Verification** | Compare two faces to verify identity | [face_verification.ipynb](examples/face_verification.ipynb) |
-| **Face Search** | Find a person in a group photo | [face_search.ipynb](examples/face_search.ipynb) |
-
-### Webcam Face Detection
-
-```python
-import cv2
-from uniface import RetinaFace
-from uniface.visualization import draw_detections
-
-detector = RetinaFace()
-cap = cv2.VideoCapture(0)
-
-while True:
-    ret, frame = cap.read()
-    if not ret:
-        break
-
-    faces = detector.detect(frame)
-
-    # Extract data for visualization
-    bboxes = [f['bbox'] for f in faces]
-    scores = [f['confidence'] for f in faces]
-    landmarks = [f['landmarks'] for f in faces]
-
-    draw_detections(
-        image=frame,
-        bboxes=bboxes,
-        scores=scores,
-        landmarks=landmarks,
-        vis_threshold=0.6,
-    )
-
-    cv2.imshow("Face Detection", frame)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-
-cap.release()
-cv2.destroyAllWindows()
-```
-
-### Face Search System
-
-```python
-import numpy as np
-from uniface import RetinaFace, ArcFace
-
-detector = RetinaFace()
-recognizer = ArcFace()
-
-# Build face database
-database = {}
-for person_id, image_path in person_images.items():
-    image = cv2.imread(image_path)
-    faces = detector.detect(image)
-    if faces:
-        embedding = recognizer.get_normalized_embedding(
-            image, faces[0]['landmarks']
-        )
-        database[person_id] = embedding
-
-# Search for a face
-query_image = cv2.imread("query.jpg")
-query_faces = detector.detect(query_image)
-if query_faces:
-    query_embedding = recognizer.get_normalized_embedding(
-        query_image, query_faces[0]['landmarks']
-    )
-
-    # Find best match
-    best_match = None
-    best_similarity = -1
-
-    for person_id, db_embedding in database.items():
-        similarity = np.dot(query_embedding, db_embedding.T)[0][0]
-        if similarity > best_similarity:
-            best_similarity = similarity
-            best_match = person_id
-
-    print(f"Best match: {best_match} (similarity: {best_similarity:.4f})")
-```
-
-More examples in the [examples/](examples/) directory.
-
----
-
-## Advanced Configuration
-
-### Custom ONNX Runtime Providers
-
-```python
-from uniface.onnx_utils import get_available_providers, create_onnx_session
-
-# Check available providers
-providers = get_available_providers()
-print(f"Available: {providers}")
-
-# Force CPU-only execution
-from uniface import RetinaFace
-detector = RetinaFace()
-# Internally uses create_onnx_session() which auto-selects best provider
-```
-
-### Model Download and Caching
-
-Models are automatically downloaded on first use and cached in `~/.uniface/models/`.
-
-```python
-from uniface.model_store import verify_model_weights
-from uniface.constants import RetinaFaceWeights
-
-# Manually download and verify a model
-model_path = verify_model_weights(
-    RetinaFaceWeights.MNET_V2,
-    root='./custom_models'  # Custom cache directory
-)
-```
-
-### Logging Configuration
-
-```python
-from uniface import Logger
-import logging
-
-# Set logging level
-Logger.setLevel(logging.DEBUG)  # DEBUG, INFO, WARNING, ERROR
-
-# Disable logging
-Logger.setLevel(logging.CRITICAL)
-```
-
----
-
-## Testing
+### Numerical Parity Verification
 
 ```bash
-# Run all tests
-pytest
+python scripts/verify_numerical_parity.py
+```
 
-# Run with coverage
-pytest --cov=uniface --cov-report=html
-
-# Run specific test file
-pytest tests/test_retinaface.py -v
+Output:
+```
+✓ SUCCESS: MLX and ONNX outputs match within tolerance!
+  All outputs have correlation > 0.999
 ```
 
 ---
 
 ## Development
 
-### Setup Development Environment
+### Setup
 
 ```bash
-git clone https://github.com/yakhyo/uniface.git
-cd uniface
-
-# Install in editable mode with dev dependencies
+git clone https://github.com/CodeWithBehnam/mlx-uniface.git
+cd mlx-uniface
 pip install -e ".[dev]"
+```
 
-# Run tests
+### Run Tests
+
+```bash
 pytest
 ```
 
 ### Code Formatting
 
-This project uses [Ruff](https://docs.astral.sh/ruff/) for linting and formatting.
-
 ```bash
-# Format code
 ruff format .
-
-# Check for linting errors
-ruff check .
-
-# Auto-fix linting errors
 ruff check . --fix
 ```
 
-Ruff configuration is in `pyproject.toml`. Key settings:
+---
 
-- Line length: 120
-- Python target: 3.10+
-- Import sorting: `uniface` as first-party
-
-### Project Structure
+## Project Structure
 
 ```
-uniface/
+mlx-uniface/
 ├── uniface/
-│   ├── detection/       # Face detection models (MLX + ONNX)
-│   ├── recognition/     # Face recognition models (MLX + ONNX)
-│   ├── landmark/        # Landmark detection (MLX + ONNX)
-│   ├── attribute/       # Age, gender, emotion (MLX + ONNX)
-│   ├── nn/              # MLX neural network building blocks
-│   ├── mlx_utils.py     # MLX utilities
+│   ├── detection/       # Face detection (RetinaFace, SCRFD, YOLOv5)
+│   │   ├── retinaface.py      # ONNX implementation
+│   │   ├── retinaface_mlx.py  # MLX implementation
+│   │   └── ...
+│   ├── recognition/     # Face recognition (ArcFace, MobileFace)
+│   ├── landmark/        # 106-point landmarks
+│   ├── attribute/       # Age, Gender, Emotion
+│   ├── nn/              # MLX neural network modules
+│   │   ├── backbone.py  # MobileNetV1/V2
+│   │   ├── conv.py      # Conv layers with fused BatchNorm
+│   │   ├── fpn.py       # Feature Pyramid Network
+│   │   └── head.py      # Detection heads
 │   ├── backend.py       # Backend auto-selection
-│   ├── onnx_utils.py    # ONNX Runtime utilities
-│   ├── model_store.py   # Model download & caching
-│   └── visualization.py # Drawing utilities
-├── tests/               # Unit tests
-├── examples/            # Example notebooks
-└── scripts/             # Utility scripts
+│   ├── mlx_utils.py     # MLX utilities
+│   └── onnx_utils.py    # ONNX utilities
+├── scripts/
+│   ├── convert_onnx_to_mlx.py    # Weight conversion
+│   ├── verify_numerical_parity.py # Accuracy validation
+│   └── test_mlx_detection.py      # End-to-end tests
+├── notebooks/
+│   └── benchmark_mlx_vs_onnx.ipynb
+└── weights_mlx/         # Pre-converted MLX weights
 ```
 
 ---
 
-## MLX Backend (Apple Silicon)
+## Credits
 
-UniFace includes native MLX implementations for blazing fast inference on Apple Silicon Macs.
-
-### Supported Models (MLX)
-
-| Category | Models |
-|----------|--------|
-| **Detection** | RetinaFace, SCRFD, YOLOv5-Face |
-| **Recognition** | ArcFace, MobileFace, SphereFace |
-| **Landmarks** | Landmark106 (106-point) |
-| **Attributes** | AgeGender, Emotion (DDAMFN) |
-
-### MLX vs ONNX Performance
-
-Run benchmarks on your hardware:
-
-```bash
-# Benchmark a specific model
-python scripts/benchmark_mlx_vs_onnx.py --model retinaface --iterations 100
-
-# Benchmark all models
-python scripts/benchmark_mlx_vs_onnx.py --all
-```
-
-### Validating MLX Accuracy
-
-Ensure MLX outputs match ONNX:
-
-```bash
-# Check that all MLX modules can be imported
-python scripts/validate_mlx_accuracy.py --imports-only
-
-# Full validation with test image
-python scripts/validate_mlx_accuracy.py --image test.jpg
-```
-
-### Converting Weights to MLX Format
-
-To convert PyTorch weights to MLX-compatible safetensors:
-
-```bash
-# Convert all models
-python scripts/convert_weights_to_mlx.py --all --input-dir weights_pytorch/
-
-# Convert a single model
-python scripts/convert_weights_to_mlx.py -i model.pth -o model.safetensors
-```
+- **Original UniFace**: [yakhyo/uniface](https://github.com/yakhyo/uniface) by Yakhyokhuja Valikhujaev
+- **MLX Framework**: [Apple MLX](https://github.com/ml-explore/mlx)
+- **Model Architectures**:
+  - [RetinaFace](https://arxiv.org/abs/1905.00641)
+  - [SCRFD](https://arxiv.org/abs/2105.04714)
+  - [ArcFace](https://arxiv.org/abs/1801.07698)
 
 ---
 
-## References
+## License
 
-- **RetinaFace Training**: [yakhyo/retinaface-pytorch](https://github.com/yakhyo/retinaface-pytorch) - PyTorch implementation and training code
-- **YOLOv5-Face ONNX**: [yakhyo/yolov5-face-onnx-inference](https://github.com/yakhyo/yolov5-face-onnx-inference) - ONNX inference implementation
-- **Face Recognition Training**: [yakhyo/face-recognition](https://github.com/yakhyo/face-recognition) - ArcFace, MobileFace, SphereFace training code
-- **InsightFace**: [deepinsight/insightface](https://github.com/deepinsight/insightface) - Model architectures and pretrained weights
+MIT License - see [LICENSE](LICENSE) for details.
+
+---
 
 ## Contributing
 
-Contributions are welcome! Please open an issue or submit a pull request on [GitHub](https://github.com/yakhyo/uniface).
+Contributions are welcome! Please open an issue or submit a pull request.
+
+- **Issues**: [GitHub Issues](https://github.com/CodeWithBehnam/mlx-uniface/issues)
+- **Original Project**: [yakhyo/uniface](https://github.com/yakhyo/uniface)

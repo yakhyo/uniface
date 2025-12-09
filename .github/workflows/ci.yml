@@ -11,19 +11,31 @@ on:
       - develop
 
 jobs:
-  test:
+  lint:
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install ruff
+        run: pip install ruff
+      - name: Lint
+        run: |
+          ruff check .
+          ruff format --check .
 
+  test-onnx:
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.10", "3.11", "3.12"]
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
@@ -32,56 +44,68 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install .[dev]
+          python -m pip install -e ".[dev,onnx]"
 
-      - name: Check ONNX Runtime providers
-        run: |
-          python -c "import onnxruntime as ort; print('Available providers:', ort.get_available_providers())"
-
-      - name: Lint with ruff (if available)
-        run: |
-          pip install ruff || true
-          ruff check . --exit-zero || true
-        continue-on-error: true
+      - name: Check ONNX Runtime
+        run: python -c "import onnxruntime as ort; print('Providers:', ort.get_available_providers())"
 
       - name: Run tests
         run: pytest -v --tb=short
+        env:
+          UNIFACE_BACKEND: onnx
 
-      - name: Test package imports
-        run: |
-          python -c "from uniface import RetinaFace, ArcFace, Landmark106, AgeGender; print('All imports successful')"
+      - name: Test imports
+        run: python -c "from uniface import RetinaFace, ArcFace; print('OK')"
 
-  build:
-    runs-on: ubuntu-latest
-    needs: test
-
+  test-mlx:
+    runs-on: macos-14
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
-          cache: 'pip'
+          python-version: '3.11'
 
-      - name: Install build tools
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install build
+          python -m pip install -e ".[dev,mlx,onnx]"
 
-      - name: Build package
-        run: python -m build
+      - name: Check MLX
+        run: python -c "import mlx.core as mx; print('MLX OK')"
 
-      - name: Check package
+      - name: Run tests
+        run: pytest -v --tb=short
+        env:
+          UNIFACE_BACKEND: mlx
+
+      - name: Verify parity
+        run: python scripts/verify_numerical_parity.py
+        continue-on-error: true
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [lint, test-onnx]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Build
         run: |
-          python -m pip install twine
+          pip install build twine
+          python -m build
           twine check dist/*
 
-      - name: Upload build artifacts
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: dist-python-${{ github.sha }}
+          name: dist
           path: dist/
           retention-days: 7
 

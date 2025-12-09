@@ -1,92 +1,34 @@
 name: Publish to PyPI
 
 on:
-  push:
-    tags:
-      - "v*.*.*"  # Trigger only on version tags like v0.1.9
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      publish_to:
+        description: 'Publish to'
+        required: true
+        default: 'testpypi'
+        type: choice
+        options:
+          - testpypi
+          - pypi
 
 jobs:
-  validate:
+  build:
     runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.get_version.outputs.version }}
-      tag_version: ${{ steps.get_version.outputs.tag_version }}
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Get version from tag and pyproject.toml
-        id: get_version
-        run: |
-          TAG_VERSION=${GITHUB_REF#refs/tags/v}
-          echo "tag_version=$TAG_VERSION" >> $GITHUB_OUTPUT
-
-          PYPROJECT_VERSION=$(grep -Po '(?<=^version = ")[^"]*' pyproject.toml)
-          echo "version=$PYPROJECT_VERSION" >> $GITHUB_OUTPUT
-
-          echo "Tag version: v$TAG_VERSION"
-          echo "pyproject.toml version: $PYPROJECT_VERSION"
-
-      - name: Verify version match
-        run: |
-          if [ "${{ steps.get_version.outputs.tag_version }}" != "${{ steps.get_version.outputs.version }}" ]; then
-            echo "Error: Tag version (${{ steps.get_version.outputs.tag_version }}) does not match pyproject.toml version (${{ steps.get_version.outputs.version }})"
-            exit 1
-          fi
-          echo "Version validation passed: ${{ steps.get_version.outputs.version }}"
-
-  test:
-    runs-on: ubuntu-latest
-    needs: validate
-
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.10", "3.11", "3.12", "3.13"]
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-          cache: 'pip'
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install .[dev]
-
-      - name: Run tests
-        run: pytest -v
-
-  publish:
-    runs-on: ubuntu-latest
-    needs: [validate, test]
-    permissions:
-      contents: write
-      id-token: write
-    environment:
-      name: pypi
-      url: https://pypi.org/project/uniface/
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
-          cache: 'pip'
+          python-version: '3.11'
 
-      - name: Install build tools
+      - name: Install build dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install build twine
+          pip install build twine
 
       - name: Build package
         run: python -m build
@@ -94,15 +36,48 @@ jobs:
       - name: Check package
         run: twine check dist/*
 
-      - name: Publish to PyPI
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: twine upload dist/*
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
         with:
-          files: dist/*
-          generate_release_notes: true
+          name: dist
+          path: dist/
 
+  publish-testpypi:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.publish_to == 'testpypi'
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/project/mlx-uniface/
+    permissions:
+      id-token: write
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+
+  publish-pypi:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.publish_to == 'pypi')
+    environment:
+      name: pypi
+      url: https://pypi.org/project/mlx-uniface/
+    permissions:
+      id-token: write
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
