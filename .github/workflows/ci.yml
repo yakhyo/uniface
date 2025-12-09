@@ -49,8 +49,8 @@ jobs:
       - name: Check ONNX Runtime
         run: python -c "import onnxruntime as ort; print('Providers:', ort.get_available_providers())"
 
-      - name: Run tests
-        run: pytest -v --tb=short
+      - name: Run tests (utilities only - no model downloads)
+        run: pytest tests/test_utils.py -v --tb=short
         env:
           UNIFACE_BACKEND: onnx
 
@@ -75,14 +75,13 @@ jobs:
       - name: Check MLX
         run: python -c "import mlx.core as mx; print('MLX OK')"
 
-      - name: Run tests
-        run: pytest -v --tb=short
+      - name: Run tests (utilities only - no model downloads)
+        run: pytest tests/test_utils.py -v --tb=short
         env:
           UNIFACE_BACKEND: mlx
 
-      - name: Verify parity
-        run: python scripts/verify_numerical_parity.py
-        continue-on-error: true
+      - name: Test imports
+        run: python -c "from uniface import RetinaFace, ArcFace, AgeGender; print('Imports OK')"
 
   build:
     runs-on: ubuntu-latest
