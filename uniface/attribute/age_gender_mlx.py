@@ -141,6 +141,10 @@ class AgeGenderMLX(Attribute):
         # Set to inference mode
         self.model.train(False)
 
+    def _initialize_model(self) -> None:
+        """Initialize model - already done in __init__."""
+        pass
+
     def preprocess(self, image: np.ndarray, bbox: Union[List, np.ndarray]) -> mx.array:
         """
         Align face and prepare for inference.
