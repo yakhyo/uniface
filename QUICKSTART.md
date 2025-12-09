@@ -199,9 +199,9 @@ faces = detector.detect(image)
 
 # Predict attributes
 for i, face in enumerate(faces):
-    gender_id, age = age_gender.predict(image, face['bbox'])
-    gender = 'Female' if gender_id == 0 else 'Male'
-    print(f"Face {i+1}: {gender}, {age} years old")
+    gender, age = age_gender.predict(image, face['bbox'])
+    gender_str = 'Female' if gender == 0 else 'Male'
+    print(f"Face {i+1}: {gender_str}, {age} years old")
 ```
 
 **Output:**

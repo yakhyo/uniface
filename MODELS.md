@@ -251,9 +251,9 @@ landmarks = landmarker.get_landmarks(image, bbox)
 from uniface import AgeGender
 
 predictor = AgeGender()
-gender_id, age = predictor.predict(image, bbox)
-# Returns: (gender_id, age_in_years)
-# gender_id: 0 for Female, 1 for Male
+gender, age = predictor.predict(image, bbox)
+# Returns: (gender, age_in_years)
+# gender: 0 for Female, 1 for Male
 ```
 
 ---
