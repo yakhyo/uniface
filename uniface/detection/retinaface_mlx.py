@@ -272,6 +272,11 @@ class RetinaFaceMLX(BaseDetector):
         # Set to inference mode
         self.model.train(False)
 
+        # Compile the model forward pass for better performance
+        # mx.compile fuses operations and reduces overhead
+        self._compiled_forward = mx.compile(self.model)
+        Logger.debug('Compiled model forward pass with mx.compile')
+
         # Precompute anchors if using static size
         if not self.dynamic_size and self.input_size is not None:
             self._priors = generate_anchors(image_size=self.input_size)
@@ -310,7 +315,7 @@ class RetinaFaceMLX(BaseDetector):
 
     def inference(self, input_tensor: mx.array) -> Tuple[mx.array, mx.array, mx.array]:
         """
-        Perform MLX inference.
+        Perform MLX inference using compiled model.
 
         Args:
             input_tensor: Preprocessed input tensor in NHWC format.
@@ -318,7 +323,8 @@ class RetinaFaceMLX(BaseDetector):
         Returns:
             Tuple of (cls_scores, bbox_preds, landmark_preds).
         """
-        cls_preds, bbox_preds, landmark_preds = self.model(input_tensor)
+        # Use compiled forward pass for better performance
+        cls_preds, bbox_preds, landmark_preds = self._compiled_forward(input_tensor)
 
         # Force computation (MLX uses lazy evaluation)
         synchronize(cls_preds, bbox_preds, landmark_preds)

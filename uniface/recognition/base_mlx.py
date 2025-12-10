@@ -57,6 +57,12 @@ class BaseRecognizerMLX(ABC):
 
         # Subclasses must set this
         self.model: nn.Module = None
+        self._compiled_forward = None  # Will be set after model is built
+
+    def _compile_model(self) -> None:
+        """Compile the model forward pass for better performance."""
+        if self.model is not None:
+            self._compiled_forward = mx.compile(self.model)
 
     @abstractmethod
     def _build_model(self) -> nn.Module:
@@ -96,7 +102,7 @@ class BaseRecognizerMLX(ABC):
 
     def inference(self, input_tensor: mx.array) -> mx.array:
         """
-        Perform MLX inference.
+        Perform MLX inference using compiled model if available.
 
         Args:
             input_tensor: Preprocessed input tensor in NHWC format.
@@ -104,7 +110,11 @@ class BaseRecognizerMLX(ABC):
         Returns:
             Embedding tensor.
         """
-        embedding = self.model(input_tensor)
+        # Use compiled forward pass if available, otherwise use regular model
+        if self._compiled_forward is not None:
+            embedding = self._compiled_forward(input_tensor)
+        else:
+            embedding = self.model(input_tensor)
         synchronize(embedding)
         return embedding
 

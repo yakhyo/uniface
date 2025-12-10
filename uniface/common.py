@@ -57,6 +57,8 @@ def generate_anchors(image_size: Tuple[int, int] = (640, 640)) -> np.ndarray:
     """
     Generate anchor boxes for a given image size (RetinaFace specific).
 
+    Vectorized implementation for better performance (avoids Python loops).
+
     Args:
         image_size (Tuple[int, int]): Input image size (width, height). Defaults to (640, 640).
 
@@ -66,23 +68,34 @@ def generate_anchors(image_size: Tuple[int, int] = (640, 640)) -> np.ndarray:
     steps = [8, 16, 32]
     min_sizes = [[16, 32], [64, 128], [256, 512]]
 
-    anchors = []
-    feature_maps = [[math.ceil(image_size[0] / step), math.ceil(image_size[1] / step)] for step in steps]
+    all_anchors = []
 
-    for k, (map_height, map_width) in enumerate(feature_maps):
-        step = steps[k]
-        for i, j in itertools.product(range(map_height), range(map_width)):
-            for min_size in min_sizes[k]:
-                s_kx = min_size / image_size[1]
-                s_ky = min_size / image_size[0]
+    for k, step in enumerate(steps):
+        map_height = math.ceil(image_size[0] / step)
+        map_width = math.ceil(image_size[1] / step)
 
-                dense_cx = [x * step / image_size[1] for x in [j + 0.5]]
-                dense_cy = [y * step / image_size[0] for y in [i + 0.5]]
-                for cy, cx in itertools.product(dense_cy, dense_cx):
-                    anchors += [cx, cy, s_kx, s_ky]
+        # Vectorized grid generation using meshgrid
+        j_grid, i_grid = np.meshgrid(np.arange(map_width), np.arange(map_height))
 
-    output = np.array(anchors, dtype=np.float32).reshape(-1, 4)
-    return output
+        # Compute centers (vectorized)
+        cx = (j_grid.ravel() + 0.5) * step / image_size[1]
+        cy = (i_grid.ravel() + 0.5) * step / image_size[0]
+
+        # Stack centers for each anchor size at this level
+        for min_size in min_sizes[k]:
+            s_kx = min_size / image_size[1]
+            s_ky = min_size / image_size[0]
+
+            # Create anchors for all positions at once
+            n_positions = len(cx)
+            anchors = np.empty((n_positions, 4), dtype=np.float32)
+            anchors[:, 0] = cx
+            anchors[:, 1] = cy
+            anchors[:, 2] = s_kx
+            anchors[:, 3] = s_ky
+            all_anchors.append(anchors)
+
+    return np.vstack(all_anchors)
 
 
 def non_max_suppression(dets: np.ndarray, threshold: float) -> List[int]:

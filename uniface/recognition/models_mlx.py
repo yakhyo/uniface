@@ -294,6 +294,10 @@ class ArcFaceMLX(BaseRecognizerMLX):
         # Set to inference mode
         self.model.train(False)
 
+        # Compile for better performance
+        self._compile_model()
+        Logger.debug('Compiled recognition model with mx.compile')
+
     def _build_model(self) -> nn.Module:
         """Build the ArcFace model."""
         # Determine width multiplier from model name
@@ -343,6 +347,10 @@ class MobileFaceMLX(BaseRecognizerMLX):
 
         # Set to inference mode
         self.model.train(False)
+
+        # Compile for better performance
+        self._compile_model()
+        Logger.debug('Compiled recognition model with mx.compile')
 
     def _build_model(self) -> nn.Module:
         """Build the MobileFace model."""
@@ -399,6 +407,10 @@ class SphereFaceMLX(BaseRecognizerMLX):
 
         # Set to inference mode
         self.model.train(False)
+
+        # Compile for better performance
+        self._compile_model()
+        Logger.debug('Compiled recognition model with mx.compile')
 
     def _build_model(self) -> nn.Module:
         """Build the SphereFace model."""

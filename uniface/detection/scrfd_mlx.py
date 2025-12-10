@@ -176,6 +176,10 @@ class SCRFDMLX(BaseDetector):
         # Set to inference mode
         self.model.train(False)
 
+        # Compile the model forward pass for better performance
+        self._compiled_forward = mx.compile(self.model)
+        Logger.debug('Compiled model forward pass with mx.compile')
+
     def preprocess(self, image: np.ndarray) -> mx.array:
         """Preprocess image for MLX inference."""
         image = image.astype(np.float32)
@@ -187,8 +191,8 @@ class SCRFDMLX(BaseDetector):
         return mx.array(image)
 
     def inference(self, input_tensor: mx.array) -> List[Tuple[mx.array, mx.array, mx.array]]:
-        """Perform MLX inference."""
-        outputs = self.model(input_tensor)
+        """Perform MLX inference using compiled model."""
+        outputs = self._compiled_forward(input_tensor)
 
         # Force computation
         for scores, bboxes, kps in outputs:
