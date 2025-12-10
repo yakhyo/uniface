@@ -71,3 +71,47 @@ All detectors return `List[Dict]` where each dict contains:
 2. Implement model class inheriting from appropriate base class
 3. Export from module `__init__.py` and main `uniface/__init__.py`
 4. Add tests in `tests/`
+
+## Git Branching Strategy
+
+### Rules
+1. **NEVER commit directly to `main`** - always use feature branches
+2. Create branches from the latest `main`
+3. Use PR workflow for all changes
+4. Keep branches focused and short-lived
+
+### Branch Naming Convention
+- `feature/<name>` - New features (e.g., `feature/batch-processing`)
+- `fix/<name>` - Bug fixes (e.g., `fix/memory-leak`)
+- `docs/<name>` - Documentation updates (e.g., `docs/api-reference`)
+- `perf/<name>` - Performance improvements (e.g., `perf/mlx-compile`)
+- `refactor/<name>` - Code refactoring (e.g., `refactor/detection-base`)
+- `test/<name>` - Test additions/changes (e.g., `test/recognition-coverage`)
+- `ci/<name>` - CI/CD changes (e.g., `ci/github-actions`)
+
+### Workflow
+```bash
+# 1. Start from latest main
+git checkout main && git pull origin main
+
+# 2. Create a feature branch
+git checkout -b feature/my-feature
+
+# 3. Make changes and commit
+git add <files>
+git commit -m "feat: add new feature"
+
+# 4. Push branch and create PR
+git push -u origin feature/my-feature
+gh pr create --title "feat: Add new feature" --body "Description of changes"
+```
+
+### Commit Message Prefixes
+- `feat:` - New feature
+- `fix:` - Bug fix
+- `docs:` - Documentation only
+- `perf:` - Performance improvement
+- `refactor:` - Code refactoring (no functional change)
+- `test:` - Adding or updating tests
+- `ci:` - CI/CD configuration
+- `chore:` - Maintenance tasks
