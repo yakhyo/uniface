@@ -62,11 +62,13 @@ class YOLOv5FaceWeights(str, Enum):
     Exported to ONNX from: https://github.com/yakhyo/yolov5-face-onnx-inference
 
     Model Performance (WIDER FACE):
-    - YOLOV5S: 7.1M params, 28MB, 94.33% Easy / 92.61% Medium / 83.15% Hard
-    - YOLOV5M: 21.1M params, 84MB, 95.30% Easy / 93.76% Medium / 85.28% Hard
+    - YOLOV5N: 11MB, 93.61% Easy / 91.52% Medium / 80.53% Hard
+    - YOLOV5S: 28MB, 94.33% Easy / 92.61% Medium / 83.15% Hard
+    - YOLOV5M: 82MB, 95.30% Easy / 93.76% Medium / 85.28% Hard
     """
-    YOLOV5S = "yolov5s_face"
-    YOLOV5M = "yolov5m_face"
+    YOLOV5N = "yolov5n"
+    YOLOV5S = "yolov5s"
+    YOLOV5M = "yolov5m"
 
 
 class DDAMFNWeights(str, Enum):
@@ -117,6 +119,7 @@ MODEL_URLS: Dict[Enum, str] = {
     SCRFDWeights.SCRFD_10G_KPS:      'https://github.com/yakhyo/uniface/releases/download/weights/scrfd_10g_kps.onnx',
     SCRFDWeights.SCRFD_500M_KPS:     'https://github.com/yakhyo/uniface/releases/download/weights/scrfd_500m_kps.onnx',
     # YOLOv5-Face
+    YOLOv5FaceWeights.YOLOV5N:       'https://github.com/yakhyo/yolov5-face-onnx-inference/releases/download/weights/yolov5n_face.onnx',
     YOLOv5FaceWeights.YOLOV5S:       'https://github.com/yakhyo/yolov5-face-onnx-inference/releases/download/weights/yolov5s_face.onnx',
     YOLOv5FaceWeights.YOLOV5M:       'https://github.com/yakhyo/yolov5-face-onnx-inference/releases/download/weights/yolov5m_face.onnx',
     # DDAFM
@@ -151,6 +154,7 @@ MODEL_SHA256: Dict[Enum, str] = {
     SCRFDWeights.SCRFD_10G_KPS:      '5838f7fe053675b1c7a08b633df49e7af5495cee0493c7dcf6697200b85b5b91',
     SCRFDWeights.SCRFD_500M_KPS:     '5e4447f50245bbd7966bd6c0fa52938c61474a04ec7def48753668a9d8b4ea3a',
     # YOLOv5-Face
+    YOLOv5FaceWeights.YOLOV5N:       'eb244a06e36999db732b317c2b30fa113cd6cfc1a397eaf738f2d6f33c01f640',
     YOLOv5FaceWeights.YOLOV5S:       'fc682801cd5880e1e296184a14aea0035486b5146ec1a1389d2e7149cb134bb2',
     YOLOv5FaceWeights.YOLOV5M:       '04302ce27a15bde3e20945691b688e2dd018a10e92dd8932146bede6a49207b2',
     # DDAFM

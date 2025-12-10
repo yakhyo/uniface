@@ -80,10 +80,11 @@ detector = SCRFD(
 
 YOLOv5-Face models provide excellent detection accuracy with 5-point facial landmarks, optimized for real-time applications.
 
-| Model Name     | Params | Size | Easy   | Medium | Hard   | FLOPs (G) | Use Case                       |
-| -------------- | ------ | ---- | ------ | ------ | ------ | --------- | ------------------------------ |
-| `YOLOV5S` ⭐ | 7.1M   | 28MB | 94.33% | 92.61% | 83.15% | 5.751     | **Real-time + accuracy** |
-| `YOLOV5M`    | 21.1M  | 84MB | 95.30% | 93.76% | 85.28% | 18.146    | High accuracy                  |
+| Model Name     | Size | Easy   | Medium | Hard   | Use Case                       |
+| -------------- | ---- | ------ | ------ | ------ | ------------------------------ |
+| `YOLOV5N`    | 11MB | 93.61% | 91.52% | 80.53% | Lightweight/Mobile             |
+| `YOLOV5S` ⭐ | 28MB | 94.33% | 92.61% | 83.15% | **Real-time + accuracy** |
+| `YOLOV5M`    | 82MB | 95.30% | 93.76% | 85.28% | High accuracy                  |
 
 **Accuracy**: WIDER FACE validation set - from [YOLOv5-Face paper](https://arxiv.org/abs/2105.12931)
 **Speed**: Benchmark on your own hardware using `scripts/run_detection.py --iterations 100`
@@ -94,6 +95,13 @@ YOLOv5-Face models provide excellent detection accuracy with 5-point facial land
 ```python
 from uniface import YOLOv5Face
 from uniface.constants import YOLOv5FaceWeights
+
+# Lightweight/Mobile
+detector = YOLOv5Face(
+    model_name=YOLOv5FaceWeights.YOLOV5N,
+    conf_thresh=0.6,
+    nms_thresh=0.5
+)
 
 # Real-time detection (recommended)
 detector = YOLOv5Face(

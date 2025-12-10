@@ -234,7 +234,7 @@ faces = detect_faces(image, method='retinaface', conf_thresh=0.8)  # methods: re
 | -------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------- |
 | `RetinaFace` | `model_name=RetinaFaceWeights.MNET_V2`, `conf_thresh=0.5`, `nms_thresh=0.4`, `input_size=(640, 640)`, `dynamic_size=False` | Supports 5-point landmarks                     |
 | `SCRFD`      | `model_name=SCRFDWeights.SCRFD_10G_KPS`, `conf_thresh=0.5`, `nms_thresh=0.4`, `input_size=(640, 640)`                        | Supports 5-point landmarks                     |
-| `YOLOv5Face` | `model_name=YOLOv5FaceWeights.YOLOV5S`, `conf_thresh=0.6`, `nms_thresh=0.5`, `input_size=640` (fixed)                        | Landmarks supported;`input_size` must be 640 |
+| `YOLOv5Face` | `model_name=YOLOv5FaceWeights.YOLOV5S`, `conf_thresh=0.6`, `nms_thresh=0.5`, `input_size=640` (fixed)                        | Supports 5-point landmarks; models: YOLOV5N/S/M; `input_size` must be 640 |
 
 **Recognition**
 
@@ -265,6 +265,7 @@ faces = detect_faces(image, method='retinaface', conf_thresh=0.8)  # methods: re
 | retinaface_r34     | 94.16% | 93.12% | 88.90% | High accuracy          |
 | scrfd_500m         | 90.57% | 88.12% | 68.51% | Real-time applications |
 | scrfd_10g          | 95.16% | 93.87% | 83.05% | Best accuracy/speed    |
+| yolov5n_face       | 93.61% | 91.52% | 80.53% | Lightweight/Mobile     |
 | yolov5s_face       | 94.33% | 92.61% | 83.15% | Real-time + accuracy   |
 | yolov5m_face       | 95.30% | 93.76% | 85.28% | High accuracy          |
 
