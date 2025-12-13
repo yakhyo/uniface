@@ -13,7 +13,7 @@
 
 __license__ = 'MIT'
 __author__ = 'Yakhyokhuja Valikhujaev'
-__version__ = '1.3.2'
+__version__ = '1.4.0'
 
 
 from uniface.face_utils import compute_similarity, face_alignment
@@ -37,6 +37,7 @@ from .detection import (
     detect_faces,
     list_available_detectors,
 )
+from .gaze import MobileGaze, create_gaze_estimator
 from .landmark import Landmark106, create_landmarker
 from .recognition import ArcFace, MobileFace, SphereFace, create_recognizer
 
@@ -49,6 +50,7 @@ __all__ = [
     'FaceAnalyzer',
     # Factory functions
     'create_detector',
+    'create_gaze_estimator',
     'create_landmarker',
     'create_recognizer',
     'detect_faces',
@@ -63,6 +65,8 @@ __all__ = [
     'SphereFace',
     # Landmark models
     'Landmark106',
+    # Gaze models
+    'MobileGaze',
     # Attribute models
     'AgeGender',
     'Emotion',

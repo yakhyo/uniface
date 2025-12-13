@@ -242,7 +242,50 @@ if faces:
 
 ---
 
-## 7. Batch Processing (3 minutes)
+## 7. Gaze Estimation (2 minutes)
+
+Estimate where a person is looking:
+
+```python
+import cv2
+import numpy as np
+from uniface import RetinaFace, MobileGaze
+from uniface.visualization import draw_gaze
+
+# Initialize models
+detector = RetinaFace()
+gaze_estimator = MobileGaze()
+
+# Load image
+image = cv2.imread("photo.jpg")
+faces = detector.detect(image)
+
+# Estimate gaze for each face
+for i, face in enumerate(faces):
+    bbox = face['bbox']
+    x1, y1, x2, y2 = map(int, bbox[:4])
+    face_crop = image[y1:y2, x1:x2]
+
+    if face_crop.size > 0:
+        pitch, yaw = gaze_estimator.estimate(face_crop)
+        print(f"Face {i+1}: pitch={np.degrees(pitch):.1f}°, yaw={np.degrees(yaw):.1f}°")
+
+        # Draw gaze direction
+        draw_gaze(image, bbox, pitch, yaw)
+
+cv2.imwrite("gaze_output.jpg", image)
+```
+
+**Output:**
+
+```
+Face 1: pitch=5.2°, yaw=-12.3°
+Face 2: pitch=-8.1°, yaw=15.7°
+```
+
+---
+
+## 8. Batch Processing (3 minutes)
 
 Process multiple images:
 
@@ -275,7 +318,7 @@ print("Done!")
 
 ---
 
-## 8. Model Selection
+## 9. Model Selection
 
 Choose the right model for your use case:
 
@@ -324,6 +367,22 @@ recognizer = MobileFace(model_name=MobileFaceWeights.MNET_V2)  # Fast, small siz
 
 # SphereFace (angular margin approach)
 recognizer = SphereFace(model_name=SphereFaceWeights.SPHERE20)  # Alternative method
+```
+
+### Gaze Estimation Models
+
+```python
+from uniface import MobileGaze
+from uniface.constants import GazeWeights
+
+# Default (recommended)
+gaze_estimator = MobileGaze()  # Uses RESNET34
+
+# Lightweight (mobile/edge devices)
+gaze_estimator = MobileGaze(model_name=GazeWeights.MOBILEONE_S0)
+
+# High accuracy
+gaze_estimator = MobileGaze(model_name=GazeWeights.RESNET50)
 ```
 
 ---
@@ -400,4 +459,5 @@ Explore interactive examples for common tasks:
 - **RetinaFace Training**: [yakhyo/retinaface-pytorch](https://github.com/yakhyo/retinaface-pytorch)
 - **YOLOv5-Face ONNX**: [yakhyo/yolov5-face-onnx-inference](https://github.com/yakhyo/yolov5-face-onnx-inference)
 - **Face Recognition Training**: [yakhyo/face-recognition](https://github.com/yakhyo/face-recognition)
+- **Gaze Estimation Training**: [yakhyo/gaze-estimation](https://github.com/yakhyo/gaze-estimation)
 - **InsightFace**: [deepinsight/insightface](https://github.com/deepinsight/insightface)
