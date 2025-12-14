@@ -7,6 +7,52 @@ from typing import List, Tuple, Union
 import cv2
 import numpy as np
 
+# Face parsing component names (19 classes)
+FACE_PARSING_LABELS = [
+    'background',
+    'skin',
+    'l_brow',
+    'r_brow',
+    'l_eye',
+    'r_eye',
+    'eye_g',
+    'l_ear',
+    'r_ear',
+    'ear_r',
+    'nose',
+    'mouth',
+    'u_lip',
+    'l_lip',
+    'neck',
+    'neck_l',
+    'cloth',
+    'hair',
+    'hat',
+]
+
+# Color palette for face parsing visualization
+FACE_PARSING_COLORS = [
+    [0, 0, 0],
+    [255, 85, 0],
+    [255, 170, 0],
+    [255, 0, 85],
+    [255, 0, 170],
+    [0, 255, 0],
+    [85, 255, 0],
+    [170, 255, 0],
+    [0, 255, 85],
+    [0, 255, 170],
+    [0, 0, 255],
+    [85, 0, 255],
+    [170, 0, 255],
+    [0, 85, 255],
+    [0, 170, 255],
+    [255, 255, 0],
+    [255, 255, 85],
+    [255, 255, 170],
+    [255, 0, 255],
+]
+
 
 def draw_detections(
     *,
@@ -220,3 +266,65 @@ def draw_gaze(
             (255, 255, 255),
             font_thickness,
         )
+
+
+def vis_parsing_maps(
+    image: np.ndarray,
+    segmentation_mask: np.ndarray,
+    *,
+    save_image: bool = False,
+    save_path: str = 'result.png',
+) -> np.ndarray:
+    """
+    Visualizes face parsing segmentation mask by overlaying colored regions on the image.
+
+    Args:
+        image: Input face image in RGB format with shape (H, W, 3).
+        segmentation_mask: Segmentation mask with shape (H, W) where each pixel
+                          value represents a facial component class (0-18).
+        save_image: Whether to save the visualization to disk. Defaults to False.
+        save_path: Path to save the visualization if save_image is True.
+
+    Returns:
+        np.ndarray: Blended image with segmentation overlay in BGR format.
+
+    Example:
+        >>> import cv2
+        >>> from uniface.parsing import BiSeNet
+        >>> from uniface.visualization import vis_parsing_maps
+        >>>
+        >>> parser = BiSeNet()
+        >>> face_image = cv2.imread('face.jpg')
+        >>> mask = parser.parse(face_image)
+        >>>
+        >>> # Visualize
+        >>> face_rgb = cv2.cvtColor(face_image, cv2.COLOR_BGR2RGB)
+        >>> result = vis_parsing_maps(face_rgb, mask)
+        >>> cv2.imwrite('parsed_face.jpg', result)
+    """
+    # Create numpy arrays for image and segmentation mask
+    image = np.array(image).copy().astype(np.uint8)
+    segmentation_mask = segmentation_mask.copy().astype(np.uint8)
+
+    # Create a color mask
+    segmentation_mask_color = np.zeros((segmentation_mask.shape[0], segmentation_mask.shape[1], 3))
+
+    num_classes = np.max(segmentation_mask)
+
+    for class_index in range(1, num_classes + 1):
+        class_pixels = np.where(segmentation_mask == class_index)
+        segmentation_mask_color[class_pixels[0], class_pixels[1], :] = FACE_PARSING_COLORS[class_index]
+
+    segmentation_mask_color = segmentation_mask_color.astype(np.uint8)
+
+    # Convert image to BGR format for blending
+    bgr_image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+
+    # Blend the image with the segmentation mask
+    blended_image = cv2.addWeighted(bgr_image, 0.6, segmentation_mask_color, 0.4, 0)
+
+    # Save the result if required
+    if save_image:
+        cv2.imwrite(save_path, blended_image, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
+
+    return blended_image

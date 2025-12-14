@@ -373,7 +373,7 @@ BiSeNet (Bilateral Segmentation Network) models for semantic face parsing. Segme
 ```python
 from uniface.parsing import BiSeNet
 from uniface.constants import ParsingWeights
-from uniface.parsing.utils import vis_parsing_maps
+from uniface.visualization import vis_parsing_maps
 import cv2
 
 # Default (recommended)

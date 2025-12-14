@@ -181,7 +181,7 @@ for face in faces:
 
 ```python
 from uniface.parsing import BiSeNet
-from uniface.parsing.utils import vis_parsing_maps
+from uniface.visualization import vis_parsing_maps
 
 # Initialize parser
 parser = BiSeNet()  # Uses ResNet18 by default

@@ -293,7 +293,7 @@ Segment face into semantic components (skin, eyes, nose, mouth, hair, etc.):
 import cv2
 import numpy as np
 from uniface.parsing import BiSeNet
-from uniface.parsing.utils import vis_parsing_maps
+from uniface.visualization import vis_parsing_maps
 
 # Initialize parser
 parser = BiSeNet()  # Uses ResNet18 by default

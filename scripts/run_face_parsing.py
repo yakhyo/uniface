@@ -9,9 +9,9 @@ from pathlib import Path
 import cv2
 
 from uniface import RetinaFace
-from uniface.parsing import BiSeNet
 from uniface.constants import ParsingWeights
-from uniface.parsing.utils import vis_parsing_maps
+from uniface.parsing import BiSeNet
+from uniface.visualization import vis_parsing_maps
 
 
 def process_image(detector, parser, image_path: str, save_dir: str = 'outputs'):

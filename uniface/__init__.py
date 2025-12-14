@@ -19,7 +19,7 @@ __version__ = '1.5.0'
 from uniface.face_utils import compute_similarity, face_alignment
 from uniface.log import Logger, enable_logging
 from uniface.model_store import verify_model_weights
-from uniface.visualization import draw_detections
+from uniface.visualization import draw_detections, vis_parsing_maps
 
 from .analyzer import FaceAnalyzer
 from .attribute import AgeGender
@@ -77,6 +77,7 @@ __all__ = [
     # Utilities
     'compute_similarity',
     'draw_detections',
+    'vis_parsing_maps',
     'face_alignment',
     'verify_model_weights',
     'Logger',
