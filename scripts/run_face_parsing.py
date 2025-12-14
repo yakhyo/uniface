@@ -10,6 +10,7 @@ import cv2
 
 from uniface import RetinaFace
 from uniface.parsing import BiSeNet
+from uniface.constants import ParsingWeights
 from uniface.parsing.utils import vis_parsing_maps
 
 
@@ -105,7 +106,7 @@ def main():
     parser_arg.add_argument('--webcam', action='store_true', help='Use webcam')
     parser_arg.add_argument('--save_dir', type=str, default='outputs')
     parser_arg.add_argument(
-        '--model', type=str, default='parsing_resnet18', choices=['parsing_resnet18', 'parsing_resnet34']
+        '--model', type=str, default=ParsingWeights.RESNET18, choices=[ParsingWeights.RESNET18, ParsingWeights.RESNET34]
     )
     args = parser_arg.parse_args()
 
@@ -113,7 +114,7 @@ def main():
         parser_arg.error('Either --image or --webcam must be specified')
 
     detector = RetinaFace()
-    parser = BiSeNet(model_name=args.model)
+    parser = BiSeNet(model_name=ParsingWeights.RESNET34)
 
     if args.webcam:
         run_webcam(detector, parser)
