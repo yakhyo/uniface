@@ -109,6 +109,16 @@ class GazeWeights(str, Enum):
     MOBILEONE_S0 = "gaze_mobileone_s0"
 
 
+class ParsingWeights(str, Enum):
+    """
+    Face Parsing: Semantic Segmentation of Facial Components.
+    Trained on CelebAMask-HQ dataset.
+    https://github.com/yakhyo/face-parsing
+    """
+    RESNET18 = "parsing_resnet18"
+    RESNET34 = "parsing_resnet34"
+
+
 MODEL_URLS: Dict[Enum, str] = {
     # RetinaFace
     RetinaFaceWeights.MNET_025:      'https://github.com/yakhyo/uniface/releases/download/weights/retinaface_mv1_0.25.onnx',
@@ -148,6 +158,9 @@ MODEL_URLS: Dict[Enum, str] = {
     GazeWeights.RESNET50:            'https://github.com/yakhyo/gaze-estimation/releases/download/weights/resnet50_gaze.onnx',
     GazeWeights.MOBILENET_V2:        'https://github.com/yakhyo/gaze-estimation/releases/download/weights/mobilenetv2_gaze.onnx',
     GazeWeights.MOBILEONE_S0:        'https://github.com/yakhyo/gaze-estimation/releases/download/weights/mobileone_s0_gaze.onnx',
+    # Parsing
+    ParsingWeights.RESNET18:         'https://github.com/yakhyo/face-parsing/releases/download/weights/resnet18.onnx',
+    ParsingWeights.RESNET34:         'https://github.com/yakhyo/face-parsing/releases/download/weights/resnet34.onnx',
 }
 
 MODEL_SHA256: Dict[Enum, str] = {
@@ -189,6 +202,9 @@ MODEL_SHA256: Dict[Enum, str] = {
     GazeWeights.RESNET50:            'e1eaf98f5ec7c89c6abe7cfe39f7be83e747163f98d1ff945c0603b3c521be22',
     GazeWeights.MOBILENET_V2:        'fdcdb84e3e6421b5a79e8f95139f249fc258d7f387eed5ddac2b80a9a15ce076',
     GazeWeights.MOBILEONE_S0:        'c0b5a4f4a0ffd24f76ab3c1452354bb2f60110899fd9a88b464c75bafec0fde8',
+    # Face Parsing
+    ParsingWeights.RESNET18:         '0d9bd318e46987c3bdbfacae9e2c0f461cae1c6ac6ea6d43bbe541a91727e33f',
+    ParsingWeights.RESNET34:         '5b805bba7b5660ab7070b5a381dcf75e5b3e04199f1e9387232a77a00095102e',
 }
 
 CHUNK_SIZE = 8192
