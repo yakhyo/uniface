@@ -98,7 +98,7 @@ def main():
     else:
         from uniface.constants import YOLOv5FaceWeights
 
-        detector = YOLOv5Face(model_name=YOLOv5FaceWeights.YOLOV5N)
+        detector = YOLOv5Face(model_name=YOLOv5FaceWeights.YOLOV5M)
 
     if args.webcam:
         run_webcam(detector, args.threshold)

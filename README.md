@@ -20,6 +20,7 @@
 - **High-Speed Face Detection**: ONNX-optimized RetinaFace, SCRFD, and YOLOv5-Face models
 - **Facial Landmark Detection**: Accurate 106-point landmark localization
 - **Face Recognition**: ArcFace, MobileFace, and SphereFace embeddings
+- **Gaze Estimation**: Real-time gaze direction prediction with MobileGaze
 - **Attribute Analysis**: Age, gender, and emotion detection
 - **Face Alignment**: Precise alignment for downstream tasks
 - **Hardware Acceleration**: ARM64 optimizations (Apple Silicon), CUDA (NVIDIA), CPU fallback
@@ -152,6 +153,29 @@ gender_str = 'Female' if gender == 0 else 'Male'
 print(f"{gender_str}, {age} years old")
 ```
 
+### Gaze Estimation
+
+```python
+from uniface import RetinaFace, MobileGaze
+from uniface.visualization import draw_gaze
+import numpy as np
+
+detector = RetinaFace()
+gaze_estimator = MobileGaze()
+
+faces = detector.detect(image)
+for face in faces:
+    bbox = face['bbox']
+    x1, y1, x2, y2 = map(int, bbox[:4])
+    face_crop = image[y1:y2, x1:x2]
+
+    pitch, yaw = gaze_estimator.estimate(face_crop)
+    print(f"Gaze: pitch={np.degrees(pitch):.1f}°, yaw={np.degrees(yaw):.1f}°")
+
+    # Visualize
+    draw_gaze(image, bbox, pitch, yaw)
+```
+
 ---
 
 ## Documentation
@@ -252,6 +276,12 @@ faces = detect_faces(image, method='retinaface', conf_thresh=0.8)  # methods: re
 | `AgeGender`   | `model_name=AgeGenderWeights.DEFAULT`; `input_size` auto-detected | Requires bbox; ONNXRuntime              |
 | `Emotion`     | `model_weights=DDAMFNWeights.AFFECNET7`, `input_size=(112, 112)`  | Requires 5-point landmarks; TorchScript |
 
+**Gaze Estimation**
+
+| Class         | Key params (defaults)                      | Notes                                |
+| ------------- | ------------------------------------------ | ------------------------------------ |
+| `MobileGaze` | `model_name=GazeWeights.RESNET34`       | Returns (pitch, yaw) angles in radians; trained on Gaze360 |
+
 ---
 
 ## Model Performance
@@ -298,6 +328,7 @@ Interactive examples covering common face analysis tasks:
 | **Face Recognition** | Extract face embeddings and compare faces | [face_analyzer.ipynb](examples/face_analyzer.ipynb) |
 | **Face Verification** | Compare two faces to verify identity | [face_verification.ipynb](examples/face_verification.ipynb) |
 | **Face Search** | Find a person in a group photo | [face_search.ipynb](examples/face_search.ipynb) |
+| **Gaze Estimation** | Estimate gaze direction from face images | [gaze_estimation.ipynb](examples/gaze_estimation.ipynb) |
 
 ### Webcam Face Detection
 
@@ -488,6 +519,7 @@ uniface/
 │   ├── detection/       # Face detection models
 │   ├── recognition/     # Face recognition models
 │   ├── landmark/        # Landmark detection
+│   ├── gaze/            # Gaze estimation
 │   ├── attribute/       # Age, gender, emotion
 │   ├── onnx_utils.py    # ONNX Runtime utilities
 │   ├── model_store.py   # Model download & caching
@@ -504,6 +536,7 @@ uniface/
 - **RetinaFace Training**: [yakhyo/retinaface-pytorch](https://github.com/yakhyo/retinaface-pytorch) - PyTorch implementation and training code
 - **YOLOv5-Face ONNX**: [yakhyo/yolov5-face-onnx-inference](https://github.com/yakhyo/yolov5-face-onnx-inference) - ONNX inference implementation
 - **Face Recognition Training**: [yakhyo/face-recognition](https://github.com/yakhyo/face-recognition) - ArcFace, MobileFace, SphereFace training code
+- **Gaze Estimation Training**: [yakhyo/gaze-estimation](https://github.com/yakhyo/gaze-estimation) - MobileGaze training code and pretrained weights
 - **InsightFace**: [deepinsight/insightface](https://github.com/deepinsight/insightface) - Model architectures and pretrained weights
 
 ## Contributing

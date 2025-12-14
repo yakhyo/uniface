@@ -291,6 +291,47 @@ emotion, confidence = predictor.predict(image, landmarks)
 
 ---
 
+## Gaze Estimation Models
+
+### MobileGaze Family
+
+Real-time gaze direction prediction models trained on Gaze360 dataset. Returns pitch (vertical) and yaw (horizontal) angles in radians.
+
+| Model Name     | Params | Size    | MAE*  | Use Case                      |
+| -------------- | ------ | ------- | ----- | ----------------------------- |
+| `RESNET18`   | 11.7M  | 43 MB   | 12.84 | Balanced accuracy/speed       |
+| `RESNET34` ⭐ | 24.8M  | 81.6 MB | 11.33 | **Recommended default** |
+| `RESNET50`   | 25.6M  | 91.3 MB | 11.34 | High accuracy                 |
+| `MOBILENET_V2` | 3.5M   | 9.59 MB | 13.07 | Mobile/Edge devices           |
+| `MOBILEONE_S0` | 2.1M   | 4.8 MB  | 12.58 | Lightweight/Real-time         |
+
+*MAE (Mean Absolute Error) in degrees on Gaze360 test set - lower is better
+
+**Dataset**: Trained on Gaze360 (indoor/outdoor scenes with diverse head poses)
+**Training**: 200 epochs with classification-based approach (binned angles)
+
+#### Usage
+
+```python
+from uniface import MobileGaze
+from uniface.constants import GazeWeights
+import numpy as np
+
+# Default (recommended)
+gaze_estimator = MobileGaze()  # Uses RESNET34
+
+# Lightweight model
+gaze_estimator = MobileGaze(model_name=GazeWeights.MOBILEONE_S0)
+
+# Estimate gaze from face crop
+pitch, yaw = gaze_estimator.estimate(face_crop)
+print(f"Pitch: {np.degrees(pitch):.1f}°, Yaw: {np.degrees(yaw):.1f}°")
+```
+
+**Note**: Requires face crop as input. Use face detection first to obtain bounding boxes.
+
+---
+
 ## Model Updates
 
 Models are automatically downloaded and cached on first use. Cache location: `~/.uniface/models/`
@@ -330,6 +371,7 @@ python scripts/download_model.py --model MNET_V2
 - **YOLOv5-Face Original**: [deepcam-cn/yolov5-face](https://github.com/deepcam-cn/yolov5-face) - Original PyTorch implementation
 - **YOLOv5-Face ONNX**: [yakhyo/yolov5-face-onnx-inference](https://github.com/yakhyo/yolov5-face-onnx-inference) - ONNX inference implementation
 - **Face Recognition Training**: [yakhyo/face-recognition](https://github.com/yakhyo/face-recognition) - ArcFace, MobileFace, SphereFace training code
+- **Gaze Estimation Training**: [yakhyo/gaze-estimation](https://github.com/yakhyo/gaze-estimation) - MobileGaze training code and pretrained weights
 - **InsightFace**: [deepinsight/insightface](https://github.com/deepinsight/insightface) - Model architectures and pretrained weights
 
 ### Papers

@@ -9,6 +9,7 @@ Scripts for testing UniFace features.
 | `run_detection.py` | Face detection on image or webcam |
 | `run_age_gender.py` | Age and gender prediction |
 | `run_emotion.py` | Emotion detection (7 or 8 emotions) |
+| `run_gaze_estimation.py` | Gaze direction estimation |
 | `run_landmarks.py` | 106-point facial landmark detection |
 | `run_recognition.py` | Face embedding extraction and comparison |
 | `run_face_analyzer.py` | Complete face analysis (detection + recognition + attributes) |
@@ -32,6 +33,10 @@ python scripts/run_age_gender.py --webcam
 # Emotion detection
 python scripts/run_emotion.py --image assets/test.jpg
 python scripts/run_emotion.py --webcam
+
+# Gaze estimation
+python scripts/run_gaze_estimation.py --image assets/test.jpg
+python scripts/run_gaze_estimation.py --webcam
 
 # Landmarks
 python scripts/run_landmarks.py --image assets/test.jpg

@@ -96,6 +96,19 @@ class LandmarkWeights(str, Enum):
     DEFAULT = "2d_106"
 
 
+class GazeWeights(str, Enum):
+    """
+    MobileGaze: Real-Time Gaze Estimation models.
+    Trained on Gaze360 dataset.
+    https://github.com/yakhyo/gaze-estimation
+    """
+    RESNET18     = "gaze_resnet18"
+    RESNET34     = "gaze_resnet34"
+    RESNET50     = "gaze_resnet50"
+    MOBILENET_V2 = "gaze_mobilenetv2"
+    MOBILEONE_S0 = "gaze_mobileone_s0"
+
+
 MODEL_URLS: Dict[Enum, str] = {
     # RetinaFace
     RetinaFaceWeights.MNET_025:      'https://github.com/yakhyo/uniface/releases/download/weights/retinaface_mv1_0.25.onnx',
@@ -129,6 +142,12 @@ MODEL_URLS: Dict[Enum, str] = {
     AgeGenderWeights.DEFAULT:        'https://github.com/yakhyo/uniface/releases/download/weights/genderage.onnx',
     # Landmarks
     LandmarkWeights.DEFAULT:         'https://github.com/yakhyo/uniface/releases/download/weights/2d106det.onnx',
+    # Gaze (MobileGaze)
+    GazeWeights.RESNET18:            'https://github.com/yakhyo/gaze-estimation/releases/download/weights/resnet18_gaze.onnx',
+    GazeWeights.RESNET34:            'https://github.com/yakhyo/gaze-estimation/releases/download/weights/resnet34_gaze.onnx',
+    GazeWeights.RESNET50:            'https://github.com/yakhyo/gaze-estimation/releases/download/weights/resnet50_gaze.onnx',
+    GazeWeights.MOBILENET_V2:        'https://github.com/yakhyo/gaze-estimation/releases/download/weights/mobilenetv2_gaze.onnx',
+    GazeWeights.MOBILEONE_S0:        'https://github.com/yakhyo/gaze-estimation/releases/download/weights/mobileone_s0_gaze.onnx',
 }
 
 MODEL_SHA256: Dict[Enum, str] = {
@@ -164,6 +183,12 @@ MODEL_SHA256: Dict[Enum, str] = {
     AgeGenderWeights.DEFAULT:        '4fde69b1c810857b88c64a335084f1c3fe8f01246c9a191b48c7bb756d6652fb',
     # Landmark
     LandmarkWeights.DEFAULT:         'f001b856447c413801ef5c42091ed0cd516fcd21f2d6b79635b1e733a7109dbf',
+    # MobileGaze (trained on Gaze360)
+    GazeWeights.RESNET18:            '23d5d7e4f6f40dce8c35274ce9d08b45b9e22cbaaf5af73182f473229d713d31',
+    GazeWeights.RESNET34:            '4457ee5f7acd1a5ab02da4b61f02fc3a0b17adbf3844dd0ba3cd4288f2b5e1de',
+    GazeWeights.RESNET50:            'e1eaf98f5ec7c89c6abe7cfe39f7be83e747163f98d1ff945c0603b3c521be22',
+    GazeWeights.MOBILENET_V2:        'fdcdb84e3e6421b5a79e8f95139f249fc258d7f387eed5ddac2b80a9a15ce076',
+    GazeWeights.MOBILEONE_S0:        'c0b5a4f4a0ffd24f76ab3c1452354bb2f60110899fd9a88b464c75bafec0fde8',
 }
 
 CHUNK_SIZE = 8192

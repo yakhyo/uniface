@@ -79,7 +79,9 @@ def run_webcam(detector, age_gender, threshold: float = 0.6):
         bboxes = [f['bbox'] for f in faces]
         scores = [f['confidence'] for f in faces]
         landmarks = [f['landmarks'] for f in faces]
-        draw_detections(frame, bboxes, scores, landmarks, vis_threshold=threshold)
+        draw_detections(
+            image=frame, bboxes=bboxes, scores=scores, landmarks=landmarks, vis_threshold=threshold, fancy_bbox=True
+        )
 
         for face in faces:
             gender_id, age = age_gender.predict(frame, face['bbox'])  # predict per face
