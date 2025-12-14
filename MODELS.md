@@ -332,6 +332,78 @@ print(f"Pitch: {np.degrees(pitch):.1f}°, Yaw: {np.degrees(yaw):.1f}°")
 
 ---
 
+## Face Parsing Models
+
+### BiSeNet Family
+
+BiSeNet (Bilateral Segmentation Network) models for semantic face parsing. Segments face images into 19 facial component classes.
+
+| Model Name     | Params | Size    | Classes | Use Case                      |
+| -------------- | ------ | ------- | ------- | ----------------------------- |
+| `RESNET18` ⭐ | 13.3M  | 50.7 MB | 19      | **Recommended default** |
+| `RESNET34`   | 24.1M  | 89.2 MB | 19      | Higher accuracy               |
+
+**19 Facial Component Classes:**
+1. Background
+2. Skin
+3. Left Eyebrow
+4. Right Eyebrow
+5. Left Eye
+6. Right Eye
+7. Eye Glasses
+8. Left Ear
+9. Right Ear
+10. Ear Ring
+11. Nose
+12. Mouth
+13. Upper Lip
+14. Lower Lip
+15. Neck
+16. Neck Lace
+17. Cloth
+18. Hair
+19. Hat
+
+**Dataset**: Trained on CelebAMask-HQ
+**Architecture**: BiSeNet with ResNet backbone
+**Input Size**: 512×512 (automatically resized)
+
+#### Usage
+
+```python
+from uniface.parsing import BiSeNet
+from uniface.constants import ParsingWeights
+from uniface.parsing.utils import vis_parsing_maps
+import cv2
+
+# Default (recommended)
+parser = BiSeNet()  # Uses RESNET18
+
+# Higher accuracy model
+parser = BiSeNet(model_name=ParsingWeights.RESNET34)
+
+# Parse face image (already cropped)
+mask = parser.parse(face_image)
+
+# Visualize with overlay
+face_rgb = cv2.cvtColor(face_image, cv2.COLOR_BGR2RGB)
+vis_result = vis_parsing_maps(face_rgb, mask, save_image=False)
+
+# mask shape: (H, W) with values 0-18 representing classes
+print(f"Detected {len(np.unique(mask))} facial components")
+```
+
+**Applications:**
+- Face makeup and beauty applications
+- Virtual try-on systems
+- Face editing and manipulation
+- Facial feature extraction
+- Portrait segmentation
+
+**Note**: Input should be a cropped face image. For full pipeline, use face detection first to obtain face crops.
+
+---
+
 ## Model Updates
 
 Models are automatically downloaded and cached on first use. Cache location: `~/.uniface/models/`
@@ -372,6 +444,7 @@ python scripts/download_model.py --model MNET_V2
 - **YOLOv5-Face ONNX**: [yakhyo/yolov5-face-onnx-inference](https://github.com/yakhyo/yolov5-face-onnx-inference) - ONNX inference implementation
 - **Face Recognition Training**: [yakhyo/face-recognition](https://github.com/yakhyo/face-recognition) - ArcFace, MobileFace, SphereFace training code
 - **Gaze Estimation Training**: [yakhyo/gaze-estimation](https://github.com/yakhyo/gaze-estimation) - MobileGaze training code and pretrained weights
+- **Face Parsing Training**: [yakhyo/face-parsing](https://github.com/yakhyo/face-parsing) - BiSeNet training code and pretrained weights
 - **InsightFace**: [deepinsight/insightface](https://github.com/deepinsight/insightface) - Model architectures and pretrained weights
 
 ### Papers
@@ -381,3 +454,4 @@ python scripts/download_model.py --model MNET_V2
 - **YOLOv5-Face**: [YOLO5Face: Why Reinventing a Face Detector](https://arxiv.org/abs/2105.12931)
 - **ArcFace**: [Additive Angular Margin Loss for Deep Face Recognition](https://arxiv.org/abs/1801.07698)
 - **SphereFace**: [Deep Hypersphere Embedding for Face Recognition](https://arxiv.org/abs/1704.08063)
+- **BiSeNet**: [Bilateral Segmentation Network for Real-time Semantic Segmentation](https://arxiv.org/abs/1808.00897)
