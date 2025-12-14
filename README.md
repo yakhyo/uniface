@@ -11,7 +11,7 @@
     <img src=".github/logos/logo_web.webp" width=75%>
 </div>
 
-**UniFace** is a lightweight, production-ready face analysis library built on ONNX Runtime. It provides high-performance face detection, recognition, landmark detection, and attribute analysis with hardware acceleration support across platforms.
+**UniFace** is a lightweight, production-ready face analysis library built on ONNX Runtime. It provides high-performance face detection, recognition, landmark detection, face parsing, gaze estimation, and attribute analysis with hardware acceleration support across platforms.
 
 ---
 
@@ -20,6 +20,7 @@
 - **High-Speed Face Detection**: ONNX-optimized RetinaFace, SCRFD, and YOLOv5-Face models
 - **Facial Landmark Detection**: Accurate 106-point landmark localization
 - **Face Recognition**: ArcFace, MobileFace, and SphereFace embeddings
+- **Face Parsing**: BiSeNet-based semantic segmentation with 19 facial component classes
 - **Gaze Estimation**: Real-time gaze direction prediction with MobileGaze
 - **Attribute Analysis**: Age, gender, and emotion detection
 - **Face Alignment**: Precise alignment for downstream tasks
@@ -176,6 +177,27 @@ for face in faces:
     draw_gaze(image, bbox, pitch, yaw)
 ```
 
+### Face Parsing
+
+```python
+from uniface.parsing import BiSeNet
+from uniface.visualization import vis_parsing_maps
+
+# Initialize parser
+parser = BiSeNet()  # Uses ResNet18 by default
+
+# Parse face image (already cropped)
+mask = parser.parse(face_image)
+
+# Visualize with overlay
+import cv2
+face_rgb = cv2.cvtColor(face_image, cv2.COLOR_BGR2RGB)
+vis_result = vis_parsing_maps(face_rgb, mask, save_image=False)
+
+# mask contains 19 classes: skin, eyes, nose, mouth, hair, etc.
+print(f"Unique classes: {len(np.unique(mask))}")
+```
+
 ---
 
 ## Documentation
@@ -282,6 +304,12 @@ faces = detect_faces(image, method='retinaface', conf_thresh=0.8)  # methods: re
 | ------------- | ------------------------------------------ | ------------------------------------ |
 | `MobileGaze` | `model_name=GazeWeights.RESNET34`       | Returns (pitch, yaw) angles in radians; trained on Gaze360 |
 
+**Face Parsing**
+
+| Class      | Key params (defaults)                    | Notes                                |
+| ---------- | ---------------------------------------- | ------------------------------------ |
+| `BiSeNet` | `model_name=ParsingWeights.RESNET18`, `input_size=(512, 512)` | 19 facial component classes; BiSeNet architecture with ResNet backbone |
+
 ---
 
 ## Model Performance
@@ -328,6 +356,7 @@ Interactive examples covering common face analysis tasks:
 | **Face Recognition** | Extract face embeddings and compare faces | [face_analyzer.ipynb](examples/face_analyzer.ipynb) |
 | **Face Verification** | Compare two faces to verify identity | [face_verification.ipynb](examples/face_verification.ipynb) |
 | **Face Search** | Find a person in a group photo | [face_search.ipynb](examples/face_search.ipynb) |
+| **Face Parsing** | Segment face into semantic components | [face_parsing.ipynb](examples/face_parsing.ipynb) |
 | **Gaze Estimation** | Estimate gaze direction from face images | [gaze_estimation.ipynb](examples/gaze_estimation.ipynb) |
 
 ### Webcam Face Detection
@@ -519,6 +548,7 @@ uniface/
 │   ├── detection/       # Face detection models
 │   ├── recognition/     # Face recognition models
 │   ├── landmark/        # Landmark detection
+│   ├── parsing/         # Face parsing
 │   ├── gaze/            # Gaze estimation
 │   ├── attribute/       # Age, gender, emotion
 │   ├── onnx_utils.py    # ONNX Runtime utilities
@@ -536,6 +566,7 @@ uniface/
 - **RetinaFace Training**: [yakhyo/retinaface-pytorch](https://github.com/yakhyo/retinaface-pytorch) - PyTorch implementation and training code
 - **YOLOv5-Face ONNX**: [yakhyo/yolov5-face-onnx-inference](https://github.com/yakhyo/yolov5-face-onnx-inference) - ONNX inference implementation
 - **Face Recognition Training**: [yakhyo/face-recognition](https://github.com/yakhyo/face-recognition) - ArcFace, MobileFace, SphereFace training code
+- **Face Parsing Training**: [yakhyo/face-parsing](https://github.com/yakhyo/face-parsing) - BiSeNet face parsing training code and pretrained weights
 - **Gaze Estimation Training**: [yakhyo/gaze-estimation](https://github.com/yakhyo/gaze-estimation) - MobileGaze training code and pretrained weights
 - **InsightFace**: [deepinsight/insightface](https://github.com/deepinsight/insightface) - Model architectures and pretrained weights
 

@@ -285,7 +285,50 @@ Face 2: pitch=-8.1°, yaw=15.7°
 
 ---
 
-## 8. Batch Processing (3 minutes)
+## 8. Face Parsing (2 minutes)
+
+Segment face into semantic components (skin, eyes, nose, mouth, hair, etc.):
+
+```python
+import cv2
+import numpy as np
+from uniface.parsing import BiSeNet
+from uniface.visualization import vis_parsing_maps
+
+# Initialize parser
+parser = BiSeNet()  # Uses ResNet18 by default
+
+# Load face image (already cropped)
+face_image = cv2.imread("face.jpg")
+
+# Parse face into 19 components
+mask = parser.parse(face_image)
+
+# Visualize with overlay
+face_rgb = cv2.cvtColor(face_image, cv2.COLOR_BGR2RGB)
+vis_result = vis_parsing_maps(face_rgb, mask, save_image=False)
+
+# Convert back to BGR for saving
+vis_bgr = cv2.cvtColor(vis_result, cv2.COLOR_RGB2BGR)
+cv2.imwrite("parsed_face.jpg", vis_bgr)
+
+print(f"Detected {len(np.unique(mask))} facial components")
+```
+
+**Output:**
+
+```
+Detected 12 facial components
+```
+
+**19 Facial Component Classes:**
+- Background, Skin, Eyebrows (L/R), Eyes (L/R), Eye Glasses
+- Ears (L/R), Ear Ring, Nose, Mouth, Lips (Upper/Lower)
+- Neck, Neck Lace, Cloth, Hair, Hat
+
+---
+
+## 9. Batch Processing (3 minutes)
 
 Process multiple images:
 
@@ -318,7 +361,7 @@ print("Done!")
 
 ---
 
-## 9. Model Selection
+## 10. Model Selection
 
 Choose the right model for your use case:
 
@@ -385,6 +428,19 @@ gaze_estimator = MobileGaze(model_name=GazeWeights.MOBILEONE_S0)
 gaze_estimator = MobileGaze(model_name=GazeWeights.RESNET50)
 ```
 
+### Face Parsing Models
+
+```python
+from uniface.parsing import BiSeNet
+from uniface.constants import ParsingWeights
+
+# Default (recommended, 50.7 MB)
+parser = BiSeNet()  # Uses RESNET18
+
+# Higher accuracy (89.2 MB)
+parser = BiSeNet(model_name=ParsingWeights.RESNET34)
+```
+
 ---
 
 ## Common Issues
@@ -446,6 +502,8 @@ Explore interactive examples for common tasks:
 | **Face Recognition** | Extract face embeddings and compare faces | [face_analyzer.ipynb](examples/face_analyzer.ipynb) |
 | **Face Verification** | Compare two faces to verify identity | [face_verification.ipynb](examples/face_verification.ipynb) |
 | **Face Search** | Find a person in a group photo | [face_search.ipynb](examples/face_search.ipynb) |
+| **Face Parsing** | Segment face into semantic components | [face_parsing.ipynb](examples/face_parsing.ipynb) |
+| **Gaze Estimation** | Estimate gaze direction | [gaze_estimation.ipynb](examples/gaze_estimation.ipynb) |
 
 ### Additional Resources
 
@@ -460,4 +518,5 @@ Explore interactive examples for common tasks:
 - **YOLOv5-Face ONNX**: [yakhyo/yolov5-face-onnx-inference](https://github.com/yakhyo/yolov5-face-onnx-inference)
 - **Face Recognition Training**: [yakhyo/face-recognition](https://github.com/yakhyo/face-recognition)
 - **Gaze Estimation Training**: [yakhyo/gaze-estimation](https://github.com/yakhyo/gaze-estimation)
+- **Face Parsing Training**: [yakhyo/face-parsing](https://github.com/yakhyo/face-parsing)
 - **InsightFace**: [deepinsight/insightface](https://github.com/deepinsight/insightface)

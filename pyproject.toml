@@ -1,7 +1,7 @@
 [project]
 name = "uniface"
-version = "1.4.0"
-description = "UniFace: A Comprehensive Library for Face Detection, Recognition, Landmark Analysis, Gaze Estimation, Age, and Gender Detection"
+version = "1.5.0"
+description = "UniFace: A Comprehensive Library for Face Detection, Recognition, Landmark Analysis, Face Parsing, Gaze Estimation, Age, and Gender Detection"
 readme = "README.md"
 license = { text = "MIT" }
 authors = [{ name = "Yakhyokhuja Valikhujaev", email = "yakhyo9696@gmail.com" }]
@@ -14,6 +14,8 @@ keywords = [
     "face-detection",
     "face-recognition",
     "facial-landmarks",
+    "face-parsing",
+    "face-segmentation",
     "gaze-estimation",
     "age-detection",
     "gender-detection",
@@ -22,6 +24,7 @@ keywords = [
     "onnx",
     "onnxruntime",
     "face-analysis",
+    "bisenet",
 ]
 
 classifiers = [
