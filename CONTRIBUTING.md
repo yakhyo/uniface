@@ -51,6 +51,7 @@ Example notebooks demonstrating library usage:
 | Face Recognition | [face_analyzer.ipynb](examples/face_analyzer.ipynb) |
 | Face Verification | [face_verification.ipynb](examples/face_verification.ipynb) |
 | Face Search | [face_search.ipynb](examples/face_search.ipynb) |
+| Face Anonymization | [face_anonymization.ipynb](examples/face_anonymization.ipynb) |
 
 ## Questions?
 

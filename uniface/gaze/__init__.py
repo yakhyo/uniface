@@ -51,8 +51,4 @@ def create_gaze_estimator(method: str = 'mobilegaze', **kwargs) -> BaseGazeEstim
         raise ValueError(f"Unsupported gaze estimation method: '{method}'. Available: {available}")
 
 
-__all__ = [
-    'create_gaze_estimator',
-    'MobileGaze',
-    'BaseGazeEstimator',
-]
+__all__ = ['create_gaze_estimator', 'MobileGaze', 'BaseGazeEstimator']

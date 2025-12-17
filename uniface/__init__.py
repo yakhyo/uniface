@@ -13,7 +13,7 @@
 
 __license__ = 'MIT'
 __author__ = 'Yakhyokhuja Valikhujaev'
-__version__ = '1.5.3'
+__version__ = '1.6.0'
 
 
 from uniface.face_utils import compute_similarity, face_alignment
@@ -40,6 +40,7 @@ from .detection import (
 from .gaze import MobileGaze, create_gaze_estimator
 from .landmark import Landmark106, create_landmarker
 from .parsing import BiSeNet, create_face_parser
+from .privacy import BlurFace, anonymize_faces
 from .recognition import ArcFace, MobileFace, SphereFace, create_recognizer
 
 __all__ = [
@@ -74,6 +75,9 @@ __all__ = [
     # Attribute models
     'AgeGender',
     'Emotion',
+    # Privacy
+    'BlurFace',
+    'anonymize_faces',
     # Utilities
     'compute_similarity',
     'draw_detections',
