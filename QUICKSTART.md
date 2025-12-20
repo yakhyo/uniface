@@ -420,7 +420,46 @@ python scripts/run_anonymization.py --image photo.jpg --method gaussian --blur-s
 
 ---
 
-## 10. Batch Processing (3 minutes)
+## 10. Face Anti-Spoofing (2 minutes)
+
+Detect if a face is real or fake (photo, video replay, mask):
+
+```python
+from uniface import RetinaFace
+from uniface.spoofing import MiniFASNet
+
+detector = RetinaFace()
+spoofer = MiniFASNet()  # Uses V2 by default
+
+image = cv2.imread("photo.jpg")
+faces = detector.detect(image)
+
+for i, face in enumerate(faces):
+    label_idx, score = spoofer.predict(image, face['bbox'])
+    # label_idx: 0 = Fake, 1 = Real
+    label = 'Real' if label_idx == 1 else 'Fake'
+    print(f"Face {i+1}: {label} ({score:.1%})")
+```
+
+**Output:**
+
+```
+Face 1: Real (98.5%)
+```
+
+**Command-line tool:**
+
+```bash
+# Image
+python scripts/run_spoofing.py --image photo.jpg
+
+# Webcam
+python scripts/run_spoofing.py --source 0
+```
+
+---
+
+## 11. Batch Processing (3 minutes)
 
 Process multiple images:
 
@@ -453,7 +492,7 @@ print("Done!")
 
 ---
 
-## 11. Model Selection
+## 12. Model Selection
 
 Choose the right model for your use case:
 

@@ -23,6 +23,7 @@
 - **Face Parsing**: BiSeNet-based semantic segmentation with 19 facial component classes
 - **Gaze Estimation**: Real-time gaze direction prediction with MobileGaze
 - **Attribute Analysis**: Age, gender, and emotion detection
+- **Anti-Spoofing**: Face liveness detection with MiniFASNet models
 - **Face Anonymization**: Privacy-preserving face blurring with 5 methods (pixelate, gaussian, blackout, elliptical, median)
 - **Face Alignment**: Precise alignment for downstream tasks
 - **Hardware Acceleration**: ARM64 optimizations (Apple Silicon), CUDA (NVIDIA), CPU fallback
@@ -199,6 +200,25 @@ vis_result = vis_parsing_maps(face_rgb, mask, save_image=False)
 print(f"Unique classes: {len(np.unique(mask))}")
 ```
 
+### Face Anti-Spoofing
+
+Detect if a face is real or fake (photo, video replay, mask):
+
+```python
+from uniface import RetinaFace
+from uniface.spoofing import MiniFASNet
+
+detector = RetinaFace()
+spoofer = MiniFASNet()  # Uses V2 by default
+
+faces = detector.detect(image)
+for face in faces:
+    label_idx, score = spoofer.predict(image, face['bbox'])
+    # label_idx: 0 = Fake, 1 = Real
+    label = 'Real' if label_idx == 1 else 'Fake'
+    print(f"{label}: {score:.1%}")
+```
+
 ### Face Anonymization
 
 Protect privacy by blurring or pixelating faces with 5 different methods:
@@ -363,6 +383,12 @@ faces = detect_faces(image, method='retinaface', conf_thresh=0.8)  # methods: re
 | Class      | Key params (defaults)                    | Notes                                |
 | ---------- | ---------------------------------------- | ------------------------------------ |
 | `BiSeNet` | `model_name=ParsingWeights.RESNET18`, `input_size=(512, 512)` | 19 facial component classes; BiSeNet architecture with ResNet backbone |
+
+**Anti-Spoofing**
+
+| Class         | Key params (defaults)                     | Notes                                |
+| ------------- | ----------------------------------------- | ------------------------------------ |
+| `MiniFASNet` | `model_name=MiniFASNetWeights.V2`       | Returns (label_idx, score); 0=Fake, 1=Real |
 
 ---
 
@@ -606,6 +632,7 @@ uniface/
 │   ├── parsing/         # Face parsing
 │   ├── gaze/            # Gaze estimation
 │   ├── attribute/       # Age, gender, emotion
+│   ├── spoofing/        # Face anti-spoofing
 │   ├── privacy/         # Face anonymization & blurring
 │   ├── onnx_utils.py    # ONNX Runtime utilities
 │   ├── model_store.py   # Model download & caching
@@ -624,6 +651,7 @@ uniface/
 - **Face Recognition Training**: [yakhyo/face-recognition](https://github.com/yakhyo/face-recognition) - ArcFace, MobileFace, SphereFace training code
 - **Face Parsing Training**: [yakhyo/face-parsing](https://github.com/yakhyo/face-parsing) - BiSeNet face parsing training code and pretrained weights
 - **Gaze Estimation Training**: [yakhyo/gaze-estimation](https://github.com/yakhyo/gaze-estimation) - MobileGaze training code and pretrained weights
+- **Face Anti-Spoofing**: [yakhyo/face-anti-spoofing](https://github.com/yakhyo/face-anti-spoofing) - MiniFASNet ONNX inference (weights from [minivision-ai/Silent-Face-Anti-Spoofing](https://github.com/minivision-ai/Silent-Face-Anti-Spoofing))
 - **InsightFace**: [deepinsight/insightface](https://github.com/deepinsight/insightface) - Model architectures and pretrained weights
 
 ## Contributing

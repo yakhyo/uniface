@@ -119,6 +119,20 @@ class ParsingWeights(str, Enum):
     RESNET34 = "parsing_resnet34"
 
 
+class MiniFASNetWeights(str, Enum):
+    """
+    MiniFASNet: Lightweight Face Anti-Spoofing models.
+    Trained on face anti-spoofing datasets.
+    https://github.com/yakhyo/face-anti-spoofing
+
+    Model Variants:
+    - V1SE: Uses scale=4.0 for face crop (squeese-and-excitation version)
+    - V2: Uses scale=2.7 for face crop (improved version)
+    """
+    V1SE = "minifasnet_v1se"
+    V2   = "minifasnet_v2"
+
+
 MODEL_URLS: Dict[Enum, str] = {
     # RetinaFace
     RetinaFaceWeights.MNET_025:      'https://github.com/yakhyo/uniface/releases/download/weights/retinaface_mv1_0.25.onnx',
@@ -161,6 +175,9 @@ MODEL_URLS: Dict[Enum, str] = {
     # Parsing
     ParsingWeights.RESNET18:         'https://github.com/yakhyo/face-parsing/releases/download/weights/resnet18.onnx',
     ParsingWeights.RESNET34:         'https://github.com/yakhyo/face-parsing/releases/download/weights/resnet34.onnx',
+    # Anti-Spoofing (MiniFASNet)
+    MiniFASNetWeights.V1SE:          'https://github.com/yakhyo/face-anti-spoofing/releases/download/weights/MiniFASNetV1SE.onnx',
+    MiniFASNetWeights.V2:            'https://github.com/yakhyo/face-anti-spoofing/releases/download/weights/MiniFASNetV2.onnx',
 }
 
 MODEL_SHA256: Dict[Enum, str] = {
@@ -205,6 +222,9 @@ MODEL_SHA256: Dict[Enum, str] = {
     # Face Parsing
     ParsingWeights.RESNET18:         '0d9bd318e46987c3bdbfacae9e2c0f461cae1c6ac6ea6d43bbe541a91727e33f',
     ParsingWeights.RESNET34:         '5b805bba7b5660ab7070b5a381dcf75e5b3e04199f1e9387232a77a00095102e',
+    # Anti-Spoofing (MiniFASNet)
+    MiniFASNetWeights.V1SE:          'ebab7f90c7833fbccd46d3a555410e78d969db5438e169b6524be444862b3676',
+    MiniFASNetWeights.V2:            'b32929adc2d9c34b9486f8c4c7bc97c1b69bc0ea9befefc380e4faae4e463907',
 }
 
 CHUNK_SIZE = 8192

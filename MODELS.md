@@ -404,6 +404,47 @@ print(f"Detected {len(np.unique(mask))} facial components")
 
 ---
 
+## Anti-Spoofing Models
+
+### MiniFASNet Family
+
+Lightweight face anti-spoofing models for liveness detection. Detect if a face is real (live) or fake (photo, video replay, mask).
+
+| Model Name | Size   | Scale | Use Case                      |
+| ---------- | ------ | ----- | ----------------------------- |
+| `V1SE`   | 1.2 MB | 4.0   | Squeeze-and-excitation variant |
+| `V2` ⭐  | 1.2 MB | 2.7   | **Recommended default**       |
+
+**Dataset**: Trained on face anti-spoofing datasets
+**Output**: Returns (label_idx, score) where label_idx: 0=Fake, 1=Real
+
+#### Usage
+
+```python
+from uniface import RetinaFace
+from uniface.spoofing import MiniFASNet
+from uniface.constants import MiniFASNetWeights
+
+# Default (V2, recommended)
+detector = RetinaFace()
+spoofer = MiniFASNet()
+
+# V1SE variant
+spoofer = MiniFASNet(model_name=MiniFASNetWeights.V1SE)
+
+# Detect and check liveness
+faces = detector.detect(image)
+for face in faces:
+    label_idx, score = spoofer.predict(image, face['bbox'])
+    # label_idx: 0 = Fake, 1 = Real
+    label = 'Real' if label_idx == 1 else 'Fake'
+    print(f"{label}: {score:.1%}")
+```
+
+**Note**: Requires face bounding box from a detector. Use with RetinaFace, SCRFD, or YOLOv5Face.
+
+---
+
 ## Model Updates
 
 Models are automatically downloaded and cached on first use. Cache location: `~/.uniface/models/`
@@ -445,6 +486,7 @@ python scripts/download_model.py --model MNET_V2
 - **Face Recognition Training**: [yakhyo/face-recognition](https://github.com/yakhyo/face-recognition) - ArcFace, MobileFace, SphereFace training code
 - **Gaze Estimation Training**: [yakhyo/gaze-estimation](https://github.com/yakhyo/gaze-estimation) - MobileGaze training code and pretrained weights
 - **Face Parsing Training**: [yakhyo/face-parsing](https://github.com/yakhyo/face-parsing) - BiSeNet training code and pretrained weights
+- **Face Anti-Spoofing**: [yakhyo/face-anti-spoofing](https://github.com/yakhyo/face-anti-spoofing) - MiniFASNet ONNX inference (weights from [minivision-ai/Silent-Face-Anti-Spoofing](https://github.com/minivision-ai/Silent-Face-Anti-Spoofing))
 - **InsightFace**: [deepinsight/insightface](https://github.com/deepinsight/insightface) - Model architectures and pretrained weights
 
 ### Papers
