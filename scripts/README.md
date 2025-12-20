@@ -7,6 +7,7 @@ Scripts for testing UniFace features.
 | Script | Description |
 |--------|-------------|
 | `run_detection.py` | Face detection on image or webcam |
+| `run_anonymization.py` | Face anonymization/blurring for privacy |
 | `run_age_gender.py` | Age and gender prediction |
 | `run_emotion.py` | Emotion detection (7 or 8 emotions) |
 | `run_gaze_estimation.py` | Gaze direction estimation |
@@ -25,6 +26,11 @@ Scripts for testing UniFace features.
 # Face detection
 python scripts/run_detection.py --image assets/test.jpg
 python scripts/run_detection.py --webcam
+
+# Face anonymization
+python scripts/run_anonymization.py --image assets/test.jpg --method pixelate
+python scripts/run_anonymization.py --webcam --method gaussian
+python scripts/run_anonymization.py --image photo.jpg --method pixelate --pixel-blocks 5
 
 # Age and gender
 python scripts/run_age_gender.py --image assets/test.jpg

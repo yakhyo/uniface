@@ -328,7 +328,86 @@ Detected 12 facial components
 
 ---
 
-## 9. Batch Processing (3 minutes)
+## 9. Face Anonymization (2 minutes)
+
+Automatically blur faces for privacy protection:
+
+```python
+from uniface.privacy import anonymize_faces
+import cv2
+
+# One-liner: automatic detection and blurring
+image = cv2.imread("group_photo.jpg")
+anonymized = anonymize_faces(image, method='pixelate')
+cv2.imwrite("anonymized.jpg", anonymized)
+print("Faces anonymized successfully!")
+```
+
+**Manual control with custom parameters:**
+
+```python
+from uniface import RetinaFace
+from uniface.privacy import BlurFace
+
+# Initialize detector and blurrer
+detector = RetinaFace()
+blurrer = BlurFace(method='gaussian', blur_strength=5.0)
+
+# Detect and anonymize
+faces = detector.detect(image)
+anonymized = blurrer.anonymize(image, faces)
+cv2.imwrite("output.jpg", anonymized)
+```
+
+**Available blur methods:**
+
+```python
+# Pixelation (news media standard)
+blurrer = BlurFace(method='pixelate', pixel_blocks=8)
+
+# Gaussian blur (smooth, natural)
+blurrer = BlurFace(method='gaussian', blur_strength=4.0)
+
+# Black boxes (maximum privacy)
+blurrer = BlurFace(method='blackout', color=(0, 0, 0))
+
+# Elliptical blur (natural face shape)
+blurrer = BlurFace(method='elliptical', blur_strength=3.0, margin=30)
+
+# Median blur (edge-preserving)
+blurrer = BlurFace(method='median', blur_strength=3.0)
+```
+
+**Webcam anonymization:**
+
+```python
+import cv2
+from uniface import RetinaFace
+from uniface.privacy import BlurFace
+
+detector = RetinaFace()
+blurrer = BlurFace(method='pixelate')
+cap = cv2.VideoCapture(0)
+
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        break
+
+    faces = detector.detect(frame)
+    frame = blurrer.anonymize(frame, faces, inplace=True)
+
+    cv2.imshow('Anonymized', frame)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
+```
+
+---
+
+## 10. Batch Processing (3 minutes)
 
 Process multiple images:
 
@@ -361,7 +440,7 @@ print("Done!")
 
 ---
 
-## 10. Model Selection
+## 11. Model Selection
 
 Choose the right model for your use case:
 

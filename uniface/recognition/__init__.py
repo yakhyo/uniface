@@ -55,10 +55,4 @@ def create_recognizer(method: str = 'arcface', **kwargs) -> BaseRecognizer:
         raise ValueError(f"Unsupported method: '{method}'. Available: {available}")
 
 
-__all__ = [
-    'create_recognizer',
-    'ArcFace',
-    'MobileFace',
-    'SphereFace',
-    'BaseRecognizer',
-]
+__all__ = ['create_recognizer', 'BaseRecognizer', 'ArcFace', 'MobileFace', 'SphereFace']

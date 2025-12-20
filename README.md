@@ -23,6 +23,7 @@
 - **Face Parsing**: BiSeNet-based semantic segmentation with 19 facial component classes
 - **Gaze Estimation**: Real-time gaze direction prediction with MobileGaze
 - **Attribute Analysis**: Age, gender, and emotion detection
+- **Face Anonymization**: Privacy-preserving face blurring with multiple methods
 - **Face Alignment**: Precise alignment for downstream tasks
 - **Hardware Acceleration**: ARM64 optimizations (Apple Silicon), CUDA (NVIDIA), CPU fallback
 - **Simple API**: Intuitive factory functions and clean interfaces
@@ -198,6 +199,34 @@ vis_result = vis_parsing_maps(face_rgb, mask, save_image=False)
 print(f"Unique classes: {len(np.unique(mask))}")
 ```
 
+### Face Anonymization
+
+Blur or pixelate faces for privacy protection:
+
+```python
+from uniface import RetinaFace
+from uniface.privacy import BlurFace, anonymize_faces
+
+# Method 1: One-liner with automatic detection
+anonymized = anonymize_faces(image, method='pixelate')
+
+# Method 2: Manual control with custom parameters
+detector = RetinaFace()
+blurrer = BlurFace(method='gaussian', blur_strength=4.0)
+
+faces = detector.detect(image)
+anonymized = blurrer.anonymize(image, faces)
+
+# Available methods with examples
+methods = {
+    'gaussian': BlurFace(method='gaussian', blur_strength=3.0),    # Smooth, natural blur
+    'pixelate': BlurFace(method='pixelate', pixel_blocks=10),      # Blocky effect (news media)
+    'blackout': BlurFace(method='blackout', color=(0, 0, 0)),      # Solid color (max privacy)
+    'elliptical': BlurFace(method='elliptical', margin=20),        # Soft oval blur
+    'median': BlurFace(method='median', blur_strength=3.0)         # Edge-preserving
+}
+```
+
 ---
 
 ## Documentation
@@ -216,6 +245,7 @@ print(f"Unique classes: {len(np.unique(mask))}")
 from uniface.detection import RetinaFace, SCRFD
 from uniface.recognition import ArcFace
 from uniface.landmark import Landmark106
+from uniface.privacy import BlurFace, anonymize_faces
 
 from uniface.constants import SCRFDWeights
 
