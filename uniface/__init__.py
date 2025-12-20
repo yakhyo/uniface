@@ -42,6 +42,7 @@ from .landmark import Landmark106, create_landmarker
 from .parsing import BiSeNet, create_face_parser
 from .privacy import BlurFace, anonymize_faces
 from .recognition import ArcFace, MobileFace, SphereFace, create_recognizer
+from .spoofing import MiniFASNet, create_spoofer
 
 __all__ = [
     '__author__',
@@ -56,6 +57,7 @@ __all__ = [
     'create_gaze_estimator',
     'create_landmarker',
     'create_recognizer',
+    'create_spoofer',
     'detect_faces',
     'list_available_detectors',
     # Detection models
@@ -75,6 +77,8 @@ __all__ = [
     # Attribute models
     'AgeGender',
     'Emotion',
+    # Spoofing models
+    'MiniFASNet',
     # Privacy
     'BlurFace',
     'anonymize_faces',
