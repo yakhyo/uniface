@@ -23,7 +23,7 @@
 - **Face Parsing**: BiSeNet-based semantic segmentation with 19 facial component classes
 - **Gaze Estimation**: Real-time gaze direction prediction with MobileGaze
 - **Attribute Analysis**: Age, gender, and emotion detection
-- **Face Anonymization**: Privacy-preserving face blurring with multiple methods
+- **Face Anonymization**: Privacy-preserving face blurring with 5 methods (pixelate, gaussian, blackout, elliptical, median)
 - **Face Alignment**: Precise alignment for downstream tasks
 - **Hardware Acceleration**: ARM64 optimizations (Apple Silicon), CUDA (NVIDIA), CPU fallback
 - **Simple API**: Intuitive factory functions and clean interfaces
@@ -201,31 +201,55 @@ print(f"Unique classes: {len(np.unique(mask))}")
 
 ### Face Anonymization
 
-Blur or pixelate faces for privacy protection:
+Protect privacy by blurring or pixelating faces with 5 different methods:
 
 ```python
 from uniface import RetinaFace
 from uniface.privacy import BlurFace, anonymize_faces
+import cv2
 
 # Method 1: One-liner with automatic detection
+image = cv2.imread("photo.jpg")
 anonymized = anonymize_faces(image, method='pixelate')
+cv2.imwrite("anonymized.jpg", anonymized)
 
 # Method 2: Manual control with custom parameters
 detector = RetinaFace()
-blurrer = BlurFace(method='gaussian', blur_strength=4.0)
+blurrer = BlurFace(method='gaussian', blur_strength=5.0)
 
 faces = detector.detect(image)
 anonymized = blurrer.anonymize(image, faces)
 
-# Available methods with examples
+# Available blur methods:
 methods = {
+    'pixelate': BlurFace(method='pixelate', pixel_blocks=10),      # Blocky effect (news media standard)
     'gaussian': BlurFace(method='gaussian', blur_strength=3.0),    # Smooth, natural blur
-    'pixelate': BlurFace(method='pixelate', pixel_blocks=10),      # Blocky effect (news media)
-    'blackout': BlurFace(method='blackout', color=(0, 0, 0)),      # Solid color (max privacy)
-    'elliptical': BlurFace(method='elliptical', margin=20),        # Soft oval blur
-    'median': BlurFace(method='median', blur_strength=3.0)         # Edge-preserving
+    'blackout': BlurFace(method='blackout', color=(0, 0, 0)),      # Solid color boxes (maximum privacy)
+    'elliptical': BlurFace(method='elliptical', margin=20),        # Soft oval blur (natural face shape)
+    'median': BlurFace(method='median', blur_strength=3.0)         # Edge-preserving blur
 }
+
+# Real-time webcam anonymization
+cap = cv2.VideoCapture(0)
+detector = RetinaFace()
+blurrer = BlurFace(method='pixelate')
+
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        break
+
+    faces = detector.detect(frame)
+    frame = blurrer.anonymize(frame, faces, inplace=True)
+
+    cv2.imshow('Anonymized', frame)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
 ```
+
 
 ---
 
@@ -387,6 +411,7 @@ Interactive examples covering common face analysis tasks:
 | **Face Verification** | Compare two faces to verify identity | [face_verification.ipynb](examples/face_verification.ipynb) |
 | **Face Search** | Find a person in a group photo | [face_search.ipynb](examples/face_search.ipynb) |
 | **Face Parsing** | Segment face into semantic components | [face_parsing.ipynb](examples/face_parsing.ipynb) |
+| **Face Anonymization** | Blur or pixelate faces for privacy protection | [face_anonymization.ipynb](examples/face_anonymization.ipynb) |
 | **Gaze Estimation** | Estimate gaze direction from face images | [gaze_estimation.ipynb](examples/gaze_estimation.ipynb) |
 
 ### Webcam Face Detection
@@ -581,6 +606,7 @@ uniface/
 │   ├── parsing/         # Face parsing
 │   ├── gaze/            # Gaze estimation
 │   ├── attribute/       # Age, gender, emotion
+│   ├── privacy/         # Face anonymization & blurring
 │   ├── onnx_utils.py    # ONNX Runtime utilities
 │   ├── model_store.py   # Model download & caching
 │   └── visualization.py # Drawing utilities

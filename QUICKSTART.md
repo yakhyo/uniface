@@ -405,6 +405,19 @@ cap.release()
 cv2.destroyAllWindows()
 ```
 
+**Command-line tool:**
+
+```bash
+# Anonymize image with pixelation
+python scripts/run_anonymization.py --image photo.jpg
+
+# Real-time webcam anonymization
+python scripts/run_anonymization.py --webcam --method gaussian
+
+# Custom blur strength
+python scripts/run_anonymization.py --image photo.jpg --method gaussian --blur-strength 5.0
+```
+
 ---
 
 ## 10. Batch Processing (3 minutes)
@@ -582,6 +595,7 @@ Explore interactive examples for common tasks:
 | **Face Verification** | Compare two faces to verify identity | [face_verification.ipynb](examples/face_verification.ipynb) |
 | **Face Search** | Find a person in a group photo | [face_search.ipynb](examples/face_search.ipynb) |
 | **Face Parsing** | Segment face into semantic components | [face_parsing.ipynb](examples/face_parsing.ipynb) |
+| **Face Anonymization** | Blur or pixelate faces for privacy protection | [face_anonymization.ipynb](examples/face_anonymization.ipynb) |
 | **Gaze Estimation** | Estimate gaze direction | [gaze_estimation.ipynb](examples/gaze_estimation.ipynb) |
 
 ### Additional Resources
