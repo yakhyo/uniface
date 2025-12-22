@@ -2,7 +2,7 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-from typing import Any, Dict, List, Literal, Tuple
+from typing import Any, List, Literal, Tuple
 
 import numpy as np
 
@@ -14,6 +14,7 @@ from uniface.common import (
     resize_image,
 )
 from uniface.constants import RetinaFaceWeights
+from uniface.face import Face
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
 from uniface.onnx_utils import create_onnx_session
@@ -154,7 +155,7 @@ class RetinaFace(BaseDetector):
         max_num: int = 0,
         metric: Literal['default', 'max'] = 'max',
         center_weight: float = 2.0,
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Face]:
         """
         Perform face detection on an input image and return bounding boxes and facial landmarks.
 
@@ -168,19 +169,19 @@ class RetinaFace(BaseDetector):
                 when using the "default" metric. Defaults to 2.0.
 
         Returns:
-            List[Dict[str, Any]]: List of face detection dictionaries, each containing:
-                - 'bbox' (np.ndarray): Bounding box coordinates with shape (4,) as [x1, y1, x2, y2]
-                - 'confidence' (float): Detection confidence score (0.0 to 1.0)
-                - 'landmarks' (np.ndarray): 5-point facial landmarks with shape (5, 2)
+            List[Face]: List of Face objects, each containing:
+                - bbox (np.ndarray): Bounding box coordinates with shape (4,) as [x1, y1, x2, y2]
+                - confidence (float): Detection confidence score (0.0 to 1.0)
+                - landmarks (np.ndarray): 5-point facial landmarks with shape (5, 2)
 
         Example:
             >>> faces = detector.detect(image)
             >>> for face in faces:
-            ...     bbox = face['bbox']  # np.ndarray with shape (4,)
-            ...     confidence = face['confidence']  # float
-            ...     landmarks = face['landmarks']  # np.ndarray with shape (5, 2)
+            ...     bbox = face.bbox  # np.ndarray with shape (4,)
+            ...     confidence = face.confidence  # float
+            ...     landmarks = face.landmarks  # np.ndarray with shape (5, 2)
             ...     # Can pass landmarks directly to recognition
-            ...     embedding = recognizer.get_normalized_embedding(image, landmarks)
+            ...     embedding = recognizer.get_normalized_embedding(image, face.landmarks)
         """
 
         original_height, original_width = image.shape[:2]
@@ -229,12 +230,12 @@ class RetinaFace(BaseDetector):
 
         faces = []
         for i in range(detections.shape[0]):
-            face_dict = {
-                'bbox': detections[i, :4],
-                'confidence': float(detections[i, 4]),
-                'landmarks': landmarks[i],
-            }
-            faces.append(face_dict)
+            face = Face(
+                bbox=detections[i, :4],
+                confidence=float(detections[i, 4]),
+                landmarks=landmarks[i],
+            )
+            faces.append(face)
 
         return faces
 
@@ -350,19 +351,12 @@ if __name__ == '__main__':
 
         # Process each detected face
         for face in faces:
-            # Extract bbox and landmarks from dictionary
-            bbox = face['bbox']  # [x1, y1, x2, y2]
-            landmarks = face['landmarks']  # [[x1, y1], [x2, y2], ...]
-            confidence = face['confidence']
+            # Extract bbox and landmarks from Face object
+            draw_bbox(frame, face.bbox, face.confidence)
 
-            # Pass bbox and confidence separately
-            draw_bbox(frame, bbox, confidence)
-
-            # Convert landmarks to numpy array format if needed
-            if landmarks is not None and len(landmarks) > 0:
-                # Convert list of [x, y] pairs to numpy array
-                points = np.array(landmarks, dtype=np.float32)  # Shape: (5, 2)
-                draw_keypoints(frame, points)
+            # Draw landmarks if available
+            if face.landmarks is not None and len(face.landmarks) > 0:
+                draw_keypoints(frame, face.landmarks)
 
         # Display face count
         cv2.putText(

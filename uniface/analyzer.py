@@ -36,40 +36,23 @@ class FaceAnalyzer:
 
     def analyze(self, image: np.ndarray) -> List[Face]:
         """Analyze faces in an image."""
-        detections = self.detector.detect(image)
-        Logger.debug(f'Detected {len(detections)} face(s)')
+        faces = self.detector.detect(image)
+        Logger.debug(f'Detected {len(faces)} face(s)')
 
-        faces = []
-        for idx, detection in enumerate(detections):
-            bbox = detection['bbox']
-            confidence = detection['confidence']
-            landmarks = detection['landmarks']
-
-            embedding = None
+        for idx, face in enumerate(faces):
             if self.recognizer is not None:
                 try:
-                    embedding = self.recognizer.get_normalized_embedding(image, landmarks)
-                    Logger.debug(f'  Face {idx + 1}: Extracted embedding with shape {embedding.shape}')
+                    face.embedding = self.recognizer.get_normalized_embedding(image, face.landmarks)
+                    Logger.debug(f'  Face {idx + 1}: Extracted embedding with shape {face.embedding.shape}')
                 except Exception as e:
                     Logger.warning(f'  Face {idx + 1}: Failed to extract embedding: {e}')
 
-            age, gender = None, None
             if self.age_gender is not None:
                 try:
-                    gender, age = self.age_gender.predict(image, bbox)
-                    Logger.debug(f'  Face {idx + 1}: Age={age}, Gender={gender}')
+                    face.gender, face.age = self.age_gender.predict(image, face.bbox)
+                    Logger.debug(f'  Face {idx + 1}: Age={face.age}, Gender={face.gender}')
                 except Exception as e:
                     Logger.warning(f'  Face {idx + 1}: Failed to predict age/gender: {e}')
-
-            face = Face(
-                bbox=bbox,
-                confidence=confidence,
-                landmarks=landmarks,
-                embedding=embedding,
-                age=age,
-                gender=gender,
-            )
-            faces.append(face)
 
         Logger.info(f'Analysis complete: {len(faces)} face(s) processed')
         return faces

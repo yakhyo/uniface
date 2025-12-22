@@ -2,13 +2,14 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-from typing import Any, Dict, List, Literal, Tuple
+from typing import Any, List, Literal, Tuple
 
 import cv2
 import numpy as np
 
 from uniface.common import non_max_suppression
 from uniface.constants import YOLOv5FaceWeights
+from uniface.face import Face
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
 from uniface.onnx_utils import create_onnx_session
@@ -259,7 +260,7 @@ class YOLOv5Face(BaseDetector):
         max_num: int = 0,
         metric: Literal['default', 'max'] = 'max',
         center_weight: float = 2.0,
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Face]:
         """
         Perform face detection on an input image and return bounding boxes and facial landmarks.
 
@@ -273,19 +274,19 @@ class YOLOv5Face(BaseDetector):
                 when using the "default" metric. Defaults to 2.0.
 
         Returns:
-            List[Dict[str, Any]]: List of face detection dictionaries, each containing:
-                - 'bbox' (np.ndarray): Bounding box coordinates with shape (4,) as [x1, y1, x2, y2]
-                - 'confidence' (float): Detection confidence score (0.0 to 1.0)
-                - 'landmarks' (np.ndarray): 5-point facial landmarks with shape (5, 2)
+            List[Face]: List of Face objects, each containing:
+                - bbox (np.ndarray): Bounding box coordinates with shape (4,) as [x1, y1, x2, y2]
+                - confidence (float): Detection confidence score (0.0 to 1.0)
+                - landmarks (np.ndarray): 5-point facial landmarks with shape (5, 2)
 
         Example:
             >>> faces = detector.detect(image)
             >>> for face in faces:
-            ...     bbox = face['bbox']  # np.ndarray with shape (4,)
-            ...     confidence = face['confidence']  # float
-            ...     landmarks = face['landmarks']  # np.ndarray with shape (5, 2)
+            ...     bbox = face.bbox  # np.ndarray with shape (4,)
+            ...     confidence = face.confidence  # float
+            ...     landmarks = face.landmarks  # np.ndarray with shape (5, 2)
             ...     # Can pass landmarks directly to recognition
-            ...     embedding = recognizer.get_normalized_embedding(image, landmarks)
+            ...     embedding = recognizer.get_normalized_embedding(image, face.landmarks)
         """
 
         original_height, original_width = image.shape[:2]
@@ -330,11 +331,11 @@ class YOLOv5Face(BaseDetector):
 
         faces = []
         for i in range(detections.shape[0]):
-            face_dict = {
-                'bbox': detections[i, :4],
-                'confidence': float(detections[i, 4]),
-                'landmarks': landmarks[i],
-            }
-            faces.append(face_dict)
+            face = Face(
+                bbox=detections[i, :4],
+                confidence=float(detections[i, 4]),
+                landmarks=landmarks[i],
+            )
+            faces.append(face)
 
         return faces

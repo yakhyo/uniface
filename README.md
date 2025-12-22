@@ -101,9 +101,9 @@ faces = detector.detect(image)
 
 # Process results
 for face in faces:
-    bbox = face['bbox']  # [x1, y1, x2, y2]
-    confidence = face['confidence']
-    landmarks = face['landmarks']  # 5-point landmarks
+    bbox = face.bbox  # np.ndarray [x1, y1, x2, y2]
+    confidence = face.confidence
+    landmarks = face.landmarks  # np.ndarray (5, 2) landmarks
     print(f"Face detected with confidence: {confidence:.2f}")
 ```
 
@@ -121,8 +121,8 @@ recognizer = ArcFace()
 faces1 = detector.detect(image1)
 faces2 = detector.detect(image2)
 
-embedding1 = recognizer.get_normalized_embedding(image1, faces1[0]['landmarks'])
-embedding2 = recognizer.get_normalized_embedding(image2, faces2[0]['landmarks'])
+embedding1 = recognizer.get_normalized_embedding(image1, faces1[0].landmarks)
+embedding2 = recognizer.get_normalized_embedding(image2, faces2[0].landmarks)
 
 # Compare faces
 similarity = compute_similarity(embedding1, embedding2)
@@ -138,7 +138,7 @@ detector = RetinaFace()
 landmarker = Landmark106()
 
 faces = detector.detect(image)
-landmarks = landmarker.get_landmarks(image, faces[0]['bbox'])
+landmarks = landmarker.get_landmarks(image, faces[0].bbox)
 # Returns 106 (x, y) landmark points
 ```
 
@@ -151,7 +151,7 @@ detector = RetinaFace()
 age_gender = AgeGender()
 
 faces = detector.detect(image)
-gender, age = age_gender.predict(image, faces[0]['bbox'])
+gender, age = age_gender.predict(image, faces[0].bbox)
 gender_str = 'Female' if gender == 0 else 'Male'
 print(f"{gender_str}, {age} years old")
 ```
@@ -168,15 +168,14 @@ gaze_estimator = MobileGaze()
 
 faces = detector.detect(image)
 for face in faces:
-    bbox = face['bbox']
-    x1, y1, x2, y2 = map(int, bbox[:4])
+    x1, y1, x2, y2 = map(int, face.bbox[:4])
     face_crop = image[y1:y2, x1:x2]
 
     pitch, yaw = gaze_estimator.estimate(face_crop)
     print(f"Gaze: pitch={np.degrees(pitch):.1f}°, yaw={np.degrees(yaw):.1f}°")
 
     # Visualize
-    draw_gaze(image, bbox, pitch, yaw)
+    draw_gaze(image, face.bbox, pitch, yaw)
 ```
 
 ### Face Parsing
@@ -213,7 +212,7 @@ spoofer = MiniFASNet()  # Uses V2 by default
 
 faces = detector.detect(image)
 for face in faces:
-    label_idx, score = spoofer.predict(image, face['bbox'])
+    label_idx, score = spoofer.predict(image, face.bbox)
     # label_idx: 0 = Fake, 1 = Real
     label = 'Real' if label_idx == 1 else 'Fake'
     print(f"{label}: {score:.1%}")
@@ -458,9 +457,9 @@ while True:
     faces = detector.detect(frame)
 
     # Extract data for visualization
-    bboxes = [f['bbox'] for f in faces]
-    scores = [f['confidence'] for f in faces]
-    landmarks = [f['landmarks'] for f in faces]
+    bboxes = [f.bbox for f in faces]
+    scores = [f.confidence for f in faces]
+    landmarks = [f.landmarks for f in faces]
 
     draw_detections(
         image=frame,
@@ -494,7 +493,7 @@ for person_id, image_path in person_images.items():
     faces = detector.detect(image)
     if faces:
         embedding = recognizer.get_normalized_embedding(
-            image, faces[0]['landmarks']
+            image, faces[0].landmarks
         )
         database[person_id] = embedding
 
@@ -503,7 +502,7 @@ query_image = cv2.imread("query.jpg")
 query_faces = detector.detect(query_image)
 if query_faces:
     query_embedding = recognizer.get_normalized_embedding(
-        query_image, query_faces[0]['landmarks']
+        query_image, query_faces[0].landmarks
     )
 
     # Find best match

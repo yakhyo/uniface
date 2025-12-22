@@ -39,9 +39,9 @@ faces = detector.detect(image)
 # Print results
 for i, face in enumerate(faces):
     print(f"Face {i+1}:")
-    print(f"  Confidence: {face['confidence']:.2f}")
-    print(f"  BBox: {face['bbox']}")
-    print(f"  Landmarks: {len(face['landmarks'])} points")
+    print(f"  Confidence: {face.confidence:.2f}")
+    print(f"  BBox: {face.bbox}")
+    print(f"  Landmarks: {len(face.landmarks)} points")
 ```
 
 **Output:**
@@ -70,9 +70,9 @@ image = cv2.imread("photo.jpg")
 faces = detector.detect(image)
 
 # Extract visualization data
-bboxes = [f['bbox'] for f in faces]
-scores = [f['confidence'] for f in faces]
-landmarks = [f['landmarks'] for f in faces]
+bboxes = [f.bbox for f in faces]
+scores = [f.confidence for f in faces]
+landmarks = [f.landmarks for f in faces]
 
 # Draw on image
 draw_detections(
@@ -113,8 +113,8 @@ faces2 = detector.detect(image2)
 
 if faces1 and faces2:
     # Extract embeddings
-    emb1 = recognizer.get_normalized_embedding(image1, faces1[0]['landmarks'])
-    emb2 = recognizer.get_normalized_embedding(image2, faces2[0]['landmarks'])
+    emb1 = recognizer.get_normalized_embedding(image1, faces1[0].landmarks)
+    emb2 = recognizer.get_normalized_embedding(image2, faces2[0].landmarks)
 
     # Compute similarity (cosine similarity)
     similarity = np.dot(emb1, emb2.T)[0][0]
@@ -159,9 +159,9 @@ while True:
     faces = detector.detect(frame)
 
     # Draw results
-    bboxes = [f['bbox'] for f in faces]
-    scores = [f['confidence'] for f in faces]
-    landmarks = [f['landmarks'] for f in faces]
+    bboxes = [f.bbox for f in faces]
+    scores = [f.confidence for f in faces]
+    landmarks = [f.landmarks for f in faces]
     draw_detections(
         image=frame,
         bboxes=bboxes,
@@ -199,7 +199,7 @@ faces = detector.detect(image)
 
 # Predict attributes
 for i, face in enumerate(faces):
-    gender, age = age_gender.predict(image, face['bbox'])
+    gender, age = age_gender.predict(image, face.bbox)
     gender_str = 'Female' if gender == 0 else 'Male'
     print(f"Face {i+1}: {gender_str}, {age} years old")
 ```
@@ -230,7 +230,7 @@ image = cv2.imread("photo.jpg")
 faces = detector.detect(image)
 
 if faces:
-    landmarks = landmarker.get_landmarks(image, faces[0]['bbox'])
+    landmarks = landmarker.get_landmarks(image, faces[0].bbox)
     print(f"Detected {len(landmarks)} landmarks")
 
     # Draw landmarks
@@ -262,8 +262,7 @@ faces = detector.detect(image)
 
 # Estimate gaze for each face
 for i, face in enumerate(faces):
-    bbox = face['bbox']
-    x1, y1, x2, y2 = map(int, bbox[:4])
+    x1, y1, x2, y2 = map(int, face.bbox[:4])
     face_crop = image[y1:y2, x1:x2]
 
     if face_crop.size > 0:
@@ -271,7 +270,7 @@ for i, face in enumerate(faces):
         print(f"Face {i+1}: pitch={np.degrees(pitch):.1f}°, yaw={np.degrees(yaw):.1f}°")
 
         # Draw gaze direction
-        draw_gaze(image, bbox, pitch, yaw)
+        draw_gaze(image, face.bbox, pitch, yaw)
 
 cv2.imwrite("gaze_output.jpg", image)
 ```
@@ -435,7 +434,7 @@ image = cv2.imread("photo.jpg")
 faces = detector.detect(image)
 
 for i, face in enumerate(faces):
-    label_idx, score = spoofer.predict(image, face['bbox'])
+    label_idx, score = spoofer.predict(image, face.bbox)
     # label_idx: 0 = Fake, 1 = Real
     label = 'Real' if label_idx == 1 else 'Fake'
     print(f"Face {i+1}: {label} ({score:.1%})")
