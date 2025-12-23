@@ -21,10 +21,27 @@ Thank you for considering contributing to UniFace! We welcome contributions of a
 
 ### Code Style
 
+This project uses [Ruff](https://docs.astral.sh/ruff/) for linting and formatting.
+
+```bash
+# Check for linting errors
+ruff check .
+
+# Auto-fix linting errors
+ruff check . --fix
+
+# Format code
+ruff format .
+```
+
+**Guidelines:**
 - Follow PEP8 guidelines
 - Use type hints (Python 3.10+)
 - Write docstrings for public APIs
+- Line length: 120 characters
 - Keep code simple and readable
+
+All PRs must pass `ruff check .` before merging.
 
 ## Development Setup
 
