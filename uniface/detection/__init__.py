@@ -7,6 +7,8 @@ from typing import Any, Dict, List
 
 import numpy as np
 
+from uniface.face import Face
+
 from .base import BaseDetector
 from .retinaface import RetinaFace
 from .scrfd import SCRFD
@@ -16,7 +18,7 @@ from .yolov5 import YOLOv5Face
 _detector_cache: Dict[str, BaseDetector] = {}
 
 
-def detect_faces(image: np.ndarray, method: str = 'retinaface', **kwargs) -> List[Dict[str, Any]]:
+def detect_faces(image: np.ndarray, method: str = 'retinaface', **kwargs) -> List[Face]:
     """
     High-level face detection function.
 
@@ -26,18 +28,18 @@ def detect_faces(image: np.ndarray, method: str = 'retinaface', **kwargs) -> Lis
         **kwargs: Additional arguments passed to the detector.
 
     Returns:
-        List[Dict[str, Any]]: A list of dictionaries, where each dictionary represents a detected face and contains:
-            - 'bbox' (List[float]): [x1, y1, x2, y2] bounding box coordinates.
-            - 'confidence' (float): The confidence score of the detection.
-            - 'landmarks' (List[List[float]]): 5-point facial landmarks.
+        List[Face]: A list of Face objects, each containing:
+            - bbox (np.ndarray): [x1, y1, x2, y2] bounding box coordinates.
+            - confidence (float): The confidence score of the detection.
+            - landmarks (np.ndarray): 5-point facial landmarks with shape (5, 2).
 
     Example:
         >>> from uniface import detect_faces
         >>> image = cv2.imread("your_image.jpg")
         >>> faces = detect_faces(image, method='retinaface', conf_thresh=0.8)
         >>> for face in faces:
-        ...     print(f"Found face with confidence: {face['confidence']}")
-        ...     print(f"BBox: {face['bbox']}")
+        ...     print(f"Found face with confidence: {face.confidence}")
+        ...     print(f"BBox: {face.bbox}")
     """
     method_name = method.lower()
 

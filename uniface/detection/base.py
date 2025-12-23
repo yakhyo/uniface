@@ -7,6 +7,8 @@ from typing import Any, Dict, List
 
 import numpy as np
 
+from uniface.face import Face
+
 
 class BaseDetector(ABC):
     """
@@ -21,7 +23,7 @@ class BaseDetector(ABC):
         self.config = kwargs
 
     @abstractmethod
-    def detect(self, image: np.ndarray, **kwargs) -> List[Dict[str, Any]]:
+    def detect(self, image: np.ndarray, **kwargs) -> List[Face]:
         """
         Detect faces in an image.
 
@@ -30,18 +32,17 @@ class BaseDetector(ABC):
             **kwargs: Additional detection parameters
 
         Returns:
-            List[Dict[str, Any]]: List of detected faces, where each dictionary contains:
-                - 'bbox' (np.ndarray): Bounding box coordinates with shape (4,) as [x1, y1, x2, y2]
-                - 'confidence' (float): Detection confidence score (0.0 to 1.0)
-                - 'landmarks' (np.ndarray): Facial landmarks with shape (5, 2) for 5-point landmarks
-                  or (68, 2) for 68-point landmarks. Empty array if not supported.
+            List[Face]: List of detected Face objects, each containing:
+                - bbox (np.ndarray): Bounding box coordinates with shape (4,) as [x1, y1, x2, y2]
+                - confidence (float): Detection confidence score (0.0 to 1.0)
+                - landmarks (np.ndarray): Facial landmarks with shape (5, 2) for 5-point landmarks
 
         Example:
             >>> faces = detector.detect(image)
             >>> for face in faces:
-            ...     bbox = face['bbox']  # np.ndarray with shape (4,)
-            ...     confidence = face['confidence']  # float
-            ...     landmarks = face['landmarks']  # np.ndarray with shape (5, 2)
+            ...     bbox = face.bbox  # np.ndarray with shape (4,)
+            ...     confidence = face.confidence  # float
+            ...     landmarks = face.landmarks  # np.ndarray with shape (5, 2)
         """
         pass
 
