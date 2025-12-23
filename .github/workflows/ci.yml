@@ -10,14 +10,20 @@ on:
       - main
       - develop
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
 
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10", "3.11", "3.12", "3.13"]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ["3.10", "3.13"]
 
     steps:
       - name: Checkout code
@@ -27,7 +33,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: 'pip'
+          cache: "pip"
 
       - name: Install dependencies
         run: |
@@ -38,21 +44,18 @@ jobs:
         run: |
           python -c "import onnxruntime as ort; print('Available providers:', ort.get_available_providers())"
 
-      - name: Lint with ruff (if available)
-        run: |
-          pip install ruff || true
-          ruff check . --exit-zero || true
-        continue-on-error: true
+      - name: Lint with ruff
+        run: ruff check .
 
       - name: Run tests
         run: pytest -v --tb=short
 
       - name: Test package imports
-        run: |
-          python -c "from uniface import RetinaFace, ArcFace, Landmark106, AgeGender; print('All imports successful')"
+        run: python -c "import uniface; print(f'uniface {uniface.__version__} loaded with {len(uniface.__all__)} exports')"
 
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: test
 
     steps:
@@ -63,7 +66,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
-          cache: 'pip'
+          cache: "pip"
 
       - name: Install build tools
         run: |
@@ -84,4 +87,3 @@ jobs:
           name: dist-python-${{ github.sha }}
           path: dist/
           retention-days: 7
-

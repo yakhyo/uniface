@@ -5,9 +5,14 @@ on:
     tags:
       - "v*.*.*"  # Trigger only on version tags like v0.1.9
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     outputs:
       version: ${{ steps.get_version.outputs.version }}
       tag_version: ${{ steps.get_version.outputs.tag_version }}
@@ -16,13 +21,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
       - name: Get version from tag and pyproject.toml
         id: get_version
         run: |
           TAG_VERSION=${GITHUB_REF#refs/tags/v}
           echo "tag_version=$TAG_VERSION" >> $GITHUB_OUTPUT
 
-          PYPROJECT_VERSION=$(grep -Po '(?<=^version = ")[^"]*' pyproject.toml)
+          PYPROJECT_VERSION=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
           echo "version=$PYPROJECT_VERSION" >> $GITHUB_OUTPUT
 
           echo "Tag version: v$TAG_VERSION"
@@ -38,12 +48,13 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: validate
 
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.10", "3.13"]
 
     steps:
       - name: Checkout code
@@ -65,6 +76,7 @@ jobs:
 
   publish:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: [validate, test]
     permissions:
       contents: write
