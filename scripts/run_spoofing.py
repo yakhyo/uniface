@@ -70,13 +70,13 @@ def process_image(detector, spoofer, image_path: str, save_dir: str = 'outputs')
 
     # Run anti-spoofing on each face
     for i, face in enumerate(faces, 1):
-        label_idx, score = spoofer.predict(image, face['bbox'])
+        label_idx, score = spoofer.predict(image, face.bbox)
         # label_idx: 0 = Fake, 1 = Real
         label = 'Real' if label_idx == 1 else 'Fake'
         print(f'  Face {i}: {label} ({score:.1%})')
 
         # Draw result on image
-        draw_spoofing_result(image, face['bbox'], label_idx, score)
+        draw_spoofing_result(image, face.bbox, label_idx, score)
 
     # Save output
     os.makedirs(save_dir, exist_ok=True)
@@ -128,8 +128,8 @@ def process_video(detector, spoofer, source, save_dir: str = 'outputs') -> None:
 
             # Run anti-spoofing on each face
             for face in faces:
-                label_idx, score = spoofer.predict(frame, face['bbox'])
-                draw_spoofing_result(frame, face['bbox'], label_idx, score)
+                label_idx, score = spoofer.predict(frame, face.bbox)
+                draw_spoofing_result(frame, face.bbox, label_idx, score)
 
             # Write frame
             writer.write(frame)

@@ -54,7 +54,7 @@ class MobileGaze(BaseGazeEstimator):
         >>> # Detect faces and estimate gaze for each
         >>> faces = detector.detect(image)
         >>> for face in faces:
-        ...     bbox = face['bbox']
+        ...     bbox = face.bbox
         ...     x1, y1, x2, y2 = map(int, bbox[:4])
         ...     face_crop = image[y1:y2, x1:x2]
         ...     pitch, yaw = gaze_estimator.estimate(face_crop)

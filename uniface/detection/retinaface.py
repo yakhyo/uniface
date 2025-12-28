@@ -32,8 +32,8 @@ class RetinaFace(BaseDetector):
 
     Args:
         model_name (RetinaFaceWeights): Model weights to use. Defaults to `RetinaFaceWeights.MNET_V2`.
-        conf_thresh (float): Confidence threshold for filtering detections. Defaults to 0.5.
-        nms_thresh (float): Non-maximum suppression (NMS) IoU threshold. Defaults to 0.4.
+        confidence_threshold (float): Confidence threshold for filtering detections. Defaults to 0.5.
+        nms_threshold (float): Non-maximum suppression (NMS) IoU threshold. Defaults to 0.4.
         input_size (Tuple[int, int]): Fixed input size (width, height) if `dynamic_size=False`.
             Defaults to (640, 640).
             Note: Non-default sizes may cause slower inference and CoreML compatibility issues.
@@ -44,8 +44,8 @@ class RetinaFace(BaseDetector):
 
     Attributes:
         model_name (RetinaFaceWeights): Selected model variant.
-        conf_thresh (float): Threshold for confidence-based filtering.
-        nms_thresh (float): IoU threshold used for NMS.
+        confidence_threshold (float): Threshold for confidence-based filtering.
+        nms_threshold (float): IoU threshold used for NMS.
         pre_nms_topk (int): Limit on proposals before applying NMS.
         post_nms_topk (int): Limit on retained detections after NMS.
         dynamic_size (bool): Flag indicating dynamic or static input sizing.
@@ -63,23 +63,23 @@ class RetinaFace(BaseDetector):
         self,
         *,
         model_name: RetinaFaceWeights = RetinaFaceWeights.MNET_V2,
-        conf_thresh: float = 0.5,
-        nms_thresh: float = 0.4,
+        confidence_threshold: float = 0.5,
+        nms_threshold: float = 0.4,
         input_size: Tuple[int, int] = (640, 640),
         **kwargs: Any,
     ) -> None:
         super().__init__(
             model_name=model_name,
-            conf_thresh=conf_thresh,
-            nms_thresh=nms_thresh,
+            confidence_threshold=confidence_threshold,
+            nms_threshold=nms_threshold,
             input_size=input_size,
             **kwargs,
         )
         self._supports_landmarks = True  # RetinaFace supports landmarks
 
         self.model_name = model_name
-        self.conf_thresh = conf_thresh
-        self.nms_thresh = nms_thresh
+        self.confidence_threshold = confidence_threshold
+        self.nms_threshold = nms_threshold
         self.input_size = input_size
 
         # Advanced options from kwargs
@@ -88,8 +88,8 @@ class RetinaFace(BaseDetector):
         self.dynamic_size = kwargs.get('dynamic_size', False)
 
         Logger.info(
-            f'Initializing RetinaFace with model={self.model_name}, conf_thresh={self.conf_thresh}, '
-            f'nms_thresh={self.nms_thresh}, input_size={self.input_size}'
+            f'Initializing RetinaFace with model={self.model_name}, confidence_threshold={self.confidence_threshold}, '
+            f'nms_threshold={self.nms_threshold}, input_size={self.input_size}'
         )
 
         # Get path to model weights
@@ -260,21 +260,21 @@ class RetinaFace(BaseDetector):
                 - landmarks (np.ndarray): Array of detected facial landmarks.
                 Shape: (num_detections, 5, 2), where each row contains 5 landmark points (x, y).
         """
-        loc, conf, landmarks = (
+        location_predictions, confidence_scores, landmark_predictions = (
             outputs[0].squeeze(0),
             outputs[1].squeeze(0),
             outputs[2].squeeze(0),
         )
 
         # Decode boxes and landmarks
-        boxes = decode_boxes(loc, self._priors)
-        landmarks = decode_landmarks(landmarks, self._priors)
+        boxes = decode_boxes(location_predictions, self._priors)
+        landmarks = decode_landmarks(landmark_predictions, self._priors)
 
         boxes, landmarks = self._scale_detections(boxes, landmarks, resize_factor, shape=(shape[0], shape[1]))
 
         # Extract confidence scores for the face class
-        scores = conf[:, 1]
-        mask = scores > self.conf_thresh
+        scores = confidence_scores[:, 1]
+        mask = scores > self.confidence_threshold
 
         # Filter by confidence threshold
         boxes, landmarks, scores = boxes[mask], landmarks[mask], scores[mask]
@@ -285,7 +285,7 @@ class RetinaFace(BaseDetector):
 
         # Apply NMS
         detections = np.hstack((boxes, scores[:, np.newaxis])).astype(np.float32, copy=False)
-        keep = non_max_suppression(detections, self.nms_thresh)
+        keep = non_max_suppression(detections, self.nms_threshold)
         detections, landmarks = detections[keep], landmarks[keep]
 
         # Keep top-k detections

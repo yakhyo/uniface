@@ -149,7 +149,7 @@ class BlurFace:
         if not faces:
             return image if inplace else image.copy()
 
-        bboxes = [face['bbox'] for face in faces]
+        bboxes = [face.bbox for face in faces]
         return self.blur_regions(image, bboxes, inplace)
 
     def blur_regions(

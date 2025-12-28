@@ -545,7 +545,7 @@ from uniface.constants import RetinaFaceWeights, SCRFDWeights, YOLOv5FaceWeights
 # Fast detection (mobile/edge devices)
 detector = RetinaFace(
     model_name=RetinaFaceWeights.MNET_025,
-    conf_thresh=0.7
+    confidence_threshold=0.7
 )
 
 # Balanced (recommended)
@@ -556,14 +556,14 @@ detector = RetinaFace(
 # Real-time with high accuracy
 detector = YOLOv5Face(
     model_name=YOLOv5FaceWeights.YOLOV5S,
-    conf_thresh=0.6,
+    confidence_threshold=0.6,
     nms_thresh=0.5
 )
 
 # High accuracy (server/GPU)
 detector = SCRFD(
     model_name=SCRFDWeights.SCRFD_10G_KPS,
-    conf_thresh=0.5
+    confidence_threshold=0.5
 )
 ```
 
@@ -668,14 +668,14 @@ Explore interactive examples for common tasks:
 
 | Example | Description | Notebook |
 |---------|-------------|----------|
-| **Face Detection** | Detect faces and facial landmarks | [face_detection.ipynb](examples/face_detection.ipynb) |
-| **Face Alignment** | Align and crop faces for recognition | [face_alignment.ipynb](examples/face_alignment.ipynb) |
-| **Face Recognition** | Extract face embeddings and compare faces | [face_analyzer.ipynb](examples/face_analyzer.ipynb) |
-| **Face Verification** | Compare two faces to verify identity | [face_verification.ipynb](examples/face_verification.ipynb) |
-| **Face Search** | Find a person in a group photo | [face_search.ipynb](examples/face_search.ipynb) |
-| **Face Parsing** | Segment face into semantic components | [face_parsing.ipynb](examples/face_parsing.ipynb) |
-| **Face Anonymization** | Blur or pixelate faces for privacy protection | [face_anonymization.ipynb](examples/face_anonymization.ipynb) |
-| **Gaze Estimation** | Estimate gaze direction | [gaze_estimation.ipynb](examples/gaze_estimation.ipynb) |
+| **Face Detection** | Detect faces and facial landmarks | [01_face_detection.ipynb](examples/01_face_detection.ipynb) |
+| **Face Alignment** | Align and crop faces for recognition | [02_face_alignment.ipynb](examples/02_face_alignment.ipynb) |
+| **Face Verification** | Compare two faces to verify identity | [03_face_verification.ipynb](examples/03_face_verification.ipynb) |
+| **Face Search** | Find a person in a group photo | [04_face_search.ipynb](examples/04_face_search.ipynb) |
+| **Face Analyzer** | All-in-one detection, recognition & attributes | [05_face_analyzer.ipynb](examples/05_face_analyzer.ipynb) |
+| **Face Parsing** | Segment face into semantic components | [06_face_parsing.ipynb](examples/06_face_parsing.ipynb) |
+| **Face Anonymization** | Blur or pixelate faces for privacy protection | [07_face_anonymization.ipynb](examples/07_face_anonymization.ipynb) |
+| **Gaze Estimation** | Estimate gaze direction | [08_gaze_estimation.ipynb](examples/08_gaze_estimation.ipynb) |
 
 ### Additional Resources
 

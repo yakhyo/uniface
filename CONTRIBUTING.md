@@ -63,12 +63,14 @@ Example notebooks demonstrating library usage:
 
 | Example | Notebook |
 |---------|----------|
-| Face Detection | [face_detection.ipynb](examples/face_detection.ipynb) |
-| Face Alignment | [face_alignment.ipynb](examples/face_alignment.ipynb) |
-| Face Recognition | [face_analyzer.ipynb](examples/face_analyzer.ipynb) |
-| Face Verification | [face_verification.ipynb](examples/face_verification.ipynb) |
-| Face Search | [face_search.ipynb](examples/face_search.ipynb) |
-| Face Anonymization | [face_anonymization.ipynb](examples/face_anonymization.ipynb) |
+| Face Detection | [01_face_detection.ipynb](examples/01_face_detection.ipynb) |
+| Face Alignment | [02_face_alignment.ipynb](examples/02_face_alignment.ipynb) |
+| Face Verification | [03_face_verification.ipynb](examples/03_face_verification.ipynb) |
+| Face Search | [04_face_search.ipynb](examples/04_face_search.ipynb) |
+| Face Analyzer | [05_face_analyzer.ipynb](examples/05_face_analyzer.ipynb) |
+| Face Parsing | [06_face_parsing.ipynb](examples/06_face_parsing.ipynb) |
+| Face Anonymization | [07_face_anonymization.ipynb](examples/07_face_anonymization.ipynb) |
+| Gaze Estimation | [08_gaze_estimation.ipynb](examples/08_gaze_estimation.ipynb) |
 
 ## Questions?
 

@@ -39,17 +39,17 @@ def process_image(
     if not faces:
         return
 
-    bboxes = [f['bbox'] for f in faces]
-    scores = [f['confidence'] for f in faces]
-    landmarks = [f['landmarks'] for f in faces]
+    bboxes = [f.bbox for f in faces]
+    scores = [f.confidence for f in faces]
+    landmarks = [f.landmarks for f in faces]
     draw_detections(
         image=image, bboxes=bboxes, scores=scores, landmarks=landmarks, vis_threshold=threshold, fancy_bbox=True
     )
 
     for i, face in enumerate(faces):
-        result = age_gender.predict(image, face['bbox'])
+        result = age_gender.predict(image, face.bbox)
         print(f'  Face {i + 1}: {result.sex}, {result.age} years old')
-        draw_age_gender_label(image, face['bbox'], result.sex, result.age)
+        draw_age_gender_label(image, face.bbox, result.sex, result.age)
 
     os.makedirs(save_dir, exist_ok=True)
     output_path = os.path.join(save_dir, f'{Path(image_path).stem}_age_gender.jpg')
@@ -74,16 +74,16 @@ def run_webcam(detector, age_gender, threshold: float = 0.6):
         faces = detector.detect(frame)
 
         # unpack face data for visualization
-        bboxes = [f['bbox'] for f in faces]
-        scores = [f['confidence'] for f in faces]
-        landmarks = [f['landmarks'] for f in faces]
+        bboxes = [f.bbox for f in faces]
+        scores = [f.confidence for f in faces]
+        landmarks = [f.landmarks for f in faces]
         draw_detections(
             image=frame, bboxes=bboxes, scores=scores, landmarks=landmarks, vis_threshold=threshold, fancy_bbox=True
         )
 
         for face in faces:
-            result = age_gender.predict(frame, face['bbox'])
-            draw_age_gender_label(frame, face['bbox'], result.sex, result.age)
+            result = age_gender.predict(frame, face.bbox)
+            draw_age_gender_label(frame, face.bbox, result.sex, result.age)
 
         cv2.putText(
             frame,

@@ -54,7 +54,7 @@ class BiSeNet(BaseFaceParser):
         >>> # Detect faces and parse each face
         >>> faces = detector.detect(image)
         >>> for face in faces:
-        ...     bbox = face['bbox']
+        ...     bbox = face.bbox
         ...     x1, y1, x2, y2 = map(int, bbox[:4])
         ...     face_crop = image[y1:y2, x1:x2]
         ...     mask = parser.parse(face_crop)

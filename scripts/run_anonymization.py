@@ -33,9 +33,9 @@ def process_image(
         from uniface.visualization import draw_detections
 
         preview = image.copy()
-        bboxes = [face['bbox'] for face in faces]
-        scores = [face['confidence'] for face in faces]
-        landmarks = [face['landmarks'] for face in faces]
+        bboxes = [face.bbox for face in faces]
+        scores = [face.confidence for face in faces]
+        landmarks = [face.landmarks for face in faces]
         draw_detections(preview, bboxes, scores, landmarks)
 
         # Show preview
@@ -157,7 +157,7 @@ Examples:
 
     # Detection
     parser.add_argument(
-        '--conf-thresh',
+        '--confidence-threshold',
         type=float,
         default=0.5,
         help='Detection confidence threshold (default: 0.5)',
@@ -183,8 +183,8 @@ Examples:
     color = tuple(color_values)
 
     # Initialize detector
-    print(f'Initializing face detector (conf_thresh={args.conf_thresh})...')
-    detector = RetinaFace(conf_thresh=args.conf_thresh)
+    print(f'Initializing face detector (confidence_threshold={args.confidence_threshold})...')
+    detector = RetinaFace(confidence_threshold=args.confidence_threshold)
 
     # Initialize blurrer
     print(f'Initializing blur method: {args.method}')

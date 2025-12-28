@@ -24,7 +24,7 @@ def process_image(detector, landmarker, image_path: str, save_dir: str = 'output
         return
 
     for i, face in enumerate(faces):
-        bbox = face['bbox']
+        bbox = face.bbox
         x1, y1, x2, y2 = map(int, bbox)
         cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 2)
 
@@ -67,7 +67,7 @@ def run_webcam(detector, landmarker):
         faces = detector.detect(frame)
 
         for face in faces:
-            bbox = face['bbox']
+            bbox = face.bbox
             x1, y1, x2, y2 = map(int, bbox)
             cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
 

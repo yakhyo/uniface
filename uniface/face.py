@@ -29,6 +29,8 @@ class Face:
         age: Predicted exact age in years (optional, from AgeGender model).
         age_group: Predicted age range like "20-29" (optional, from FairFace).
         race: Predicted race/ethnicity (optional, from FairFace).
+        emotion: Predicted emotion label (optional, from Emotion model).
+        emotion_confidence: Confidence score for emotion prediction (optional).
 
     Properties:
         sex: Gender as a human-readable string ("Female" or "Male").
@@ -47,6 +49,8 @@ class Face:
     age: Optional[int] = None
     age_group: Optional[str] = None
     race: Optional[str] = None
+    emotion: Optional[str] = None
+    emotion_confidence: Optional[float] = None
 
     def compute_similarity(self, other: 'Face') -> float:
         """Compute cosine similarity with another face."""
@@ -85,6 +89,8 @@ class Face:
             parts.append(f'sex={self.sex}')
         if self.race is not None:
             parts.append(f'race={self.race}')
+        if self.emotion is not None:
+            parts.append(f'emotion={self.emotion}')
         if self.embedding is not None:
             parts.append(f'embedding_dim={self.embedding.shape[0]}')
         return ', '.join(parts) + ')'

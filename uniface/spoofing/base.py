@@ -95,7 +95,7 @@ class BaseSpoofer(ABC):
             >>> detector = RetinaFace()
             >>> faces = detector.detect(image)
             >>> for face in faces:
-            ...     label_idx, score = spoofer.predict(image, face['bbox'])
+            ...     label_idx, score = spoofer.predict(image, face.bbox)
             ...     label = 'Real' if label_idx == 1 else 'Fake'
             ...     print(f'{label}: {score:.2%}')
         """

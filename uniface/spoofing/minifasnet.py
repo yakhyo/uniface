@@ -59,7 +59,7 @@ class MiniFASNet(BaseSpoofer):
         >>> # Detect faces and check if they are real
         >>> faces = detector.detect(image)
         >>> for face in faces:
-        ...     label_idx, score = spoofer.predict(image, face['bbox'])
+        ...     label_idx, score = spoofer.predict(image, face.bbox)
         ...     # label_idx: 0 = Fake, 1 = Real
         ...     label = 'Real' if label_idx == 1 else 'Fake'
         ...     print(f'{label}: {score:.2%}')

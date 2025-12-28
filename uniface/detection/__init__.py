@@ -36,7 +36,7 @@ def detect_faces(image: np.ndarray, method: str = 'retinaface', **kwargs) -> Lis
     Example:
         >>> from uniface import detect_faces
         >>> image = cv2.imread("your_image.jpg")
-        >>> faces = detect_faces(image, method='retinaface', conf_thresh=0.8)
+        >>> faces = detect_faces(image, method='retinaface', confidence_threshold=0.8)
         >>> for face in faces:
         ...     print(f"Found face with confidence: {face.confidence}")
         ...     print(f"BBox: {face.bbox}")
@@ -79,7 +79,7 @@ def create_detector(method: str = 'retinaface', **kwargs) -> BaseDetector:
         >>> detector = create_detector(
         ...     'scrfd',
         ...     model_name=SCRFDWeights.SCRFD_10G_KPS,
-        ...     conf_thresh=0.8,
+        ...     confidence_threshold=0.8,
         ...     input_size=(640, 640)
         ... )
 
@@ -87,16 +87,16 @@ def create_detector(method: str = 'retinaface', **kwargs) -> BaseDetector:
         >>> detector = create_detector(
         ...     'retinaface',
         ...     model_name=RetinaFaceWeights.MNET_V2,
-        ...     conf_thresh=0.8,
-        ...     nms_thresh=0.4
+        ...     confidence_threshold=0.8,
+        ...     nms_threshold=0.4
         ... )
 
         >>> # YOLOv5-Face detector
         >>> detector = create_detector(
         ...     'yolov5face',
         ...     model_name=YOLOv5FaceWeights.YOLOV5S,
-        ...     conf_thresh=0.25,
-        ...     nms_thresh=0.45
+        ...     confidence_threshold=0.25,
+        ...     nms_threshold=0.45
         ... )
     """
     method = method.lower()
@@ -129,8 +129,8 @@ def list_available_detectors() -> Dict[str, Dict[str, Any]]:
             'paper': 'https://arxiv.org/abs/1905.00641',
             'default_params': {
                 'model_name': 'mnet_v2',
-                'conf_thresh': 0.5,
-                'nms_thresh': 0.4,
+                'confidence_threshold': 0.5,
+                'nms_threshold': 0.4,
                 'input_size': (640, 640),
             },
         },
@@ -140,8 +140,8 @@ def list_available_detectors() -> Dict[str, Dict[str, Any]]:
             'paper': 'https://arxiv.org/abs/2105.04714',
             'default_params': {
                 'model_name': 'scrfd_10g_kps',
-                'conf_thresh': 0.5,
-                'nms_thresh': 0.4,
+                'confidence_threshold': 0.5,
+                'nms_threshold': 0.4,
                 'input_size': (640, 640),
             },
         },
@@ -151,8 +151,8 @@ def list_available_detectors() -> Dict[str, Dict[str, Any]]:
             'paper': 'https://arxiv.org/abs/2105.12931',
             'default_params': {
                 'model_name': 'yolov5s_face',
-                'conf_thresh': 0.25,
-                'nms_thresh': 0.45,
+                'confidence_threshold': 0.25,
+                'nms_threshold': 0.45,
                 'input_size': 640,
             },
         },

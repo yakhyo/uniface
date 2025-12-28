@@ -20,9 +20,9 @@ def process_image(detector, image_path: str, threshold: float = 0.6, save_dir: s
     faces = detector.detect(image)
 
     if faces:
-        bboxes = [face['bbox'] for face in faces]
-        scores = [face['confidence'] for face in faces]
-        landmarks = [face['landmarks'] for face in faces]
+        bboxes = [face.bbox for face in faces]
+        scores = [face.confidence for face in faces]
+        landmarks = [face.landmarks for face in faces]
         draw_detections(image, bboxes, scores, landmarks, vis_threshold=threshold)
 
     os.makedirs(save_dir, exist_ok=True)
@@ -48,9 +48,9 @@ def run_webcam(detector, threshold: float = 0.6):
         faces = detector.detect(frame)
 
         # unpack face data for visualization
-        bboxes = [f['bbox'] for f in faces]
-        scores = [f['confidence'] for f in faces]
-        landmarks = [f['landmarks'] for f in faces]
+        bboxes = [f.bbox for f in faces]
+        scores = [f.confidence for f in faces]
+        landmarks = [f.landmarks for f in faces]
         draw_detections(
             image=frame,
             bboxes=bboxes,

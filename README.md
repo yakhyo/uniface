@@ -321,7 +321,7 @@ detector = RetinaFace()
 # Create with custom config
 detector = SCRFD(
     model_name=SCRFDWeights.SCRFD_10G_KPS, # SCRFDWeights.SCRFD_500M_KPS
-    conf_thresh=0.4,
+    confidence_threshold=0.4,
     input_size=(640, 640)
 )
 # Or with defaults settings: detector = SCRFD()
@@ -340,16 +340,16 @@ from uniface.constants import RetinaFaceWeights, YOLOv5FaceWeights
 # Detection
 detector = RetinaFace(
     model_name=RetinaFaceWeights.MNET_V2,
-    conf_thresh=0.5,
-    nms_thresh=0.4
+    confidence_threshold=0.5,
+    nms_threshold=0.4
 )
 # Or detector = RetinaFace()
 
 # YOLOv5-Face detection
 detector = YOLOv5Face(
     model_name=YOLOv5FaceWeights.YOLOV5S,
-    conf_thresh=0.6,
-    nms_thresh=0.5
+    confidence_threshold=0.6,
+    nms_threshold=0.5
 )
 # Or detector = YOLOv5Face
 
@@ -365,7 +365,7 @@ recognizer = SphereFace()  # Angular softmax alternative
 from uniface import detect_faces
 
 # One-line face detection
-faces = detect_faces(image, method='retinaface', conf_thresh=0.8)  # methods: retinaface, scrfd, yolov5face
+faces = detect_faces(image, method='retinaface', confidence_threshold=0.8)  # methods: retinaface, scrfd, yolov5face
 ```
 
 ### Key Parameters (quick reference)
@@ -374,9 +374,9 @@ faces = detect_faces(image, method='retinaface', conf_thresh=0.8)  # methods: re
 
 | Class          | Key params (defaults)                                                                                                                | Notes                                          |
 | -------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------- |
-| `RetinaFace` | `model_name=RetinaFaceWeights.MNET_V2`, `conf_thresh=0.5`, `nms_thresh=0.4`, `input_size=(640, 640)`, `dynamic_size=False` | Supports 5-point landmarks                     |
-| `SCRFD`      | `model_name=SCRFDWeights.SCRFD_10G_KPS`, `conf_thresh=0.5`, `nms_thresh=0.4`, `input_size=(640, 640)`                        | Supports 5-point landmarks                     |
-| `YOLOv5Face` | `model_name=YOLOv5FaceWeights.YOLOV5S`, `conf_thresh=0.6`, `nms_thresh=0.5`, `input_size=640` (fixed)                        | Supports 5-point landmarks; models: YOLOV5N/S/M; `input_size` must be 640 |
+| `RetinaFace` | `model_name=RetinaFaceWeights.MNET_V2`, `confidence_threshold=0.5`, `nms_threshold=0.4`, `input_size=(640, 640)`, `dynamic_size=False` | Supports 5-point landmarks                     |
+| `SCRFD`      | `model_name=SCRFDWeights.SCRFD_10G_KPS`, `confidence_threshold=0.5`, `nms_threshold=0.4`, `input_size=(640, 640)`                        | Supports 5-point landmarks                     |
+| `YOLOv5Face` | `model_name=YOLOv5FaceWeights.YOLOV5S`, `confidence_threshold=0.6`, `nms_threshold=0.5`, `input_size=640` (fixed)                        | Supports 5-point landmarks; models: YOLOV5N/S/M; `input_size` must be 640 |
 
 **Recognition**
 
@@ -454,14 +454,14 @@ Interactive examples covering common face analysis tasks:
 
 | Example | Description | Notebook |
 |---------|-------------|----------|
-| **Face Detection** | Detect faces and facial landmarks | [face_detection.ipynb](examples/face_detection.ipynb) |
-| **Face Alignment** | Align and crop faces for recognition | [face_alignment.ipynb](examples/face_alignment.ipynb) |
-| **Face Recognition** | Extract face embeddings and compare faces | [face_analyzer.ipynb](examples/face_analyzer.ipynb) |
-| **Face Verification** | Compare two faces to verify identity | [face_verification.ipynb](examples/face_verification.ipynb) |
-| **Face Search** | Find a person in a group photo | [face_search.ipynb](examples/face_search.ipynb) |
-| **Face Parsing** | Segment face into semantic components | [face_parsing.ipynb](examples/face_parsing.ipynb) |
-| **Face Anonymization** | Blur or pixelate faces for privacy protection | [face_anonymization.ipynb](examples/face_anonymization.ipynb) |
-| **Gaze Estimation** | Estimate gaze direction from face images | [gaze_estimation.ipynb](examples/gaze_estimation.ipynb) |
+| **Face Detection** | Detect faces and facial landmarks | [01_face_detection.ipynb](examples/01_face_detection.ipynb) |
+| **Face Alignment** | Align and crop faces for recognition | [02_face_alignment.ipynb](examples/02_face_alignment.ipynb) |
+| **Face Verification** | Compare two faces to verify identity | [03_face_verification.ipynb](examples/03_face_verification.ipynb) |
+| **Face Search** | Find a person in a group photo | [04_face_search.ipynb](examples/04_face_search.ipynb) |
+| **Face Analyzer** | All-in-one detection, recognition & attributes | [05_face_analyzer.ipynb](examples/05_face_analyzer.ipynb) |
+| **Face Parsing** | Segment face into semantic components | [06_face_parsing.ipynb](examples/06_face_parsing.ipynb) |
+| **Face Anonymization** | Blur or pixelate faces for privacy protection | [07_face_anonymization.ipynb](examples/07_face_anonymization.ipynb) |
+| **Gaze Estimation** | Estimate gaze direction from face images | [08_gaze_estimation.ipynb](examples/08_gaze_estimation.ipynb) |
 
 ### Webcam Face Detection
 

@@ -29,8 +29,8 @@ class SCRFD(BaseDetector):
     Args:
         model_name (SCRFDWeights): Predefined model enum (e.g., `SCRFD_10G_KPS`).
             Specifies the SCRFD variant to load. Defaults to SCRFD_10G_KPS.
-        conf_thresh (float): Confidence threshold for filtering detections. Defaults to 0.5.
-        nms_thresh (float): Non-Maximum Suppression threshold. Defaults to 0.4.
+        confidence_threshold (float): Confidence threshold for filtering detections. Defaults to 0.5.
+        nms_threshold (float): Non-Maximum Suppression threshold. Defaults to 0.4.
         input_size (Tuple[int, int]): Input image size (width, height).
             Defaults to (640, 640).
             Note: Non-default sizes may cause slower inference and CoreML compatibility issues.
@@ -38,10 +38,10 @@ class SCRFD(BaseDetector):
 
     Attributes:
         model_name (SCRFDWeights): Selected model variant.
-        conf_thresh (float): Threshold used to filter low-confidence detections.
-        nms_thresh (float): Threshold used during NMS to suppress overlapping boxes.
+        confidence_threshold (float): Threshold used to filter low-confidence detections.
+        nms_threshold (float): Threshold used during NMS to suppress overlapping boxes.
         input_size (Tuple[int, int]): Image size to which inputs are resized before inference.
-        _fmc (int): Number of feature map levels used in the model.
+        _num_feature_maps (int): Number of feature map levels used in the model.
         _feat_stride_fpn (List[int]): Feature map strides corresponding to each detection level.
         _num_anchors (int): Number of anchors per feature location.
         _center_cache (Dict): Cached anchor centers for efficient forward passes.
@@ -56,35 +56,35 @@ class SCRFD(BaseDetector):
         self,
         *,
         model_name: SCRFDWeights = SCRFDWeights.SCRFD_10G_KPS,
-        conf_thresh: float = 0.5,
-        nms_thresh: float = 0.4,
+        confidence_threshold: float = 0.5,
+        nms_threshold: float = 0.4,
         input_size: Tuple[int, int] = (640, 640),
         **kwargs: Any,
     ) -> None:
         super().__init__(
             model_name=model_name,
-            conf_thresh=conf_thresh,
-            nms_thresh=nms_thresh,
+            confidence_threshold=confidence_threshold,
+            nms_threshold=nms_threshold,
             input_size=input_size,
             **kwargs,
         )
         self._supports_landmarks = True  # SCRFD supports landmarks
 
         self.model_name = model_name
-        self.conf_thresh = conf_thresh
-        self.nms_thresh = nms_thresh
+        self.confidence_threshold = confidence_threshold
+        self.nms_threshold = nms_threshold
         self.input_size = input_size
 
         # ------- SCRFD model params ------
-        self._fmc = 3
+        self._num_feature_maps = 3
         self._feat_stride_fpn = [8, 16, 32]
         self._num_anchors = 2
         self._center_cache = {}
         # ---------------------------------
 
         Logger.info(
-            f'Initializing SCRFD with model={self.model_name}, conf_thresh={self.conf_thresh}, '
-            f'nms_thresh={self.nms_thresh}, input_size={self.input_size}'
+            f'Initializing SCRFD with model={self.model_name}, confidence_threshold={self.confidence_threshold}, '
+            f'nms_threshold={self.nms_threshold}, input_size={self.input_size}'
         )
 
         # Get path to model weights
@@ -147,11 +147,11 @@ class SCRFD(BaseDetector):
 
         image_size = image_size
 
-        fmc = self._fmc
+        num_feature_maps = self._num_feature_maps
         for idx, stride in enumerate(self._feat_stride_fpn):
             scores = outputs[idx]
-            bbox_preds = outputs[fmc + idx] * stride
-            kps_preds = outputs[2 * fmc + idx] * stride
+            bbox_preds = outputs[num_feature_maps + idx] * stride
+            kps_preds = outputs[2 * num_feature_maps + idx] * stride
 
             # Generate anchors
             fm_height = image_size[0] // stride
@@ -171,7 +171,7 @@ class SCRFD(BaseDetector):
                 if len(self._center_cache) < 100:
                     self._center_cache[cache_key] = anchor_centers
 
-            pos_indices = np.where(scores >= self.conf_thresh)[0]
+            pos_indices = np.where(scores >= self.confidence_threshold)[0]
             if len(pos_indices) == 0:
                 continue
 
@@ -247,7 +247,7 @@ class SCRFD(BaseDetector):
         pre_det = np.hstack((bboxes, scores)).astype(np.float32, copy=False)
         pre_det = pre_det[order, :]
 
-        keep = non_max_suppression(pre_det, threshold=self.nms_thresh)
+        keep = non_max_suppression(pre_det, threshold=self.nms_threshold)
 
         detections = pre_det[keep, :]
         landmarks = landmarks[order, :, :]

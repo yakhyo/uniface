@@ -96,7 +96,7 @@ def face_alignment(
         np.ndarray: The 2x3 transformation matrix used for alignment.
     """
     # Get the transformation matrix
-    M, M_inv = estimate_norm(landmark, image_size)
+    transform_matrix, inverse_transform = estimate_norm(landmark, image_size)
 
     # Handle both int and tuple for warpAffine output size
     if isinstance(image_size, int):
@@ -105,9 +105,9 @@ def face_alignment(
         output_size = image_size
 
     # Warp the input image to align the face
-    warped = cv2.warpAffine(image, M, output_size, borderValue=0.0)
+    warped = cv2.warpAffine(image, transform_matrix, output_size, borderValue=0.0)
 
-    return warped, M_inv
+    return warped, inverse_transform
 
 
 def compute_similarity(feat1: np.ndarray, feat2: np.ndarray, normalized: bool = False) -> np.float32:
