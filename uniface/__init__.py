@@ -22,7 +22,7 @@ from uniface.model_store import verify_model_weights
 from uniface.visualization import draw_detections, vis_parsing_maps
 
 from .analyzer import FaceAnalyzer
-from .attribute import AgeGender
+from .attribute import AgeGender, AttributeResult, FairFace
 from .face import Face
 
 try:
@@ -76,7 +76,9 @@ __all__ = [
     'BiSeNet',
     # Attribute models
     'AgeGender',
+    'AttributeResult',
     'Emotion',
+    'FairFace',
     # Spoofing models
     'MiniFASNet',
     # Privacy

@@ -2,7 +2,7 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass, fields
 from typing import Optional
 
 import numpy as np
@@ -12,10 +12,28 @@ from uniface.face_utils import compute_similarity
 __all__ = ['Face']
 
 
-@dataclass
+@dataclass(slots=True)
 class Face:
     """
     Detected face with analysis results.
+
+    This dataclass represents a single detected face along with optional
+    analysis results such as embeddings, age, gender, and race predictions.
+
+    Attributes:
+        bbox: Bounding box coordinates [x1, y1, x2, y2].
+        confidence: Detection confidence score.
+        landmarks: Facial landmark coordinates (typically 5 points).
+        embedding: Face embedding vector for recognition (optional).
+        gender: Predicted gender, 0=Female, 1=Male (optional).
+        age: Predicted exact age in years (optional, from AgeGender model).
+        age_group: Predicted age range like "20-29" (optional, from FairFace).
+        race: Predicted race/ethnicity (optional, from FairFace).
+
+    Properties:
+        sex: Gender as a human-readable string ("Female" or "Male").
+        bbox_xyxy: Bounding box in (x1, y1, x2, y2) format.
+        bbox_xywh: Bounding box in (x1, y1, width, height) format.
     """
 
     # Required attributes
@@ -25,8 +43,10 @@ class Face:
 
     # Optional attributes
     embedding: Optional[np.ndarray] = None
+    gender: Optional[int] = None
     age: Optional[int] = None
-    gender: Optional[int] = None  # 0 or 1
+    age_group: Optional[str] = None
+    race: Optional[str] = None
 
     def compute_similarity(self, other: 'Face') -> float:
         """Compute cosine similarity with another face."""
@@ -36,10 +56,10 @@ class Face:
 
     def to_dict(self) -> dict:
         """Convert to dictionary."""
-        return asdict(self)
+        return {f.name: getattr(self, f.name) for f in fields(self)}
 
     @property
-    def sex(self) -> str:
+    def sex(self) -> Optional[str]:
         """Get gender as a string label (Female or Male)."""
         if self.gender is None:
             return None
@@ -59,8 +79,12 @@ class Face:
         parts = [f'Face(confidence={self.confidence:.3f}']
         if self.age is not None:
             parts.append(f'age={self.age}')
+        if self.age_group is not None:
+            parts.append(f'age_group={self.age_group}')
         if self.gender is not None:
             parts.append(f'sex={self.sex}')
+        if self.race is not None:
+            parts.append(f'race={self.race}')
         if self.embedding is not None:
             parts.append(f'embedding_dim={self.embedding.shape[0]}')
         return ', '.join(parts) + ')'

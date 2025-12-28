@@ -88,6 +88,15 @@ class AgeGenderWeights(str, Enum):
     DEFAULT = "age_gender"
 
 
+class FairFaceWeights(str, Enum):
+    """
+    FairFace attribute prediction (race, gender, age).
+    Trained on FairFace dataset with balanced demographics.
+    https://github.com/yakhyo/fairface-onnx
+    """
+    DEFAULT = "fairface"
+
+
 class LandmarkWeights(str, Enum):
     """
     MobileNet 0.5 from Insightface
@@ -164,6 +173,8 @@ MODEL_URLS: Dict[Enum, str] = {
     DDAMFNWeights.AFFECNET8:         'https://github.com/yakhyo/uniface/releases/download/weights/affecnet8.script',
     # AgeGender
     AgeGenderWeights.DEFAULT:        'https://github.com/yakhyo/uniface/releases/download/weights/genderage.onnx',
+    # FairFace
+    FairFaceWeights.DEFAULT:         'https://github.com/yakhyo/fairface-onnx/releases/download/weights/fairface.onnx',
     # Landmarks
     LandmarkWeights.DEFAULT:         'https://github.com/yakhyo/uniface/releases/download/weights/2d106det.onnx',
     # Gaze (MobileGaze)
@@ -211,6 +222,8 @@ MODEL_SHA256: Dict[Enum, str] = {
     DDAMFNWeights.AFFECNET8:         '8c66963bc71db42796a14dfcbfcd181b268b65a3fc16e87147d6a3a3d7e0f487',
     # AgeGender
     AgeGenderWeights.DEFAULT:        '4fde69b1c810857b88c64a335084f1c3fe8f01246c9a191b48c7bb756d6652fb',
+    # FairFace
+    FairFaceWeights.DEFAULT:         '9c8c47d437cd310538d233f2465f9ed0524cb7fb51882a37f74e8bc22437fdbf',
     # Landmark
     LandmarkWeights.DEFAULT:         'f001b856447c413801ef5c42091ed0cd516fcd21f2d6b79635b1e733a7109dbf',
     # MobileGaze (trained on Gaze360)

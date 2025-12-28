@@ -199,9 +199,11 @@ faces = detector.detect(image)
 
 # Predict attributes
 for i, face in enumerate(faces):
-    gender, age = age_gender.predict(image, face.bbox)
-    gender_str = 'Female' if gender == 0 else 'Male'
-    print(f"Face {i+1}: {gender_str}, {age} years old")
+    result = age_gender.predict(image, face.bbox)
+    print(f"Face {i+1}: {result.sex}, {result.age} years old")
+    # result.gender: 0=Female, 1=Male
+    # result.sex: "Female" or "Male"
+    # result.age: age in years
 ```
 
 **Output:**
@@ -210,6 +212,45 @@ for i, face in enumerate(faces):
 Face 1: Male, 32 years old
 Face 2: Female, 28 years old
 ```
+
+---
+
+## 5b. FairFace Attributes (2 minutes)
+
+Detect race, gender, and age group with balanced demographics:
+
+```python
+import cv2
+from uniface import RetinaFace, FairFace
+
+# Initialize models
+detector = RetinaFace()
+fairface = FairFace()
+
+# Load image
+image = cv2.imread("photo.jpg")
+faces = detector.detect(image)
+
+# Predict attributes
+for i, face in enumerate(faces):
+    result = fairface.predict(image, face.bbox)
+    print(f"Face {i+1}: {result.sex}, {result.age_group}, {result.race}")
+    # result.gender: 0=Female, 1=Male
+    # result.sex: "Female" or "Male"
+    # result.age_group: "20-29", "30-39", etc.
+    # result.race: "East Asian", "White", etc.
+```
+
+**Output:**
+
+```
+Face 1: Male, 30-39, East Asian
+Face 2: Female, 20-29, White
+```
+
+**Race Categories:** White, Black, Latino Hispanic, East Asian, Southeast Asian, Indian, Middle Eastern
+
+**Age Groups:** 0-2, 3-9, 10-19, 20-29, 30-39, 40-49, 50-59, 60-69, 70+
 
 ---
 
@@ -650,4 +691,5 @@ Explore interactive examples for common tasks:
 - **Face Recognition Training**: [yakhyo/face-recognition](https://github.com/yakhyo/face-recognition)
 - **Gaze Estimation Training**: [yakhyo/gaze-estimation](https://github.com/yakhyo/gaze-estimation)
 - **Face Parsing Training**: [yakhyo/face-parsing](https://github.com/yakhyo/face-parsing)
+- **FairFace**: [yakhyo/fairface-onnx](https://github.com/yakhyo/fairface-onnx) - Race, gender, age prediction
 - **InsightFace**: [deepinsight/insightface](https://github.com/deepinsight/insightface)

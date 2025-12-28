@@ -3,9 +3,57 @@
 # GitHub: https://github.com/yakhyo
 
 from abc import ABC, abstractmethod
-from typing import Any
+from dataclasses import dataclass
+from typing import Any, Optional
 
 import numpy as np
+
+__all__ = ['Attribute', 'AttributeResult']
+
+
+@dataclass(slots=True)
+class AttributeResult:
+    """
+    Unified result structure for face attribute prediction.
+
+    This dataclass provides a consistent return type across different attribute
+    prediction models (e.g., AgeGender, FairFace), enabling interoperability
+    and unified handling of results.
+
+    Attributes:
+        gender: Predicted gender (0=Female, 1=Male).
+        age: Exact age in years. Provided by AgeGender model, None for FairFace.
+        age_group: Age range string like "20-29". Provided by FairFace, None for AgeGender.
+        race: Race/ethnicity label. Provided by FairFace only.
+
+    Properties:
+        sex: Gender as a human-readable string ("Female" or "Male").
+
+    Examples:
+        >>> # AgeGender result
+        >>> result = AttributeResult(gender=1, age=25)
+        >>> result.sex
+        'Male'
+        >>> result.age
+        25
+
+        >>> # FairFace result
+        >>> result = AttributeResult(gender=0, age_group="20-29", race="East Asian")
+        >>> result.sex
+        'Female'
+        >>> result.race
+        'East Asian'
+    """
+
+    gender: int
+    age: Optional[int] = None
+    age_group: Optional[str] = None
+    race: Optional[str] = None
+
+    @property
+    def sex(self) -> str:
+        """Get gender as a string label (Female or Male)."""
+        return 'Female' if self.gender == 0 else 'Male'
 
 
 class Attribute(ABC):
