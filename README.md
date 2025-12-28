@@ -3,7 +3,7 @@
 <div align="center">
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.11%2B-blue)](https://www.python.org/)
 [![PyPI](https://img.shields.io/pypi/v/uniface.svg)](https://pypi.org/project/uniface/)
 [![CI](https://github.com/yakhyo/uniface/actions/workflows/ci.yml/badge.svg)](https://github.com/yakhyo/uniface/actions)
 [![Downloads](https://static.pepy.tech/badge/uniface)](https://pepy.tech/project/uniface)
@@ -26,7 +26,7 @@
 - **Face Recognition**: ArcFace, MobileFace, and SphereFace embeddings
 - **Face Parsing**: BiSeNet-based semantic segmentation with 19 facial component classes
 - **Gaze Estimation**: Real-time gaze direction prediction with MobileGaze
-- **Attribute Analysis**: Age, gender, and emotion detection
+- **Attribute Analysis**: Age, gender, race (FairFace), and emotion detection
 - **Anti-Spoofing**: Face liveness detection with MiniFASNet models
 - **Face Anonymization**: Privacy-preserving face blurring with 5 methods (pixelate, gaussian, blackout, elliptical, median)
 - **Face Alignment**: Precise alignment for downstream tasks
@@ -155,9 +155,28 @@ detector = RetinaFace()
 age_gender = AgeGender()
 
 faces = detector.detect(image)
-gender, age = age_gender.predict(image, faces[0].bbox)
-gender_str = 'Female' if gender == 0 else 'Male'
-print(f"{gender_str}, {age} years old")
+result = age_gender.predict(image, faces[0].bbox)
+print(f"{result.sex}, {result.age} years old")
+# result.gender: 0=Female, 1=Male
+# result.sex: "Female" or "Male"
+# result.age: age in years
+```
+
+### FairFace Attributes (Race, Gender, Age Group)
+
+```python
+from uniface import RetinaFace, FairFace
+
+detector = RetinaFace()
+fairface = FairFace()
+
+faces = detector.detect(image)
+result = fairface.predict(image, faces[0].bbox)
+print(f"{result.sex}, {result.age_group}, {result.race}")
+# result.gender: 0=Female, 1=Male
+# result.sex: "Female" or "Male"
+# result.age_group: "20-29", "30-39", etc.
+# result.race: "East Asian", "White", etc.
 ```
 
 ### Gaze Estimation
@@ -372,7 +391,8 @@ faces = detect_faces(image, method='retinaface', conf_thresh=0.8)  # methods: re
 | Class           | Key params (defaults)                                                 | Notes                                   |
 | --------------- | --------------------------------------------------------------------- | --------------------------------------- |
 | `Landmark106` | No required params                                                    | 106-point landmarks                     |
-| `AgeGender`   | `model_name=AgeGenderWeights.DEFAULT`; `input_size` auto-detected | Requires bbox; ONNXRuntime              |
+| `AgeGender`   | `model_name=AgeGenderWeights.DEFAULT`; `input_size` auto-detected | Returns `AttributeResult` with gender, age |
+| `FairFace`    | `model_name=FairFaceWeights.DEFAULT`, `input_size=(224, 224)`     | Returns `AttributeResult` with gender, age_group, race |
 | `Emotion`     | `model_weights=DDAMFNWeights.AFFECNET7`, `input_size=(112, 112)`  | Requires 5-point landmarks; TorchScript |
 
 **Gaze Estimation**
@@ -655,6 +675,7 @@ uniface/
 - **Face Parsing Training**: [yakhyo/face-parsing](https://github.com/yakhyo/face-parsing) - BiSeNet face parsing training code and pretrained weights
 - **Gaze Estimation Training**: [yakhyo/gaze-estimation](https://github.com/yakhyo/gaze-estimation) - MobileGaze training code and pretrained weights
 - **Face Anti-Spoofing**: [yakhyo/face-anti-spoofing](https://github.com/yakhyo/face-anti-spoofing) - MiniFASNet ONNX inference (weights from [minivision-ai/Silent-Face-Anti-Spoofing](https://github.com/minivision-ai/Silent-Face-Anti-Spoofing))
+- **FairFace**: [yakhyo/fairface-onnx](https://github.com/yakhyo/fairface-onnx) - FairFace ONNX inference for race, gender, age prediction
 - **InsightFace**: [deepinsight/insightface](https://github.com/deepinsight/insightface) - Model architectures and pretrained weights
 
 ## Contributing

@@ -4,7 +4,6 @@
 
 from typing import Any, List, Literal, Tuple
 
-import cv2
 import numpy as np
 
 from uniface.common import distance2bbox, distance2kps, non_max_suppression, resize_image
@@ -289,63 +288,3 @@ class SCRFD(BaseDetector):
             faces.append(face)
 
         return faces
-
-
-# TODO: below is only for testing, remove it later
-def draw_bbox(frame, bbox, score, color=(0, 255, 0), thickness=2):
-    x1, y1, x2, y2 = map(int, bbox)  # Unpack 4 bbox values
-    cv2.rectangle(frame, (x1, y1), (x2, y2), color, thickness)
-    cv2.putText(frame, f'{score:.2f}', (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
-
-
-def draw_keypoints(frame, points, color=(0, 0, 255), radius=2):
-    for x, y in points.astype(np.int32):
-        cv2.circle(frame, (int(x), int(y)), radius, color, -1)
-
-
-if __name__ == '__main__':
-    detector = SCRFD(model_name=SCRFDWeights.SCRFD_500M_KPS)
-    print(detector.get_info())
-    cap = cv2.VideoCapture(0)
-
-    if not cap.isOpened():
-        print('Failed to open webcam.')
-        exit()
-
-    print("Webcam started. Press 'q' to exit.")
-
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            print('Failed to read frame.')
-            break
-
-        # Get face detections as list of dictionaries
-        faces = detector.detect(frame)
-
-        # Process each detected face
-        for face in faces:
-            # Extract bbox and landmarks from Face object
-            draw_bbox(frame, face.bbox, face.confidence)
-
-            # Draw landmarks if available
-            if face.landmarks is not None and len(face.landmarks) > 0:
-                draw_keypoints(frame, face.landmarks)
-
-        # Display face count
-        cv2.putText(
-            frame,
-            f'Faces: {len(faces)}',
-            (10, 30),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            0.7,
-            (255, 255, 255),
-            2,
-        )
-
-        cv2.imshow('FaceDetection', frame)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-
-    cap.release()
-    cv2.destroyAllWindows()

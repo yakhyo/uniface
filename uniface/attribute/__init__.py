@@ -7,8 +7,9 @@ from typing import Any, Dict, List, Union
 import numpy as np
 
 from uniface.attribute.age_gender import AgeGender
-from uniface.attribute.base import Attribute
-from uniface.constants import AgeGenderWeights, DDAMFNWeights
+from uniface.attribute.base import Attribute, AttributeResult
+from uniface.attribute.fairface import FairFace
+from uniface.constants import AgeGenderWeights, DDAMFNWeights, FairFaceWeights
 
 # Emotion requires PyTorch - make it optional
 try:
@@ -20,11 +21,19 @@ except ImportError:
     _EMOTION_AVAILABLE = False
 
 # Public API for the attribute module
-__all__ = ['AgeGender', 'Emotion', 'create_attribute_predictor', 'predict_attributes']
+__all__ = [
+    'AgeGender',
+    'AttributeResult',
+    'Emotion',
+    'FairFace',
+    'create_attribute_predictor',
+    'predict_attributes',
+]
 
 # A mapping from model enums to their corresponding attribute classes
 _ATTRIBUTE_MODELS = {
     **{model: AgeGender for model in AgeGenderWeights},
+    **{model: FairFace for model in FairFaceWeights},
 }
 
 # Add Emotion models only if PyTorch is available
@@ -32,7 +41,9 @@ if _EMOTION_AVAILABLE:
     _ATTRIBUTE_MODELS.update({model: Emotion for model in DDAMFNWeights})
 
 
-def create_attribute_predictor(model_name: Union[AgeGenderWeights, DDAMFNWeights], **kwargs: Any) -> Attribute:
+def create_attribute_predictor(
+    model_name: Union[AgeGenderWeights, DDAMFNWeights, FairFaceWeights], **kwargs: Any
+) -> Attribute:
     """
     Factory function to create an attribute predictor instance.
 
@@ -41,11 +52,13 @@ def create_attribute_predictor(model_name: Union[AgeGenderWeights, DDAMFNWeights
 
     Args:
         model_name: The enum corresponding to the desired attribute model
-                    (e.g., AgeGenderWeights.DEFAULT or DDAMFNWeights.AFFECNET7).
+                    (e.g., AgeGenderWeights.DEFAULT, DDAMFNWeights.AFFECNET7,
+                    or FairFaceWeights.DEFAULT).
         **kwargs: Additional keyword arguments to pass to the model's constructor.
 
     Returns:
-        An initialized instance of an Attribute predictor class (e.g., AgeGender).
+        An initialized instance of an Attribute predictor class
+        (e.g., AgeGender, FairFace, or Emotion).
 
     Raises:
         ValueError: If the provided model_name is not a supported enum.
@@ -54,7 +67,8 @@ def create_attribute_predictor(model_name: Union[AgeGenderWeights, DDAMFNWeights
 
     if model_class is None:
         raise ValueError(
-            f'Unsupported attribute model: {model_name}. Please choose from AgeGenderWeights or DDAMFNWeights.'
+            f'Unsupported attribute model: {model_name}. '
+            f'Please choose from AgeGenderWeights, FairFaceWeights, or DDAMFNWeights.'
         )
 
     # Pass model_name to the constructor, as some classes might need it
@@ -88,9 +102,16 @@ def predict_attributes(
             face['attributes'] = {}
 
         if isinstance(predictor, AgeGender):
-            gender_id, age = predictor(image, face['bbox'])
-            face['attributes']['gender_id'] = gender_id
-            face['attributes']['age'] = age
+            result = predictor(image, face['bbox'])
+            face['attributes']['gender'] = result.gender
+            face['attributes']['sex'] = result.sex
+            face['attributes']['age'] = result.age
+        elif isinstance(predictor, FairFace):
+            result = predictor(image, face['bbox'])
+            face['attributes']['gender'] = result.gender
+            face['attributes']['sex'] = result.sex
+            face['attributes']['age_group'] = result.age_group
+            face['attributes']['race'] = result.race
         elif isinstance(predictor, Emotion):
             emotion, confidence = predictor(image, face['landmark'])
             face['attributes']['emotion'] = emotion

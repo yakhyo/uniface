@@ -259,9 +259,40 @@ landmarks = landmarker.get_landmarks(image, bbox)
 from uniface import AgeGender
 
 predictor = AgeGender()
-gender, age = predictor.predict(image, bbox)
-# Returns: (gender, age_in_years)
-# gender: 0 for Female, 1 for Male
+result = predictor.predict(image, bbox)
+# Returns: AttributeResult with gender, age, sex property
+# result.gender: 0 for Female, 1 for Male
+# result.sex: "Female" or "Male"
+# result.age: age in years
+```
+
+---
+
+### FairFace Attributes
+
+| Model Name  | Attributes            | Params | Size  | Use Case                    |
+| ----------- | --------------------- | ------ | ----- | --------------------------- |
+| `DEFAULT` | Race, Gender, Age Group | -      | 44MB  | Balanced demographic prediction |
+
+**Dataset**: Trained on FairFace dataset with balanced demographics
+**Note**: FairFace provides more equitable predictions across different racial and gender groups
+
+**Race Categories (7):** White, Black, Latino Hispanic, East Asian, Southeast Asian, Indian, Middle Eastern
+
+**Age Groups (9):** 0-2, 3-9, 10-19, 20-29, 30-39, 40-49, 50-59, 60-69, 70+
+
+#### Usage
+
+```python
+from uniface import FairFace
+
+predictor = FairFace()
+result = predictor.predict(image, bbox)
+# Returns: AttributeResult with gender, age_group, race, sex property
+# result.gender: 0 for Female, 1 for Male
+# result.sex: "Female" or "Male"
+# result.age_group: "20-29", "30-39", etc.
+# result.race: "East Asian", "White", etc.
 ```
 
 ---
@@ -487,6 +518,7 @@ python scripts/download_model.py --model MNET_V2
 - **Gaze Estimation Training**: [yakhyo/gaze-estimation](https://github.com/yakhyo/gaze-estimation) - MobileGaze training code and pretrained weights
 - **Face Parsing Training**: [yakhyo/face-parsing](https://github.com/yakhyo/face-parsing) - BiSeNet training code and pretrained weights
 - **Face Anti-Spoofing**: [yakhyo/face-anti-spoofing](https://github.com/yakhyo/face-anti-spoofing) - MiniFASNet ONNX inference (weights from [minivision-ai/Silent-Face-Anti-Spoofing](https://github.com/minivision-ai/Silent-Face-Anti-Spoofing))
+- **FairFace**: [yakhyo/fairface-onnx](https://github.com/yakhyo/fairface-onnx) - FairFace ONNX inference for race, gender, age prediction
 - **InsightFace**: [deepinsight/insightface](https://github.com/deepinsight/insightface) - Model architectures and pretrained weights
 
 ### Papers
