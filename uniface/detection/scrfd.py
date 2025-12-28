@@ -4,7 +4,6 @@
 
 from typing import Any, List, Literal, Tuple
 
-import cv2
 import numpy as np
 
 from uniface.common import distance2bbox, distance2kps, non_max_suppression, resize_image
