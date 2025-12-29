@@ -13,7 +13,7 @@
 
 __license__ = 'MIT'
 __author__ = 'Yakhyokhuja Valikhujaev'
-__version__ = '1.6.0'
+__version__ = '2.0.0'
 
 
 from uniface.face_utils import compute_similarity, face_alignment
