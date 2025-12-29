@@ -2,16 +2,23 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-from typing import List
+"""ONNX Runtime utilities for UniFace.
+
+This module provides helper functions for creating and managing ONNX Runtime
+inference sessions with automatic hardware acceleration detection.
+"""
+
+from __future__ import annotations
 
 import onnxruntime as ort
 
 from uniface.log import Logger
 
+__all__ = ['create_onnx_session', 'get_available_providers']
 
-def get_available_providers() -> List[str]:
-    """
-    Get list of available ONNX Runtime execution providers for the current platform.
+
+def get_available_providers() -> list[str]:
+    """Get list of available ONNX Runtime execution providers.
 
     Automatically detects and prioritizes hardware acceleration:
     - CoreML on Apple Silicon (M1/M2/M3/M4)
@@ -19,13 +26,12 @@ def get_available_providers() -> List[str]:
     - CPU as fallback (always available)
 
     Returns:
-        List[str]: Ordered list of execution providers to use
+        Ordered list of execution providers to use.
 
-    Examples:
+    Example:
         >>> providers = get_available_providers()
         >>> # On M4 Mac: ['CoreMLExecutionProvider', 'CPUExecutionProvider']
         >>> # On Linux with CUDA: ['CUDAExecutionProvider', 'CPUExecutionProvider']
-        >>> # On CPU-only: ['CPUExecutionProvider']
     """
     available = ort.get_available_providers()
     providers = []
@@ -48,26 +54,28 @@ def get_available_providers() -> List[str]:
     return providers
 
 
-def create_onnx_session(model_path: str, providers: List[str] = None) -> ort.InferenceSession:
-    """
-    Create an ONNX Runtime inference session with optimal provider selection.
+def create_onnx_session(
+    model_path: str,
+    providers: list[str] | None = None,
+) -> ort.InferenceSession:
+    """Create an ONNX Runtime inference session with optimal provider selection.
 
     Args:
-        model_path (str): Path to the ONNX model file
-        providers (List[str], optional): List of providers to use.
-            If None, automatically detects best available providers.
+        model_path: Path to the ONNX model file.
+        providers: List of execution providers to use. If None, automatically
+            detects best available providers.
 
     Returns:
-        ort.InferenceSession: Configured ONNX Runtime session
+        Configured ONNX Runtime session.
 
     Raises:
-        RuntimeError: If session creation fails
+        RuntimeError: If session creation fails.
 
-    Examples:
-        >>> session = create_onnx_session("model.onnx")
+    Example:
+        >>> session = create_onnx_session('model.onnx')
         >>> # Automatically uses best available providers
 
-        >>> session = create_onnx_session("model.onnx", providers=["CPUExecutionProvider"])
+        >>> session = create_onnx_session('model.onnx', providers=['CPUExecutionProvider'])
         >>> # Force CPU-only execution
     """
     if providers is None:

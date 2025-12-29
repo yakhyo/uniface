@@ -2,7 +2,6 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-from typing import List, Optional, Tuple, Union
 
 import cv2
 import numpy as np
@@ -35,7 +34,7 @@ class AgeGender(Attribute):
     def __init__(
         self,
         model_name: AgeGenderWeights = AgeGenderWeights.DEFAULT,
-        input_size: Optional[Tuple[int, int]] = None,
+        input_size: tuple[int, int] | None = None,
     ) -> None:
         """
         Initializes the AgeGender prediction model.
@@ -81,7 +80,7 @@ class AgeGender(Attribute):
             )
             raise RuntimeError(f'Failed to initialize AgeGender model: {e}') from e
 
-    def preprocess(self, image: np.ndarray, bbox: Union[List, np.ndarray]) -> np.ndarray:
+    def preprocess(self, image: np.ndarray, bbox: list | np.ndarray) -> np.ndarray:
         """
         Aligns the face based on the bounding box and preprocesses it for inference.
 
@@ -127,7 +126,7 @@ class AgeGender(Attribute):
         age = int(np.round(prediction[2] * 100))
         return AttributeResult(gender=gender, age=age)
 
-    def predict(self, image: np.ndarray, bbox: Union[List, np.ndarray]) -> AttributeResult:
+    def predict(self, image: np.ndarray, bbox: list | np.ndarray) -> AttributeResult:
         """
         Predicts age and gender for a single face specified by a bounding box.
 

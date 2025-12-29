@@ -2,7 +2,6 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-from typing import List, Optional, Tuple, Union
 
 import cv2
 import numpy as np
@@ -13,7 +12,7 @@ from uniface.log import Logger
 from uniface.model_store import verify_model_weights
 from uniface.onnx_utils import create_onnx_session
 
-__all__ = ['FairFace', 'RACE_LABELS', 'AGE_LABELS']
+__all__ = ['AGE_LABELS', 'RACE_LABELS', 'FairFace']
 
 # Label definitions
 RACE_LABELS = [
@@ -49,7 +48,7 @@ class FairFace(Attribute):
     def __init__(
         self,
         model_name: FairFaceWeights = FairFaceWeights.DEFAULT,
-        input_size: Optional[Tuple[int, int]] = None,
+        input_size: tuple[int, int] | None = None,
     ) -> None:
         """
         Initializes the FairFace prediction model.
@@ -82,7 +81,7 @@ class FairFace(Attribute):
             )
             raise RuntimeError(f'Failed to initialize FairFace model: {e}') from e
 
-    def preprocess(self, image: np.ndarray, bbox: Optional[Union[List, np.ndarray]] = None) -> np.ndarray:
+    def preprocess(self, image: np.ndarray, bbox: list | np.ndarray | None = None) -> np.ndarray:
         """
         Preprocesses the face image for inference.
 
@@ -130,7 +129,7 @@ class FairFace(Attribute):
 
         return image
 
-    def postprocess(self, prediction: Tuple[np.ndarray, np.ndarray, np.ndarray]) -> AttributeResult:
+    def postprocess(self, prediction: tuple[np.ndarray, np.ndarray, np.ndarray]) -> AttributeResult:
         """
         Processes the raw model output to extract race, gender, and age.
 
@@ -162,7 +161,7 @@ class FairFace(Attribute):
             race=RACE_LABELS[race_idx],
         )
 
-    def predict(self, image: np.ndarray, bbox: Optional[Union[List, np.ndarray]] = None) -> AttributeResult:
+    def predict(self, image: np.ndarray, bbox: list | np.ndarray | None = None) -> AttributeResult:
         """
         Predicts race, gender, and age for a face.
 

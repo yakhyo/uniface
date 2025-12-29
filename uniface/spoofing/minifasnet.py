@@ -2,7 +2,6 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-from typing import List, Optional, Tuple, Union
 
 import cv2
 import numpy as np
@@ -68,7 +67,7 @@ class MiniFASNet(BaseSpoofer):
     def __init__(
         self,
         model_name: MiniFASNetWeights = MiniFASNetWeights.V2,
-        scale: Optional[float] = None,
+        scale: float | None = None,
     ) -> None:
         Logger.info(f'Initializing MiniFASNet with model={model_name.name}')
 
@@ -104,12 +103,12 @@ class MiniFASNet(BaseSpoofer):
             Logger.error(f"Failed to load MiniFASNet model from '{self.model_path}'", exc_info=True)
             raise RuntimeError(f'Failed to initialize MiniFASNet model: {e}') from e
 
-    def _xyxy_to_xywh(self, bbox: Union[List, np.ndarray]) -> List[int]:
+    def _xyxy_to_xywh(self, bbox: list | np.ndarray) -> list[int]:
         """Convert bounding box from [x1, y1, x2, y2] to [x, y, w, h] format."""
         x1, y1, x2, y2 = bbox[:4]
         return [int(x1), int(y1), int(x2 - x1), int(y2 - y1)]
 
-    def _crop_face(self, image: np.ndarray, bbox_xywh: List[int]) -> np.ndarray:
+    def _crop_face(self, image: np.ndarray, bbox_xywh: list[int]) -> np.ndarray:
         """
         Crop and resize face region from image using scale factor.
 
@@ -147,7 +146,7 @@ class MiniFASNet(BaseSpoofer):
 
         return resized
 
-    def preprocess(self, image: np.ndarray, bbox: Union[List, np.ndarray]) -> np.ndarray:
+    def preprocess(self, image: np.ndarray, bbox: list | np.ndarray) -> np.ndarray:
         """
         Preprocess the input image for model inference.
 
@@ -181,7 +180,7 @@ class MiniFASNet(BaseSpoofer):
         e_x = np.exp(x - np.max(x, axis=1, keepdims=True))
         return e_x / e_x.sum(axis=1, keepdims=True)
 
-    def postprocess(self, outputs: np.ndarray) -> Tuple[int, float]:
+    def postprocess(self, outputs: np.ndarray) -> tuple[int, float]:
         """
         Postprocess raw model outputs into prediction result.
 
@@ -202,7 +201,7 @@ class MiniFASNet(BaseSpoofer):
 
         return label_idx, score
 
-    def predict(self, image: np.ndarray, bbox: Union[List, np.ndarray]) -> Tuple[int, float]:
+    def predict(self, image: np.ndarray, bbox: list | np.ndarray) -> tuple[int, float]:
         """
         Perform end-to-end anti-spoofing prediction on a face.
 

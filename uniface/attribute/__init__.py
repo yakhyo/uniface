@@ -2,7 +2,9 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-from typing import Any, List, Union
+from __future__ import annotations
+
+from typing import Any
 
 import numpy as np
 
@@ -33,17 +35,17 @@ __all__ = [
 
 # A mapping from model enums to their corresponding attribute classes
 _ATTRIBUTE_MODELS = {
-    **{model: AgeGender for model in AgeGenderWeights},
-    **{model: FairFace for model in FairFaceWeights},
+    **dict.fromkeys(AgeGenderWeights, AgeGender),
+    **dict.fromkeys(FairFaceWeights, FairFace),
 }
 
 # Add Emotion models only if PyTorch is available
 if _EMOTION_AVAILABLE:
-    _ATTRIBUTE_MODELS.update({model: Emotion for model in DDAMFNWeights})
+    _ATTRIBUTE_MODELS.update(dict.fromkeys(DDAMFNWeights, Emotion))
 
 
 def create_attribute_predictor(
-    model_name: Union[AgeGenderWeights, DDAMFNWeights, FairFaceWeights], **kwargs: Any
+    model_name: AgeGenderWeights | DDAMFNWeights | FairFaceWeights, **kwargs: Any
 ) -> Attribute:
     """
     Factory function to create an attribute predictor instance.
@@ -76,7 +78,7 @@ def create_attribute_predictor(
     return model_class(model_name=model_name, **kwargs)
 
 
-def predict_attributes(image: np.ndarray, faces: List[Face], predictor: Attribute) -> List[Face]:
+def predict_attributes(image: np.ndarray, faces: list[Face], predictor: Attribute) -> list[Face]:
     """
     High-level API to predict attributes for multiple detected faces.
 

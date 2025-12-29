@@ -3,7 +3,6 @@
 # GitHub: https://github.com/yakhyo
 
 from abc import ABC, abstractmethod
-from typing import Tuple
 
 import numpy as np
 
@@ -53,7 +52,7 @@ class BaseFaceParser(ABC):
         raise NotImplementedError('Subclasses must implement the preprocess method.')
 
     @abstractmethod
-    def postprocess(self, outputs: np.ndarray, original_size: Tuple[int, int]) -> np.ndarray:
+    def postprocess(self, outputs: np.ndarray, original_size: tuple[int, int]) -> np.ndarray:
         """
         Postprocess raw model outputs into a segmentation mask.
 
@@ -89,7 +88,7 @@ class BaseFaceParser(ABC):
         Example:
             >>> parser = create_face_parser()
             >>> mask = parser.parse(face_crop)
-            >>> print(f"Mask shape: {mask.shape}, unique classes: {np.unique(mask)}")
+            >>> print(f'Mask shape: {mask.shape}, unique classes: {np.unique(mask)}')
         """
         raise NotImplementedError('Subclasses must implement the parse method.')
 

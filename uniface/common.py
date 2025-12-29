@@ -2,34 +2,42 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
+from __future__ import annotations
+
 import itertools
 import math
-from typing import List, Optional, Tuple
 
 import cv2
 import numpy as np
 
 __all__ = [
-    'resize_image',
-    'generate_anchors',
-    'non_max_suppression',
     'decode_boxes',
     'decode_landmarks',
     'distance2bbox',
     'distance2kps',
+    'generate_anchors',
+    'non_max_suppression',
+    'resize_image',
 ]
 
 
-def resize_image(frame, target_shape: Tuple[int, int] = (640, 640)) -> Tuple[np.ndarray, float]:
-    """
-    Resize an image to fit within a target shape while keeping its aspect ratio.
+def resize_image(
+    frame: np.ndarray,
+    target_shape: tuple[int, int] = (640, 640),
+) -> tuple[np.ndarray, float]:
+    """Resize an image to fit within a target shape while keeping its aspect ratio.
+
+    The image is resized to fit within the target dimensions and placed on a
+    blank canvas (zero-padded to target size).
 
     Args:
-        frame (np.ndarray): Input image.
-        target_shape (Tuple[int, int]): Target size (width, height). Defaults to (640, 640).
+        frame: Input image with shape (H, W, C).
+        target_shape: Target size as (width, height). Defaults to (640, 640).
 
     Returns:
-        Tuple[np.ndarray, float]: Resized image on a blank canvas and the resize factor.
+        A tuple containing:
+            - Resized image on a blank canvas with shape (height, width, 3).
+            - The resize factor as a float.
     """
     width, height = target_shape
 
@@ -53,16 +61,16 @@ def resize_image(frame, target_shape: Tuple[int, int] = (640, 640)) -> Tuple[np.
     return image, resize_factor
 
 
-def generate_anchors(image_size: Tuple[int, int] = (640, 640)) -> np.ndarray:
-    """
-    Generate anchor boxes for a given image size (RetinaFace specific).
+def generate_anchors(image_size: tuple[int, int] = (640, 640)) -> np.ndarray:
+    """Generate anchor boxes for a given image size (RetinaFace specific).
 
     Args:
-        image_size (Tuple[int, int]): Input image size (width, height). Defaults to (640, 640).
+        image_size: Input image size as (width, height). Defaults to (640, 640).
 
     Returns:
-        np.ndarray: Anchor box coordinates as a NumPy array with shape (num_anchors, 4).
+        Anchor box coordinates as a numpy array with shape (num_anchors, 4).
     """
+    # RetinaFace FPN strides and corresponding anchor sizes per level
     steps = [8, 16, 32]
     min_sizes = [[16, 32], [64, 128], [256, 512]]
 
@@ -85,16 +93,15 @@ def generate_anchors(image_size: Tuple[int, int] = (640, 640)) -> np.ndarray:
     return output
 
 
-def non_max_suppression(dets: np.ndarray, threshold: float) -> List[int]:
-    """
-    Apply Non-Maximum Suppression (NMS) to reduce overlapping bounding boxes based on a threshold.
+def non_max_suppression(dets: np.ndarray, threshold: float) -> list[int]:
+    """Apply Non-Maximum Suppression (NMS) to reduce overlapping bounding boxes.
 
     Args:
-        dets (np.ndarray): Array of detections with each row as [x1, y1, x2, y2, score].
-        threshold (float): IoU threshold for suppression.
+        dets: Array of detections with each row as [x1, y1, x2, y2, score].
+        threshold: IoU threshold for suppression.
 
     Returns:
-        List[int]: Indices of bounding boxes retained after suppression.
+        Indices of bounding boxes retained after suppression.
     """
     x1 = dets[:, 0]
     y1 = dets[:, 1]
@@ -125,18 +132,22 @@ def non_max_suppression(dets: np.ndarray, threshold: float) -> List[int]:
     return keep
 
 
-def decode_boxes(loc: np.ndarray, priors: np.ndarray, variances: Optional[List[float]] = None) -> np.ndarray:
-    """
-    Decode locations from predictions using priors to undo
-    the encoding done for offset regression at train time (RetinaFace specific).
+def decode_boxes(
+    loc: np.ndarray,
+    priors: np.ndarray,
+    variances: list[float] | None = None,
+) -> np.ndarray:
+    """Decode locations from predictions using priors (RetinaFace specific).
+
+    Undoes the encoding done for offset regression at train time.
 
     Args:
-        loc (np.ndarray): Location predictions for loc layers, shape: [num_priors, 4]
-        priors (np.ndarray): Prior boxes in center-offset form, shape: [num_priors, 4]
-        variances (Optional[List[float]]): Variances of prior boxes. Defaults to [0.1, 0.2].
+        loc: Location predictions for loc layers, shape: [num_priors, 4].
+        priors: Prior boxes in center-offset form, shape: [num_priors, 4].
+        variances: Variances of prior boxes. Defaults to [0.1, 0.2].
 
     Returns:
-        np.ndarray: Decoded bounding box predictions with shape [num_priors, 4]
+        Decoded bounding box predictions with shape [num_priors, 4].
     """
     if variances is None:
         variances = [0.1, 0.2]
@@ -155,18 +166,19 @@ def decode_boxes(loc: np.ndarray, priors: np.ndarray, variances: Optional[List[f
 
 
 def decode_landmarks(
-    predictions: np.ndarray, priors: np.ndarray, variances: Optional[List[float]] = None
+    predictions: np.ndarray,
+    priors: np.ndarray,
+    variances: list[float] | None = None,
 ) -> np.ndarray:
-    """
-    Decode landmark predictions using prior boxes (RetinaFace specific).
+    """Decode landmark predictions using prior boxes (RetinaFace specific).
 
     Args:
-        predictions (np.ndarray): Landmark predictions, shape: [num_priors, 10]
-        priors (np.ndarray): Prior boxes, shape: [num_priors, 4]
-        variances (Optional[List[float]]): Scaling factors for landmark offsets. Defaults to [0.1, 0.2].
+        predictions: Landmark predictions, shape: [num_priors, 10].
+        priors: Prior boxes, shape: [num_priors, 4].
+        variances: Scaling factors for landmark offsets. Defaults to [0.1, 0.2].
 
     Returns:
-        np.ndarray: Decoded landmarks, shape: [num_priors, 10]
+        Decoded landmarks, shape: [num_priors, 10].
     """
     if variances is None:
         variances = [0.1, 0.2]
@@ -187,18 +199,21 @@ def decode_landmarks(
     return landmarks
 
 
-def distance2bbox(points: np.ndarray, distance: np.ndarray, max_shape: Optional[Tuple[int, int]] = None) -> np.ndarray:
-    """
-    Decode distance prediction to bounding box (SCRFD specific).
+def distance2bbox(
+    points: np.ndarray,
+    distance: np.ndarray,
+    max_shape: tuple[int, int] | None = None,
+) -> np.ndarray:
+    """Decode distance prediction to bounding box (SCRFD specific).
 
     Args:
-        points (np.ndarray): Anchor points with shape (n, 2), [x, y].
-        distance (np.ndarray): Distance from the given point to 4
-            boundaries (left, top, right, bottom) with shape (n, 4).
-        max_shape (Optional[Tuple[int, int]]): Shape of the image (height, width) for clipping.
+        points: Anchor points with shape (n, 2), [x, y].
+        distance: Distance from the given point to 4 boundaries
+            (left, top, right, bottom) with shape (n, 4).
+        max_shape: Shape of the image (height, width) for clipping.
 
     Returns:
-        np.ndarray: Decoded bounding boxes with shape (n, 4) as [x1, y1, x2, y2].
+        Decoded bounding boxes with shape (n, 4) as [x1, y1, x2, y2].
     """
     x1 = points[:, 0] - distance[:, 0]
     y1 = points[:, 1] - distance[:, 1]
@@ -219,17 +234,20 @@ def distance2bbox(points: np.ndarray, distance: np.ndarray, max_shape: Optional[
     return np.stack([x1, y1, x2, y2], axis=-1)
 
 
-def distance2kps(points: np.ndarray, distance: np.ndarray, max_shape: Optional[Tuple[int, int]] = None) -> np.ndarray:
-    """
-    Decode distance prediction to keypoints (SCRFD specific).
+def distance2kps(
+    points: np.ndarray,
+    distance: np.ndarray,
+    max_shape: tuple[int, int] | None = None,
+) -> np.ndarray:
+    """Decode distance prediction to keypoints (SCRFD specific).
 
     Args:
-        points (np.ndarray): Anchor points with shape (n, 2), [x, y].
-        distance (np.ndarray): Distance from the given point to keypoints with shape (n, 2k).
-        max_shape (Optional[Tuple[int, int]]): Shape of the image (height, width) for clipping.
+        points: Anchor points with shape (n, 2), [x, y].
+        distance: Distance from the given point to keypoints with shape (n, 2k).
+        max_shape: Shape of the image (height, width) for clipping.
 
     Returns:
-        np.ndarray: Decoded keypoints with shape (n, 2k).
+        Decoded keypoints with shape (n, 2k).
     """
     preds = []
     for i in range(0, distance.shape[1], 2):

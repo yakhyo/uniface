@@ -2,12 +2,17 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-from typing import Dict, List, Tuple, Union
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, ClassVar
 
 import cv2
 import numpy as np
 
-__all__ = ['BlurFace']
+if TYPE_CHECKING:
+    pass
+
+__all__ = ['BlurFace', 'EllipticalBlur']
 
 
 def _gaussian_blur(region: np.ndarray, strength: float = 3.0) -> np.ndarray:
@@ -32,7 +37,7 @@ def _pixelate_blur(region: np.ndarray, blocks: int = 10) -> np.ndarray:
     return cv2.resize(temp, (w, h), interpolation=cv2.INTER_NEAREST)
 
 
-def _blackout_blur(region: np.ndarray, color: Tuple[int, int, int] = (0, 0, 0)) -> np.ndarray:
+def _blackout_blur(region: np.ndarray, color: tuple[int, int, int] = (0, 0, 0)) -> np.ndarray:
     """Replace region with solid color."""
     return np.full_like(region, color)
 
@@ -55,7 +60,7 @@ class EllipticalBlur:
     def __call__(
         self,
         image: np.ndarray,
-        bboxes: List[Union[Tuple, List]],
+        bboxes: list[tuple | list],
         inplace: bool = False,
     ) -> np.ndarray:
         if not inplace:
@@ -98,14 +103,14 @@ class BlurFace:
         >>> anonymized = blurrer.anonymize(image, faces)
     """
 
-    VALID_METHODS = {'gaussian', 'pixelate', 'blackout', 'elliptical', 'median'}
+    VALID_METHODS: ClassVar[set[str]] = {'gaussian', 'pixelate', 'blackout', 'elliptical', 'median'}
 
     def __init__(
         self,
         method: str = 'pixelate',
         blur_strength: float = 3.0,
         pixel_blocks: int = 15,
-        color: Tuple[int, int, int] = (0, 0, 0),
+        color: tuple[int, int, int] = (0, 0, 0),
         margin: int = 20,
     ):
         self.method = method.lower()
@@ -121,6 +126,7 @@ class BlurFace:
             self._elliptical = EllipticalBlur(blur_strength, margin)
 
     def _blur_region(self, region: np.ndarray) -> np.ndarray:
+        """Apply blur to a single region based on the configured method."""
         if self.method == 'gaussian':
             return _gaussian_blur(region, self._blur_strength)
         elif self.method == 'median':
@@ -129,11 +135,12 @@ class BlurFace:
             return _pixelate_blur(region, self._pixel_blocks)
         elif self.method == 'blackout':
             return _blackout_blur(region, self._color)
+        return region  # Fallback (should not reach here)
 
     def anonymize(
         self,
         image: np.ndarray,
-        faces: List[Dict],
+        faces: list,
         inplace: bool = False,
     ) -> np.ndarray:
         """Anonymize faces in an image.
@@ -155,7 +162,7 @@ class BlurFace:
     def blur_regions(
         self,
         image: np.ndarray,
-        bboxes: List[Union[Tuple, List]],
+        bboxes: list[tuple | list],
         inplace: bool = False,
     ) -> np.ndarray:
         """Blur specific rectangular regions in an image.

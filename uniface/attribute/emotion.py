@@ -2,7 +2,6 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-from typing import List, Tuple, Union
 
 import cv2
 import numpy as np
@@ -29,7 +28,7 @@ class Emotion(Attribute):
     def __init__(
         self,
         model_weights: DDAMFNWeights = DDAMFNWeights.AFFECNET7,
-        input_size: Tuple[int, int] = (112, 112),
+        input_size: tuple[int, int] = (112, 112),
     ) -> None:
         """
         Initializes the emotion recognition model.
@@ -81,7 +80,7 @@ class Emotion(Attribute):
             Logger.error(f"Failed to load Emotion model from '{self.model_path}'", exc_info=True)
             raise RuntimeError(f'Failed to initialize Emotion model: {e}') from e
 
-    def preprocess(self, image: np.ndarray, landmark: Union[List, np.ndarray]) -> torch.Tensor:
+    def preprocess(self, image: np.ndarray, landmark: list | np.ndarray) -> torch.Tensor:
         """
         Aligns the face using landmarks and preprocesses it into a tensor.
 
@@ -106,7 +105,7 @@ class Emotion(Attribute):
 
         return torch.from_numpy(transposed_image).unsqueeze(0).to(self.device)
 
-    def postprocess(self, prediction: torch.Tensor) -> Tuple[str, float]:
+    def postprocess(self, prediction: torch.Tensor) -> tuple[str, float]:
         """
         Processes the raw model output to get the emotion label and confidence score.
         """
@@ -116,7 +115,7 @@ class Emotion(Attribute):
         confidence = float(probabilities[pred_index])
         return emotion_label, confidence
 
-    def predict(self, image: np.ndarray, landmark: Union[List, np.ndarray]) -> Tuple[str, float]:
+    def predict(self, image: np.ndarray, landmark: list | np.ndarray) -> tuple[str, float]:
         """
         Predicts the emotion from a single face specified by its landmarks.
         """

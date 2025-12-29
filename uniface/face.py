@@ -2,8 +2,9 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
+from __future__ import annotations
+
 from dataclasses import dataclass, fields
-from typing import Optional
 
 import numpy as np
 
@@ -44,15 +45,15 @@ class Face:
     landmarks: np.ndarray
 
     # Optional attributes
-    embedding: Optional[np.ndarray] = None
-    gender: Optional[int] = None
-    age: Optional[int] = None
-    age_group: Optional[str] = None
-    race: Optional[str] = None
-    emotion: Optional[str] = None
-    emotion_confidence: Optional[float] = None
+    embedding: np.ndarray | None = None
+    gender: int | None = None
+    age: int | None = None
+    age_group: str | None = None
+    race: str | None = None
+    emotion: str | None = None
+    emotion_confidence: float | None = None
 
-    def compute_similarity(self, other: 'Face') -> float:
+    def compute_similarity(self, other: Face) -> float:
         """Compute cosine similarity with another face."""
         if self.embedding is None or other.embedding is None:
             raise ValueError('Both faces must have embeddings for similarity computation')
@@ -63,7 +64,7 @@ class Face:
         return {f.name: getattr(self, f.name) for f in fields(self)}
 
     @property
-    def sex(self) -> Optional[str]:
+    def sex(self) -> str | None:
         """Get gender as a string label (Female or Male)."""
         if self.gender is None:
             return None

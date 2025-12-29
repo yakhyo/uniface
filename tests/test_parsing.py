@@ -2,6 +2,10 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
+"""Tests for BiSeNet face parsing model."""
+
+from __future__ import annotations
+
 import numpy as np
 import pytest
 

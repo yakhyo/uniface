@@ -3,7 +3,6 @@
 # GitHub: https://github.com/yakhyo
 
 from abc import ABC, abstractmethod
-from typing import Tuple
 
 import numpy as np
 
@@ -54,7 +53,7 @@ class BaseGazeEstimator(ABC):
         raise NotImplementedError('Subclasses must implement the preprocess method.')
 
     @abstractmethod
-    def postprocess(self, outputs: Tuple[np.ndarray, np.ndarray]) -> Tuple[float, float]:
+    def postprocess(self, outputs: tuple[np.ndarray, np.ndarray]) -> tuple[float, float]:
         """
         Postprocess raw model outputs into gaze angles.
 
@@ -71,7 +70,7 @@ class BaseGazeEstimator(ABC):
         raise NotImplementedError('Subclasses must implement the postprocess method.')
 
     @abstractmethod
-    def estimate(self, face_image: np.ndarray) -> Tuple[float, float]:
+    def estimate(self, face_image: np.ndarray) -> tuple[float, float]:
         """
         Perform end-to-end gaze estimation on a face image.
 
@@ -91,11 +90,11 @@ class BaseGazeEstimator(ABC):
         Example:
             >>> estimator = create_gaze_estimator()
             >>> pitch, yaw = estimator.estimate(face_crop)
-            >>> print(f"Looking: pitch={np.degrees(pitch):.1f}°, yaw={np.degrees(yaw):.1f}°")
+            >>> print(f'Looking: pitch={np.degrees(pitch):.1f}°, yaw={np.degrees(yaw):.1f}°')
         """
         raise NotImplementedError('Subclasses must implement the estimate method.')
 
-    def __call__(self, face_image: np.ndarray) -> Tuple[float, float]:
+    def __call__(self, face_image: np.ndarray) -> tuple[float, float]:
         """
         Provides a convenient, callable shortcut for the `estimate` method.
 

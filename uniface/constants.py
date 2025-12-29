@@ -3,7 +3,6 @@
 # GitHub: https://github.com/yakhyo
 
 from enum import Enum
-from typing import Dict
 
 
 # fmt: off
@@ -142,7 +141,7 @@ class MiniFASNetWeights(str, Enum):
     V2   = "minifasnet_v2"
 
 
-MODEL_URLS: Dict[Enum, str] = {
+MODEL_URLS: dict[Enum, str] = {
     # RetinaFace
     RetinaFaceWeights.MNET_025:      'https://github.com/yakhyo/uniface/releases/download/weights/retinaface_mv1_0.25.onnx',
     RetinaFaceWeights.MNET_050:      'https://github.com/yakhyo/uniface/releases/download/weights/retinaface_mv1_0.50.onnx',
@@ -191,7 +190,7 @@ MODEL_URLS: Dict[Enum, str] = {
     MiniFASNetWeights.V2:            'https://github.com/yakhyo/face-anti-spoofing/releases/download/weights/MiniFASNetV2.onnx',
 }
 
-MODEL_SHA256: Dict[Enum, str] = {
+MODEL_SHA256: dict[Enum, str] = {
     # RetinaFace
     RetinaFaceWeights.MNET_025:      'b7a7acab55e104dce6f32cdfff929bd83946da5cd869b9e2e9bdffafd1b7e4a5',
     RetinaFaceWeights.MNET_050:      'd8977186f6037999af5b4113d42ba77a84a6ab0c996b17c713cc3d53b88bfc37',

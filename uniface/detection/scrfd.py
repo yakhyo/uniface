@@ -2,7 +2,9 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-from typing import Any, List, Literal, Tuple
+from __future__ import annotations
+
+from typing import Any, Literal
 
 import numpy as np
 
@@ -58,7 +60,7 @@ class SCRFD(BaseDetector):
         model_name: SCRFDWeights = SCRFDWeights.SCRFD_10G_KPS,
         confidence_threshold: float = 0.5,
         nms_threshold: float = 0.4,
-        input_size: Tuple[int, int] = (640, 640),
+        input_size: tuple[int, int] = (640, 640),
         **kwargs: Any,
     ) -> None:
         super().__init__(
@@ -95,14 +97,13 @@ class SCRFD(BaseDetector):
         self._initialize_model(self._model_path)
 
     def _initialize_model(self, model_path: str) -> None:
-        """
-        Initializes an ONNX model session from the given path.
+        """Initialize an ONNX model session from the given path.
 
         Args:
-            model_path (str): The file path to the ONNX model.
+            model_path: The file path to the ONNX model.
 
         Raises:
-            RuntimeError: If the model fails to load, logs an error and raises an exception.
+            RuntimeError: If the model fails to load.
         """
         try:
             self.session = create_onnx_session(model_path)
@@ -113,14 +114,14 @@ class SCRFD(BaseDetector):
             Logger.error(f"Failed to load model from '{model_path}': {e}", exc_info=True)
             raise RuntimeError(f"Failed to initialize model session for '{model_path}'") from e
 
-    def preprocess(self, image: np.ndarray) -> Tuple[np.ndarray, Tuple[int, int]]:
+    def preprocess(self, image: np.ndarray) -> np.ndarray:
         """Preprocess image for inference.
 
         Args:
-            image (np.ndarray): Input image
+            image: Input image with shape (H, W, C).
 
         Returns:
-            Tuple[np.ndarray, Tuple[int, int]]: Preprocessed blob and input size
+            Preprocessed image tensor with shape (1, C, H, W).
         """
         image = image.astype(np.float32)
         image = (image - 127.5) / 127.5
@@ -129,19 +130,32 @@ class SCRFD(BaseDetector):
 
         return image
 
-    def inference(self, input_tensor: np.ndarray) -> List[np.ndarray]:
+    def inference(self, input_tensor: np.ndarray) -> list[np.ndarray]:
         """Perform model inference on the preprocessed image tensor.
 
         Args:
-            input_tensor (np.ndarray): Preprocessed input tensor.
+            input_tensor: Preprocessed input tensor with shape (1, C, H, W).
 
         Returns:
-            Tuple[np.ndarray, np.ndarray]: Raw model outputs.
+            List of raw model outputs.
         """
         return self.session.run(self.output_names, {self.input_names: input_tensor})
 
-    def postprocess(self, outputs: List[np.ndarray], image_size: Tuple[int, int]):
-        scores_list = []
+    def postprocess(
+        self,
+        outputs: list[np.ndarray],
+        image_size: tuple[int, int],
+    ) -> tuple[list[np.ndarray], list[np.ndarray], list[np.ndarray]]:
+        """Process model outputs into detection results.
+
+        Args:
+            outputs: Raw outputs from the detection model.
+            image_size: Size of the input image as (height, width).
+
+        Returns:
+            Tuple of (scores_list, bboxes_list, landmarks_list).
+        """
+        scores_list: list[np.ndarray] = []
         bboxes_list = []
         kpss_list = []
 
@@ -193,7 +207,7 @@ class SCRFD(BaseDetector):
         max_num: int = 0,
         metric: Literal['default', 'max'] = 'max',
         center_weight: float = 2.0,
-    ) -> List[Face]:
+    ) -> list[Face]:
         """
         Perform face detection on an input image and return bounding boxes and facial landmarks.
 

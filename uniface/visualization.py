@@ -2,10 +2,25 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-from typing import List, Tuple, Union
+"""Visualization utilities for UniFace.
+
+This module provides functions for drawing detection results, gaze directions,
+and face parsing segmentation maps on images.
+"""
+
+from __future__ import annotations
 
 import cv2
 import numpy as np
+
+__all__ = [
+    'FACE_PARSING_COLORS',
+    'FACE_PARSING_LABELS',
+    'draw_detections',
+    'draw_fancy_bbox',
+    'draw_gaze',
+    'vis_parsing_maps',
+]
 
 # Face parsing component names (19 classes)
 FACE_PARSING_LABELS = [
@@ -57,23 +72,25 @@ FACE_PARSING_COLORS = [
 def draw_detections(
     *,
     image: np.ndarray,
-    bboxes: Union[List[np.ndarray], List[List[float]]],
-    scores: Union[np.ndarray, List[float]],
-    landmarks: Union[List[np.ndarray], List[List[List[float]]]],
+    bboxes: list[np.ndarray] | list[list[float]],
+    scores: np.ndarray | list[float],
+    landmarks: list[np.ndarray] | list[list[list[float]]],
     vis_threshold: float = 0.6,
     draw_score: bool = False,
     fancy_bbox: bool = True,
-):
-    """
-    Draws bounding boxes, landmarks, and optional scores on an image.
+) -> None:
+    """Draw bounding boxes, landmarks, and optional scores on an image.
+
+    Modifies the image in-place.
 
     Args:
-        image: Input image to draw on.
-        bboxes: List of bounding boxes [x1, y1, x2, y2].
+        image: Input image to draw on (modified in-place).
+        bboxes: List of bounding boxes as [x1, y1, x2, y2].
         scores: List of confidence scores.
         landmarks: List of landmark sets with shape (5, 2).
         vis_threshold: Confidence threshold for filtering. Defaults to 0.6.
         draw_score: Whether to draw confidence scores. Defaults to False.
+        fancy_bbox: Use corner-style bounding boxes. Defaults to True.
     """
     colors = [(0, 0, 255), (0, 255, 255), (255, 0, 255), (0, 255, 0), (255, 0, 0)]
 
@@ -134,19 +151,18 @@ def draw_detections(
 def draw_fancy_bbox(
     image: np.ndarray,
     bbox: np.ndarray,
-    color: Tuple[int, int, int] = (0, 255, 0),
+    color: tuple[int, int, int] = (0, 255, 0),
     thickness: int = 3,
     proportion: float = 0.2,
-):
-    """
-    Draws a bounding box with fancy corners on an image.
+) -> None:
+    """Draw a bounding box with fancy corners on an image.
 
     Args:
-        image: Input image to draw on.
+        image: Input image to draw on (modified in-place).
         bbox: Bounding box coordinates [x1, y1, x2, y2].
-        color: Color of the bounding box. Defaults to green.
-        thickness: Thickness of the bounding box lines. Defaults to 3.
-        proportion: Proportion of the corner length to the width/height of the bounding box. Defaults to 0.2.
+        color: Color of the bounding box in BGR. Defaults to green.
+        thickness: Thickness of the corner lines. Defaults to 3.
+        proportion: Proportion of corner length to box dimensions. Defaults to 0.2.
     """
     x1, y1, x2, y2 = map(int, bbox)
     width = x2 - x1
@@ -177,15 +193,14 @@ def draw_fancy_bbox(
 def draw_gaze(
     image: np.ndarray,
     bbox: np.ndarray,
-    pitch: np.ndarray,
-    yaw: np.ndarray,
+    pitch: np.ndarray | float,
+    yaw: np.ndarray | float,
     *,
     draw_bbox: bool = True,
     fancy_bbox: bool = True,
     draw_angles: bool = True,
-):
-    """
-    Draws gaze direction with optional bounding box on an image.
+) -> None:
+    """Draw gaze direction with optional bounding box on an image.
 
     Args:
         image: Input image to draw on (modified in-place).
@@ -194,7 +209,7 @@ def draw_gaze(
         yaw: Horizontal gaze angle in radians.
         draw_bbox: Whether to draw the bounding box. Defaults to True.
         fancy_bbox: Use fancy corner-style bbox. Defaults to True.
-        draw_angles: Whether to display pitch/yaw values as text. Defaults to False.
+        draw_angles: Whether to display pitch/yaw values as text. Defaults to True.
     """
     x_min, y_min, x_max, y_max = map(int, bbox[:4])
 
@@ -275,29 +290,25 @@ def vis_parsing_maps(
     save_image: bool = False,
     save_path: str = 'result.png',
 ) -> np.ndarray:
-    """
-    Visualizes face parsing segmentation mask by overlaying colored regions on the image.
+    """Visualize face parsing segmentation mask by overlaying colored regions.
 
     Args:
         image: Input face image in RGB format with shape (H, W, 3).
         segmentation_mask: Segmentation mask with shape (H, W) where each pixel
-                          value represents a facial component class (0-18).
+            value represents a facial component class (0-18).
         save_image: Whether to save the visualization to disk. Defaults to False.
         save_path: Path to save the visualization if save_image is True.
 
     Returns:
-        np.ndarray: Blended image with segmentation overlay in BGR format.
+        Blended image with segmentation overlay in BGR format.
 
     Example:
         >>> import cv2
         >>> from uniface.parsing import BiSeNet
         >>> from uniface.visualization import vis_parsing_maps
-        >>>
         >>> parser = BiSeNet()
         >>> face_image = cv2.imread('face.jpg')
         >>> mask = parser.parse(face_image)
-        >>>
-        >>> # Visualize
         >>> face_rgb = cv2.cvtColor(face_image, cv2.COLOR_BGR2RGB)
         >>> result = vis_parsing_maps(face_rgb, mask)
         >>> cv2.imwrite('parsed_face.jpg', result)

@@ -2,9 +2,10 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import List, Tuple, Union
 
 import cv2
 import numpy as np
@@ -13,16 +14,22 @@ from uniface.face_utils import face_alignment
 from uniface.log import Logger
 from uniface.onnx_utils import create_onnx_session
 
+__all__ = ['BaseRecognizer', 'PreprocessConfig']
+
 
 @dataclass
 class PreprocessConfig:
-    """
-    Configuration for preprocessing images before feeding them into the model.
+    """Configuration for preprocessing images before feeding them into the model.
+
+    Attributes:
+        input_mean: Mean value(s) for normalization.
+        input_std: Standard deviation value(s) for normalization.
+        input_size: Target image size as (height, width).
     """
 
-    input_mean: Union[float, List[float]] = 127.5
-    input_std: Union[float, List[float]] = 127.5
-    input_size: Tuple[int, int] = (112, 112)
+    input_mean: float | list[float] = 127.5
+    input_std: float | list[float] = 127.5
+    input_size: tuple[int, int] = (112, 112)
 
 
 class BaseRecognizer(ABC):
@@ -94,7 +101,7 @@ class BaseRecognizer(ABC):
         """
         resized_img = cv2.resize(face_img, self.input_size)
 
-        if isinstance(self.input_std, (list, tuple)):
+        if isinstance(self.input_std, list | tuple):
             # Per-channel normalization
             rgb_img = cv2.cvtColor(resized_img, cv2.COLOR_BGR2RGB).astype(np.float32)
             normalized_img = (rgb_img - np.array(self.input_mean, dtype=np.float32)) / np.array(
@@ -116,13 +123,14 @@ class BaseRecognizer(ABC):
 
         return blob
 
-    def get_embedding(self, image: np.ndarray, landmarks: np.ndarray = None) -> np.ndarray:
-        """
-        Extracts face embedding from an image.
+    def get_embedding(self, image: np.ndarray, landmarks: np.ndarray | None = None) -> np.ndarray:
+        """Extract face embedding from an image.
 
         Args:
-            image: Input face image (BGR format). If already aligned (112x112), landmarks can be None.
-            landmarks: Facial landmarks (5 points for alignment). Optional if image is already aligned.
+            image: Input face image in BGR format. If already aligned (112x112),
+                landmarks can be None.
+            landmarks: Facial landmarks (5 points for alignment). Optional if
+                image is already aligned.
 
         Returns:
             Face embedding vector (typically 512-dimensional).
@@ -141,15 +149,14 @@ class BaseRecognizer(ABC):
         return embedding
 
     def get_normalized_embedding(self, image: np.ndarray, landmarks: np.ndarray) -> np.ndarray:
-        """
-        Extracts a l2 normalized face embedding vector from an image.
+        """Extract an L2-normalized face embedding vector from an image.
 
         Args:
-            image: Input face image (BGR format).
+            image: Input face image in BGR format.
             landmarks: Facial landmarks (5 points for alignment).
 
         Returns:
-            Normalized face embedding vector (typically 512-dimensional).
+            L2-normalized face embedding vector (typically 512-dimensional).
         """
         embedding = self.get_embedding(image, landmarks)
         norm = np.linalg.norm(embedding)

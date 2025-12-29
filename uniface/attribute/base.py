@@ -4,7 +4,7 @@
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
 
@@ -38,7 +38,7 @@ class AttributeResult:
         25
 
         >>> # FairFace result
-        >>> result = AttributeResult(gender=0, age_group="20-29", race="East Asian")
+        >>> result = AttributeResult(gender=0, age_group='20-29', race='East Asian')
         >>> result.sex
         'Female'
         >>> result.race
@@ -46,9 +46,9 @@ class AttributeResult:
     """
 
     gender: int
-    age: Optional[int] = None
-    age_group: Optional[str] = None
-    race: Optional[str] = None
+    age: int | None = None
+    age_group: str | None = None
+    race: str | None = None
 
     @property
     def sex(self) -> str:

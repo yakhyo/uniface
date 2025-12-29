@@ -2,7 +2,7 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-from typing import Optional
+from __future__ import annotations
 
 import numpy as np
 
@@ -11,7 +11,7 @@ from .blur import BlurFace
 
 def anonymize_faces(
     image: np.ndarray,
-    detector: Optional[object] = None,
+    detector: object | None = None,
     method: str = 'pixelate',
     blur_strength: float = 3.0,
     pixel_blocks: int = 10,

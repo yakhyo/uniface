@@ -1,6 +1,15 @@
-# Face detection on image or webcam
-# Usage: python run_detection.py --image path/to/image.jpg
-#        python run_detection.py --webcam
+# Copyright 2025 Yakhyokhuja Valikhujaev
+# Author: Yakhyokhuja Valikhujaev
+# GitHub: https://github.com/yakhyo
+
+"""Face detection on image or webcam.
+
+Usage:
+    python run_detection.py --image path/to/image.jpg
+    python run_detection.py --webcam
+"""
+
+from __future__ import annotations
 
 import argparse
 import os

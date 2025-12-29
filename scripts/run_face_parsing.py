@@ -5,7 +5,6 @@
 import argparse
 import os
 from pathlib import Path
-from typing import Tuple
 
 import cv2
 import numpy as np
@@ -18,10 +17,10 @@ from uniface.visualization import vis_parsing_maps
 
 def expand_bbox(
     bbox: np.ndarray,
-    image_shape: Tuple[int, int],
+    image_shape: tuple[int, int],
     expand_ratio: float = 0.2,
     expand_top_ratio: float = 0.4,
-) -> Tuple[int, int, int, int]:
+) -> tuple[int, int, int, int]:
     """
     Expand bounding box to include full head region for face parsing.
 

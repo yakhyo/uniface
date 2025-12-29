@@ -89,13 +89,60 @@ exclude = [
 
 [tool.ruff.format]
 quote-style = "single"
-
+docstring-code-format = true
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "W"]
+select = [
+    "E",      # pycodestyle errors
+    "F",      # pyflakes
+    "I",      # isort
+    "W",      # pycodestyle warnings
+    "UP",     # pyupgrade (modern Python syntax)
+    "B",      # flake8-bugbear
+    "C4",     # flake8-comprehensions
+    "SIM",    # flake8-simplify
+    "RUF",    # Ruff-specific rules
+]
+ignore = [
+    "E501",   # Line too long (handled by formatter)
+    "B008",   # Function call in default argument (common in FastAPI/Click)
+    "SIM108", # Use ternary operator (can reduce readability)
+    "RUF022", # Allow logical grouping in __all__ instead of alphabetical sorting
+]
 
 [tool.ruff.lint.flake8-quotes]
 docstring-quotes = "double"
 
 [tool.ruff.lint.isort]
+force-single-line = false
+force-sort-within-sections = true
 known-first-party = ["uniface"]
+section-order = [
+    "future",
+    "standard-library",
+    "third-party",
+    "first-party",
+    "local-folder",
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = false
+warn_unused_ignores = true
+ignore_missing_imports = true
+exclude = ["tests/", "scripts/", "examples/"]
+# Disable strict return type checking for numpy operations
+disable_error_code = ["no-any-return"]
+
+[tool.bandit]
+exclude_dirs = ["tests", "scripts", "examples"]
+skips = ["B101", "B614"]  # B101: assert, B614: torch.jit.load (models are SHA256 verified)
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"

@@ -2,6 +2,15 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
+"""Model weight management for UniFace.
+
+This module handles downloading, caching, and verifying model weights
+using SHA-256 checksums for integrity validation.
+"""
+
+from __future__ import annotations
+
+from enum import Enum
 import hashlib
 import os
 
@@ -14,33 +23,32 @@ from uniface.log import Logger
 __all__ = ['verify_model_weights']
 
 
-def verify_model_weights(model_name: str, root: str = '~/.uniface/models') -> str:
-    """
-    Ensure model weights are present, downloading and verifying them using SHA-256 if necessary.
+def verify_model_weights(model_name: Enum, root: str = '~/.uniface/models') -> str:
+    """Ensure model weights are present, downloading and verifying them if necessary.
 
-    Given a model identifier from an Enum class (e.g., `RetinaFaceWeights.MNET_V2`), this function checks if
-    the corresponding `.onnx` weight file exists locally. If not, it downloads the file from a predefined URL.
-    After download, the file’s integrity is verified using a SHA-256 hash. If verification fails, the file is deleted
-    and an error is raised.
+    Given a model identifier from an Enum class (e.g., `RetinaFaceWeights.MNET_V2`),
+    this function checks if the corresponding weight file exists locally. If not,
+    it downloads the file from a predefined URL and verifies its integrity using
+    a SHA-256 hash.
 
     Args:
-        model_name (Enum): Model weight identifier (e.g., `RetinaFaceWeights.MNET_V2`, `ArcFaceWeights.RESNET`, etc.).
-        root (str, optional): Directory to store or locate the model weights. Defaults to '~/.uniface/models'.
+        model_name: Model weight identifier enum (e.g., `RetinaFaceWeights.MNET_V2`).
+        root: Directory to store or locate the model weights.
+            Defaults to '~/.uniface/models'.
 
     Returns:
-        str: Absolute path to the verified model weights file.
+        Absolute path to the verified model weights file.
 
     Raises:
         ValueError: If the model is unknown or SHA-256 verification fails.
         ConnectionError: If downloading the file fails.
 
-    Examples:
-        >>> from uniface.models import RetinaFaceWeights, verify_model_weights
-        >>> verify_model_weights(RetinaFaceWeights.MNET_V2)
+    Example:
+        >>> from uniface.constants import RetinaFaceWeights
+        >>> from uniface.model_store import verify_model_weights
+        >>> path = verify_model_weights(RetinaFaceWeights.MNET_V2)
+        >>> print(path)
         '/home/user/.uniface/models/retinaface_mnet_v2.onnx'
-
-        >>> verify_model_weights(RetinaFaceWeights.RESNET34, root='/custom/dir')
-        '/custom/dir/retinaface_r34.onnx'
     """
 
     root = os.path.expanduser(root)
@@ -73,10 +81,16 @@ def verify_model_weights(model_name: str, root: str = '~/.uniface/models') -> st
     return model_path
 
 
-def download_file(url: str, dest_path: str) -> None:
-    """Download a file from a URL in chunks and save it to the destination path."""
+def download_file(url: str, dest_path: str, timeout: int = 30) -> None:
+    """Download a file from a URL in chunks and save it to the destination path.
+
+    Args:
+        url: URL to download from.
+        dest_path: Local file path to save to.
+        timeout: Connection timeout in seconds. Defaults to 30.
+    """
     try:
-        response = requests.get(url, stream=True)
+        response = requests.get(url, stream=True, timeout=timeout)
         response.raise_for_status()
         with (
             open(dest_path, 'wb') as file,

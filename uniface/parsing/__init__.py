@@ -2,7 +2,7 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-from typing import Union
+from __future__ import annotations
 
 from uniface.constants import ParsingWeights
 
@@ -13,38 +13,29 @@ __all__ = ['BaseFaceParser', 'BiSeNet', 'create_face_parser']
 
 
 def create_face_parser(
-    model_name: Union[str, ParsingWeights] = ParsingWeights.RESNET18,
+    model_name: str | ParsingWeights = ParsingWeights.RESNET18,
 ) -> BaseFaceParser:
-    """
-    Factory function to create a face parsing model instance.
+    """Factory function to create a face parsing model instance.
 
     This function provides a convenient way to instantiate face parsing models
-    without directly importing the specific model classes. It supports both
-    string-based and enum-based model selection.
+    without directly importing the specific model classes.
 
     Args:
-        model_name (Union[str, ParsingWeights]): The face parsing model to create.
-            Can be either a string or a ParsingWeights enum value.
-            Available options:
+        model_name: The face parsing model to create. Can be either a string
+            or a ParsingWeights enum value. Available options:
             - 'parsing_resnet18' or ParsingWeights.RESNET18 (default)
             - 'parsing_resnet34' or ParsingWeights.RESNET34
 
     Returns:
-        BaseFaceParser: An instance of the requested face parsing model.
+        An instance of the requested face parsing model.
 
     Raises:
         ValueError: If the model_name is not recognized.
 
-    Examples:
-        >>> # Using enum
+    Example:
         >>> from uniface.parsing import create_face_parser
         >>> from uniface.constants import ParsingWeights
         >>> parser = create_face_parser(ParsingWeights.RESNET18)
-        >>>
-        >>> # Using string
-        >>> parser = create_face_parser('parsing_resnet18')
-        >>>
-        >>> # Parse a face image
         >>> mask = parser.parse(face_crop)
     """
     # Convert string to enum if necessary

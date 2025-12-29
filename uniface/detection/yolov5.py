@@ -2,7 +2,7 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-from typing import Any, List, Literal, Tuple
+from typing import Any, Literal
 
 import cv2
 import numpy as np
@@ -113,7 +113,7 @@ class YOLOv5Face(BaseDetector):
             Logger.error(f"Failed to load model from '{model_path}': {e}", exc_info=True)
             raise RuntimeError(f"Failed to initialize model session for '{model_path}'") from e
 
-    def preprocess(self, image: np.ndarray) -> Tuple[np.ndarray, float, Tuple[int, int]]:
+    def preprocess(self, image: np.ndarray) -> tuple[np.ndarray, float, tuple[int, int]]:
         """
         Preprocess image for inference.
 
@@ -154,7 +154,7 @@ class YOLOv5Face(BaseDetector):
 
         return img_batch, scale, (pad_w, pad_h)
 
-    def inference(self, input_tensor: np.ndarray) -> List[np.ndarray]:
+    def inference(self, input_tensor: np.ndarray) -> list[np.ndarray]:
         """Perform model inference on the preprocessed image tensor.
 
         Args:
@@ -169,8 +169,8 @@ class YOLOv5Face(BaseDetector):
         self,
         predictions: np.ndarray,
         scale: float,
-        padding: Tuple[int, int],
-    ) -> Tuple[np.ndarray, np.ndarray]:
+        padding: tuple[int, int],
+    ) -> tuple[np.ndarray, np.ndarray]:
         """
         Postprocess model predictions.
 
@@ -260,7 +260,7 @@ class YOLOv5Face(BaseDetector):
         max_num: int = 0,
         metric: Literal['default', 'max'] = 'max',
         center_weight: float = 2.0,
-    ) -> List[Face]:
+    ) -> list[Face]:
         """
         Perform face detection on an input image and return bounding boxes and facial landmarks.
 
