@@ -2,8 +2,9 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
+from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any
 
 import numpy as np
 
@@ -14,37 +15,40 @@ from .retinaface import RetinaFace
 from .scrfd import SCRFD
 from .yolov5 import YOLOv5Face
 
-# Global cache for detector instances
-_detector_cache: Dict[str, BaseDetector] = {}
+# Global cache for detector instances (keyed by method name + config hash)
+_detector_cache: dict[str, BaseDetector] = {}
 
 
-def detect_faces(image: np.ndarray, method: str = 'retinaface', **kwargs) -> List[Face]:
-    """
-    High-level face detection function.
+def detect_faces(image: np.ndarray, method: str = 'retinaface', **kwargs: Any) -> list[Face]:
+    """High-level face detection function.
+
+    Detects faces in an image using the specified detection method.
+    Results are cached for repeated calls with the same configuration.
 
     Args:
-        image (np.ndarray): Input image as numpy array.
-        method (str): Detection method to use. Options: 'retinaface', 'scrfd', 'yolov5face'.
+        image: Input image as numpy array with shape (H, W, C) in BGR format.
+        method: Detection method to use. Options: 'retinaface', 'scrfd', 'yolov5face'.
         **kwargs: Additional arguments passed to the detector.
 
     Returns:
-        List[Face]: A list of Face objects, each containing:
-            - bbox (np.ndarray): [x1, y1, x2, y2] bounding box coordinates.
-            - confidence (float): The confidence score of the detection.
-            - landmarks (np.ndarray): 5-point facial landmarks with shape (5, 2).
+        A list of Face objects, each containing:
+            - bbox: [x1, y1, x2, y2] bounding box coordinates.
+            - confidence: The confidence score of the detection.
+            - landmarks: 5-point facial landmarks with shape (5, 2).
 
     Example:
         >>> from uniface import detect_faces
-        >>> image = cv2.imread("your_image.jpg")
-        >>> faces = detect_faces(image, method='retinaface', conf_thresh=0.8)
+        >>> import cv2
+        >>> image = cv2.imread('your_image.jpg')
+        >>> faces = detect_faces(image, method='retinaface', confidence_threshold=0.8)
         >>> for face in faces:
-        ...     print(f"Found face with confidence: {face.confidence}")
-        ...     print(f"BBox: {face.bbox}")
+        ...     print(f'Found face with confidence: {face.confidence}')
+        ...     print(f'BBox: {face.bbox}')
     """
     method_name = method.lower()
 
     sorted_kwargs = sorted(kwargs.items())
-    cache_key = f'{method_name}_{str(sorted_kwargs)}'
+    cache_key = f'{method_name}_{sorted_kwargs!s}'
 
     if cache_key not in _detector_cache:
         # Pass kwargs to create the correctly configured detector
@@ -54,49 +58,36 @@ def detect_faces(image: np.ndarray, method: str = 'retinaface', **kwargs) -> Lis
     return detector.detect(image)
 
 
-def create_detector(method: str = 'retinaface', **kwargs) -> BaseDetector:
-    """
-    Factory function to create face detectors.
+def create_detector(method: str = 'retinaface', **kwargs: Any) -> BaseDetector:
+    """Factory function to create face detectors.
 
     Args:
-        method (str): Detection method. Options:
+        method: Detection method. Options:
             - 'retinaface': RetinaFace detector (default)
             - 'scrfd': SCRFD detector (fast and accurate)
             - 'yolov5face': YOLOv5-Face detector (accurate with landmarks)
-        **kwargs: Detector-specific parameters
+        **kwargs: Detector-specific parameters.
 
     Returns:
-        BaseDetector: Initialized detector instance
+        Initialized detector instance.
 
     Raises:
-        ValueError: If method is not supported
+        ValueError: If method is not supported.
 
-    Examples:
+    Example:
         >>> # Basic usage
         >>> detector = create_detector('retinaface')
 
         >>> # SCRFD detector with custom parameters
+        >>> from uniface.constants import SCRFDWeights
         >>> detector = create_detector(
-        ...     'scrfd',
-        ...     model_name=SCRFDWeights.SCRFD_10G_KPS,
-        ...     conf_thresh=0.8,
-        ...     input_size=(640, 640)
+        ...     'scrfd', model_name=SCRFDWeights.SCRFD_10G_KPS, confidence_threshold=0.8, input_size=(640, 640)
         ... )
 
         >>> # RetinaFace detector
+        >>> from uniface.constants import RetinaFaceWeights
         >>> detector = create_detector(
-        ...     'retinaface',
-        ...     model_name=RetinaFaceWeights.MNET_V2,
-        ...     conf_thresh=0.8,
-        ...     nms_thresh=0.4
-        ... )
-
-        >>> # YOLOv5-Face detector
-        >>> detector = create_detector(
-        ...     'yolov5face',
-        ...     model_name=YOLOv5FaceWeights.YOLOV5S,
-        ...     conf_thresh=0.25,
-        ...     nms_thresh=0.45
+        ...     'retinaface', model_name=RetinaFaceWeights.MNET_V2, confidence_threshold=0.8, nms_threshold=0.4
         ... )
     """
     method = method.lower()
@@ -115,12 +106,12 @@ def create_detector(method: str = 'retinaface', **kwargs) -> BaseDetector:
         raise ValueError(f"Unsupported detection method: '{method}'. Available methods: {available_methods}")
 
 
-def list_available_detectors() -> Dict[str, Dict[str, Any]]:
-    """
-    List all available detection methods with their descriptions and parameters.
+def list_available_detectors() -> dict[str, dict[str, Any]]:
+    """List all available detection methods with their descriptions and parameters.
 
     Returns:
-        Dict[str, Dict[str, Any]]: Dictionary of detector information
+        Dictionary mapping detector names to their information including
+        description, landmark support, paper reference, and default parameters.
     """
     return {
         'retinaface': {
@@ -129,8 +120,8 @@ def list_available_detectors() -> Dict[str, Dict[str, Any]]:
             'paper': 'https://arxiv.org/abs/1905.00641',
             'default_params': {
                 'model_name': 'mnet_v2',
-                'conf_thresh': 0.5,
-                'nms_thresh': 0.4,
+                'confidence_threshold': 0.5,
+                'nms_threshold': 0.4,
                 'input_size': (640, 640),
             },
         },
@@ -140,8 +131,8 @@ def list_available_detectors() -> Dict[str, Dict[str, Any]]:
             'paper': 'https://arxiv.org/abs/2105.04714',
             'default_params': {
                 'model_name': 'scrfd_10g_kps',
-                'conf_thresh': 0.5,
-                'nms_thresh': 0.4,
+                'confidence_threshold': 0.5,
+                'nms_threshold': 0.4,
                 'input_size': (640, 640),
             },
         },
@@ -151,8 +142,8 @@ def list_available_detectors() -> Dict[str, Dict[str, Any]]:
             'paper': 'https://arxiv.org/abs/2105.12931',
             'default_params': {
                 'model_name': 'yolov5s_face',
-                'conf_thresh': 0.25,
-                'nms_thresh': 0.45,
+                'confidence_threshold': 0.25,
+                'nms_threshold': 0.45,
                 'input_size': 640,
             },
         },
@@ -160,11 +151,11 @@ def list_available_detectors() -> Dict[str, Dict[str, Any]]:
 
 
 __all__ = [
-    'detect_faces',
-    'create_detector',
-    'list_available_detectors',
     'SCRFD',
+    'BaseDetector',
     'RetinaFace',
     'YOLOv5Face',
-    'BaseDetector',
+    'create_detector',
+    'detect_faces',
+    'list_available_detectors',
 ]

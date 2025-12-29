@@ -2,7 +2,7 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-from typing import Optional
+from __future__ import annotations
 
 from uniface.constants import ArcFaceWeights, MobileFaceWeights, SphereFaceWeights
 from uniface.model_store import verify_model_weights
@@ -34,7 +34,7 @@ class ArcFace(BaseRecognizer):
     def __init__(
         self,
         model_name: ArcFaceWeights = ArcFaceWeights.MNET,
-        preprocessing: Optional[PreprocessConfig] = None,
+        preprocessing: PreprocessConfig | None = None,
     ) -> None:
         if preprocessing is None:
             preprocessing = PreprocessConfig(input_mean=127.5, input_std=127.5, input_size=(112, 112))
@@ -64,7 +64,7 @@ class MobileFace(BaseRecognizer):
     def __init__(
         self,
         model_name: MobileFaceWeights = MobileFaceWeights.MNET_V2,
-        preprocessing: Optional[PreprocessConfig] = None,
+        preprocessing: PreprocessConfig | None = None,
     ) -> None:
         if preprocessing is None:
             preprocessing = PreprocessConfig(input_mean=127.5, input_std=127.5, input_size=(112, 112))
@@ -94,7 +94,7 @@ class SphereFace(BaseRecognizer):
     def __init__(
         self,
         model_name: SphereFaceWeights = SphereFaceWeights.SPHERE20,
-        preprocessing: Optional[PreprocessConfig] = None,
+        preprocessing: PreprocessConfig | None = None,
     ) -> None:
         if preprocessing is None:
             preprocessing = PreprocessConfig(input_mean=127.5, input_std=127.5, input_size=(112, 112))

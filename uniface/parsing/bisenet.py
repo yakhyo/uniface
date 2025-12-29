@@ -2,7 +2,6 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-from typing import Tuple
 
 import cv2
 import numpy as np
@@ -54,17 +53,17 @@ class BiSeNet(BaseFaceParser):
         >>> # Detect faces and parse each face
         >>> faces = detector.detect(image)
         >>> for face in faces:
-        ...     bbox = face['bbox']
+        ...     bbox = face.bbox
         ...     x1, y1, x2, y2 = map(int, bbox[:4])
         ...     face_crop = image[y1:y2, x1:x2]
         ...     mask = parser.parse(face_crop)
-        ...     print(f"Mask shape: {mask.shape}, unique classes: {np.unique(mask)}")
+        ...     print(f'Mask shape: {mask.shape}, unique classes: {np.unique(mask)}')
     """
 
     def __init__(
         self,
         model_name: ParsingWeights = ParsingWeights.RESNET18,
-        input_size: Tuple[int, int] = (512, 512),
+        input_size: tuple[int, int] = (512, 512),
     ) -> None:
         Logger.info(f'Initializing BiSeNet with model={model_name}, input_size={input_size}')
 
@@ -127,7 +126,7 @@ class BiSeNet(BaseFaceParser):
 
         return image
 
-    def postprocess(self, outputs: np.ndarray, original_size: Tuple[int, int]) -> np.ndarray:
+    def postprocess(self, outputs: np.ndarray, original_size: tuple[int, int]) -> np.ndarray:
         """
         Postprocess model output to segmentation mask.
 

@@ -29,7 +29,7 @@ def extract_reference_embedding(detector, recognizer, image_path: str) -> np.nda
     if not faces:
         raise RuntimeError('No faces found in reference image.')
 
-    landmarks = faces[0]['landmarks']
+    landmarks = faces[0].landmarks
     return recognizer.get_normalized_embedding(image, landmarks)
 
 
@@ -49,8 +49,8 @@ def run_webcam(detector, recognizer, ref_embedding: np.ndarray, threshold: float
         faces = detector.detect(frame)
 
         for face in faces:
-            bbox = face['bbox']
-            landmarks = face['landmarks']
+            bbox = face.bbox
+            landmarks = face.landmarks
             x1, y1, x2, y2 = map(int, bbox)
 
             embedding = recognizer.get_normalized_embedding(frame, landmarks)

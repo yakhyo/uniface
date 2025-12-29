@@ -2,7 +2,6 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-from typing import Tuple
 
 import cv2
 import numpy as np
@@ -46,7 +45,7 @@ class Landmark106(BaseLandmarker):
     def __init__(
         self,
         model_name: LandmarkWeights = LandmarkWeights.DEFAULT,
-        input_size: Tuple[int, int] = (192, 192),
+        input_size: tuple[int, int] = (192, 192),
     ) -> None:
         Logger.info(f'Initializing Facial Landmark with model={model_name}, input_size={input_size}')
         self.input_size = input_size
@@ -85,7 +84,7 @@ class Landmark106(BaseLandmarker):
             Logger.error(f"Failed to load landmark model from '{self.model_path}'", exc_info=True)
             raise RuntimeError(f'Failed to initialize landmark model: {e}') from e
 
-    def preprocess(self, image: np.ndarray, bbox: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    def preprocess(self, image: np.ndarray, bbox: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         """Prepares a face crop for inference.
 
         This method takes a face bounding box, performs a center alignment to

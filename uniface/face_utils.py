@@ -2,21 +2,21 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-from typing import Tuple, Union
+from __future__ import annotations
 
 import cv2
 import numpy as np
 from skimage.transform import SimilarityTransform
 
 __all__ = [
-    'face_alignment',
-    'compute_similarity',
     'bbox_center_alignment',
+    'compute_similarity',
+    'face_alignment',
     'transform_points_2d',
 ]
 
 
-# Reference alignment for facial landmarks (ArcFace)
+# Standard 5-point facial landmark reference for ArcFace alignment (112x112)
 reference_alignment: np.ndarray = np.array(
     [
         [38.2946, 51.6963],
@@ -29,22 +29,25 @@ reference_alignment: np.ndarray = np.array(
 )
 
 
-def estimate_norm(landmark: np.ndarray, image_size: Union[int, Tuple[int, int]] = 112) -> Tuple[np.ndarray, np.ndarray]:
-    """
-    Estimate the normalization transformation matrix for facial landmarks.
+def estimate_norm(
+    landmark: np.ndarray,
+    image_size: int | tuple[int, int] = 112,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Estimate the normalization transformation matrix for facial landmarks.
 
     Args:
-        landmark (np.ndarray): Array of shape (5, 2) representing the coordinates of the facial landmarks.
-        image_size (Union[int, Tuple[int, int]], optional): The size of the output image.
-            Can be an integer (for square images) or a tuple (width, height). Default is 112.
+        landmark: Array of shape (5, 2) representing the coordinates of the facial landmarks.
+        image_size: The size of the output image. Can be an integer (for square images)
+            or a tuple (width, height). Default is 112.
 
     Returns:
-        np.ndarray: The 2x3 transformation matrix for aligning the landmarks.
-        np.ndarray: The 2x3 inverse transformation matrix for aligning the landmarks.
+        A tuple containing:
+            - The 2x3 transformation matrix for aligning the landmarks.
+            - The 2x3 inverse transformation matrix.
 
     Raises:
         AssertionError: If the input landmark array does not have the shape (5, 2)
-                        or if image_size is not a multiple of 112 or 128.
+            or if image_size is not a multiple of 112 or 128.
     """
     assert landmark.shape == (5, 2), 'Landmark array must have shape (5, 2).'
 
@@ -80,23 +83,23 @@ def estimate_norm(landmark: np.ndarray, image_size: Union[int, Tuple[int, int]] 
 def face_alignment(
     image: np.ndarray,
     landmark: np.ndarray,
-    image_size: Union[int, Tuple[int, int]] = 112,
-) -> Tuple[np.ndarray, np.ndarray]:
-    """
-    Align the face in the input image based on the given facial landmarks.
+    image_size: int | tuple[int, int] = 112,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Align the face in the input image based on the given facial landmarks.
 
     Args:
-        image (np.ndarray): Input image as a NumPy array.
-        landmark (np.ndarray): Array of shape (5, 2) representing the coordinates of the facial landmarks.
-        image_size (Union[int, Tuple[int, int]], optional): The size of the aligned output image.
-            Can be an integer (for square images) or a tuple (width, height). Default is 112.
+        image: Input image as a NumPy array with shape (H, W, C).
+        landmark: Array of shape (5, 2) representing the facial landmark coordinates.
+        image_size: The size of the aligned output image. Can be an integer
+            (for square images) or a tuple (width, height). Default is 112.
 
     Returns:
-        np.ndarray: The aligned face as a NumPy array.
-        np.ndarray: The 2x3 transformation matrix used for alignment.
+        A tuple containing:
+            - The aligned face as a NumPy array.
+            - The 2x3 inverse transformation matrix used for alignment.
     """
     # Get the transformation matrix
-    M, M_inv = estimate_norm(landmark, image_size)
+    transform_matrix, inverse_transform = estimate_norm(landmark, image_size)
 
     # Handle both int and tuple for warpAffine output size
     if isinstance(image_size, int):
@@ -105,44 +108,50 @@ def face_alignment(
         output_size = image_size
 
     # Warp the input image to align the face
-    warped = cv2.warpAffine(image, M, output_size, borderValue=0.0)
+    warped = cv2.warpAffine(image, transform_matrix, output_size, borderValue=0.0)
 
-    return warped, M_inv
+    return warped, inverse_transform
 
 
 def compute_similarity(feat1: np.ndarray, feat2: np.ndarray, normalized: bool = False) -> np.float32:
-    """Computing Similarity between two faces.
+    """Compute cosine similarity between two face embeddings.
 
     Args:
-        feat1 (np.ndarray): First embedding.
-        feat2 (np.ndarray): Second embedding.
-        normalized (bool): Set True if the embeddings are already L2 normalized.
+        feat1: First embedding vector.
+        feat2: Second embedding vector.
+        normalized: Set True if the embeddings are already L2 normalized.
 
     Returns:
-        np.float32: Cosine similarity.
+        Cosine similarity score in range [-1, 1].
     """
     feat1 = feat1.ravel()
     feat2 = feat2.ravel()
     if normalized:
         return np.dot(feat1, feat2)
-    else:
-        return np.dot(feat1, feat2) / (np.linalg.norm(feat1) * np.linalg.norm(feat2) + 1e-5)
+    # Add small epsilon to prevent division by zero
+    return np.dot(feat1, feat2) / (np.linalg.norm(feat1) * np.linalg.norm(feat2) + 1e-5)
 
 
-def bbox_center_alignment(image, center, output_size, scale, rotation):
-    """
-    Apply center-based alignment, scaling, and rotation to an image.
+def bbox_center_alignment(
+    image: np.ndarray,
+    center: tuple[float, float],
+    output_size: int,
+    scale: float,
+    rotation: float,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Apply center-based alignment, scaling, and rotation to an image.
 
     Args:
-        image (np.ndarray): Input image.
-        center (Tuple[float, float]): Center point (e.g., face center from bbox).
-        output_size (int): Desired output image size (square).
-        scale (float): Scaling factor to zoom in/out.
-        rotation (float): Rotation angle in degrees (clockwise).
+        image: Input image with shape (H, W, C).
+        center: Center point (x, y), e.g., face center from bbox.
+        output_size: Desired output image size (square).
+        scale: Scaling factor to zoom in/out.
+        rotation: Rotation angle in degrees (clockwise).
 
     Returns:
-        cropped (np.ndarray): Aligned and cropped image.
-        M (np.ndarray): 2x3 affine transform matrix used.
+        A tuple containing:
+            - Aligned and cropped image with shape (output_size, output_size, C).
+            - 2x3 affine transform matrix used.
     """
 
     # Convert rotation from degrees to radians
@@ -175,15 +184,14 @@ def bbox_center_alignment(image, center, output_size, scale, rotation):
 
 
 def transform_points_2d(points: np.ndarray, transform: np.ndarray) -> np.ndarray:
-    """
-    Apply a 2D affine transformation to an array of 2D points.
+    """Apply a 2D affine transformation to an array of 2D points.
 
     Args:
-        points (np.ndarray): An (N, 2) array of 2D points.
-        transform (np.ndarray): A (2, 3) affine transformation matrix.
+        points: An (N, 2) array of 2D points.
+        transform: A (2, 3) affine transformation matrix.
 
     Returns:
-        np.ndarray: Transformed (N, 2) array of points.
+        Transformed (N, 2) array of points.
     """
     transformed = np.zeros_like(points, dtype=np.float32)
     for i in range(points.shape[0]):

@@ -1,3 +1,11 @@
+# Copyright 2025 Yakhyokhuja Valikhujaev
+# Author: Yakhyokhuja Valikhujaev
+# GitHub: https://github.com/yakhyo
+
+"""Tests for factory functions (create_detector, create_recognizer, etc.)."""
+
+from __future__ import annotations
+
 import numpy as np
 import pytest
 
@@ -35,8 +43,8 @@ def test_create_detector_with_config():
     detector = create_detector(
         'retinaface',
         model_name=RetinaFaceWeights.MNET_V2,
-        conf_thresh=0.8,
-        nms_thresh=0.3,
+        confidence_threshold=0.8,
+        nms_threshold=0.3,
     )
     assert detector is not None, 'Failed to create detector with custom config'
 
@@ -53,7 +61,7 @@ def test_create_detector_scrfd_with_model():
     """
     Test creating SCRFD detector with specific model.
     """
-    detector = create_detector('scrfd', model_name=SCRFDWeights.SCRFD_10G_KPS, conf_thresh=0.5)
+    detector = create_detector('scrfd', model_name=SCRFDWeights.SCRFD_10G_KPS, confidence_threshold=0.5)
     assert detector is not None, 'Failed to create SCRFD with specific model'
 
 
@@ -141,13 +149,13 @@ def test_detect_faces_with_threshold():
     Test detect_faces with custom confidence threshold.
     """
     mock_image = np.random.randint(0, 255, (640, 640, 3), dtype=np.uint8)
-    faces = detect_faces(mock_image, method='retinaface', conf_thresh=0.8)
+    faces = detect_faces(mock_image, method='retinaface', confidence_threshold=0.8)
 
     assert isinstance(faces, list), 'detect_faces should return a list'
 
     # All detections should respect threshold
     for face in faces:
-        assert face['confidence'] >= 0.8, 'All detections should meet confidence threshold'
+        assert face.confidence >= 0.8, 'All detections should meet confidence threshold'
 
 
 def test_detect_faces_default_method():
@@ -246,8 +254,8 @@ def test_detector_with_different_configs():
     """
     Test creating multiple detectors with different configurations.
     """
-    detector_high_thresh = create_detector('retinaface', conf_thresh=0.9)
-    detector_low_thresh = create_detector('retinaface', conf_thresh=0.3)
+    detector_high_thresh = create_detector('retinaface', confidence_threshold=0.9)
+    detector_low_thresh = create_detector('retinaface', confidence_threshold=0.3)
 
     mock_image = np.random.randint(0, 255, (640, 640, 3), dtype=np.uint8)
 

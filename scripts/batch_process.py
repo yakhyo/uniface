@@ -28,9 +28,9 @@ def process_image(detector, image_path: Path, output_path: Path, threshold: floa
     faces = detector.detect(image)
 
     # unpack face data for visualization
-    bboxes = [f['bbox'] for f in faces]
-    scores = [f['confidence'] for f in faces]
-    landmarks = [f['landmarks'] for f in faces]
+    bboxes = [f.bbox for f in faces]
+    scores = [f.confidence for f in faces]
+    landmarks = [f.landmarks for f in faces]
     draw_detections(
         image=image, bboxes=bboxes, scores=scores, landmarks=landmarks, vis_threshold=threshold, fancy_bbox=True
     )

@@ -24,7 +24,7 @@ def process_image(detector, gaze_estimator, image_path: str, save_dir: str = 'ou
     print(f'Detected {len(faces)} face(s)')
 
     for i, face in enumerate(faces):
-        bbox = face['bbox']
+        bbox = face.bbox
         x1, y1, x2, y2 = map(int, bbox[:4])
         face_crop = image[y1:y2, x1:x2]
 
@@ -60,7 +60,7 @@ def run_webcam(detector, gaze_estimator):
         faces = detector.detect(frame)
 
         for face in faces:
-            bbox = face['bbox']
+            bbox = face.bbox
             x1, y1, x2, y2 = map(int, bbox[:4])
             face_crop = frame[y1:y2, x1:x2]
 

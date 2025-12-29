@@ -2,7 +2,9 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-from typing import Any, List, Literal, Tuple
+from __future__ import annotations
+
+from typing import Any, Literal
 
 import numpy as np
 
@@ -32,8 +34,8 @@ class RetinaFace(BaseDetector):
 
     Args:
         model_name (RetinaFaceWeights): Model weights to use. Defaults to `RetinaFaceWeights.MNET_V2`.
-        conf_thresh (float): Confidence threshold for filtering detections. Defaults to 0.5.
-        nms_thresh (float): Non-maximum suppression (NMS) IoU threshold. Defaults to 0.4.
+        confidence_threshold (float): Confidence threshold for filtering detections. Defaults to 0.5.
+        nms_threshold (float): Non-maximum suppression (NMS) IoU threshold. Defaults to 0.4.
         input_size (Tuple[int, int]): Fixed input size (width, height) if `dynamic_size=False`.
             Defaults to (640, 640).
             Note: Non-default sizes may cause slower inference and CoreML compatibility issues.
@@ -44,8 +46,8 @@ class RetinaFace(BaseDetector):
 
     Attributes:
         model_name (RetinaFaceWeights): Selected model variant.
-        conf_thresh (float): Threshold for confidence-based filtering.
-        nms_thresh (float): IoU threshold used for NMS.
+        confidence_threshold (float): Threshold for confidence-based filtering.
+        nms_threshold (float): IoU threshold used for NMS.
         pre_nms_topk (int): Limit on proposals before applying NMS.
         post_nms_topk (int): Limit on retained detections after NMS.
         dynamic_size (bool): Flag indicating dynamic or static input sizing.
@@ -63,23 +65,23 @@ class RetinaFace(BaseDetector):
         self,
         *,
         model_name: RetinaFaceWeights = RetinaFaceWeights.MNET_V2,
-        conf_thresh: float = 0.5,
-        nms_thresh: float = 0.4,
-        input_size: Tuple[int, int] = (640, 640),
+        confidence_threshold: float = 0.5,
+        nms_threshold: float = 0.4,
+        input_size: tuple[int, int] = (640, 640),
         **kwargs: Any,
     ) -> None:
         super().__init__(
             model_name=model_name,
-            conf_thresh=conf_thresh,
-            nms_thresh=nms_thresh,
+            confidence_threshold=confidence_threshold,
+            nms_threshold=nms_threshold,
             input_size=input_size,
             **kwargs,
         )
         self._supports_landmarks = True  # RetinaFace supports landmarks
 
         self.model_name = model_name
-        self.conf_thresh = conf_thresh
-        self.nms_thresh = nms_thresh
+        self.confidence_threshold = confidence_threshold
+        self.nms_threshold = nms_threshold
         self.input_size = input_size
 
         # Advanced options from kwargs
@@ -88,8 +90,8 @@ class RetinaFace(BaseDetector):
         self.dynamic_size = kwargs.get('dynamic_size', False)
 
         Logger.info(
-            f'Initializing RetinaFace with model={self.model_name}, conf_thresh={self.conf_thresh}, '
-            f'nms_thresh={self.nms_thresh}, input_size={self.input_size}'
+            f'Initializing RetinaFace with model={self.model_name}, confidence_threshold={self.confidence_threshold}, '
+            f'nms_threshold={self.nms_threshold}, input_size={self.input_size}'
         )
 
         # Get path to model weights
@@ -105,14 +107,13 @@ class RetinaFace(BaseDetector):
         self._initialize_model(self._model_path)
 
     def _initialize_model(self, model_path: str) -> None:
-        """
-        Initializes an ONNX model session from the given path.
+        """Initialize an ONNX model session from the given path.
 
         Args:
-            model_path (str): The file path to the ONNX model.
+            model_path: The file path to the ONNX model.
 
         Raises:
-            RuntimeError: If the model fails to load, logs an error and raises an exception.
+            RuntimeError: If the model fails to load.
         """
         try:
             self.session = create_onnx_session(model_path)
@@ -137,14 +138,14 @@ class RetinaFace(BaseDetector):
         image = np.expand_dims(image, axis=0)  # Add batch dimension (1, C, H, W)
         return image
 
-    def inference(self, input_tensor: np.ndarray) -> List[np.ndarray]:
+    def inference(self, input_tensor: np.ndarray) -> list[np.ndarray]:
         """Perform model inference on the preprocessed image tensor.
 
         Args:
-            input_tensor (np.ndarray): Preprocessed input tensor.
+            input_tensor: Preprocessed input tensor with shape (1, C, H, W).
 
         Returns:
-            Tuple[np.ndarray, np.ndarray]: Raw model outputs.
+            List of raw model outputs (location, confidence, landmarks).
         """
         return self.session.run(self.output_names, {self.input_names: input_tensor})
 
@@ -155,7 +156,7 @@ class RetinaFace(BaseDetector):
         max_num: int = 0,
         metric: Literal['default', 'max'] = 'max',
         center_weight: float = 2.0,
-    ) -> List[Face]:
+    ) -> list[Face]:
         """
         Perform face detection on an input image and return bounding boxes and facial landmarks.
 
@@ -240,41 +241,43 @@ class RetinaFace(BaseDetector):
         return faces
 
     def postprocess(
-        self, outputs: List[np.ndarray], resize_factor: float, shape: Tuple[int, int]
-    ) -> Tuple[np.ndarray, np.ndarray]:
-        """
-        Process the model outputs into final detection results.
+        self,
+        outputs: list[np.ndarray],
+        resize_factor: float,
+        shape: tuple[int, int],
+    ) -> tuple[np.ndarray, np.ndarray]:
+        """Process the model outputs into final detection results.
 
         Args:
-            outputs (List[np.ndarray]): Raw outputs from the detection model.
+            outputs: Raw outputs from the detection model containing:
                 - outputs[0]: Location predictions (bounding box coordinates).
                 - outputs[1]: Class confidence scores.
                 - outputs[2]: Landmark predictions.
-            resize_factor (float): Factor used to resize the input image during preprocessing.
-            shape (Tuple[int, int]): Original shape of the image as (height, width).
+            resize_factor: Factor used to resize the input image during preprocessing.
+            shape: Original shape of the image as (width, height).
 
         Returns:
-            Tuple[np.ndarray, np.ndarray]: Processed results containing:
-                - detections (np.ndarray): Array of detected bounding boxes with confidence scores.
-                Shape: (num_detections, 5), where each row is [x_min, y_min, x_max, y_max, score].
-                - landmarks (np.ndarray): Array of detected facial landmarks.
-                Shape: (num_detections, 5, 2), where each row contains 5 landmark points (x, y).
+            A tuple containing:
+                - detections: Array of detected bounding boxes with confidence scores,
+                  shape (num_detections, 5), each row is [x1, y1, x2, y2, score].
+                - landmarks: Array of detected facial landmarks,
+                  shape (num_detections, 5, 2), each row contains 5 landmark points (x, y).
         """
-        loc, conf, landmarks = (
+        location_predictions, confidence_scores, landmark_predictions = (
             outputs[0].squeeze(0),
             outputs[1].squeeze(0),
             outputs[2].squeeze(0),
         )
 
         # Decode boxes and landmarks
-        boxes = decode_boxes(loc, self._priors)
-        landmarks = decode_landmarks(landmarks, self._priors)
+        boxes = decode_boxes(location_predictions, self._priors)
+        landmarks = decode_landmarks(landmark_predictions, self._priors)
 
         boxes, landmarks = self._scale_detections(boxes, landmarks, resize_factor, shape=(shape[0], shape[1]))
 
         # Extract confidence scores for the face class
-        scores = conf[:, 1]
-        mask = scores > self.conf_thresh
+        scores = confidence_scores[:, 1]
+        mask = scores > self.confidence_threshold
 
         # Filter by confidence threshold
         boxes, landmarks, scores = boxes[mask], landmarks[mask], scores[mask]
@@ -285,7 +288,7 @@ class RetinaFace(BaseDetector):
 
         # Apply NMS
         detections = np.hstack((boxes, scores[:, np.newaxis])).astype(np.float32, copy=False)
-        keep = non_max_suppression(detections, self.nms_thresh)
+        keep = non_max_suppression(detections, self.nms_threshold)
         detections, landmarks = detections[keep], landmarks[keep]
 
         # Keep top-k detections
@@ -303,9 +306,9 @@ class RetinaFace(BaseDetector):
         boxes: np.ndarray,
         landmarks: np.ndarray,
         resize_factor: float,
-        shape: Tuple[int, int],
-    ) -> Tuple[np.ndarray, np.ndarray]:
-        # Scale bounding boxes and landmarks to the original image size.
+        shape: tuple[int, int],
+    ) -> tuple[np.ndarray, np.ndarray]:
+        """Scale bounding boxes and landmarks to the original image size."""
         bbox_scale = np.array([shape[0], shape[1]] * 2)
         boxes = boxes * bbox_scale / resize_factor
 

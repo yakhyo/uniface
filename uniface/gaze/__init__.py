@@ -34,10 +34,7 @@ def create_gaze_estimator(method: str = 'mobilegaze', **kwargs) -> BaseGazeEstim
 
         >>> # Create with MobileNetV2 backbone
         >>> from uniface.constants import GazeWeights
-        >>> estimator = create_gaze_estimator(
-        ...     'mobilegaze',
-        ...     model_name=GazeWeights.MOBILENET_V2
-        ... )
+        >>> estimator = create_gaze_estimator('mobilegaze', model_name=GazeWeights.MOBILENET_V2)
 
         >>> # Use the estimator
         >>> pitch, yaw = estimator.estimate(face_crop)
@@ -51,4 +48,4 @@ def create_gaze_estimator(method: str = 'mobilegaze', **kwargs) -> BaseGazeEstim
         raise ValueError(f"Unsupported gaze estimation method: '{method}'. Available: {available}")
 
 
-__all__ = ['create_gaze_estimator', 'MobileGaze', 'BaseGazeEstimator']
+__all__ = ['BaseGazeEstimator', 'MobileGaze', 'create_gaze_estimator']

@@ -2,7 +2,7 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-from typing import Any, List, Literal, Tuple
+from typing import Any, Literal
 
 import cv2
 import numpy as np
@@ -30,8 +30,8 @@ class YOLOv5Face(BaseDetector):
     Args:
         model_name (YOLOv5FaceWeights): Predefined model enum (e.g., `YOLOV5S`).
             Specifies the YOLOv5-Face variant to load. Defaults to YOLOV5S.
-        conf_thresh (float): Confidence threshold for filtering detections. Defaults to 0.6.
-        nms_thresh (float): Non-Maximum Suppression threshold. Defaults to 0.5.
+        confidence_threshold (float): Confidence threshold for filtering detections. Defaults to 0.6.
+        nms_threshold (float): Non-Maximum Suppression threshold. Defaults to 0.5.
         input_size (int): Input image size. Defaults to 640.
             Note: ONNX model is fixed at 640. Changing this will cause inference errors.
         **kwargs: Advanced options:
@@ -39,8 +39,8 @@ class YOLOv5Face(BaseDetector):
 
     Attributes:
         model_name (YOLOv5FaceWeights): Selected model variant.
-        conf_thresh (float): Threshold used to filter low-confidence detections.
-        nms_thresh (float): Threshold used during NMS to suppress overlapping boxes.
+        confidence_threshold (float): Threshold used to filter low-confidence detections.
+        nms_threshold (float): Threshold used during NMS to suppress overlapping boxes.
         input_size (int): Image size to which inputs are resized before inference.
         max_det (int): Maximum number of detections to return.
         _model_path (str): Absolute path to the downloaded/verified model weights.
@@ -54,15 +54,15 @@ class YOLOv5Face(BaseDetector):
         self,
         *,
         model_name: YOLOv5FaceWeights = YOLOv5FaceWeights.YOLOV5S,
-        conf_thresh: float = 0.6,
-        nms_thresh: float = 0.5,
+        confidence_threshold: float = 0.6,
+        nms_threshold: float = 0.5,
         input_size: int = 640,
         **kwargs: Any,
     ) -> None:
         super().__init__(
             model_name=model_name,
-            conf_thresh=conf_thresh,
-            nms_thresh=nms_thresh,
+            confidence_threshold=confidence_threshold,
+            nms_threshold=nms_threshold,
             input_size=input_size,
             **kwargs,
         )
@@ -75,16 +75,16 @@ class YOLOv5Face(BaseDetector):
             )
 
         self.model_name = model_name
-        self.conf_thresh = conf_thresh
-        self.nms_thresh = nms_thresh
+        self.confidence_threshold = confidence_threshold
+        self.nms_threshold = nms_threshold
         self.input_size = input_size
 
         # Advanced options from kwargs
         self.max_det = kwargs.get('max_det', 750)
 
         Logger.info(
-            f'Initializing YOLOv5Face with model={self.model_name}, conf_thresh={self.conf_thresh}, '
-            f'nms_thresh={self.nms_thresh}, input_size={self.input_size}'
+            f'Initializing YOLOv5Face with model={self.model_name}, confidence_threshold={self.confidence_threshold}, '
+            f'nms_threshold={self.nms_threshold}, input_size={self.input_size}'
         )
 
         # Get path to model weights
@@ -113,7 +113,7 @@ class YOLOv5Face(BaseDetector):
             Logger.error(f"Failed to load model from '{model_path}': {e}", exc_info=True)
             raise RuntimeError(f"Failed to initialize model session for '{model_path}'") from e
 
-    def preprocess(self, image: np.ndarray) -> Tuple[np.ndarray, float, Tuple[int, int]]:
+    def preprocess(self, image: np.ndarray) -> tuple[np.ndarray, float, tuple[int, int]]:
         """
         Preprocess image for inference.
 
@@ -154,7 +154,7 @@ class YOLOv5Face(BaseDetector):
 
         return img_batch, scale, (pad_w, pad_h)
 
-    def inference(self, input_tensor: np.ndarray) -> List[np.ndarray]:
+    def inference(self, input_tensor: np.ndarray) -> list[np.ndarray]:
         """Perform model inference on the preprocessed image tensor.
 
         Args:
@@ -169,8 +169,8 @@ class YOLOv5Face(BaseDetector):
         self,
         predictions: np.ndarray,
         scale: float,
-        padding: Tuple[int, int],
-    ) -> Tuple[np.ndarray, np.ndarray]:
+        padding: tuple[int, int],
+    ) -> tuple[np.ndarray, np.ndarray]:
         """
         Postprocess model predictions.
 
@@ -190,7 +190,7 @@ class YOLOv5Face(BaseDetector):
         predictions = predictions[0]  # Remove batch dimension
 
         # Filter by confidence
-        mask = predictions[:, 4] >= self.conf_thresh
+        mask = predictions[:, 4] >= self.confidence_threshold
         predictions = predictions[mask]
 
         if len(predictions) == 0:
@@ -207,7 +207,7 @@ class YOLOv5Face(BaseDetector):
 
         # Apply NMS
         detections_for_nms = np.hstack((boxes, scores[:, None])).astype(np.float32, copy=False)
-        keep = non_max_suppression(detections_for_nms, self.nms_thresh)
+        keep = non_max_suppression(detections_for_nms, self.nms_threshold)
 
         if len(keep) == 0:
             return np.array([]), np.array([])
@@ -260,7 +260,7 @@ class YOLOv5Face(BaseDetector):
         max_num: int = 0,
         metric: Literal['default', 'max'] = 'max',
         center_weight: float = 2.0,
-    ) -> List[Face]:
+    ) -> list[Face]:
         """
         Perform face detection on an input image and return bounding boxes and facial landmarks.
 

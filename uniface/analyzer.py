@@ -2,7 +2,7 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-from typing import List, Optional
+from __future__ import annotations
 
 import numpy as np
 
@@ -17,14 +17,32 @@ __all__ = ['FaceAnalyzer']
 
 
 class FaceAnalyzer:
-    """Unified face analyzer combining detection, recognition, and attributes."""
+    """Unified face analyzer combining detection, recognition, and attributes.
+
+    This class provides a high-level interface for face analysis by combining
+    multiple components: face detection, recognition (embedding extraction),
+    and attribute prediction (age, gender, race).
+
+    Args:
+        detector: Face detector instance for detecting faces in images.
+        recognizer: Optional face recognizer for extracting embeddings.
+        age_gender: Optional age/gender predictor.
+        fairface: Optional FairFace predictor for demographics.
+
+    Example:
+        >>> from uniface import RetinaFace, ArcFace, FaceAnalyzer
+        >>> detector = RetinaFace()
+        >>> recognizer = ArcFace()
+        >>> analyzer = FaceAnalyzer(detector, recognizer=recognizer)
+        >>> faces = analyzer.analyze(image)
+    """
 
     def __init__(
         self,
         detector: BaseDetector,
-        recognizer: Optional[BaseRecognizer] = None,
-        age_gender: Optional[AgeGender] = None,
-        fairface: Optional[FairFace] = None,
+        recognizer: BaseRecognizer | None = None,
+        age_gender: AgeGender | None = None,
+        fairface: FairFace | None = None,
     ) -> None:
         self.detector = detector
         self.recognizer = recognizer
@@ -39,8 +57,18 @@ class FaceAnalyzer:
         if fairface:
             Logger.info(f'  - FairFace enabled: {fairface.__class__.__name__}')
 
-    def analyze(self, image: np.ndarray) -> List[Face]:
-        """Analyze faces in an image."""
+    def analyze(self, image: np.ndarray) -> list[Face]:
+        """Analyze faces in an image.
+
+        Performs face detection and optionally extracts embeddings and
+        predicts attributes for each detected face.
+
+        Args:
+            image: Input image as numpy array with shape (H, W, C) in BGR format.
+
+        Returns:
+            List of Face objects with detection results and any predicted attributes.
+        """
         faces = self.detector.detect(image)
         Logger.debug(f'Detected {len(faces)} face(s)')
 

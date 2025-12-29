@@ -3,7 +3,6 @@
 # GitHub: https://github.com/yakhyo
 
 from abc import ABC, abstractmethod
-from typing import List, Tuple, Union
 
 import numpy as np
 
@@ -36,7 +35,7 @@ class BaseSpoofer(ABC):
         raise NotImplementedError('Subclasses must implement the _initialize_model method.')
 
     @abstractmethod
-    def preprocess(self, image: np.ndarray, bbox: Union[List, np.ndarray]) -> np.ndarray:
+    def preprocess(self, image: np.ndarray, bbox: list | np.ndarray) -> np.ndarray:
         """
         Preprocess the input image for model inference.
 
@@ -55,7 +54,7 @@ class BaseSpoofer(ABC):
         raise NotImplementedError('Subclasses must implement the preprocess method.')
 
     @abstractmethod
-    def postprocess(self, outputs: np.ndarray) -> Tuple[int, float]:
+    def postprocess(self, outputs: np.ndarray) -> tuple[int, float]:
         """
         Postprocess raw model outputs into prediction result.
 
@@ -73,7 +72,7 @@ class BaseSpoofer(ABC):
         raise NotImplementedError('Subclasses must implement the postprocess method.')
 
     @abstractmethod
-    def predict(self, image: np.ndarray, bbox: Union[List, np.ndarray]) -> Tuple[int, float]:
+    def predict(self, image: np.ndarray, bbox: list | np.ndarray) -> tuple[int, float]:
         """
         Perform end-to-end anti-spoofing prediction on a face.
 
@@ -95,13 +94,13 @@ class BaseSpoofer(ABC):
             >>> detector = RetinaFace()
             >>> faces = detector.detect(image)
             >>> for face in faces:
-            ...     label_idx, score = spoofer.predict(image, face['bbox'])
+            ...     label_idx, score = spoofer.predict(image, face.bbox)
             ...     label = 'Real' if label_idx == 1 else 'Fake'
             ...     print(f'{label}: {score:.2%}')
         """
         raise NotImplementedError('Subclasses must implement the predict method.')
 
-    def __call__(self, image: np.ndarray, bbox: Union[List, np.ndarray]) -> Tuple[int, float]:
+    def __call__(self, image: np.ndarray, bbox: list | np.ndarray) -> tuple[int, float]:
         """
         Provides a convenient, callable shortcut for the `predict` method.
 

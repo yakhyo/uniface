@@ -2,7 +2,9 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-from typing import Any, Dict, List, Union
+from __future__ import annotations
+
+from typing import Any
 
 import numpy as np
 
@@ -10,6 +12,7 @@ from uniface.attribute.age_gender import AgeGender
 from uniface.attribute.base import Attribute, AttributeResult
 from uniface.attribute.fairface import FairFace
 from uniface.constants import AgeGenderWeights, DDAMFNWeights, FairFaceWeights
+from uniface.face import Face
 
 # Emotion requires PyTorch - make it optional
 try:
@@ -32,17 +35,17 @@ __all__ = [
 
 # A mapping from model enums to their corresponding attribute classes
 _ATTRIBUTE_MODELS = {
-    **{model: AgeGender for model in AgeGenderWeights},
-    **{model: FairFace for model in FairFaceWeights},
+    **dict.fromkeys(AgeGenderWeights, AgeGender),
+    **dict.fromkeys(FairFaceWeights, FairFace),
 }
 
 # Add Emotion models only if PyTorch is available
 if _EMOTION_AVAILABLE:
-    _ATTRIBUTE_MODELS.update({model: Emotion for model in DDAMFNWeights})
+    _ATTRIBUTE_MODELS.update(dict.fromkeys(DDAMFNWeights, Emotion))
 
 
 def create_attribute_predictor(
-    model_name: Union[AgeGenderWeights, DDAMFNWeights, FairFaceWeights], **kwargs: Any
+    model_name: AgeGenderWeights | DDAMFNWeights | FairFaceWeights, **kwargs: Any
 ) -> Attribute:
     """
     Factory function to create an attribute predictor instance.
@@ -75,46 +78,36 @@ def create_attribute_predictor(
     return model_class(model_name=model_name, **kwargs)
 
 
-def predict_attributes(
-    image: np.ndarray, detections: List[Dict[str, np.ndarray]], predictor: Attribute
-) -> List[Dict[str, Any]]:
+def predict_attributes(image: np.ndarray, faces: list[Face], predictor: Attribute) -> list[Face]:
     """
     High-level API to predict attributes for multiple detected faces.
 
-    This function iterates through a list of face detections, runs the
-    specified attribute predictor on each one, and appends the results back
-    into the detection dictionary.
+    This function iterates through a list of Face objects, runs the
+    specified attribute predictor on each one, and updates the Face
+    objects with the predicted attributes.
 
     Args:
         image (np.ndarray): The full input image in BGR format.
-        detections (List[Dict]): A list of detection results, where each dict
-                                 must contain a 'bbox' and optionally 'landmark'.
+        faces (List[Face]): A list of Face objects from face detection.
         predictor (Attribute): An initialized attribute predictor instance,
                                created by `create_attribute_predictor`.
 
     Returns:
-        The list of detections, where each dictionary is updated with a new
-        'attributes' key containing the prediction result.
+        List[Face]: The list of Face objects with updated attribute fields.
     """
-    for face in detections:
-        # Initialize attributes dict if it doesn't exist
-        if 'attributes' not in face:
-            face['attributes'] = {}
-
+    for face in faces:
         if isinstance(predictor, AgeGender):
-            result = predictor(image, face['bbox'])
-            face['attributes']['gender'] = result.gender
-            face['attributes']['sex'] = result.sex
-            face['attributes']['age'] = result.age
+            result = predictor(image, face.bbox)
+            face.gender = result.gender
+            face.age = result.age
         elif isinstance(predictor, FairFace):
-            result = predictor(image, face['bbox'])
-            face['attributes']['gender'] = result.gender
-            face['attributes']['sex'] = result.sex
-            face['attributes']['age_group'] = result.age_group
-            face['attributes']['race'] = result.race
+            result = predictor(image, face.bbox)
+            face.gender = result.gender
+            face.age_group = result.age_group
+            face.race = result.race
         elif isinstance(predictor, Emotion):
-            emotion, confidence = predictor(image, face['landmark'])
-            face['attributes']['emotion'] = emotion
-            face['attributes']['confidence'] = confidence
+            emotion, confidence = predictor(image, face.landmarks)
+            face.emotion = emotion
+            face.emotion_confidence = confidence
 
-    return detections
+    return faces

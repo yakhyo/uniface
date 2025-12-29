@@ -2,8 +2,9 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
+from __future__ import annotations
+
 from dataclasses import dataclass, fields
-from typing import Optional
 
 import numpy as np
 
@@ -29,6 +30,8 @@ class Face:
         age: Predicted exact age in years (optional, from AgeGender model).
         age_group: Predicted age range like "20-29" (optional, from FairFace).
         race: Predicted race/ethnicity (optional, from FairFace).
+        emotion: Predicted emotion label (optional, from Emotion model).
+        emotion_confidence: Confidence score for emotion prediction (optional).
 
     Properties:
         sex: Gender as a human-readable string ("Female" or "Male").
@@ -42,13 +45,15 @@ class Face:
     landmarks: np.ndarray
 
     # Optional attributes
-    embedding: Optional[np.ndarray] = None
-    gender: Optional[int] = None
-    age: Optional[int] = None
-    age_group: Optional[str] = None
-    race: Optional[str] = None
+    embedding: np.ndarray | None = None
+    gender: int | None = None
+    age: int | None = None
+    age_group: str | None = None
+    race: str | None = None
+    emotion: str | None = None
+    emotion_confidence: float | None = None
 
-    def compute_similarity(self, other: 'Face') -> float:
+    def compute_similarity(self, other: Face) -> float:
         """Compute cosine similarity with another face."""
         if self.embedding is None or other.embedding is None:
             raise ValueError('Both faces must have embeddings for similarity computation')
@@ -59,7 +64,7 @@ class Face:
         return {f.name: getattr(self, f.name) for f in fields(self)}
 
     @property
-    def sex(self) -> Optional[str]:
+    def sex(self) -> str | None:
         """Get gender as a string label (Female or Male)."""
         if self.gender is None:
             return None
@@ -85,6 +90,8 @@ class Face:
             parts.append(f'sex={self.sex}')
         if self.race is not None:
             parts.append(f'race={self.race}')
+        if self.emotion is not None:
+            parts.append(f'emotion={self.emotion}')
         if self.embedding is not None:
             parts.append(f'embedding_dim={self.embedding.shape[0]}')
         return ', '.join(parts) + ')'

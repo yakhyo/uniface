@@ -34,10 +34,7 @@ def create_recognizer(method: str = 'arcface', **kwargs) -> BaseRecognizer:
 
         >>> # Create a specific MobileFace recognizer
         >>> from uniface.constants import MobileFaceWeights
-        >>> recognizer = create_recognizer(
-        ...     'mobileface',
-        ...     model_name=MobileFaceWeights.MNET_V2
-        ... )
+        >>> recognizer = create_recognizer('mobileface', model_name=MobileFaceWeights.MNET_V2)
 
         >>> # Create a SphereFace recognizer
         >>> recognizer = create_recognizer('sphereface')
@@ -55,4 +52,4 @@ def create_recognizer(method: str = 'arcface', **kwargs) -> BaseRecognizer:
         raise ValueError(f"Unsupported method: '{method}'. Available: {available}")
 
 
-__all__ = ['create_recognizer', 'BaseRecognizer', 'ArcFace', 'MobileFace', 'SphereFace']
+__all__ = ['ArcFace', 'BaseRecognizer', 'MobileFace', 'SphereFace', 'create_recognizer']

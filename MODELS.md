@@ -34,7 +34,7 @@ detector = RetinaFace()  # Uses MNET_V2
 # Specific model
 detector = RetinaFace(
     model_name=RetinaFaceWeights.MNET_025,  # Fastest
-    conf_thresh=0.5,
+    confidence_threshold=0.5,
     nms_thresh=0.4,
     input_size=(640, 640)
 )
@@ -63,14 +63,14 @@ from uniface.constants import SCRFDWeights
 # Fast real-time detection
 detector = SCRFD(
     model_name=SCRFDWeights.SCRFD_500M_KPS,
-    conf_thresh=0.5,
+    confidence_threshold=0.5,
     input_size=(640, 640)
 )
 
 # High accuracy
 detector = SCRFD(
     model_name=SCRFDWeights.SCRFD_10G_KPS,
-    conf_thresh=0.5
+    confidence_threshold=0.5
 )
 ```
 
@@ -99,29 +99,29 @@ from uniface.constants import YOLOv5FaceWeights
 # Lightweight/Mobile
 detector = YOLOv5Face(
     model_name=YOLOv5FaceWeights.YOLOV5N,
-    conf_thresh=0.6,
+    confidence_threshold=0.6,
     nms_thresh=0.5
 )
 
 # Real-time detection (recommended)
 detector = YOLOv5Face(
     model_name=YOLOv5FaceWeights.YOLOV5S,
-    conf_thresh=0.6,
+    confidence_threshold=0.6,
     nms_thresh=0.5
 )
 
 # High accuracy
 detector = YOLOv5Face(
     model_name=YOLOv5FaceWeights.YOLOV5M,
-    conf_thresh=0.6
+    confidence_threshold=0.6
 )
 
 # Detect faces with landmarks
 faces = detector.detect(image)
 for face in faces:
-    bbox = face['bbox']  # [x1, y1, x2, y2]
-    confidence = face['confidence']
-    landmarks = face['landmarks']  # 5-point landmarks (5, 2)
+    bbox = face.bbox  # [x1, y1, x2, y2]
+    confidence = face.confidence
+    landmarks = face.landmarks  # 5-point landmarks (5, 2)
 ```
 
 ---
@@ -466,7 +466,7 @@ spoofer = MiniFASNet(model_name=MiniFASNetWeights.V1SE)
 # Detect and check liveness
 faces = detector.detect(image)
 for face in faces:
-    label_idx, score = spoofer.predict(image, face['bbox'])
+    label_idx, score = spoofer.predict(image, face.bbox)
     # label_idx: 0 = Fake, 1 = Real
     label = 'Real' if label_idx == 1 else 'Fake'
     print(f"{label}: {score:.1%}")

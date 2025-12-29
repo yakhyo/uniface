@@ -39,17 +39,17 @@ def process_image(
     if not faces:
         return
 
-    bboxes = [f['bbox'] for f in faces]
-    scores = [f['confidence'] for f in faces]
-    landmarks = [f['landmarks'] for f in faces]
+    bboxes = [f.bbox for f in faces]
+    scores = [f.confidence for f in faces]
+    landmarks = [f.landmarks for f in faces]
     draw_detections(
         image=image, bboxes=bboxes, scores=scores, landmarks=landmarks, vis_threshold=threshold, fancy_bbox=True
     )
 
     for i, face in enumerate(faces):
-        emotion, confidence = emotion_predictor.predict(image, face['landmarks'])
+        emotion, confidence = emotion_predictor.predict(image, face.landmarks)
         print(f'  Face {i + 1}: {emotion} (confidence: {confidence:.3f})')
-        draw_emotion_label(image, face['bbox'], emotion, confidence)
+        draw_emotion_label(image, face.bbox, emotion, confidence)
 
     os.makedirs(save_dir, exist_ok=True)
     output_path = os.path.join(save_dir, f'{Path(image_path).stem}_emotion.jpg')
@@ -74,14 +74,16 @@ def run_webcam(detector, emotion_predictor, threshold: float = 0.6):
         faces = detector.detect(frame)
 
         # unpack face data for visualization
-        bboxes = [f['bbox'] for f in faces]
-        scores = [f['confidence'] for f in faces]
-        landmarks = [f['landmarks'] for f in faces]
-        draw_detections(frame, bboxes, scores, landmarks, vis_threshold=threshold)
+        bboxes = [f.bbox for f in faces]
+        scores = [f.confidence for f in faces]
+        landmarks = [f.landmarks for f in faces]
+        draw_detections(
+            image=frame, bboxes=bboxes, scores=scores, landmarks=landmarks, vis_threshold=threshold, fancy_bbox=True
+        )
 
         for face in faces:
-            emotion, confidence = emotion_predictor.predict(frame, face['landmarks'])
-            draw_emotion_label(frame, face['bbox'], emotion, confidence)
+            emotion, confidence = emotion_predictor.predict(frame, face.landmarks)
+            draw_emotion_label(frame, face.bbox, emotion, confidence)
 
         cv2.putText(
             frame,

@@ -1,3 +1,11 @@
+# Copyright 2025 Yakhyokhuja Valikhujaev
+# Author: Yakhyokhuja Valikhujaev
+# GitHub: https://github.com/yakhyo
+
+"""Tests for utility functions (compute_similarity, face_alignment, etc.)."""
+
+from __future__ import annotations
+
 import numpy as np
 import pytest
 
@@ -116,7 +124,7 @@ def test_compute_similarity_dtype():
     emb2 = emb2 / np.linalg.norm(emb2)
 
     similarity = compute_similarity(emb1, emb2)
-    assert isinstance(similarity, (float, np.floating)), f'Similarity should be float, got {type(similarity)}'
+    assert isinstance(similarity, float | np.floating), f'Similarity should be float, got {type(similarity)}'
 
 
 # face_alignment tests
@@ -259,4 +267,4 @@ def test_compute_similarity_with_recognition_embeddings():
 
     # Should be a valid similarity score
     assert -1.0 <= similarity <= 1.0
-    assert isinstance(similarity, (float, np.floating))
+    assert isinstance(similarity, float | np.floating)

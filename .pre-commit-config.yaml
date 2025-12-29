@@ -1,0 +1,40 @@
+# Pre-commit configuration for UniFace
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+
+repos:
+  # General file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-added-large-files
+        args: ['--maxkb=1000']
+      - id: check-merge-conflict
+      - id: debug-statements
+      - id: check-ast
+
+  # Ruff - Fast Python linter and formatter
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.8.4
+    hooks:
+      - id: ruff
+        args: [--fix, --unsafe-fixes, --exit-non-zero-on-fix]
+      - id: ruff-format
+
+  # Security checks
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.10
+    hooks:
+      - id: bandit
+        args: [-c, pyproject.toml]
+        additional_dependencies: ['bandit[toml]']
+        exclude: ^tests/
+
+# Configuration
+ci:
+  autofix_commit_msg: 'style: auto-fix by pre-commit hooks'
+  autoupdate_commit_msg: 'chore: update pre-commit hooks'

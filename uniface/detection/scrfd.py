@@ -2,7 +2,9 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-from typing import Any, List, Literal, Tuple
+from __future__ import annotations
+
+from typing import Any, Literal
 
 import numpy as np
 
@@ -29,8 +31,8 @@ class SCRFD(BaseDetector):
     Args:
         model_name (SCRFDWeights): Predefined model enum (e.g., `SCRFD_10G_KPS`).
             Specifies the SCRFD variant to load. Defaults to SCRFD_10G_KPS.
-        conf_thresh (float): Confidence threshold for filtering detections. Defaults to 0.5.
-        nms_thresh (float): Non-Maximum Suppression threshold. Defaults to 0.4.
+        confidence_threshold (float): Confidence threshold for filtering detections. Defaults to 0.5.
+        nms_threshold (float): Non-Maximum Suppression threshold. Defaults to 0.4.
         input_size (Tuple[int, int]): Input image size (width, height).
             Defaults to (640, 640).
             Note: Non-default sizes may cause slower inference and CoreML compatibility issues.
@@ -38,10 +40,10 @@ class SCRFD(BaseDetector):
 
     Attributes:
         model_name (SCRFDWeights): Selected model variant.
-        conf_thresh (float): Threshold used to filter low-confidence detections.
-        nms_thresh (float): Threshold used during NMS to suppress overlapping boxes.
+        confidence_threshold (float): Threshold used to filter low-confidence detections.
+        nms_threshold (float): Threshold used during NMS to suppress overlapping boxes.
         input_size (Tuple[int, int]): Image size to which inputs are resized before inference.
-        _fmc (int): Number of feature map levels used in the model.
+        _num_feature_maps (int): Number of feature map levels used in the model.
         _feat_stride_fpn (List[int]): Feature map strides corresponding to each detection level.
         _num_anchors (int): Number of anchors per feature location.
         _center_cache (Dict): Cached anchor centers for efficient forward passes.
@@ -56,35 +58,35 @@ class SCRFD(BaseDetector):
         self,
         *,
         model_name: SCRFDWeights = SCRFDWeights.SCRFD_10G_KPS,
-        conf_thresh: float = 0.5,
-        nms_thresh: float = 0.4,
-        input_size: Tuple[int, int] = (640, 640),
+        confidence_threshold: float = 0.5,
+        nms_threshold: float = 0.4,
+        input_size: tuple[int, int] = (640, 640),
         **kwargs: Any,
     ) -> None:
         super().__init__(
             model_name=model_name,
-            conf_thresh=conf_thresh,
-            nms_thresh=nms_thresh,
+            confidence_threshold=confidence_threshold,
+            nms_threshold=nms_threshold,
             input_size=input_size,
             **kwargs,
         )
         self._supports_landmarks = True  # SCRFD supports landmarks
 
         self.model_name = model_name
-        self.conf_thresh = conf_thresh
-        self.nms_thresh = nms_thresh
+        self.confidence_threshold = confidence_threshold
+        self.nms_threshold = nms_threshold
         self.input_size = input_size
 
         # ------- SCRFD model params ------
-        self._fmc = 3
+        self._num_feature_maps = 3
         self._feat_stride_fpn = [8, 16, 32]
         self._num_anchors = 2
         self._center_cache = {}
         # ---------------------------------
 
         Logger.info(
-            f'Initializing SCRFD with model={self.model_name}, conf_thresh={self.conf_thresh}, '
-            f'nms_thresh={self.nms_thresh}, input_size={self.input_size}'
+            f'Initializing SCRFD with model={self.model_name}, confidence_threshold={self.confidence_threshold}, '
+            f'nms_threshold={self.nms_threshold}, input_size={self.input_size}'
         )
 
         # Get path to model weights
@@ -95,14 +97,13 @@ class SCRFD(BaseDetector):
         self._initialize_model(self._model_path)
 
     def _initialize_model(self, model_path: str) -> None:
-        """
-        Initializes an ONNX model session from the given path.
+        """Initialize an ONNX model session from the given path.
 
         Args:
-            model_path (str): The file path to the ONNX model.
+            model_path: The file path to the ONNX model.
 
         Raises:
-            RuntimeError: If the model fails to load, logs an error and raises an exception.
+            RuntimeError: If the model fails to load.
         """
         try:
             self.session = create_onnx_session(model_path)
@@ -113,14 +114,14 @@ class SCRFD(BaseDetector):
             Logger.error(f"Failed to load model from '{model_path}': {e}", exc_info=True)
             raise RuntimeError(f"Failed to initialize model session for '{model_path}'") from e
 
-    def preprocess(self, image: np.ndarray) -> Tuple[np.ndarray, Tuple[int, int]]:
+    def preprocess(self, image: np.ndarray) -> np.ndarray:
         """Preprocess image for inference.
 
         Args:
-            image (np.ndarray): Input image
+            image: Input image with shape (H, W, C).
 
         Returns:
-            Tuple[np.ndarray, Tuple[int, int]]: Preprocessed blob and input size
+            Preprocessed image tensor with shape (1, C, H, W).
         """
         image = image.astype(np.float32)
         image = (image - 127.5) / 127.5
@@ -129,29 +130,42 @@ class SCRFD(BaseDetector):
 
         return image
 
-    def inference(self, input_tensor: np.ndarray) -> List[np.ndarray]:
+    def inference(self, input_tensor: np.ndarray) -> list[np.ndarray]:
         """Perform model inference on the preprocessed image tensor.
 
         Args:
-            input_tensor (np.ndarray): Preprocessed input tensor.
+            input_tensor: Preprocessed input tensor with shape (1, C, H, W).
 
         Returns:
-            Tuple[np.ndarray, np.ndarray]: Raw model outputs.
+            List of raw model outputs.
         """
         return self.session.run(self.output_names, {self.input_names: input_tensor})
 
-    def postprocess(self, outputs: List[np.ndarray], image_size: Tuple[int, int]):
-        scores_list = []
+    def postprocess(
+        self,
+        outputs: list[np.ndarray],
+        image_size: tuple[int, int],
+    ) -> tuple[list[np.ndarray], list[np.ndarray], list[np.ndarray]]:
+        """Process model outputs into detection results.
+
+        Args:
+            outputs: Raw outputs from the detection model.
+            image_size: Size of the input image as (height, width).
+
+        Returns:
+            Tuple of (scores_list, bboxes_list, landmarks_list).
+        """
+        scores_list: list[np.ndarray] = []
         bboxes_list = []
         kpss_list = []
 
         image_size = image_size
 
-        fmc = self._fmc
+        num_feature_maps = self._num_feature_maps
         for idx, stride in enumerate(self._feat_stride_fpn):
             scores = outputs[idx]
-            bbox_preds = outputs[fmc + idx] * stride
-            kps_preds = outputs[2 * fmc + idx] * stride
+            bbox_preds = outputs[num_feature_maps + idx] * stride
+            kps_preds = outputs[2 * num_feature_maps + idx] * stride
 
             # Generate anchors
             fm_height = image_size[0] // stride
@@ -171,7 +185,7 @@ class SCRFD(BaseDetector):
                 if len(self._center_cache) < 100:
                     self._center_cache[cache_key] = anchor_centers
 
-            pos_indices = np.where(scores >= self.conf_thresh)[0]
+            pos_indices = np.where(scores >= self.confidence_threshold)[0]
             if len(pos_indices) == 0:
                 continue
 
@@ -193,7 +207,7 @@ class SCRFD(BaseDetector):
         max_num: int = 0,
         metric: Literal['default', 'max'] = 'max',
         center_weight: float = 2.0,
-    ) -> List[Face]:
+    ) -> list[Face]:
         """
         Perform face detection on an input image and return bounding boxes and facial landmarks.
 
@@ -247,7 +261,7 @@ class SCRFD(BaseDetector):
         pre_det = np.hstack((bboxes, scores)).astype(np.float32, copy=False)
         pre_det = pre_det[order, :]
 
-        keep = non_max_suppression(pre_det, threshold=self.nms_thresh)
+        keep = non_max_suppression(pre_det, threshold=self.nms_threshold)
 
         detections = pre_det[keep, :]
         landmarks = landmarks[order, :, :]

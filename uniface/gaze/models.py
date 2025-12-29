@@ -2,7 +2,6 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-from typing import Tuple
 
 import cv2
 import numpy as np
@@ -54,17 +53,17 @@ class MobileGaze(BaseGazeEstimator):
         >>> # Detect faces and estimate gaze for each
         >>> faces = detector.detect(image)
         >>> for face in faces:
-        ...     bbox = face['bbox']
+        ...     bbox = face.bbox
         ...     x1, y1, x2, y2 = map(int, bbox[:4])
         ...     face_crop = image[y1:y2, x1:x2]
         ...     pitch, yaw = gaze_estimator.estimate(face_crop)
-        ...     print(f"Gaze: pitch={np.degrees(pitch):.1f}°, yaw={np.degrees(yaw):.1f}°")
+        ...     print(f'Gaze: pitch={np.degrees(pitch):.1f}°, yaw={np.degrees(yaw):.1f}°')
     """
 
     def __init__(
         self,
         model_name: GazeWeights = GazeWeights.RESNET34,
-        input_size: Tuple[int, int] = (448, 448),
+        input_size: tuple[int, int] = (448, 448),
     ) -> None:
         Logger.info(f'Initializing MobileGaze with model={model_name}, input_size={input_size}')
 
@@ -143,7 +142,7 @@ class MobileGaze(BaseGazeEstimator):
         e_x = np.exp(x - np.max(x, axis=1, keepdims=True))
         return e_x / e_x.sum(axis=1, keepdims=True)
 
-    def postprocess(self, outputs: Tuple[np.ndarray, np.ndarray]) -> Tuple[np.ndarray, np.ndarray]:
+    def postprocess(self, outputs: tuple[np.ndarray, np.ndarray]) -> tuple[np.ndarray, np.ndarray]:
         """
         Postprocess raw model outputs into gaze angles.
 
@@ -173,7 +172,7 @@ class MobileGaze(BaseGazeEstimator):
 
         return pitch, yaw
 
-    def estimate(self, face_image: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    def estimate(self, face_image: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         """
         Perform end-to-end gaze estimation on a face image.
 

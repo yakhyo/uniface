@@ -25,4 +25,4 @@ def create_landmarker(method: str = '2d106det', **kwargs) -> BaseLandmarker:
         raise ValueError(f"Unsupported method: '{method}'. Available: {available}")
 
 
-__all__ = ['create_landmarker', 'Landmark106', 'BaseLandmarker']
+__all__ = ['BaseLandmarker', 'Landmark106', 'create_landmarker']
