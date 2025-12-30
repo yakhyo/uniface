@@ -2,29 +2,25 @@
 hide:
   - toc
   - navigation
+  - edit
+template: home.html
 ---
 
 <div class="hero" markdown>
 
-# :material-face-recognition: UniFace { .hero-title }
+# UniFace { .hero-title }
 
-A lightweight, production-ready face analysis library built on ONNX Runtime.
+<p class="hero-subtitle">A lightweight, production-ready face analysis library built on ONNX Runtime</p>
 
 [![PyPI](https://img.shields.io/pypi/v/uniface.svg)](https://pypi.org/project/uniface/)
 [![Python](https://img.shields.io/badge/Python-3.11%2B-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Downloads](https://static.pepy.tech/badge/uniface)](https://pepy.tech/project/uniface)
 
-![UniFace](assets/logo.webp){ width="60%" }
-
 [Get Started](quickstart.md){ .md-button .md-button--primary }
 [View on GitHub](https://github.com/yakhyo/uniface){ .md-button }
 
 </div>
-
----
-
-## Features
 
 <div class="feature-grid" markdown>
 
@@ -98,7 +94,7 @@ Face anonymization with 5 blur methods for privacy protection.
 
 ## Next Steps
 
-<div class="feature-grid" markdown>
+<div class="next-steps-grid" markdown>
 
 <div class="feature-card" markdown>
 ### :material-rocket-launch: Quickstart
@@ -131,7 +127,5 @@ Complete examples for common workflows.
 </div>
 
 ---
-
-## License
 
 UniFace is released under the [MIT License](https://opensource.org/licenses/MIT).

@@ -21,7 +21,7 @@ pip install uniface
 ### Python Version
 
 ```
-Python 3.10+ required
+Python 3.11+ required
 ```
 
 **Solution:** Check your Python version:

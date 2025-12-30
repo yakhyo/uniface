@@ -2,20 +2,22 @@
 
 <div align="center">
 
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Python](https://img.shields.io/badge/Python-3.11%2B-blue)](https://www.python.org/)
 [![PyPI](https://img.shields.io/pypi/v/uniface.svg)](https://pypi.org/project/uniface/)
+[![Python](https://img.shields.io/badge/Python-3.11%2B-blue)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![CI](https://github.com/yakhyo/uniface/actions/workflows/ci.yml/badge.svg)](https://github.com/yakhyo/uniface/actions)
 [![Downloads](https://static.pepy.tech/badge/uniface)](https://pepy.tech/project/uniface)
-[![DeepWiki](https://img.shields.io/badge/DeepWiki-AI_Docs-blue.svg?logo=bookstack)](https://deepwiki.com/yakhyo/uniface)
+[![Docs](https://img.shields.io/badge/Docs-UniFace-blue.svg)](https://yakhyo.github.io/uniface/)
 
 </div>
 
 <div align="center">
-    <img src=".github/logos/logo_web.webp" width=75%>
+    <img src=".github/logos/logo_web.webp" width=80%>
 </div>
 
 **UniFace** is a lightweight, production-ready face analysis library built on ONNX Runtime. It provides high-performance face detection, recognition, landmark detection, face parsing, gaze estimation, and attribute analysis with hardware acceleration support across platforms.
+
+> 💬 **Have questions?** [Chat with this codebase on DeepWiki](https://deepwiki.com/yakhyo/uniface) - AI-powered docs that let you ask anything about UniFace.
 
 ---
 

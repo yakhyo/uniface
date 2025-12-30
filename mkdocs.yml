@@ -37,8 +37,6 @@ theme:
   features:
     - announce.dismiss
     - navigation.tabs
-    - navigation.sections
-    - navigation.path
     - navigation.top
     - navigation.footer
     - navigation.indexes
@@ -49,8 +47,10 @@ theme:
     - content.code.copy
     - content.code.annotate
     - content.action.edit
+    - content.action.view
     - content.tabs.link
     - toc.follow
+
   icon:
     logo: material/book-open-page-variant
     repo: fontawesome/brands/github
@@ -123,36 +123,39 @@ plugins:
 
 nav:
   - Home: index.md
-  - Getting started:
-      - Installation: installation.md
-      - Quickstart: quickstart.md
-  - Concepts:
-      - Overview: concepts/overview.md
-      - Inputs & Outputs: concepts/inputs-outputs.md
-      - Coordinate Systems: concepts/coordinate-systems.md
-      - Execution Providers: concepts/execution-providers.md
-      - Model Cache: concepts/model-cache-offline.md
-      - Thresholds: concepts/thresholds-calibration.md
-  - API:
-      - Detection: modules/detection.md
-      - Recognition: modules/recognition.md
-      - Landmarks: modules/landmarks.md
-      - Attributes: modules/attributes.md
-      - Parsing: modules/parsing.md
-      - Gaze: modules/gaze.md
-      - Anti-Spoofing: modules/spoofing.md
-      - Privacy: modules/privacy.md
-  - Examples:
-      - Image Pipeline: recipes/image-pipeline.md
-      - Batch Processing: recipes/batch-processing.md
-      - Video & Webcam: recipes/video-webcam.md
-      - Face Search: recipes/face-search.md
-      - Anonymize Stream: recipes/anonymize-stream.md
-      - Custom Models: recipes/custom-models.md
-  - Reference:
-      - API Reference: api/reference.md
-      - Troubleshooting: troubleshooting.md
-      - FAQ: faq.md
-      - Changelog: changelog.md
-      - Contributing: contributing.md
-      - License: license-attribution.md
+  - Documentation:
+      - Getting Started:
+          - Installation: installation.md
+          - Quickstart: quickstart.md
+      - Concepts:
+          - Overview: concepts/overview.md
+          - Inputs & Outputs: concepts/inputs-outputs.md
+          - Coordinate Systems: concepts/coordinate-systems.md
+          - Execution Providers: concepts/execution-providers.md
+          - Model Cache: concepts/model-cache-offline.md
+          - Thresholds: concepts/thresholds-calibration.md
+      - API:
+          - Detection: modules/detection.md
+          - Recognition: modules/recognition.md
+          - Landmarks: modules/landmarks.md
+          - Attributes: modules/attributes.md
+          - Parsing: modules/parsing.md
+          - Gaze: modules/gaze.md
+          - Anti-Spoofing: modules/spoofing.md
+          - Privacy: modules/privacy.md
+      - Examples:
+          - Image Pipeline: recipes/image-pipeline.md
+          - Batch Processing: recipes/batch-processing.md
+          - Video & Webcam: recipes/video-webcam.md
+          - Face Search: recipes/face-search.md
+          - Anonymize Stream: recipes/anonymize-stream.md
+          - Custom Models: recipes/custom-models.md
+      - Reference:
+          - API Reference: api/reference.md
+          - Troubleshooting: troubleshooting.md
+          - FAQ: faq.md
+          - Changelog: changelog.md
+          - Contributing: contributing.md
+          - License: license-attribution.md
+  - Releases: https://github.com/yakhyo/uniface/releases
+  - Community: https://github.com/yakhyo/uniface/discussions
