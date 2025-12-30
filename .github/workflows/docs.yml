@@ -27,6 +27,8 @@ jobs:
         run: mkdocs build --strict
 
       - name: Deploy to GitHub Pages
-        run: |
-          pip install ghp-import
-          ghp-import -n -p -f site
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
+          destination_dir: docs
