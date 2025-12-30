@@ -449,13 +449,13 @@ cv2.destroyAllWindows()
 
 ```bash
 # Anonymize image with pixelation
-python scripts/run_anonymization.py --image photo.jpg
+python tools/face_anonymize.py --source photo.jpg
 
 # Real-time webcam anonymization
-python scripts/run_anonymization.py --webcam --method gaussian
+python tools/face_anonymize.py --source 0 --method gaussian
 
 # Custom blur strength
-python scripts/run_anonymization.py --image photo.jpg --method gaussian --blur-strength 5.0
+python tools/face_anonymize.py --source photo.jpg --method gaussian --blur-strength 5.0
 ```
 
 ---
@@ -491,10 +491,10 @@ Face 1: Real (98.5%)
 
 ```bash
 # Image
-python scripts/run_spoofing.py --image photo.jpg
+python tools/spoofing.py --source photo.jpg
 
 # Webcam
-python scripts/run_spoofing.py --source 0
+python tools/spoofing.py --source 0
 ```
 
 ---

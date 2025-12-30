@@ -20,7 +20,7 @@ RetinaFace models are trained on the WIDER FACE dataset and provide excellent ac
 | `RESNET34`   | 24.8M  | 56MB  | 94.16% | 93.12% | 88.90% | Maximum accuracy              |
 
 **Accuracy**: WIDER FACE validation set (Easy/Medium/Hard subsets) - from [RetinaFace paper](https://arxiv.org/abs/1905.00641)
-**Speed**: Benchmark on your own hardware using `scripts/run_detection.py --iterations 100`
+**Speed**: Benchmark on your own hardware using `tools/detection.py --source <image> --iterations 100`
 
 #### Usage
 
@@ -52,7 +52,7 @@ SCRFD (Sample and Computation Redistribution for Efficient Face Detection) model
 | `SCRFD_10G` ⭐ | 4.2M   | 17MB  | 95.16% | 93.87% | 83.05% | **High accuracy + speed** |
 
 **Accuracy**: WIDER FACE validation set - from [SCRFD paper](https://arxiv.org/abs/2105.04714)
-**Speed**: Benchmark on your own hardware using `scripts/run_detection.py --iterations 100`
+**Speed**: Benchmark on your own hardware using `tools/detection.py --source <image> --iterations 100`
 
 #### Usage
 
@@ -87,7 +87,7 @@ YOLOv5-Face models provide excellent detection accuracy with 5-point facial land
 | `YOLOV5M`    | 82MB | 95.30% | 93.76% | 85.28% | High accuracy                  |
 
 **Accuracy**: WIDER FACE validation set - from [YOLOv5-Face paper](https://arxiv.org/abs/2105.12931)
-**Speed**: Benchmark on your own hardware using `scripts/run_detection.py --iterations 100`
+**Speed**: Benchmark on your own hardware using `tools/detection.py --source <image> --iterations 100`
 **Note**: Fixed input size of 640×640. Models exported to ONNX from [deepcam-cn/yolov5-face](https://github.com/deepcam-cn/yolov5-face)
 
 #### Usage
@@ -499,10 +499,10 @@ model_path = verify_model_weights(
 
 ```bash
 # Using the provided script
-python scripts/download_model.py
+python tools/download_model.py
 
 # Download specific model
-python scripts/download_model.py --model MNET_V2
+python tools/download_model.py --model MNET_V2
 ```
 
 ---

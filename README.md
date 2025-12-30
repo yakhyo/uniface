@@ -435,7 +435,7 @@ _Accuracy values from original papers: [RetinaFace](https://arxiv.org/abs/1905.0
 **Benchmark on your hardware:**
 
 ```bash
-python scripts/run_detection.py --image assets/test.jpg --iterations 100
+python tools/detection.py --source assets/test.jpg --iterations 100
 ```
 
 See [MODELS.md](MODELS.md) for detailed model information and selection guide.
@@ -662,7 +662,7 @@ uniface/
 │   └── visualization.py # Drawing utilities
 ├── tests/               # Unit tests
 ├── examples/            # Example notebooks
-└── scripts/             # Utility scripts
+└── tools/               # CLI utilities
 ```
 
 ---

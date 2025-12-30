@@ -1,5 +1,12 @@
-# Batch face detection on a folder of images
-# Usage: python batch_process.py --input images/ --output results/
+# Copyright 2025 Yakhyokhuja Valikhujaev
+# Author: Yakhyokhuja Valikhujaev
+# GitHub: https://github.com/yakhyo
+
+"""Batch face detection on a folder of images.
+
+Usage:
+    python tools/batch_process.py --input images/ --output results/
+"""
 
 import argparse
 from pathlib import Path

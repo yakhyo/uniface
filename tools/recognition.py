@@ -1,6 +1,13 @@
-# Face recognition: extract embeddings or compare two faces
-# Usage: python run_recognition.py --image path/to/image.jpg
-#        python run_recognition.py --image1 face1.jpg --image2 face2.jpg
+# Copyright 2025 Yakhyokhuja Valikhujaev
+# Author: Yakhyokhuja Valikhujaev
+# GitHub: https://github.com/yakhyo
+
+"""Face recognition: extract embeddings or compare two faces.
+
+Usage:
+    python tools/recognition.py --image path/to/image.jpg
+    python tools/recognition.py --image1 face1.jpg --image2 face2.jpg
+"""
 
 import argparse
 

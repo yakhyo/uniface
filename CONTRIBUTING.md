@@ -167,7 +167,7 @@ When adding a new model or feature:
 2. **Add weight constants** to `uniface/constants.py` with URLs and SHA256 hashes
 3. **Export in `__init__.py`** files at both module and package levels
 4. **Write tests** in `tests/` directory
-5. **Add example usage** in `scripts/` or update existing notebooks
+5. **Add example usage** in `tools/` or update existing notebooks
 6. **Update documentation** if needed
 
 ## Examples
