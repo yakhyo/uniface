@@ -9,10 +9,10 @@ import numpy as np
 
 from uniface.common import non_max_suppression
 from uniface.constants import YOLOv5FaceWeights
-from uniface.face import Face
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
 from uniface.onnx_utils import create_onnx_session
+from uniface.types import Face
 
 from .base import BaseDetector
 

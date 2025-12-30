@@ -2,6 +2,8 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
+from uniface.types import GazeResult
+
 from .base import BaseGazeEstimator
 from .models import MobileGaze
 
@@ -37,7 +39,8 @@ def create_gaze_estimator(method: str = 'mobilegaze', **kwargs) -> BaseGazeEstim
         >>> estimator = create_gaze_estimator('mobilegaze', model_name=GazeWeights.MOBILENET_V2)
 
         >>> # Use the estimator
-        >>> pitch, yaw = estimator.estimate(face_crop)
+        >>> result = estimator.estimate(face_crop)
+        >>> print(f'Pitch: {result.pitch}, Yaw: {result.yaw}')
     """
     method = method.lower()
 
@@ -48,4 +51,4 @@ def create_gaze_estimator(method: str = 'mobilegaze', **kwargs) -> BaseGazeEstim
         raise ValueError(f"Unsupported gaze estimation method: '{method}'. Available: {available}")
 
 
-__all__ = ['BaseGazeEstimator', 'MobileGaze', 'create_gaze_estimator']
+__all__ = ['BaseGazeEstimator', 'GazeResult', 'MobileGaze', 'create_gaze_estimator']

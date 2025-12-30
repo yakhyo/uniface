@@ -10,6 +10,7 @@ from uniface.constants import MiniFASNetWeights
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
 from uniface.onnx_utils import create_onnx_session
+from uniface.types import SpoofingResult
 
 from .base import BaseSpoofer
 
@@ -58,10 +59,9 @@ class MiniFASNet(BaseSpoofer):
         >>> # Detect faces and check if they are real
         >>> faces = detector.detect(image)
         >>> for face in faces:
-        ...     label_idx, score = spoofer.predict(image, face.bbox)
-        ...     # label_idx: 0 = Fake, 1 = Real
-        ...     label = 'Real' if label_idx == 1 else 'Fake'
-        ...     print(f'{label}: {score:.2%}')
+        ...     result = spoofer.predict(image, face.bbox)
+        ...     label = 'Real' if result.is_real else 'Fake'
+        ...     print(f'{label}: {result.confidence:.2%}')
     """
 
     def __init__(
@@ -180,28 +180,26 @@ class MiniFASNet(BaseSpoofer):
         e_x = np.exp(x - np.max(x, axis=1, keepdims=True))
         return e_x / e_x.sum(axis=1, keepdims=True)
 
-    def postprocess(self, outputs: np.ndarray) -> tuple[int, float]:
+    def postprocess(self, outputs: np.ndarray) -> SpoofingResult:
         """
         Postprocess raw model outputs into prediction result.
 
         Applies softmax to convert logits to probabilities and
-        returns the predicted label index and confidence score.
+        returns the SpoofingResult with is_real flag and confidence score.
 
         Args:
             outputs: Raw outputs from the model inference (logits).
 
         Returns:
-            Tuple[int, float]: A tuple of (label_idx, score) where:
-                - label_idx: 0 = Fake (spoof), 1 = Real (live)
-                - score: Confidence score for the predicted label (0.0 to 1.0)
+            SpoofingResult: Result containing is_real flag and confidence score.
         """
         probs = self._softmax(outputs)
         label_idx = int(np.argmax(probs))
-        score = float(probs[0, label_idx])
+        confidence = float(probs[0, label_idx])
 
-        return label_idx, score
+        return SpoofingResult(is_real=(label_idx == 1), confidence=confidence)
 
-    def predict(self, image: np.ndarray, bbox: list | np.ndarray) -> tuple[int, float]:
+    def predict(self, image: np.ndarray, bbox: list | np.ndarray) -> SpoofingResult:
         """
         Perform end-to-end anti-spoofing prediction on a face.
 
@@ -210,9 +208,7 @@ class MiniFASNet(BaseSpoofer):
             bbox: Face bounding box in [x1, y1, x2, y2] format.
 
         Returns:
-            Tuple[int, float]: A tuple of (label_idx, score) where:
-                - label_idx: 0 = Fake (spoof), 1 = Real (live)
-                - score: Confidence score for the predicted label (0.0 to 1.0)
+            SpoofingResult: Result containing is_real flag and confidence score.
         """
         # Preprocess
         input_tensor = self.preprocess(image, bbox)

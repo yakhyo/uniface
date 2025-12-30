@@ -9,9 +9,9 @@ import numpy as np
 from uniface.attribute.age_gender import AgeGender
 from uniface.attribute.fairface import FairFace
 from uniface.detection.base import BaseDetector
-from uniface.face import Face
 from uniface.log import Logger
 from uniface.recognition.base import BaseRecognizer
+from uniface.types import Face
 
 __all__ = ['FaceAnalyzer']
 

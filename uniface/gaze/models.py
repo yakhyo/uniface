@@ -10,6 +10,7 @@ from uniface.constants import GazeWeights
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
 from uniface.onnx_utils import create_onnx_session
+from uniface.types import GazeResult
 
 from .base import BaseGazeEstimator
 
@@ -56,8 +57,8 @@ class MobileGaze(BaseGazeEstimator):
         ...     bbox = face.bbox
         ...     x1, y1, x2, y2 = map(int, bbox[:4])
         ...     face_crop = image[y1:y2, x1:x2]
-        ...     pitch, yaw = gaze_estimator.estimate(face_crop)
-        ...     print(f'Gaze: pitch={np.degrees(pitch):.1f}°, yaw={np.degrees(yaw):.1f}°')
+        ...     result = gaze_estimator.estimate(face_crop)
+        ...     print(f'Gaze: pitch={np.degrees(result.pitch):.1f}°, yaw={np.degrees(result.yaw):.1f}°')
     """
 
     def __init__(
@@ -142,7 +143,7 @@ class MobileGaze(BaseGazeEstimator):
         e_x = np.exp(x - np.max(x, axis=1, keepdims=True))
         return e_x / e_x.sum(axis=1, keepdims=True)
 
-    def postprocess(self, outputs: tuple[np.ndarray, np.ndarray]) -> tuple[np.ndarray, np.ndarray]:
+    def postprocess(self, outputs: tuple[np.ndarray, np.ndarray]) -> GazeResult:
         """
         Postprocess raw model outputs into gaze angles.
 
@@ -154,7 +155,7 @@ class MobileGaze(BaseGazeEstimator):
                      on the specific model architecture.
 
         Returns:
-            Tuple[np.ndarray, np.ndarray]: A tuple of (pitch, yaw) angles in radians.
+            GazeResult: Result containing pitch and yaw angles in radians.
         """
         pitch_logits, yaw_logits = outputs
 
@@ -167,12 +168,12 @@ class MobileGaze(BaseGazeEstimator):
         yaw_deg = np.sum(yaw_probs * self._idx_tensor, axis=1) * self._binwidth - self._angle_offset
 
         # Convert degrees to radians
-        pitch = np.radians(pitch_deg[0])
-        yaw = np.radians(yaw_deg[0])
+        pitch = float(np.radians(pitch_deg[0]))
+        yaw = float(np.radians(yaw_deg[0]))
 
-        return pitch, yaw
+        return GazeResult(pitch=pitch, yaw=yaw)
 
-    def estimate(self, face_image: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    def estimate(self, face_image: np.ndarray) -> GazeResult:
         """
         Perform end-to-end gaze estimation on a face image.
 
@@ -181,6 +182,5 @@ class MobileGaze(BaseGazeEstimator):
         """
         input_tensor = self.preprocess(face_image)
         outputs = self.session.run(self.output_names, {self.input_name: input_tensor})
-        pitch, yaw = self.postprocess((outputs[0], outputs[1]))
 
-        return pitch, yaw
+        return self.postprocess((outputs[0], outputs[1]))

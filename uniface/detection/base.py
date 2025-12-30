@@ -9,7 +9,7 @@ from typing import Any
 
 import numpy as np
 
-from uniface.face import Face
+from uniface.types import Face
 
 __all__ = ['BaseDetector']
 
@@ -107,3 +107,15 @@ class BaseDetector(ABC):
             'supports_landmarks': self._supports_landmarks,
             'config': self.config,
         }
+
+    def __call__(self, image: np.ndarray, **kwargs: Any) -> list[Face]:
+        """Callable shortcut for the `detect` method.
+
+        Args:
+            image: Input image as numpy array with shape (H, W, C) in BGR format.
+            **kwargs: Additional detection parameters.
+
+        Returns:
+            List of detected Face objects.
+        """
+        return self.detect(image, **kwargs)

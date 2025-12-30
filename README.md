@@ -194,11 +194,11 @@ for face in faces:
     x1, y1, x2, y2 = map(int, face.bbox[:4])
     face_crop = image[y1:y2, x1:x2]
 
-    pitch, yaw = gaze_estimator.estimate(face_crop)
-    print(f"Gaze: pitch={np.degrees(pitch):.1f}°, yaw={np.degrees(yaw):.1f}°")
+    result = gaze_estimator.estimate(face_crop)
+    print(f"Gaze: pitch={np.degrees(result.pitch):.1f}°, yaw={np.degrees(result.yaw):.1f}°")
 
     # Visualize
-    draw_gaze(image, face.bbox, pitch, yaw)
+    draw_gaze(image, face.bbox, result.pitch, result.yaw)
 ```
 
 ### Face Parsing
@@ -235,10 +235,11 @@ spoofer = MiniFASNet()  # Uses V2 by default
 
 faces = detector.detect(image)
 for face in faces:
-    label_idx, score = spoofer.predict(image, face.bbox)
-    # label_idx: 0 = Fake, 1 = Real
-    label = 'Real' if label_idx == 1 else 'Fake'
-    print(f"{label}: {score:.1%}")
+    result = spoofer.predict(image, face.bbox)
+    # result.is_real: True for real, False for fake
+    # result.confidence: confidence score
+    label = 'Real' if result.is_real else 'Fake'
+    print(f"{label}: {result.confidence:.1%}")
 ```
 
 ### Face Anonymization
@@ -399,7 +400,7 @@ faces = detect_faces(image, method='retinaface', confidence_threshold=0.8)  # me
 
 | Class         | Key params (defaults)                      | Notes                                |
 | ------------- | ------------------------------------------ | ------------------------------------ |
-| `MobileGaze` | `model_name=GazeWeights.RESNET34`       | Returns (pitch, yaw) angles in radians; trained on Gaze360 |
+| `MobileGaze` | `model_name=GazeWeights.RESNET34`       | Returns `GazeResult(pitch, yaw)` in radians; trained on Gaze360 |
 
 **Face Parsing**
 
@@ -411,7 +412,7 @@ faces = detect_faces(image, method='retinaface', confidence_threshold=0.8)  # me
 
 | Class         | Key params (defaults)                     | Notes                                |
 | ------------- | ----------------------------------------- | ------------------------------------ |
-| `MiniFASNet` | `model_name=MiniFASNetWeights.V2`       | Returns (label_idx, score); 0=Fake, 1=Real |
+| `MiniFASNet` | `model_name=MiniFASNetWeights.V2`       | Returns `SpoofingResult(is_real, confidence)` |
 
 ---
 
@@ -435,7 +436,7 @@ _Accuracy values from original papers: [RetinaFace](https://arxiv.org/abs/1905.0
 **Benchmark on your hardware:**
 
 ```bash
-python scripts/run_detection.py --image assets/test.jpg --iterations 100
+python tools/detection.py --source assets/test.jpg --iterations 100
 ```
 
 See [MODELS.md](MODELS.md) for detailed model information and selection guide.
@@ -662,7 +663,7 @@ uniface/
 │   └── visualization.py # Drawing utilities
 ├── tests/               # Unit tests
 ├── examples/            # Example notebooks
-└── scripts/             # Utility scripts
+└── tools/               # CLI utilities
 ```
 
 ---

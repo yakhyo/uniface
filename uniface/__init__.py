@@ -36,7 +36,7 @@ from uniface.model_store import verify_model_weights
 from uniface.visualization import draw_detections, vis_parsing_maps
 
 from .analyzer import FaceAnalyzer
-from .attribute import AgeGender, AttributeResult, FairFace
+from .attribute import AgeGender, FairFace
 from .detection import (
     SCRFD,
     RetinaFace,
@@ -45,13 +45,13 @@ from .detection import (
     detect_faces,
     list_available_detectors,
 )
-from .face import Face
 from .gaze import MobileGaze, create_gaze_estimator
 from .landmark import Landmark106, create_landmarker
 from .parsing import BiSeNet, create_face_parser
 from .privacy import BlurFace, anonymize_faces
 from .recognition import ArcFace, MobileFace, SphereFace, create_recognizer
 from .spoofing import MiniFASNet, create_spoofer
+from .types import AttributeResult, EmotionResult, Face, GazeResult, SpoofingResult
 
 # Optional: Emotion requires PyTorch
 Emotion: type | None
@@ -88,6 +88,7 @@ __all__ = [
     # Landmark models
     'Landmark106',
     # Gaze models
+    'GazeResult',
     'MobileGaze',
     # Parsing models
     'BiSeNet',
@@ -95,9 +96,11 @@ __all__ = [
     'AgeGender',
     'AttributeResult',
     'Emotion',
+    'EmotionResult',
     'FairFace',
     # Spoofing models
     'MiniFASNet',
+    'SpoofingResult',
     # Privacy
     'BlurFace',
     'anonymize_faces',

@@ -161,3 +161,15 @@ class BaseRecognizer(ABC):
         embedding = self.get_embedding(image, landmarks)
         norm = np.linalg.norm(embedding)
         return embedding / norm if norm > 0 else embedding
+
+    def __call__(self, image: np.ndarray, landmarks: np.ndarray) -> np.ndarray:
+        """Callable shortcut for the `get_normalized_embedding` method.
+
+        Args:
+            image: Input face image in BGR format.
+            landmarks: Facial landmarks (5 points for alignment).
+
+        Returns:
+            L2-normalized face embedding vector (typically 512-dimensional).
+        """
+        return self.get_normalized_embedding(image, landmarks)

@@ -1,14 +1,42 @@
-# Face anonymization/blurring for privacy
-# Usage: python run_anonymization.py --image path/to/image.jpg --method pixelate
-#        python run_anonymization.py --webcam --method gaussian
+# Copyright 2025 Yakhyokhuja Valikhujaev
+# Author: Yakhyokhuja Valikhujaev
+# GitHub: https://github.com/yakhyo
+
+"""Face anonymization/blurring for privacy.
+
+Usage:
+    python tools/face_anonymize.py --source path/to/image.jpg --method pixelate
+    python tools/face_anonymize.py --source path/to/video.mp4 --method gaussian
+    python tools/face_anonymize.py --source 0 --method pixelate  # webcam
+"""
+
+from __future__ import annotations
 
 import argparse
 import os
+from pathlib import Path
 
 import cv2
 
 from uniface import RetinaFace
 from uniface.privacy import BlurFace
+
+IMAGE_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.bmp', '.webp', '.tiff'}
+VIDEO_EXTENSIONS = {'.mp4', '.avi', '.mov', '.mkv', '.webm', '.flv'}
+
+
+def get_source_type(source: str) -> str:
+    """Determine if source is image, video, or camera."""
+    if source.isdigit():
+        return 'camera'
+    path = Path(source)
+    suffix = path.suffix.lower()
+    if suffix in IMAGE_EXTENSIONS:
+        return 'image'
+    elif suffix in VIDEO_EXTENSIONS:
+        return 'video'
+    else:
+        return 'unknown'
 
 
 def process_image(
@@ -24,11 +52,9 @@ def process_image(
         print(f"Error: Failed to load image from '{image_path}'")
         return
 
-    # Detect faces
     faces = detector.detect(image)
     print(f'Detected {len(faces)} face(s)')
 
-    # Optionally draw detection boxes before blurring
     if show_detections and faces:
         from uniface.visualization import draw_detections
 
@@ -38,18 +64,15 @@ def process_image(
         landmarks = [face.landmarks for face in faces]
         draw_detections(preview, bboxes, scores, landmarks)
 
-        # Show preview
         cv2.imshow('Detections (Press any key to continue)', preview)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
-    # Anonymize faces
     if faces:
         anonymized = blurrer.anonymize(image, faces)
     else:
         anonymized = image
 
-    # Save output
     os.makedirs(save_dir, exist_ok=True)
     basename = os.path.splitext(os.path.basename(image_path))[0]
     output_path = os.path.join(save_dir, f'{basename}_anonymized.jpg')
@@ -57,27 +80,71 @@ def process_image(
     print(f'Output saved: {output_path}')
 
 
-def run_webcam(detector, blurrer: BlurFace):
-    """Run real-time anonymization on webcam."""
-    cap = cv2.VideoCapture(0)
+def process_video(
+    detector,
+    blurrer: BlurFace,
+    video_path: str,
+    save_dir: str = 'outputs',
+):
+    """Process a video file."""
+    cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
-        print('Cannot open webcam')
+        print(f"Error: Cannot open video file '{video_path}'")
+        return
+
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+
+    os.makedirs(save_dir, exist_ok=True)
+    output_path = os.path.join(save_dir, f'{Path(video_path).stem}_anonymized.mp4')
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
+
+    print(f'Processing video: {video_path} ({total_frames} frames)')
+    frame_count = 0
+
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
+
+        frame_count += 1
+        faces = detector.detect(frame)
+
+        if faces:
+            frame = blurrer.anonymize(frame, faces, inplace=True)
+
+        out.write(frame)
+
+        if frame_count % 100 == 0:
+            print(f'  Processed {frame_count}/{total_frames} frames...')
+
+    cap.release()
+    out.release()
+    print(f'Done! Output saved: {output_path}')
+
+
+def run_camera(detector, blurrer: BlurFace, camera_id: int = 0):
+    """Run real-time anonymization on webcam."""
+    cap = cv2.VideoCapture(camera_id)
+    if not cap.isOpened():
+        print(f'Cannot open camera {camera_id}')
         return
 
     print("Press 'q' to quit")
 
     while True:
         ret, frame = cap.read()
-        frame = cv2.flip(frame, 1)  # mirror for natural interaction
+        frame = cv2.flip(frame, 1)
         if not ret:
             break
 
-        # Detect and anonymize
         faces = detector.detect(frame)
         if faces:
             frame = blurrer.anonymize(frame, faces, inplace=True)
 
-        # Display info
         cv2.putText(
             frame,
             f'Faces blurred: {len(faces)} | Method: {blurrer.method}',
@@ -104,26 +171,25 @@ def main():
         epilog="""
 Examples:
   # Anonymize image with pixelation (default)
-  python run_anonymization.py --image photo.jpg
+  python run_anonymization.py --source photo.jpg
 
   # Use Gaussian blur with custom strength
-  python run_anonymization.py --image photo.jpg --method gaussian --blur-strength 5.0
+  python run_anonymization.py --source photo.jpg --method gaussian --blur-strength 5.0
 
   # Real-time webcam anonymization
-  python run_anonymization.py --webcam --method pixelate
+  python run_anonymization.py --source 0 --method pixelate
 
   # Black boxes for maximum privacy
-  python run_anonymization.py --image photo.jpg --method blackout
+  python run_anonymization.py --source photo.jpg --method blackout
 
   # Custom pixelation intensity
-  python run_anonymization.py --image photo.jpg --method pixelate --pixel-blocks 5
+  python run_anonymization.py --source photo.jpg --method pixelate --pixel-blocks 5
         """,
     )
 
     # Input/output
-    parser.add_argument('--image', type=str, help='Path to input image')
-    parser.add_argument('--webcam', action='store_true', help='Use webcam for real-time anonymization')
-    parser.add_argument('--save-dir', type=str, default='outputs', help='Output directory (default: outputs)')
+    parser.add_argument('--source', type=str, required=True, help='Image/video path or camera ID (0, 1, ...)')
+    parser.add_argument('--save-dir', type=str, default='outputs', help='Output directory')
 
     # Blur method
     parser.add_argument(
@@ -145,7 +211,7 @@ Examples:
         '--pixel-blocks',
         type=int,
         default=20,
-        help='Number of pixel blocks for pixelate (default: 10, lower=more pixelated)',
+        help='Number of pixel blocks for pixelate (default: 20, lower=more pixelated)',
     )
     parser.add_argument(
         '--color',
@@ -172,10 +238,6 @@ Examples:
 
     args = parser.parse_args()
 
-    # Validate input
-    if not args.image and not args.webcam:
-        parser.error('Either --image or --webcam must be specified')
-
     # Parse color
     color_values = [int(x) for x in args.color.split(',')]
     if len(color_values) != 3:
@@ -196,11 +258,23 @@ Examples:
         margin=args.margin,
     )
 
-    # Run
-    if args.webcam:
-        run_webcam(detector, blurrer)
+    source_type = get_source_type(args.source)
+
+    if source_type == 'camera':
+        run_camera(detector, blurrer, int(args.source))
+    elif source_type == 'image':
+        if not os.path.exists(args.source):
+            print(f'Error: Image not found: {args.source}')
+            return
+        process_image(detector, blurrer, args.source, args.save_dir, args.show_detections)
+    elif source_type == 'video':
+        if not os.path.exists(args.source):
+            print(f'Error: Video not found: {args.source}')
+            return
+        process_video(detector, blurrer, args.source, args.save_dir)
     else:
-        process_image(detector, blurrer, args.image, args.save_dir, args.show_detections)
+        print(f"Error: Unknown source type for '{args.source}'")
+        print('Supported formats: images (.jpg, .png, ...), videos (.mp4, .avi, ...), or camera ID (0, 1, ...)')
 
 
 if __name__ == '__main__':

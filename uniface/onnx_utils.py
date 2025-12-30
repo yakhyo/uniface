@@ -98,8 +98,7 @@ def create_onnx_session(
             'CPUExecutionProvider': 'CPU',
         }
         provider_display = provider_names.get(active_provider, active_provider)
-        Logger.debug(f'Model loaded with provider: {active_provider}')
-        print(f'✓ Model loaded ({provider_display})')
+        Logger.info(f'✓ Model loaded ({provider_display})')
 
         return session
     except Exception as e:
