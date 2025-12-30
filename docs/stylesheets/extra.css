@@ -1,0 +1,43 @@
+/* UniFace Documentation - Custom Styles */
+
+/* Hero section */
+.hero {
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.hero-title {
+  font-size: 3rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 0.5rem !important;
+}
+
+/* Feature grid */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.feature-card {
+  padding: 1rem;
+  border-radius: 8px;
+  background: var(--md-code-bg-color);
+  border: 1px solid var(--md-default-fg-color--lightest);
+}
+
+.feature-card h3 {
+  margin-top: 0;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2rem !important;
+  }
+
+  .feature-grid {
+    grid-template-columns: 1fr;
+  }
+}
