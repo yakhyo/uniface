@@ -9,10 +9,10 @@ from typing import Any
 import numpy as np
 
 from uniface.attribute.age_gender import AgeGender
-from uniface.attribute.base import Attribute, AttributeResult
+from uniface.attribute.base import Attribute
 from uniface.attribute.fairface import FairFace
 from uniface.constants import AgeGenderWeights, DDAMFNWeights, FairFaceWeights
-from uniface.face import Face
+from uniface.types import AttributeResult, EmotionResult, Face
 
 # Emotion requires PyTorch - make it optional
 try:
@@ -28,6 +28,7 @@ __all__ = [
     'AgeGender',
     'AttributeResult',
     'Emotion',
+    'EmotionResult',
     'FairFace',
     'create_attribute_predictor',
     'predict_attributes',
@@ -106,8 +107,8 @@ def predict_attributes(image: np.ndarray, faces: list[Face], predictor: Attribut
             face.age_group = result.age_group
             face.race = result.race
         elif isinstance(predictor, Emotion):
-            emotion, confidence = predictor(image, face.landmarks)
-            face.emotion = emotion
-            face.emotion_confidence = confidence
+            result = predictor(image, face.landmarks)
+            face.emotion = result.emotion
+            face.emotion_confidence = result.confidence
 
     return faces

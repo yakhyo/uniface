@@ -6,11 +6,12 @@
 import cv2
 import numpy as np
 
-from uniface.attribute.base import Attribute, AttributeResult
+from uniface.attribute.base import Attribute
 from uniface.constants import FairFaceWeights
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
 from uniface.onnx_utils import create_onnx_session
+from uniface.types import AttributeResult
 
 __all__ = ['AGE_LABELS', 'RACE_LABELS', 'FairFace']
 

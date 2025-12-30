@@ -75,9 +75,9 @@ def process_image(
     )
 
     for i, face in enumerate(faces):
-        emotion, confidence = emotion_predictor.predict(image, face.landmarks)
-        print(f'  Face {i + 1}: {emotion} (confidence: {confidence:.3f})')
-        draw_emotion_label(image, face.bbox, emotion, confidence)
+        result = emotion_predictor.predict(image, face.landmarks)
+        print(f'  Face {i + 1}: {result.emotion} (confidence: {result.confidence:.3f})')
+        draw_emotion_label(image, face.bbox, result.emotion, result.confidence)
 
     os.makedirs(save_dir, exist_ok=True)
     output_path = os.path.join(save_dir, f'{Path(image_path).stem}_emotion.jpg')
@@ -127,8 +127,8 @@ def process_video(
         )
 
         for face in faces:
-            emotion, confidence = emotion_predictor.predict(frame, face.landmarks)
-            draw_emotion_label(frame, face.bbox, emotion, confidence)
+            result = emotion_predictor.predict(frame, face.landmarks)
+            draw_emotion_label(frame, face.bbox, result.emotion, result.confidence)
 
         cv2.putText(frame, f'Faces: {len(faces)}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         out.write(frame)
@@ -166,8 +166,8 @@ def run_camera(detector, emotion_predictor, camera_id: int = 0, threshold: float
         )
 
         for face in faces:
-            emotion, confidence = emotion_predictor.predict(frame, face.landmarks)
-            draw_emotion_label(frame, face.bbox, emotion, confidence)
+            result = emotion_predictor.predict(frame, face.landmarks)
+            draw_emotion_label(frame, face.bbox, result.emotion, result.confidence)
 
         cv2.putText(frame, f'Faces: {len(faces)}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         cv2.imshow('Emotion Detection', frame)

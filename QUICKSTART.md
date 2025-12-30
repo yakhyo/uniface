@@ -307,11 +307,11 @@ for i, face in enumerate(faces):
     face_crop = image[y1:y2, x1:x2]
 
     if face_crop.size > 0:
-        pitch, yaw = gaze_estimator.estimate(face_crop)
-        print(f"Face {i+1}: pitch={np.degrees(pitch):.1f}°, yaw={np.degrees(yaw):.1f}°")
+        result = gaze_estimator.estimate(face_crop)
+        print(f"Face {i+1}: pitch={np.degrees(result.pitch):.1f}°, yaw={np.degrees(result.yaw):.1f}°")
 
         # Draw gaze direction
-        draw_gaze(image, face.bbox, pitch, yaw)
+        draw_gaze(image, face.bbox, result.pitch, result.yaw)
 
 cv2.imwrite("gaze_output.jpg", image)
 ```
@@ -475,10 +475,10 @@ image = cv2.imread("photo.jpg")
 faces = detector.detect(image)
 
 for i, face in enumerate(faces):
-    label_idx, score = spoofer.predict(image, face.bbox)
-    # label_idx: 0 = Fake, 1 = Real
-    label = 'Real' if label_idx == 1 else 'Fake'
-    print(f"Face {i+1}: {label} ({score:.1%})")
+    result = spoofer.predict(image, face.bbox)
+    # result.is_real: True for real, False for fake
+    label = 'Real' if result.is_real else 'Fake'
+    print(f"Face {i+1}: {label} ({result.confidence:.1%})")
 ```
 
 **Output:**

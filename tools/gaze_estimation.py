@@ -59,10 +59,10 @@ def process_image(detector, gaze_estimator, image_path: str, save_dir: str = 'ou
         if face_crop.size == 0:
             continue
 
-        pitch, yaw = gaze_estimator.estimate(face_crop)
-        print(f'  Face {i + 1}: pitch={np.degrees(pitch):.1f}°, yaw={np.degrees(yaw):.1f}°')
+        result = gaze_estimator.estimate(face_crop)
+        print(f'  Face {i + 1}: pitch={np.degrees(result.pitch):.1f}°, yaw={np.degrees(result.yaw):.1f}°')
 
-        draw_gaze(image, bbox, pitch, yaw, draw_angles=True)
+        draw_gaze(image, bbox, result.pitch, result.yaw, draw_angles=True)
 
     os.makedirs(save_dir, exist_ok=True)
     output_path = os.path.join(save_dir, f'{Path(image_path).stem}_gaze.jpg')
@@ -106,8 +106,8 @@ def process_video(detector, gaze_estimator, video_path: str, save_dir: str = 'ou
             if face_crop.size == 0:
                 continue
 
-            pitch, yaw = gaze_estimator.estimate(face_crop)
-            draw_gaze(frame, bbox, pitch, yaw)
+            result = gaze_estimator.estimate(face_crop)
+            draw_gaze(frame, bbox, result.pitch, result.yaw)
 
         cv2.putText(frame, f'Faces: {len(faces)}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         out.write(frame)
@@ -145,8 +145,8 @@ def run_camera(detector, gaze_estimator, camera_id: int = 0):
             if face_crop.size == 0:
                 continue
 
-            pitch, yaw = gaze_estimator.estimate(face_crop)
-            draw_gaze(frame, bbox, pitch, yaw)
+            result = gaze_estimator.estimate(face_crop)
+            draw_gaze(frame, bbox, result.pitch, result.yaw)
 
         cv2.putText(frame, f'Faces: {len(faces)}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         cv2.imshow('Gaze Estimation', frame)

@@ -317,7 +317,9 @@ from uniface import Emotion
 from uniface.constants import DDAMFNWeights
 
 predictor = Emotion(model_name=DDAMFNWeights.AFFECNET7)
-emotion, confidence = predictor.predict(image, landmarks)
+result = predictor.predict(image, landmarks)
+# result.emotion: predicted emotion label
+# result.confidence: confidence score
 ```
 
 ---
@@ -355,8 +357,8 @@ gaze_estimator = MobileGaze()  # Uses RESNET34
 gaze_estimator = MobileGaze(model_name=GazeWeights.MOBILEONE_S0)
 
 # Estimate gaze from face crop
-pitch, yaw = gaze_estimator.estimate(face_crop)
-print(f"Pitch: {np.degrees(pitch):.1f}°, Yaw: {np.degrees(yaw):.1f}°")
+result = gaze_estimator.estimate(face_crop)
+print(f"Pitch: {np.degrees(result.pitch):.1f}°, Yaw: {np.degrees(result.yaw):.1f}°")
 ```
 
 **Note**: Requires face crop as input. Use face detection first to obtain bounding boxes.
@@ -447,7 +449,7 @@ Lightweight face anti-spoofing models for liveness detection. Detect if a face i
 | `V2` ⭐  | 1.2 MB | 2.7   | **Recommended default**       |
 
 **Dataset**: Trained on face anti-spoofing datasets
-**Output**: Returns (label_idx, score) where label_idx: 0=Fake, 1=Real
+**Output**: Returns `SpoofingResult(is_real, confidence)` where is_real: True=Real, False=Fake
 
 #### Usage
 
@@ -466,10 +468,10 @@ spoofer = MiniFASNet(model_name=MiniFASNetWeights.V1SE)
 # Detect and check liveness
 faces = detector.detect(image)
 for face in faces:
-    label_idx, score = spoofer.predict(image, face.bbox)
-    # label_idx: 0 = Fake, 1 = Real
-    label = 'Real' if label_idx == 1 else 'Fake'
-    print(f"{label}: {score:.1%}")
+    result = spoofer.predict(image, face.bbox)
+    # result.is_real: True for real, False for fake
+    label = 'Real' if result.is_real else 'Fake'
+    print(f"{label}: {result.confidence:.1%}")
 ```
 
 **Note**: Requires face bounding box from a detector. Use with RetinaFace, SCRFD, or YOLOv5Face.

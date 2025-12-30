@@ -8,7 +8,7 @@ from typing import Any
 
 import numpy as np
 
-from uniface.face import Face
+from uniface.types import Face
 
 from .base import BaseDetector
 from .retinaface import RetinaFace

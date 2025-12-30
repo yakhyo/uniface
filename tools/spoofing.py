@@ -44,8 +44,8 @@ def get_source_type(source: str) -> str:
 def draw_spoofing_result(
     image: np.ndarray,
     bbox: list,
-    label_idx: int,
-    score: float,
+    is_real: bool,
+    confidence: float,
     thickness: int = 2,
 ) -> None:
     """Draw bounding box with anti-spoofing result.
@@ -53,19 +53,18 @@ def draw_spoofing_result(
     Args:
         image: Input image to draw on.
         bbox: Bounding box in [x1, y1, x2, y2] format.
-        label_idx: Prediction label index (0 = Fake, 1 = Real).
-        score: Confidence score (0.0 to 1.0).
+        is_real: True if real face, False if fake.
+        confidence: Confidence score (0.0 to 1.0).
         thickness: Line thickness for bounding box.
     """
     x1, y1, x2, y2 = map(int, bbox[:4])
 
-    is_real = label_idx == 1
     color = (0, 255, 0) if is_real else (0, 0, 255)
 
     cv2.rectangle(image, (x1, y1), (x2, y2), color, thickness)
 
     label = 'Real' if is_real else 'Fake'
-    text = f'{label}: {score:.1%}'
+    text = f'{label}: {confidence:.1%}'
 
     (tw, th), _baseline = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2)
     cv2.rectangle(image, (x1, y1 - th - 10), (x1 + tw + 10, y1), color, -1)
@@ -87,11 +86,11 @@ def process_image(detector, spoofer, image_path: str, save_dir: str = 'outputs')
         return
 
     for i, face in enumerate(faces, 1):
-        label_idx, score = spoofer.predict(image, face.bbox)
-        label = 'Real' if label_idx == 1 else 'Fake'
-        print(f'  Face {i}: {label} ({score:.1%})')
+        result = spoofer.predict(image, face.bbox)
+        label = 'Real' if result.is_real else 'Fake'
+        print(f'  Face {i}: {label} ({result.confidence:.1%})')
 
-        draw_spoofing_result(image, face.bbox, label_idx, score)
+        draw_spoofing_result(image, face.bbox, result.is_real, result.confidence)
 
     os.makedirs(save_dir, exist_ok=True)
     output_path = os.path.join(save_dir, f'{Path(image_path).stem}_spoofing.jpg')
@@ -128,8 +127,8 @@ def process_video(detector, spoofer, video_path: str, save_dir: str = 'outputs')
         faces = detector.detect(frame)
 
         for face in faces:
-            label_idx, score = spoofer.predict(frame, face.bbox)
-            draw_spoofing_result(frame, face.bbox, label_idx, score)
+            result = spoofer.predict(frame, face.bbox)
+            draw_spoofing_result(frame, face.bbox, result.is_real, result.confidence)
 
         out.write(frame)
 
@@ -159,8 +158,8 @@ def run_camera(detector, spoofer, camera_id: int = 0) -> None:
         faces = detector.detect(frame)
 
         for face in faces:
-            label_idx, score = spoofer.predict(frame, face.bbox)
-            draw_spoofing_result(frame, face.bbox, label_idx, score)
+            result = spoofer.predict(frame, face.bbox)
+            draw_spoofing_result(frame, face.bbox, result.is_real, result.confidence)
 
         cv2.imshow('Face Anti-Spoofing', frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):

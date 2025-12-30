@@ -12,6 +12,7 @@ from uniface.constants import DDAMFNWeights
 from uniface.face_utils import face_alignment
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
+from uniface.types import EmotionResult
 
 __all__ = ['Emotion']
 
@@ -105,7 +106,7 @@ class Emotion(Attribute):
 
         return torch.from_numpy(transposed_image).unsqueeze(0).to(self.device)
 
-    def postprocess(self, prediction: torch.Tensor) -> tuple[str, float]:
+    def postprocess(self, prediction: torch.Tensor) -> EmotionResult:
         """
         Processes the raw model output to get the emotion label and confidence score.
         """
@@ -113,9 +114,9 @@ class Emotion(Attribute):
         pred_index = np.argmax(probabilities)
         emotion_label = self.emotion_labels[pred_index]
         confidence = float(probabilities[pred_index])
-        return emotion_label, confidence
+        return EmotionResult(emotion=emotion_label, confidence=confidence)
 
-    def predict(self, image: np.ndarray, landmark: list | np.ndarray) -> tuple[str, float]:
+    def predict(self, image: np.ndarray, landmark: list | np.ndarray) -> EmotionResult:
         """
         Predicts the emotion from a single face specified by its landmarks.
         """

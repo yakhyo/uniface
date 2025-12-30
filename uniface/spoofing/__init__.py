@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 from uniface.constants import MiniFASNetWeights
+from uniface.types import SpoofingResult
 
 from .base import BaseSpoofer
 from .minifasnet import MiniFASNet
@@ -13,6 +14,7 @@ __all__ = [
     'BaseSpoofer',
     'MiniFASNet',
     'MiniFASNetWeights',
+    'SpoofingResult',
     'create_spoofer',
 ]
 
@@ -39,7 +41,7 @@ def create_spoofer(
     Example:
         >>> from uniface.spoofing import create_spoofer, MiniFASNetWeights
         >>> spoofer = create_spoofer()
-        >>> label_idx, score = spoofer.predict(image, face.bbox)
-        >>> # label_idx: 0 = Fake, 1 = Real
+        >>> result = spoofer.predict(image, face.bbox)
+        >>> print(f'Is real: {result.is_real}, Confidence: {result.confidence:.2%}')
     """
     return MiniFASNet(model_name=model_name, scale=scale)

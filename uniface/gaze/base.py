@@ -2,9 +2,15 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 
 import numpy as np
+
+from uniface.types import GazeResult
+
+__all__ = ['BaseGazeEstimator', 'GazeResult']
 
 
 class BaseGazeEstimator(ABC):
@@ -53,7 +59,7 @@ class BaseGazeEstimator(ABC):
         raise NotImplementedError('Subclasses must implement the preprocess method.')
 
     @abstractmethod
-    def postprocess(self, outputs: tuple[np.ndarray, np.ndarray]) -> tuple[float, float]:
+    def postprocess(self, outputs: tuple[np.ndarray, np.ndarray]) -> GazeResult:
         """
         Postprocess raw model outputs into gaze angles.
 
@@ -65,12 +71,12 @@ class BaseGazeEstimator(ABC):
                      on the specific model architecture.
 
         Returns:
-            Tuple[float, float]: A tuple of (pitch, yaw) angles in radians.
+            GazeResult: Result containing pitch and yaw angles in radians.
         """
         raise NotImplementedError('Subclasses must implement the postprocess method.')
 
     @abstractmethod
-    def estimate(self, face_image: np.ndarray) -> tuple[float, float]:
+    def estimate(self, face_image: np.ndarray) -> GazeResult:
         """
         Perform end-to-end gaze estimation on a face image.
 
@@ -83,18 +89,18 @@ class BaseGazeEstimator(ABC):
                                      well-framed within the image.
 
         Returns:
-            Tuple[float, float]: A tuple of (pitch, yaw) angles in radians:
+            GazeResult: Result containing pitch and yaw angles in radians:
                 - pitch: Vertical gaze angle (positive = up, negative = down)
                 - yaw: Horizontal gaze angle (positive = right, negative = left)
 
         Example:
             >>> estimator = create_gaze_estimator()
-            >>> pitch, yaw = estimator.estimate(face_crop)
-            >>> print(f'Looking: pitch={np.degrees(pitch):.1f}°, yaw={np.degrees(yaw):.1f}°')
+            >>> result = estimator.estimate(face_crop)
+            >>> print(f'Looking: pitch={np.degrees(result.pitch):.1f}°, yaw={np.degrees(result.yaw):.1f}°')
         """
         raise NotImplementedError('Subclasses must implement the estimate method.')
 
-    def __call__(self, face_image: np.ndarray) -> tuple[float, float]:
+    def __call__(self, face_image: np.ndarray) -> GazeResult:
         """
         Provides a convenient, callable shortcut for the `estimate` method.
 
@@ -102,6 +108,6 @@ class BaseGazeEstimator(ABC):
             face_image (np.ndarray): A cropped face image in BGR format.
 
         Returns:
-            Tuple[float, float]: A tuple of (pitch, yaw) angles in radians.
+            GazeResult: Result containing pitch and yaw angles in radians.
         """
         return self.estimate(face_image)

@@ -2,9 +2,15 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 
 import numpy as np
+
+from uniface.types import SpoofingResult
+
+__all__ = ['BaseSpoofer', 'SpoofingResult']
 
 
 class BaseSpoofer(ABC):
@@ -14,10 +20,6 @@ class BaseSpoofer(ABC):
     This class defines the common interface that all anti-spoofing models must implement,
     ensuring consistency across different spoofing detection methods. Anti-spoofing models
     detect whether a face is real (live person) or fake (photo, video, mask, etc.).
-
-    The prediction returns a tuple of (label_idx, score):
-        - label_idx: 0 = Fake (spoof), 1 = Real (live)
-        - score: Confidence score for the predicted label (0.0 to 1.0)
     """
 
     @abstractmethod
@@ -54,25 +56,23 @@ class BaseSpoofer(ABC):
         raise NotImplementedError('Subclasses must implement the preprocess method.')
 
     @abstractmethod
-    def postprocess(self, outputs: np.ndarray) -> tuple[int, float]:
+    def postprocess(self, outputs: np.ndarray) -> SpoofingResult:
         """
         Postprocess raw model outputs into prediction result.
 
         This method takes the raw output from the model's inference and
-        converts it into a label index and confidence score.
+        converts it into a SpoofingResult.
 
         Args:
             outputs (np.ndarray): Raw outputs from the model inference (logits).
 
         Returns:
-            Tuple[int, float]: A tuple of (label_idx, score) where:
-                - label_idx: 0 = Fake (spoof), 1 = Real (live)
-                - score: Confidence score for the predicted label (0.0 to 1.0)
+            SpoofingResult: Result containing is_real flag and confidence score.
         """
         raise NotImplementedError('Subclasses must implement the postprocess method.')
 
     @abstractmethod
-    def predict(self, image: np.ndarray, bbox: list | np.ndarray) -> tuple[int, float]:
+    def predict(self, image: np.ndarray, bbox: list | np.ndarray) -> SpoofingResult:
         """
         Perform end-to-end anti-spoofing prediction on a face.
 
@@ -85,22 +85,20 @@ class BaseSpoofer(ABC):
                 This is typically obtained from a face detector.
 
         Returns:
-            Tuple[int, float]: A tuple of (label_idx, score) where:
-                - label_idx: 0 = Fake (spoof), 1 = Real (live)
-                - score: Confidence score for the predicted label (0.0 to 1.0)
+            SpoofingResult: Result containing is_real flag and confidence score.
 
         Example:
             >>> spoofer = MiniFASNet()
             >>> detector = RetinaFace()
             >>> faces = detector.detect(image)
             >>> for face in faces:
-            ...     label_idx, score = spoofer.predict(image, face.bbox)
-            ...     label = 'Real' if label_idx == 1 else 'Fake'
-            ...     print(f'{label}: {score:.2%}')
+            ...     result = spoofer.predict(image, face.bbox)
+            ...     label = 'Real' if result.is_real else 'Fake'
+            ...     print(f'{label}: {result.confidence:.2%}')
         """
         raise NotImplementedError('Subclasses must implement the predict method.')
 
-    def __call__(self, image: np.ndarray, bbox: list | np.ndarray) -> tuple[int, float]:
+    def __call__(self, image: np.ndarray, bbox: list | np.ndarray) -> SpoofingResult:
         """
         Provides a convenient, callable shortcut for the `predict` method.
 
@@ -109,8 +107,6 @@ class BaseSpoofer(ABC):
             bbox (Union[List, np.ndarray]): Face bounding box in [x1, y1, x2, y2] format.
 
         Returns:
-            Tuple[int, float]: A tuple of (label_idx, score) where:
-                - label_idx: 0 = Fake (spoof), 1 = Real (live)
-                - score: Confidence score for the predicted label (0.0 to 1.0)
+            SpoofingResult: Result containing is_real flag and confidence score.
         """
         return self.predict(image, bbox)
