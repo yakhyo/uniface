@@ -132,6 +132,7 @@ nav:
   - Getting Started:
       - Installation: installation.md
       - Quickstart: quickstart.md
+      - Notebooks: notebooks.md
       - Model Zoo: models.md
   - Tutorials:
       - Image Pipeline: recipes/image-pipeline.md
