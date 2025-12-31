@@ -193,3 +193,4 @@ path = verify_model_weights(RetinaFaceWeights.MNET_V2)
 - [Inputs & Outputs](inputs-outputs.md) - Understand data types
 - [Execution Providers](execution-providers.md) - Hardware acceleration
 - [Detection Module](../modules/detection.md) - Start with face detection
+- [Image Pipeline Recipe](../recipes/image-pipeline.md) - Complete workflow

@@ -9,7 +9,7 @@ Face anti-spoofing detects whether a face is real (live) or fake (photo, video r
 | Model | Size | Notes |
 |-------|------|-------|
 | MiniFASNet V1SE | 1.2 MB | Squeeze-and-Excitation variant |
-| **MiniFASNet V2** ⭐ | 1.2 MB | Improved version (recommended) |
+| **MiniFASNet V2** :material-check-circle: | 1.2 MB | Improved version (recommended) |
 
 ---
 
@@ -63,7 +63,7 @@ spoofer = MiniFASNet(model_name=MiniFASNetWeights.V1SE)
 | Variant | Size | Scale Factor |
 |---------|------|--------------|
 | V1SE | 1.2 MB | 4.0 |
-| **V2** ⭐ | 1.2 MB | 2.7 |
+| **V2** :material-check-circle: | 1.2 MB | 2.7 |
 
 ---
 

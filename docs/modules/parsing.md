@@ -8,7 +8,7 @@ Face parsing segments faces into semantic components (skin, eyes, nose, mouth, h
 
 | Model | Backbone | Size | Classes | Best For |
 |-------|----------|------|---------|----------|
-| **BiSeNet ResNet18** ⭐ | ResNet18 | 51 MB | 19 | Balanced (recommended) |
+| **BiSeNet ResNet18** :material-check-circle: | ResNet18 | 51 MB | 19 | Balanced (recommended) |
 | **BiSeNet ResNet34** | ResNet34 | 89 MB | 19 | Higher accuracy |
 
 ---
@@ -73,7 +73,7 @@ parser = BiSeNet(model_name=ParsingWeights.RESNET34)
 
 | Variant | Params | Size | Notes |
 |---------|--------|------|-------|
-| **RESNET18** ⭐ | 13.3M | 51 MB | Recommended |
+| **RESNET18** :material-check-circle: | 13.3M | 51 MB | Recommended |
 | RESNET34 | 24.1M | 89 MB | Higher accuracy |
 
 ---

@@ -243,8 +243,9 @@ landmarker = create_landmarker()  # Returns Landmark106
 
 ---
 
-## Next Steps
+## See Also
 
-- [Attributes](attributes.md) - Age, gender, emotion
-- [Gaze](gaze.md) - Gaze estimation
-- [Detection](detection.md) - Face detection with 5-point landmarks
+- [Detection Module](detection.md) - Face detection with 5-point landmarks
+- [Attributes Module](attributes.md) - Age, gender, emotion
+- [Gaze Module](gaze.md) - Gaze estimation
+- [Concepts: Coordinate Systems](../concepts/coordinate-systems.md) - Landmark formats

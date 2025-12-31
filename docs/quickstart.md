@@ -4,7 +4,7 @@ Get up and running with UniFace in 5 minutes. This guide covers the most common 
 
 ---
 
-## 1. Face Detection
+## Face Detection
 
 Detect faces in an image:
 
@@ -40,7 +40,7 @@ Face 1:
 
 ---
 
-## 2. Visualize Detections
+## Visualize Detections
 
 Draw bounding boxes and landmarks:
 
@@ -74,7 +74,7 @@ cv2.imwrite("output.jpg", image)
 
 ---
 
-## 3. Face Recognition
+## Face Recognition
 
 Compare two faces:
 
@@ -117,7 +117,7 @@ if faces1 and faces2:
 
 ---
 
-## 4. Age & Gender Detection
+## Age & Gender Detection
 
 ```python
 import cv2
@@ -146,7 +146,7 @@ Face 2: Female, 28 years old
 
 ---
 
-## 5. FairFace Attributes
+## FairFace Attributes
 
 Detect race, gender, and age group:
 
@@ -174,7 +174,7 @@ Face 2: Female, 20-29, White
 
 ---
 
-## 6. Facial Landmarks (106 Points)
+## Facial Landmarks (106 Points)
 
 ```python
 import cv2
@@ -199,7 +199,7 @@ if faces:
 
 ---
 
-## 7. Gaze Estimation
+## Gaze Estimation
 
 ```python
 import cv2
@@ -229,7 +229,7 @@ cv2.imwrite("gaze_output.jpg", image)
 
 ---
 
-## 8. Face Parsing
+## Face Parsing
 
 Segment face into semantic components:
 
@@ -256,7 +256,7 @@ print(f"Detected {len(np.unique(mask))} facial components")
 
 ---
 
-## 9. Face Anonymization
+## Face Anonymization
 
 Blur faces for privacy protection:
 
@@ -295,7 +295,7 @@ anonymized = blurrer.anonymize(image, faces)
 
 ---
 
-## 10. Face Anti-Spoofing
+## Face Anti-Spoofing
 
 Detect real vs. fake faces:
 
@@ -318,7 +318,7 @@ for i, face in enumerate(faces):
 
 ---
 
-## 11. Webcam Demo
+## Webcam Demo
 
 Real-time face detection:
 
@@ -355,8 +355,72 @@ cv2.destroyAllWindows()
 
 ---
 
+## Model Selection
+
+For detailed model comparisons, benchmarks, and selection guidance, see the [Model Zoo](models.md).
+
+**Quick recommendations:**
+
+| Task | Recommended Model | Alternative |
+|------|-------------------|-------------|
+| Detection (balanced) | `RetinaFace` (MNET_V2) | `YOLOv5Face` (YOLOV5S) |
+| Detection (speed) | `RetinaFace` (MNET_025) | `SCRFD` (SCRFD_500M) |
+| Detection (accuracy) | `SCRFD` (SCRFD_10G) | `RetinaFace` (RESNET34) |
+| Recognition | `ArcFace` (MNET) | `MobileFace` (MNET_V2) |
+| Gaze | `MobileGaze` (RESNET34) | `MobileGaze` (MOBILEONE_S0) |
+| Parsing | `BiSeNet` (RESNET18) | `BiSeNet` (RESNET34) |
+
+---
+
+## Common Issues
+
+### Models Not Downloading
+
+```python
+from uniface.model_store import verify_model_weights
+from uniface.constants import RetinaFaceWeights
+
+# Manually download a model
+model_path = verify_model_weights(RetinaFaceWeights.MNET_V2)
+print(f"Model downloaded to: {model_path}")
+```
+
+### Check Hardware Acceleration
+
+```python
+import onnxruntime as ort
+print("Available providers:", ort.get_available_providers())
+
+# macOS M-series should show: ['CoreMLExecutionProvider', ...]
+# NVIDIA GPU should show: ['CUDAExecutionProvider', ...]
+```
+
+### Slow Performance on Mac
+
+Verify you're using the ARM64 build of Python:
+
+```bash
+python -c "import platform; print(platform.machine())"
+# Should show: arm64 (not x86_64)
+```
+
+### Import Errors
+
+```python
+# Correct imports
+from uniface.detection import RetinaFace
+from uniface.recognition import ArcFace
+from uniface.landmark import Landmark106
+
+# Also works (re-exported at package level)
+from uniface import RetinaFace, ArcFace, Landmark106
+```
+
+---
+
 ## Next Steps
 
-- [Concepts Overview](concepts/overview.md) - Understand the architecture
-- [Detection Module](modules/detection.md) - Deep dive into detection models
-- [Recipes](recipes/image-pipeline.md) - Complete workflow examples
+- [Model Zoo](models.md) - All models, benchmarks, and selection guide
+- [API Reference](modules/detection.md) - Explore individual modules and their APIs
+- [Tutorials](recipes/image-pipeline.md) - Step-by-step examples for common workflows
+- [Guides](concepts/overview.md) - Learn about the architecture and design principles

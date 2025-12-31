@@ -170,5 +170,5 @@ python -c "import platform; print(platform.machine())"
 
 ## Next Steps
 
-- [Quickstart](quickstart.md) - Get started with common use cases
-- [Concepts Overview](concepts/overview.md) - Understand the architecture
+- [Quickstart Guide](quickstart.md) - Get started in 5 minutes
+- [Execution Providers](concepts/execution-providers.md) - Hardware acceleration setup
