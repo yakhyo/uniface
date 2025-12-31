@@ -28,7 +28,7 @@ from __future__ import annotations
 
 __license__ = 'MIT'
 __author__ = 'Yakhyokhuja Valikhujaev'
-__version__ = '2.0.1'
+__version__ = '2.0.2'
 
 from uniface.face_utils import compute_similarity, face_alignment
 from uniface.log import Logger, enable_logging
