@@ -77,7 +77,7 @@ extra:
       link: https://x.com/y_valikhujaev
   analytics:
     provider: google
-    property: G-XXXXXXXXXX
+    property: G-FGEHR2K5ZE
 
 extra_css:
   - stylesheets/extra.css
