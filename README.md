@@ -90,16 +90,16 @@ for face in faces:
 
 ### Jupyter Notebooks
 
-| Example | Description |
-|---------|-------------|
-| [01_face_detection.ipynb](examples/01_face_detection.ipynb) | Face detection and landmarks |
-| [02_face_alignment.ipynb](examples/02_face_alignment.ipynb) | Face alignment for recognition |
-| [03_face_verification.ipynb](examples/03_face_verification.ipynb) | Compare faces for identity |
-| [04_face_search.ipynb](examples/04_face_search.ipynb) | Find a person in group photos |
-| [05_face_analyzer.ipynb](examples/05_face_analyzer.ipynb) | All-in-one analysis |
-| [06_face_parsing.ipynb](examples/06_face_parsing.ipynb) | Semantic face segmentation |
-| [07_face_anonymization.ipynb](examples/07_face_anonymization.ipynb) | Privacy-preserving blur |
-| [08_gaze_estimation.ipynb](examples/08_gaze_estimation.ipynb) | Gaze direction estimation |
+| Example | Colab | Description |
+|---------|:-----:|-------------|
+| [01_face_detection.ipynb](examples/01_face_detection.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/01_face_detection.ipynb) | Face detection and landmarks |
+| [02_face_alignment.ipynb](examples/02_face_alignment.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/02_face_alignment.ipynb) | Face alignment for recognition |
+| [03_face_verification.ipynb](examples/03_face_verification.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/03_face_verification.ipynb) | Compare faces for identity |
+| [04_face_search.ipynb](examples/04_face_search.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/04_face_search.ipynb) | Find a person in group photos |
+| [05_face_analyzer.ipynb](examples/05_face_analyzer.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/05_face_analyzer.ipynb) | All-in-one analysis |
+| [06_face_parsing.ipynb](examples/06_face_parsing.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/06_face_parsing.ipynb) | Semantic face segmentation |
+| [07_face_anonymization.ipynb](examples/07_face_anonymization.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/07_face_anonymization.ipynb) | Privacy-preserving blur |
+| [08_gaze_estimation.ipynb](examples/08_gaze_estimation.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/08_gaze_estimation.ipynb) | Gaze direction estimation |
 
 ---
 
