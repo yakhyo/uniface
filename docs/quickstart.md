@@ -355,8 +355,72 @@ cv2.destroyAllWindows()
 
 ---
 
+## Model Selection
+
+For detailed model comparisons, benchmarks, and selection guidance, see the [Model Zoo](models.md).
+
+**Quick recommendations:**
+
+| Task | Recommended Model | Alternative |
+|------|-------------------|-------------|
+| Detection (balanced) | `RetinaFace` (MNET_V2) | `YOLOv5Face` (YOLOV5S) |
+| Detection (speed) | `RetinaFace` (MNET_025) | `SCRFD` (SCRFD_500M) |
+| Detection (accuracy) | `SCRFD` (SCRFD_10G) | `RetinaFace` (RESNET34) |
+| Recognition | `ArcFace` (MNET) | `MobileFace` (MNET_V2) |
+| Gaze | `MobileGaze` (RESNET34) | `MobileGaze` (MOBILEONE_S0) |
+| Parsing | `BiSeNet` (RESNET18) | `BiSeNet` (RESNET34) |
+
+---
+
+## Common Issues
+
+### Models Not Downloading
+
+```python
+from uniface.model_store import verify_model_weights
+from uniface.constants import RetinaFaceWeights
+
+# Manually download a model
+model_path = verify_model_weights(RetinaFaceWeights.MNET_V2)
+print(f"Model downloaded to: {model_path}")
+```
+
+### Check Hardware Acceleration
+
+```python
+import onnxruntime as ort
+print("Available providers:", ort.get_available_providers())
+
+# macOS M-series should show: ['CoreMLExecutionProvider', ...]
+# NVIDIA GPU should show: ['CUDAExecutionProvider', ...]
+```
+
+### Slow Performance on Mac
+
+Verify you're using the ARM64 build of Python:
+
+```bash
+python -c "import platform; print(platform.machine())"
+# Should show: arm64 (not x86_64)
+```
+
+### Import Errors
+
+```python
+# Correct imports
+from uniface.detection import RetinaFace
+from uniface.recognition import ArcFace
+from uniface.landmark import Landmark106
+
+# Also works (re-exported at package level)
+from uniface import RetinaFace, ArcFace, Landmark106
+```
+
+---
+
 ## Next Steps
 
+- [Model Zoo](models.md) - All models, benchmarks, and selection guide
 - [API Reference](modules/detection.md) - Explore individual modules and their APIs
 - [Tutorials](recipes/image-pipeline.md) - Step-by-step examples for common workflows
 - [Guides](concepts/overview.md) - Learn about the architecture and design principles

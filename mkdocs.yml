@@ -122,6 +122,7 @@ plugins:
   - git-committers:
       repository: yakhyo/uniface
       branch: main
+      token: !ENV MKDOCS_GIT_COMMITTERS_APIKEY
   - git-revision-date-localized:
       enable_creation_date: true
       type: timeago
@@ -131,6 +132,7 @@ nav:
   - Getting Started:
       - Installation: installation.md
       - Quickstart: quickstart.md
+      - Model Zoo: models.md
   - Tutorials:
       - Image Pipeline: recipes/image-pipeline.md
       - Video & Webcam: recipes/video-webcam.md
