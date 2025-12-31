@@ -2,9 +2,12 @@
 
 Blur faces in real-time video streams for privacy protection.
 
+!!! note "Work in Progress"
+    This page contains example code patterns. Test thoroughly before using in production.
+
 ---
 
-## Webcam
+## Webcam Anonymization
 
 ```python
 import cv2
@@ -33,7 +36,7 @@ cv2.destroyAllWindows()
 
 ---
 
-## Video File
+## Video File Anonymization
 
 ```python
 import cv2
@@ -64,7 +67,7 @@ out.release()
 
 ---
 
-## One-Liner
+## One-Liner for Images
 
 ```python
 from uniface.privacy import anonymize_faces
@@ -77,12 +80,20 @@ cv2.imwrite("anonymized.jpg", result)
 
 ---
 
-## Blur Methods
+## Available Blur Methods
 
-| Method | Code |
-|--------|------|
+| Method | Usage |
+|--------|-------|
 | Pixelate | `BlurFace(method='pixelate', pixel_blocks=10)` |
 | Gaussian | `BlurFace(method='gaussian', blur_strength=3.0)` |
 | Blackout | `BlurFace(method='blackout', color=(0,0,0))` |
 | Elliptical | `BlurFace(method='elliptical', margin=20)` |
 | Median | `BlurFace(method='median', blur_strength=3.0)` |
+
+---
+
+## See Also
+
+- [Privacy Module](../modules/privacy.md) - Privacy protection details
+- [Video & Webcam](video-webcam.md) - Real-time processing
+- [Detection Module](../modules/detection.md) - Face detection

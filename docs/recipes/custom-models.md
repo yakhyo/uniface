@@ -2,9 +2,22 @@
 
 Add your own ONNX models to UniFace.
 
+!!! note "Work in Progress"
+    This page contains example code patterns for advanced users. Test thoroughly before using in production.
+
 ---
 
-## Add Detection Model
+## Overview
+
+UniFace is designed to be extensible. You can add custom ONNX models by:
+
+1. Creating a class that inherits from the appropriate base class
+2. Implementing required methods
+3. Using the ONNX Runtime utilities provided by UniFace
+
+---
+
+## Add Custom Detection Model
 
 ```python
 from uniface.detection.base import BaseDetector
@@ -18,28 +31,30 @@ class MyDetector(BaseDetector):
         self.threshold = confidence_threshold
 
     def detect(self, image: np.ndarray) -> list[Face]:
-        # Preprocess
+        # 1. Preprocess image
         input_tensor = self._preprocess(image)
 
-        # Inference
+        # 2. Run inference
         outputs = self.session.run(None, {'input': input_tensor})
 
-        # Postprocess
+        # 3. Postprocess outputs to Face objects
         faces = self._postprocess(outputs, image.shape)
         return faces
 
     def _preprocess(self, image):
         # Your preprocessing logic
+        # e.g., resize, normalize, transpose
         pass
 
     def _postprocess(self, outputs, shape):
         # Your postprocessing logic
+        # e.g., decode boxes, apply NMS, create Face objects
         pass
 ```
 
 ---
 
-## Add Recognition Model
+## Add Custom Recognition Model
 
 ```python
 from uniface.recognition.base import BaseRecognizer
@@ -51,17 +66,21 @@ class MyRecognizer(BaseRecognizer):
     def __init__(self, model_path: str):
         self.session = create_onnx_session(model_path)
 
-    def get_normalized_embedding(self, image: np.ndarray, landmarks: np.ndarray) -> np.ndarray:
-        # Align face
+    def get_normalized_embedding(
+        self,
+        image: np.ndarray,
+        landmarks: np.ndarray
+    ) -> np.ndarray:
+        # 1. Align face
         aligned = face_alignment(image, landmarks)
 
-        # Preprocess
+        # 2. Preprocess
         input_tensor = self._preprocess(aligned)
 
-        # Inference
+        # 3. Run inference
         embedding = self.session.run(None, {'input': input_tensor})[0]
 
-        # Normalize
+        # 4. Normalize
         embedding = embedding / np.linalg.norm(embedding)
         return embedding
 
@@ -72,25 +91,24 @@ class MyRecognizer(BaseRecognizer):
 
 ---
 
-## Register Weights
-
-Add to `uniface/constants.py`:
+## Usage
 
 ```python
-class MyModelWeights(str, Enum):
-    DEFAULT = "my_model"
+from my_module import MyDetector, MyRecognizer
 
-MODEL_URLS[MyModelWeights.DEFAULT] = 'https://...'
-MODEL_SHA256[MyModelWeights.DEFAULT] = 'sha256hash...'
+# Use custom models
+detector = MyDetector("path/to/detection_model.onnx")
+recognizer = MyRecognizer("path/to/recognition_model.onnx")
+
+# Use like built-in models
+faces = detector.detect(image)
+embedding = recognizer.get_normalized_embedding(image, faces[0].landmarks)
 ```
 
 ---
 
-## Use Custom Model
+## See Also
 
-```python
-from my_module import MyDetector
-
-detector = MyDetector("path/to/model.onnx")
-faces = detector.detect(image)
-```
+- [Detection Module](../modules/detection.md) - Built-in detection models
+- [Recognition Module](../modules/recognition.md) - Built-in recognition models
+- [Concepts: Overview](../concepts/overview.md) - Architecture overview

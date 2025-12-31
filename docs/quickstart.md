@@ -4,7 +4,7 @@ Get up and running with UniFace in 5 minutes. This guide covers the most common 
 
 ---
 
-## 1. Face Detection
+## Face Detection
 
 Detect faces in an image:
 
@@ -40,7 +40,7 @@ Face 1:
 
 ---
 
-## 2. Visualize Detections
+## Visualize Detections
 
 Draw bounding boxes and landmarks:
 
@@ -74,7 +74,7 @@ cv2.imwrite("output.jpg", image)
 
 ---
 
-## 3. Face Recognition
+## Face Recognition
 
 Compare two faces:
 
@@ -117,7 +117,7 @@ if faces1 and faces2:
 
 ---
 
-## 4. Age & Gender Detection
+## Age & Gender Detection
 
 ```python
 import cv2
@@ -146,7 +146,7 @@ Face 2: Female, 28 years old
 
 ---
 
-## 5. FairFace Attributes
+## FairFace Attributes
 
 Detect race, gender, and age group:
 
@@ -174,7 +174,7 @@ Face 2: Female, 20-29, White
 
 ---
 
-## 6. Facial Landmarks (106 Points)
+## Facial Landmarks (106 Points)
 
 ```python
 import cv2
@@ -199,7 +199,7 @@ if faces:
 
 ---
 
-## 7. Gaze Estimation
+## Gaze Estimation
 
 ```python
 import cv2
@@ -229,7 +229,7 @@ cv2.imwrite("gaze_output.jpg", image)
 
 ---
 
-## 8. Face Parsing
+## Face Parsing
 
 Segment face into semantic components:
 
@@ -256,7 +256,7 @@ print(f"Detected {len(np.unique(mask))} facial components")
 
 ---
 
-## 9. Face Anonymization
+## Face Anonymization
 
 Blur faces for privacy protection:
 
@@ -295,7 +295,7 @@ anonymized = blurrer.anonymize(image, faces)
 
 ---
 
-## 10. Face Anti-Spoofing
+## Face Anti-Spoofing
 
 Detect real vs. fake faces:
 
@@ -318,7 +318,7 @@ for i, face in enumerate(faces):
 
 ---
 
-## 11. Webcam Demo
+## Webcam Demo
 
 Real-time face detection:
 
@@ -357,6 +357,6 @@ cv2.destroyAllWindows()
 
 ## Next Steps
 
-- [Concepts Overview](concepts/overview.md) - Understand the architecture
-- [Detection Module](modules/detection.md) - Deep dive into detection models
-- [Recipes](recipes/image-pipeline.md) - Complete workflow examples
+- [API Reference](modules/detection.md) - Explore individual modules and their APIs
+- [Tutorials](recipes/image-pipeline.md) - Step-by-step examples for common workflows
+- [Guides](concepts/overview.md) - Learn about the architecture and design principles

@@ -53,7 +53,7 @@ detector = RetinaFace(model_name=RetinaFaceWeights.RESNET34)
 | MNET_025 | 0.4M | 1.7 MB | 88.5% | 87.0% | 80.6% |
 | MNET_050 | 1.0M | 2.6 MB | 89.4% | 88.0% | 82.4% |
 | MNET_V1 | 3.5M | 3.8 MB | 90.6% | 89.1% | 84.1% |
-| **MNET_V2** ⭐ | 3.2M | 3.5 MB | 91.7% | 91.0% | 86.6% |
+| **MNET_V2** :material-check-circle: | 3.2M | 3.5 MB | 91.7% | 91.0% | 86.6% |
 | RESNET18 | 11.7M | 27 MB | 92.5% | 91.0% | 86.6% |
 | RESNET34 | 24.8M | 56 MB | 94.2% | 93.1% | 88.9% |
 
@@ -100,7 +100,7 @@ detector = SCRFD(model_name=SCRFDWeights.SCRFD_10G_KPS)
 | Variant | Params | Size | Easy | Medium | Hard |
 |---------|--------|------|------|--------|------|
 | SCRFD_500M_KPS | 0.6M | 2.5 MB | 90.6% | 88.1% | 68.5% |
-| **SCRFD_10G_KPS** ⭐ | 4.2M | 17 MB | 95.2% | 93.9% | 83.1% |
+| **SCRFD_10G_KPS** :material-check-circle: | 4.2M | 17 MB | 95.2% | 93.9% | 83.1% |
 
 ### Configuration
 
@@ -147,7 +147,7 @@ detector = YOLOv5Face(model_name=YOLOv5FaceWeights.YOLOV5M)
 | Variant | Size | Easy | Medium | Hard |
 |---------|------|------|--------|------|
 | YOLOV5N | 11 MB | 93.6% | 91.5% | 80.5% |
-| **YOLOV5S** ⭐ | 28 MB | 94.3% | 92.6% | 83.2% |
+| **YOLOV5S** :material-check-circle: | 28 MB | 94.3% | 92.6% | 83.2% |
 | YOLOV5M | 82 MB | 95.3% | 93.8% | 85.3% |
 
 !!! note "Fixed Input Size"
@@ -244,8 +244,9 @@ python tools/detection.py --source image.jpg --iterations 100
 
 ---
 
-## Next Steps
+## See Also
 
-- [Recognition](recognition.md) - Extract face embeddings
-- [Landmarks](landmarks.md) - 106-point landmarks
-- [Image Pipeline Recipe](../recipes/image-pipeline.md) - Complete workflow
+- [Recognition Module](recognition.md) - Extract embeddings from detected faces
+- [Landmarks Module](landmarks.md) - Get 106-point landmarks
+- [Image Pipeline Recipe](../recipes/image-pipeline.md) - Complete detection workflow
+- [Concepts: Thresholds](../concepts/thresholds-calibration.md) - Tuning detection parameters

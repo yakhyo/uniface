@@ -277,3 +277,5 @@ with open('results.json', 'w') as f:
 - [Batch Processing](batch-processing.md) - Process multiple images
 - [Video & Webcam](video-webcam.md) - Real-time processing
 - [Face Search](face-search.md) - Build a search system
+- [Detection Module](../modules/detection.md) - Detection options
+- [Recognition Module](../modules/recognition.md) - Recognition details

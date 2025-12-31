@@ -104,28 +104,30 @@ Get up and running in 5 minutes with common use cases.
 </div>
 
 <div class="feature-card" markdown>
-### :material-book-open-variant: Concepts
-Learn about the architecture and design principles.
+### :material-school: Tutorials
+Step-by-step examples for common workflows.
 
-[Read Concepts →](concepts/overview.md)
+[View Tutorials →](recipes/image-pipeline.md)
 </div>
 
 <div class="feature-card" markdown>
-### :material-puzzle: Modules
+### :material-api: API Reference
 Explore individual modules and their APIs.
 
-[Browse Modules →](modules/detection.md)
+[Browse API →](modules/detection.md)
 </div>
 
 <div class="feature-card" markdown>
-### :material-chef-hat: Recipes
-Complete examples for common workflows.
+### :material-book-open-variant: Guides
+Learn about the architecture and design principles.
 
-[View Recipes →](recipes/image-pipeline.md)
+[Read Guides →](concepts/overview.md)
 </div>
 
 </div>
 
 ---
+
+## License
 
 UniFace is released under the [MIT License](https://opensource.org/licenses/MIT).

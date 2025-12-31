@@ -50,7 +50,7 @@ recognizer = ArcFace(model_name=ArcFaceWeights.RESNET)
 
 | Variant | Backbone | Size | Use Case |
 |---------|----------|------|----------|
-| **MNET** ⭐ | MobileNet | 8 MB | Balanced (recommended) |
+| **MNET** :material-check-circle: | MobileNet | 8 MB | Balanced (recommended) |
 | RESNET | ResNet50 | 166 MB | Maximum accuracy |
 
 ---
@@ -87,7 +87,7 @@ recognizer = MobileFace(model_name=MobileFaceWeights.MNET_V3_LARGE)
 | Variant | Params | Size | LFW | Use Case |
 |---------|--------|------|-----|----------|
 | MNET_025 | 0.36M | 1 MB | 98.8% | Ultra-lightweight |
-| **MNET_V2** ⭐ | 2.29M | 4 MB | 99.6% | Mobile/Edge |
+| **MNET_V2** :material-check-circle: | 2.29M | 4 MB | 99.6% | Mobile/Edge |
 | MNET_V3_SMALL | 1.25M | 3 MB | 99.3% | Mobile optimized |
 | MNET_V3_LARGE | 3.52M | 10 MB | 99.5% | Balanced mobile |
 
@@ -233,8 +233,8 @@ recognizer = create_recognizer('arcface')
 
 ---
 
-## Next Steps
+## See Also
 
-- [Landmarks](landmarks.md) - 106-point landmarks
+- [Detection Module](detection.md) - Detect faces first
 - [Face Search Recipe](../recipes/face-search.md) - Complete search system
 - [Thresholds](../concepts/thresholds-calibration.md) - Calibration guide

@@ -29,13 +29,12 @@ theme:
       primary: black
       accent: indigo
       toggle:
-        icon: material/toggle-switch-off
+        icon: material/toggle-switch-off-outline
         name: Switch to system preference
   font:
     text: Roboto
     code: Roboto Mono
   features:
-    - announce.dismiss
     - navigation.tabs
     - navigation.top
     - navigation.footer
@@ -53,7 +52,7 @@ theme:
 
   icon:
     logo: material/book-open-page-variant
-    repo: fontawesome/brands/github
+    repo: fontawesome/brands/git-alt
     admonition:
       note: octicons/tag-16
       abstract: octicons/checklist-16
@@ -74,8 +73,8 @@ extra:
       link: https://github.com/yakhyo
     - icon: fontawesome/brands/python
       link: https://pypi.org/project/uniface/
-  version:
-    provider: mike
+    - icon: fontawesome/brands/x-twitter
+      link: https://x.com/y_valikhujaev
   analytics:
     provider: google
     property: G-XXXXXXXXXX
@@ -91,7 +90,7 @@ markdown_extensions:
   - def_list
   - tables
   - toc:
-      permalink: true
+      permalink: false
       toc_depth: 3
   - pymdownx.superfences:
       custom_fences:
@@ -120,42 +119,43 @@ markdown_extensions:
 
 plugins:
   - search
+  - git-committers:
+      repository: yakhyo/uniface
+      branch: main
+  - git-revision-date-localized:
+      enable_creation_date: true
+      type: timeago
 
 nav:
   - Home: index.md
-  - Documentation:
-      - Getting Started:
-          - Installation: installation.md
-          - Quickstart: quickstart.md
-      - Concepts:
-          - Overview: concepts/overview.md
-          - Inputs & Outputs: concepts/inputs-outputs.md
-          - Coordinate Systems: concepts/coordinate-systems.md
-          - Execution Providers: concepts/execution-providers.md
-          - Model Cache: concepts/model-cache-offline.md
-          - Thresholds: concepts/thresholds-calibration.md
-      - API:
-          - Detection: modules/detection.md
-          - Recognition: modules/recognition.md
-          - Landmarks: modules/landmarks.md
-          - Attributes: modules/attributes.md
-          - Parsing: modules/parsing.md
-          - Gaze: modules/gaze.md
-          - Anti-Spoofing: modules/spoofing.md
-          - Privacy: modules/privacy.md
-      - Examples:
-          - Image Pipeline: recipes/image-pipeline.md
-          - Batch Processing: recipes/batch-processing.md
-          - Video & Webcam: recipes/video-webcam.md
-          - Face Search: recipes/face-search.md
-          - Anonymize Stream: recipes/anonymize-stream.md
-          - Custom Models: recipes/custom-models.md
-      - Reference:
-          - API Reference: api/reference.md
-          - Troubleshooting: troubleshooting.md
-          - FAQ: faq.md
-          - Changelog: changelog.md
-          - Contributing: contributing.md
-          - License: license-attribution.md
-  - Releases: https://github.com/yakhyo/uniface/releases
-  - Community: https://github.com/yakhyo/uniface/discussions
+  - Getting Started:
+      - Installation: installation.md
+      - Quickstart: quickstart.md
+  - Tutorials:
+      - Image Pipeline: recipes/image-pipeline.md
+      - Video & Webcam: recipes/video-webcam.md
+      - Face Search: recipes/face-search.md
+      - Batch Processing: recipes/batch-processing.md
+      - Anonymize Stream: recipes/anonymize-stream.md
+      - Custom Models: recipes/custom-models.md
+  - API Reference:
+      - Detection: modules/detection.md
+      - Recognition: modules/recognition.md
+      - Landmarks: modules/landmarks.md
+      - Attributes: modules/attributes.md
+      - Parsing: modules/parsing.md
+      - Gaze: modules/gaze.md
+      - Anti-Spoofing: modules/spoofing.md
+      - Privacy: modules/privacy.md
+  - Guides:
+      - Overview: concepts/overview.md
+      - Inputs & Outputs: concepts/inputs-outputs.md
+      - Coordinate Systems: concepts/coordinate-systems.md
+      - Execution Providers: concepts/execution-providers.md
+      - Model Cache: concepts/model-cache-offline.md
+      - Thresholds: concepts/thresholds-calibration.md
+  - Resources:
+      - Contributing: contributing.md
+      - License: license-attribution.md
+      - Releases: https://github.com/yakhyo/uniface/releases
+      - Discussions: https://github.com/yakhyo/uniface/discussions
