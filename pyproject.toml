@@ -3,7 +3,7 @@ name = "uniface"
 version = "2.0.1"
 description = "UniFace: A Comprehensive Library for Face Detection, Recognition, Landmark Analysis, Face Parsing, Gaze Estimation, Age, and Gender Detection"
 readme = "README.md"
-license = { text = "MIT" }
+license = "MIT"
 authors = [{ name = "Yakhyokhuja Valikhujaev", email = "yakhyo9696@gmail.com" }]
 maintainers = [
     { name = "Yakhyokhuja Valikhujaev", email = "yakhyo9696@gmail.com" },
@@ -31,7 +31,6 @@ classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
