@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://yakhyo.github.io/uniface/modules/detection/">
       
       
-        <link rel="prev" href="../../concepts/thresholds-calibration/">
+        <link rel="prev" href="../../recipes/custom-models/">
       
       
         <link rel="next" href="../recognition/">
@@ -120,6 +120,8 @@
       
     
     
+      <link rel="stylesheet" href="../../css/timeago.css">
+    
       <link rel="stylesheet" href="../../stylesheets/extra.css">
     
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
@@ -148,7 +150,7 @@
     
     
     
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -165,10 +167,6 @@
     <div data-md-component="announce">
       
     </div>
-    
-      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
-        
-      </div>
     
     
       
@@ -208,20 +206,30 @@
     
     
     
-    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
     
-      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5"/></svg>
       </label>
     
   
     
     
     
-    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
     
-      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6m0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4M7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3"/></svg>
       </label>
     
   
@@ -280,7 +288,7 @@
         <a href="https://github.com/yakhyo/uniface" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
   </div>
   <div class="md-source__repository">
     yakhyo/uniface
@@ -335,7 +343,7 @@
   
     
   
-  Getting started
+  Getting Started
 
         </a>
       </li>
@@ -351,13 +359,13 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../concepts/overview/" class="md-tabs__link">
+        <a href="../../recipes/image-pipeline/" class="md-tabs__link">
           
   
   
     
   
-  Concepts
+  Tutorials
 
         </a>
       </li>
@@ -381,7 +389,7 @@
   
     
   
-  API
+  API Reference
 
         </a>
       </li>
@@ -397,13 +405,13 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../recipes/image-pipeline/" class="md-tabs__link">
+        <a href="../../concepts/overview/" class="md-tabs__link">
           
   
   
     
   
-  Examples
+  Guides
 
         </a>
       </li>
@@ -419,13 +427,13 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../api/reference/" class="md-tabs__link">
+        <a href="../../contributing/" class="md-tabs__link">
           
   
   
     
   
-  Reference
+  Resources
 
         </a>
       </li>
@@ -468,7 +476,7 @@
       <a href="https://github.com/yakhyo/uniface" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
   </div>
   <div class="md-source__repository">
     yakhyo/uniface
@@ -518,12 +526,12 @@
       
         
       
-    
-    
-    
-      
-      
         
+      
+    
+    
+    
+      
       
     
     
@@ -541,7 +549,7 @@
   <span class="md-ellipsis">
     
   
-    Getting started
+    Getting Started
   
 
     
@@ -557,7 +565,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Getting started
+    Getting Started
   
 
           </label>
@@ -619,6 +627,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Model Zoo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -651,8 +687,6 @@
     
     
       
-      
-        
       
     
     
@@ -670,7 +704,7 @@
   <span class="md-ellipsis">
     
   
-    Concepts
+    Tutorials
   
 
     
@@ -686,7 +720,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Concepts
+    Tutorials
   
 
           </label>
@@ -699,14 +733,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../concepts/overview/" class="md-nav__link">
+      <a href="../../recipes/image-pipeline/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Overview
+    Image Pipeline
   
 
     
@@ -727,14 +761,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../concepts/inputs-outputs/" class="md-nav__link">
+      <a href="../../recipes/video-webcam/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Inputs & Outputs
+    Video & Webcam
   
 
     
@@ -755,14 +789,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../concepts/coordinate-systems/" class="md-nav__link">
+      <a href="../../recipes/face-search/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Coordinate Systems
+    Face Search
   
 
     
@@ -783,14 +817,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../concepts/execution-providers/" class="md-nav__link">
+      <a href="../../recipes/batch-processing/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Execution Providers
+    Batch Processing
   
 
     
@@ -811,14 +845,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../concepts/model-cache-offline/" class="md-nav__link">
+      <a href="../../recipes/anonymize-stream/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Model Cache
+    Anonymize Stream
   
 
     
@@ -839,14 +873,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../concepts/thresholds-calibration/" class="md-nav__link">
+      <a href="../../recipes/custom-models/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Thresholds
+    Custom Models
   
 
     
@@ -902,8 +936,6 @@
         
       
       
-        
-      
     
     
     <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
@@ -920,7 +952,7 @@
   <span class="md-ellipsis">
     
   
-    API
+    API Reference
   
 
     
@@ -936,7 +968,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    API
+    API Reference
   
 
           </label>
@@ -1225,10 +1257,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#next-steps" class="md-nav__link">
+  <a href="#see-also" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Next Steps
+        See Also
       
     </span>
   </a>
@@ -1473,8 +1505,6 @@
     
       
       
-        
-      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -1491,7 +1521,7 @@
   <span class="md-ellipsis">
     
   
-    Examples
+    Guides
   
 
     
@@ -1507,7 +1537,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Examples
+    Guides
   
 
           </label>
@@ -1520,14 +1550,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../recipes/image-pipeline/" class="md-nav__link">
+      <a href="../../concepts/overview/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Image Pipeline
+    Overview
   
 
     
@@ -1548,14 +1578,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../recipes/batch-processing/" class="md-nav__link">
+      <a href="../../concepts/inputs-outputs/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Batch Processing
+    Inputs & Outputs
   
 
     
@@ -1576,14 +1606,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../recipes/video-webcam/" class="md-nav__link">
+      <a href="../../concepts/coordinate-systems/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Video & Webcam
+    Coordinate Systems
   
 
     
@@ -1604,14 +1634,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../recipes/face-search/" class="md-nav__link">
+      <a href="../../concepts/execution-providers/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Face Search
+    Execution Providers
   
 
     
@@ -1632,14 +1662,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../recipes/anonymize-stream/" class="md-nav__link">
+      <a href="../../concepts/model-cache-offline/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Anonymize Stream
+    Model Cache
   
 
     
@@ -1660,14 +1690,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../recipes/custom-models/" class="md-nav__link">
+      <a href="../../concepts/thresholds-calibration/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Custom Models
+    Thresholds
   
 
     
@@ -1705,16 +1735,10 @@
       
         
       
-        
-      
-        
-      
     
     
     
       
-      
-        
       
     
     
@@ -1732,7 +1756,7 @@
   <span class="md-ellipsis">
     
   
-    Reference
+    Resources
   
 
     
@@ -1748,123 +1772,11 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Reference
+    Resources
   
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../api/reference/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    API Reference
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../troubleshooting/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Troubleshooting
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../faq/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    FAQ
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../changelog/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Changelog
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
             
               
                 
@@ -1909,6 +1821,62 @@
     
   
     License
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/yakhyo/uniface/releases" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/yakhyo/uniface/discussions" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discussions
   
 
     
@@ -2172,10 +2140,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#next-steps" class="md-nav__link">
+  <a href="#see-also" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Next Steps
+        See Also
       
     </span>
   </a>
@@ -2193,54 +2161,6 @@
           
             <div class="md-content" data-md-component="content">
               
-                
-
-
-
-  
-
-
-  <nav class="md-path" aria-label="Navigation" >
-    <ol class="md-path__list">
-      
-        
-  
-  
-    <li class="md-path__item">
-      <a href="../.." class="md-path__link">
-        
-  <span class="md-ellipsis">
-    Home
-  </span>
-
-      </a>
-    </li>
-  
-
-      
-      
-        
-  
-  
-    
-    
-      <li class="md-path__item">
-        <a href="./" class="md-path__link">
-          
-  <span class="md-ellipsis">
-    API
-  </span>
-
-        </a>
-      </li>
-    
-  
-
-      
-    </ol>
-  </nav>
-
-              
               <article class="md-content__inner md-typeset">
                 
                   
@@ -2253,12 +2173,20 @@
     </a>
   
   
+    
+      
+    
+    <a href="https://github.com/yakhyo/uniface/raw/main/docs/modules/detection.md" title="View source of this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 18c.56 0 1 .44 1 1s-.44 1-1 1-1-.44-1-1 .44-1 1-1m0-3c-2.73 0-5.06 1.66-6 4 .94 2.34 3.27 4 6 4s5.06-1.66 6-4c-.94-2.34-3.27-4-6-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5 2.5 2.5 0 0 1 2.5-2.5 2.5 2.5 0 0 1 2.5 2.5 2.5 2.5 0 0 1-2.5 2.5M9.27 20H6V4h7v5h5v4.07c.7.08 1.36.25 2 .49V8l-6-6H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h4.5a8.2 8.2 0 0 1-1.23-2"/></svg>
+    </a>
+  
 
 
-<h1 id="detection">Detection<a class="headerlink" href="#detection" title="Permanent link">&para;</a></h1>
+<h1 id="detection">Detection</h1>
 <p>Face detection is the first step in any face analysis pipeline. UniFace provides three detection models.</p>
 <hr />
-<h2 id="available-models">Available Models<a class="headerlink" href="#available-models" title="Permanent link">&para;</a></h2>
+<h2 id="available-models">Available Models</h2>
 <table>
 <thead>
 <tr>
@@ -2294,9 +2222,9 @@
 </tbody>
 </table>
 <hr />
-<h2 id="retinaface">RetinaFace<a class="headerlink" href="#retinaface" title="Permanent link">&para;</a></h2>
+<h2 id="retinaface">RetinaFace</h2>
 <p>The recommended detector for most use cases.</p>
-<h3 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h3>
+<h3 id="basic-usage">Basic Usage</h3>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface</span><span class="w"> </span><span class="kn">import</span> <span class="n">RetinaFace</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">detector</span> <span class="o">=</span> <span class="n">RetinaFace</span><span class="p">()</span>
@@ -2307,7 +2235,7 @@
 </span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;BBox: </span><span class="si">{</span><span class="n">face</span><span class="o">.</span><span class="n">bbox</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Landmarks: </span><span class="si">{</span><span class="n">face</span><span class="o">.</span><span class="n">landmarks</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># (5, 2)</span>
 </span></code></pre></div>
-<h3 id="model-variants">Model Variants<a class="headerlink" href="#model-variants" title="Permanent link">&para;</a></h3>
+<h3 id="model-variants">Model Variants</h3>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface</span><span class="w"> </span><span class="kn">import</span> <span class="n">RetinaFace</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">RetinaFaceWeights</span>
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
@@ -2357,7 +2285,7 @@
 <td>84.1%</td>
 </tr>
 <tr>
-<td><strong>MNET_V2</strong> ⭐</td>
+<td><strong>MNET_V2</strong> <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2m-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8z"/></svg></span></td>
 <td>3.2M</td>
 <td>3.5 MB</td>
 <td>91.7%</td>
@@ -2382,7 +2310,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h3>
+<h3 id="configuration">Configuration</h3>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">detector</span> <span class="o">=</span> <span class="n">RetinaFace</span><span class="p">(</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="n">model_name</span><span class="o">=</span><span class="n">RetinaFaceWeights</span><span class="o">.</span><span class="n">MNET_V2</span><span class="p">,</span>
 </span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="n">confidence_threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>  <span class="c1"># Min confidence</span>
@@ -2392,15 +2320,15 @@
 </span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="p">)</span>
 </span></code></pre></div>
 <hr />
-<h2 id="scrfd">SCRFD<a class="headerlink" href="#scrfd" title="Permanent link">&para;</a></h2>
+<h2 id="scrfd">SCRFD</h2>
 <p>State-of-the-art detection with excellent accuracy-speed tradeoff.</p>
-<h3 id="basic-usage_1">Basic Usage<a class="headerlink" href="#basic-usage_1" title="Permanent link">&para;</a></h3>
+<h3 id="basic-usage_1">Basic Usage</h3>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface</span><span class="w"> </span><span class="kn">import</span> <span class="n">SCRFD</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">detector</span> <span class="o">=</span> <span class="n">SCRFD</span><span class="p">()</span>
 </span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="n">faces</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">detect</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
 </span></code></pre></div>
-<h3 id="model-variants_1">Model Variants<a class="headerlink" href="#model-variants_1" title="Permanent link">&para;</a></h3>
+<h3 id="model-variants_1">Model Variants</h3>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface</span><span class="w"> </span><span class="kn">import</span> <span class="n">SCRFD</span>
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">SCRFDWeights</span>
 </span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
@@ -2431,7 +2359,7 @@
 <td>68.5%</td>
 </tr>
 <tr>
-<td><strong>SCRFD_10G_KPS</strong> ⭐</td>
+<td><strong>SCRFD_10G_KPS</strong> <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2m-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8z"/></svg></span></td>
 <td>4.2M</td>
 <td>17 MB</td>
 <td>95.2%</td>
@@ -2440,7 +2368,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="configuration_1">Configuration<a class="headerlink" href="#configuration_1" title="Permanent link">&para;</a></h3>
+<h3 id="configuration_1">Configuration</h3>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">detector</span> <span class="o">=</span> <span class="n">SCRFD</span><span class="p">(</span>
 </span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>    <span class="n">model_name</span><span class="o">=</span><span class="n">SCRFDWeights</span><span class="o">.</span><span class="n">SCRFD_10G_KPS</span><span class="p">,</span>
 </span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    <span class="n">confidence_threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
@@ -2449,15 +2377,15 @@
 </span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="p">)</span>
 </span></code></pre></div>
 <hr />
-<h2 id="yolov5-face">YOLOv5-Face<a class="headerlink" href="#yolov5-face" title="Permanent link">&para;</a></h2>
+<h2 id="yolov5-face">YOLOv5-Face</h2>
 <p>YOLO-based detection optimized for faces.</p>
-<h3 id="basic-usage_2">Basic Usage<a class="headerlink" href="#basic-usage_2" title="Permanent link">&para;</a></h3>
+<h3 id="basic-usage_2">Basic Usage</h3>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface</span><span class="w"> </span><span class="kn">import</span> <span class="n">YOLOv5Face</span>
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
 </span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="n">detector</span> <span class="o">=</span> <span class="n">YOLOv5Face</span><span class="p">()</span>
 </span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="n">faces</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">detect</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
 </span></code></pre></div>
-<h3 id="model-variants_2">Model Variants<a class="headerlink" href="#model-variants_2" title="Permanent link">&para;</a></h3>
+<h3 id="model-variants_2">Model Variants</h3>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface</span><span class="w"> </span><span class="kn">import</span> <span class="n">YOLOv5Face</span>
 </span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">YOLOv5FaceWeights</span>
 </span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
@@ -2489,7 +2417,7 @@
 <td>80.5%</td>
 </tr>
 <tr>
-<td><strong>YOLOV5S</strong> ⭐</td>
+<td><strong>YOLOV5S</strong> <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2m-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8z"/></svg></span></td>
 <td>28 MB</td>
 <td>94.3%</td>
 <td>92.6%</td>
@@ -2508,7 +2436,7 @@
 <p class="admonition-title">Fixed Input Size</p>
 <p>YOLOv5-Face uses a fixed input size of 640×640.</p>
 </div>
-<h3 id="configuration_2">Configuration<a class="headerlink" href="#configuration_2" title="Permanent link">&para;</a></h3>
+<h3 id="configuration_2">Configuration</h3>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">detector</span> <span class="o">=</span> <span class="n">YOLOv5Face</span><span class="p">(</span>
 </span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>    <span class="n">model_name</span><span class="o">=</span><span class="n">YOLOv5FaceWeights</span><span class="o">.</span><span class="n">YOLOV5S</span><span class="p">,</span>
 </span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>    <span class="n">confidence_threshold</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>
@@ -2516,7 +2444,7 @@
 </span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="p">)</span>
 </span></code></pre></div>
 <hr />
-<h2 id="factory-function">Factory Function<a class="headerlink" href="#factory-function" title="Permanent link">&para;</a></h2>
+<h2 id="factory-function">Factory Function</h2>
 <p>Create detectors dynamically:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_detector</span>
 </span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
@@ -2527,7 +2455,7 @@
 </span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="n">detector</span> <span class="o">=</span> <span class="n">create_detector</span><span class="p">(</span><span class="s1">&#39;yolov5face&#39;</span><span class="p">)</span>
 </span></code></pre></div>
 <hr />
-<h2 id="high-level-api">High-Level API<a class="headerlink" href="#high-level-api" title="Permanent link">&para;</a></h2>
+<h2 id="high-level-api">High-Level API</h2>
 <p>One-line detection:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface</span><span class="w"> </span><span class="kn">import</span> <span class="n">detect_faces</span>
 </span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
@@ -2538,7 +2466,7 @@
 </span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="p">)</span>
 </span></code></pre></div>
 <hr />
-<h2 id="output-format">Output Format<a class="headerlink" href="#output-format" title="Permanent link">&para;</a></h2>
+<h2 id="output-format">Output Format</h2>
 <p>All detectors return <code>list[Face]</code>:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="k">for</span> <span class="n">face</span> <span class="ow">in</span> <span class="n">faces</span><span class="p">:</span>
 </span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>    <span class="c1"># Bounding box [x1, y1, x2, y2]</span>
@@ -2552,7 +2480,7 @@
 </span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>    <span class="c1"># [left_eye, right_eye, nose, left_mouth, right_mouth]</span>
 </span></code></pre></div>
 <hr />
-<h2 id="visualization">Visualization<a class="headerlink" href="#visualization" title="Permanent link">&para;</a></h2>
+<h2 id="visualization">Visualization</h2>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">draw_detections</span>
 </span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
 </span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="n">draw_detections</span><span class="p">(</span>
@@ -2566,16 +2494,17 @@
 </span><span id="__span-12-11"><a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s2">&quot;result.jpg&quot;</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
 </span></code></pre></div>
 <hr />
-<h2 id="performance-comparison">Performance Comparison<a class="headerlink" href="#performance-comparison" title="Permanent link">&para;</a></h2>
+<h2 id="performance-comparison">Performance Comparison</h2>
 <p>Benchmark on your hardware:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>python<span class="w"> </span>tools/detection.py<span class="w"> </span>--source<span class="w"> </span>image.jpg<span class="w"> </span>--iterations<span class="w"> </span><span class="m">100</span>
 </span></code></pre></div>
 <hr />
-<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<h2 id="see-also">See Also</h2>
 <ul>
-<li><a href="../recognition/">Recognition</a> - Extract face embeddings</li>
-<li><a href="../landmarks/">Landmarks</a> - 106-point landmarks</li>
-<li><a href="../../recipes/image-pipeline/">Image Pipeline Recipe</a> - Complete workflow</li>
+<li><a href="../recognition/">Recognition Module</a> - Extract embeddings from detected faces</li>
+<li><a href="../landmarks/">Landmarks Module</a> - Get 106-point landmarks</li>
+<li><a href="../../recipes/image-pipeline/">Image Pipeline Recipe</a> - Complete detection workflow</li>
+<li><a href="../../concepts/thresholds-calibration/">Concepts: Thresholds</a> - Tuning detection parameters</li>
 </ul>
 
 
@@ -2584,6 +2513,66 @@
 
 
 
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="December 31, 2025 09:07:04 UTC"><span class="timeago" datetime="2025-12-31T09:07:04+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="December 31, 2025 09:07:04 UTC">2025-12-31</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="December 30, 2025 10:29:39 UTC"><span class="timeago" datetime="2025-12-30T10:29:39+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="December 30, 2025 10:29:39 UTC">2025-12-30</span>
+  </span>
+
+    
+    
+    
+      
+  <span class="md-source-file__fact">
+    
+      
+  <span class="md-icon" title="Contributors">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33s1.71.11 2.5.33c1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2"/></svg>
+  </span>
+  <span>GitHub</span>
+
+    
+    <nav>
+      
+        <a href="https://github.com/yakhyo" class="md-author" title="@yakhyo">
+          
+          <img src="https://avatars.githubusercontent.com/u/28424328?v=4&size=72" alt="yakhyo">
+        </a>
+      
+        <a href="https://github.com/web-flow" class="md-author" title="@web-flow">
+          
+          <img src="https://avatars.githubusercontent.com/u/19864447?v=4&size=72" alt="web-flow">
+        </a>
+      
+      
+      
+    </nav>
+  </span>
+
+    
+  </aside>
 
 
   
@@ -2616,7 +2605,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../../concepts/thresholds-calibration/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Thresholds">
+          <a href="../../recipes/custom-models/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Custom Models">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -2626,7 +2615,7 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                Thresholds
+                Custom Models
               </div>
             </div>
           </a>
@@ -2692,6 +2681,17 @@
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.8 200.5c-7.7-30.9-22.3-54.2-53.4-54.2h-40.1v47.4c0 36.8-31.2 67.8-66.8 67.8H172.7c-29.2 0-53.4 25-53.4 54.3v101.8c0 29 25.2 46 53.4 54.3 33.8 9.9 66.3 11.7 106.8 0 26.9-7.8 53.4-23.5 53.4-54.3v-40.7H226.2v-13.6h160.2c31.1 0 42.6-21.7 53.4-54.2 11.2-33.5 10.7-65.7 0-108.6M286.2 444.7a20.4 20.4 0 1 1 0-40.7 20.4 20.4 0 1 1 0 40.7M167.8 248.1h106.8c29.7 0 53.4-24.5 53.4-54.3V91.9c0-29-24.4-50.7-53.4-55.6-35.8-5.9-74.7-5.6-106.8.1-45.2 8-53.4 24.7-53.4 55.6v40.7h106.9v13.6h-147c-31.1 0-58.3 18.7-66.8 54.2-9.8 40.7-10.2 66.1 0 108.6 7.6 31.6 25.7 54.2 56.8 54.2H101v-48.8c0-35.3 30.5-66.4 66.8-66.4m-6.6-183.4a20.4 20.4 0 1 1 0 40.8 20.4 20.4 0 1 1 0-40.8"/></svg>
     </a>
   
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://x.com/y_valikhujaev" target="_blank" rel="noopener" title="x.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M357.2 48h70.6L273.6 224.2 455 464H313L201.7 318.6 74.5 464H3.8l164.9-188.5L-5.2 48h145.6l100.5 132.9zm-24.8 373.8h39.1L119.1 88h-42z"/></svg>
+    </a>
+  
 </div>
       
     </div>
@@ -2707,10 +2707,14 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.path", "navigation.top", "navigation.footer", "navigation.indexes", "navigation.instant", "navigation.tracking", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate", "content.action.edit", "content.tabs.link", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.footer", "navigation.indexes", "navigation.instant", "navigation.tracking", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate", "content.action.edit", "content.action.view", "content.tabs.link", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../js/timeago.min.js"></script>
+      
+        <script src="../../js/timeago_mkdocs_material.js"></script>
       
     
   </body>
