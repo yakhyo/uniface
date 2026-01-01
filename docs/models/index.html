@@ -791,6 +791,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#adaface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AdaFace
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#arcface" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2101,6 +2112,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#adaface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AdaFace
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#arcface" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2556,6 +2578,52 @@
 </div>
 <hr />
 <h2 id="face-recognition-models">Face Recognition Models</h2>
+<h3 id="adaface">AdaFace</h3>
+<p>High-quality face recognition using adaptive margin based on image quality. Achieves state-of-the-art results on challenging benchmarks.</p>
+<table>
+<thead>
+<tr>
+<th>Model Name</th>
+<th>Backbone</th>
+<th>Dataset</th>
+<th>Size</th>
+<th>IJB-B TAR</th>
+<th>IJB-C TAR</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>IR_18</code> <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2m-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8z"/></svg></span></td>
+<td>IR-18</td>
+<td>WebFace4M</td>
+<td>92 MB</td>
+<td>93.03%</td>
+<td>94.99%</td>
+<td><strong>Balanced (default)</strong></td>
+</tr>
+<tr>
+<td><code>IR_101</code></td>
+<td>IR-101</td>
+<td>WebFace12M</td>
+<td>249 MB</td>
+<td>-</td>
+<td>97.66%</td>
+<td>Maximum accuracy</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition info">
+<p class="admonition-title">Training Data &amp; Accuracy</p>
+<p><strong>Dataset</strong>: WebFace4M (4M images) / WebFace12M (12M images)</p>
+<p><strong>Accuracy</strong>: IJB-B and IJB-C benchmarks, TAR@FAR=0.01%</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Key Innovation</p>
+<p>AdaFace introduces adaptive margin that adjusts based on image quality, providing better performance on low-quality images compared to fixed-margin approaches.</p>
+</div>
+<p><strong>Reference</strong>: <a href="https://github.com/mk-minchul/AdaFace">AdaFace: Quality Adaptive Margin for Face Recognition</a> | <a href="https://github.com/yakhyo/adaface-onnx">ONNX Export</a></p>
+<hr />
 <h3 id="arcface">ArcFace</h3>
 <p>State-of-the-art face recognition using additive angular margin loss.</p>
 <table>
@@ -3110,6 +3178,8 @@
 <li><strong>RetinaFace Training</strong>: <a href="https://github.com/yakhyo/retinaface-pytorch">yakhyo/retinaface-pytorch</a> - PyTorch implementation and training code</li>
 <li><strong>YOLOv5-Face Original</strong>: <a href="https://github.com/deepcam-cn/yolov5-face">deepcam-cn/yolov5-face</a> - Original PyTorch implementation</li>
 <li><strong>YOLOv5-Face ONNX</strong>: <a href="https://github.com/yakhyo/yolov5-face-onnx-inference">yakhyo/yolov5-face-onnx-inference</a> - ONNX inference implementation</li>
+<li><strong>AdaFace Original</strong>: <a href="https://github.com/mk-minchul/AdaFace">mk-minchul/AdaFace</a> - Original PyTorch implementation</li>
+<li><strong>AdaFace ONNX</strong>: <a href="https://github.com/yakhyo/adaface-onnx">yakhyo/adaface-onnx</a> - ONNX export and inference</li>
 <li><strong>Face Recognition Training</strong>: <a href="https://github.com/yakhyo/face-recognition">yakhyo/face-recognition</a> - ArcFace, MobileFace, SphereFace training code</li>
 <li><strong>Gaze Estimation Training</strong>: <a href="https://github.com/yakhyo/gaze-estimation">yakhyo/gaze-estimation</a> - MobileGaze training code and pretrained weights</li>
 <li><strong>Face Parsing Training</strong>: <a href="https://github.com/yakhyo/face-parsing">yakhyo/face-parsing</a> - BiSeNet training code and pretrained weights</li>
@@ -3122,6 +3192,7 @@
 <li><strong>RetinaFace</strong>: <a href="https://arxiv.org/abs/1905.00641">Single-Shot Multi-Level Face Localisation in the Wild</a></li>
 <li><strong>SCRFD</strong>: <a href="https://arxiv.org/abs/2105.04714">Sample and Computation Redistribution for Efficient Face Detection</a></li>
 <li><strong>YOLOv5-Face</strong>: <a href="https://arxiv.org/abs/2105.12931">YOLO5Face: Why Reinventing a Face Detector</a></li>
+<li><strong>AdaFace</strong>: <a href="https://arxiv.org/abs/2204.00964">AdaFace: Quality Adaptive Margin for Face Recognition</a></li>
 <li><strong>ArcFace</strong>: <a href="https://arxiv.org/abs/1801.07698">Additive Angular Margin Loss for Deep Face Recognition</a></li>
 <li><strong>SphereFace</strong>: <a href="https://arxiv.org/abs/1704.08063">Deep Hypersphere Embedding for Face Recognition</a></li>
 <li><strong>BiSeNet</strong>: <a href="https://arxiv.org/abs/1808.00897">Bilateral Segmentation Network for Real-time Semantic Segmentation</a></li>
@@ -3148,7 +3219,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="December 31, 2025 09:07:04 UTC"><span class="timeago" datetime="2025-12-31T09:07:04+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="December 31, 2025 09:07:04 UTC">2025-12-31</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="January 1, 2026 15:23:24 UTC"><span class="timeago" datetime="2026-01-01T15:23:24+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="January 1, 2026 15:23:24 UTC">2026-01-01</span>
   </span>
 
     
