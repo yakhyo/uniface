@@ -1,4 +1,4 @@
-# Copyright 2025 Yakhyokhuja Valikhujaev
+# Copyright 2025-2026 Yakhyokhuja Valikhujaev
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
@@ -31,6 +31,15 @@ class ArcFaceWeights(str, Enum):
     """
     MNET   = "arcface_mnet"
     RESNET = "arcface_resnet"
+
+
+class AdaFaceWeights(str, Enum):
+    """
+    AdaFace model weights trained on WebFace datasets.
+    https://github.com/yakhyo/adaface-onnx
+    """
+    IR_18  = "adaface_ir_18"
+    IR_101 = "adaface_ir_101"
 
 class RetinaFaceWeights(str, Enum):
     """
@@ -160,6 +169,9 @@ MODEL_URLS: dict[Enum, str] = {
     # ArcFace
     ArcFaceWeights.MNET:             'https://github.com/yakhyo/uniface/releases/download/weights/w600k_mbf.onnx',
     ArcFaceWeights.RESNET:           'https://github.com/yakhyo/uniface/releases/download/weights/w600k_r50.onnx',
+    # AdaFace
+    AdaFaceWeights.IR_18:            'https://github.com/yakhyo/adaface-onnx/releases/download/weights/adaface_ir_18.onnx',
+    AdaFaceWeights.IR_101:           'https://github.com/yakhyo/adaface-onnx/releases/download/weights/adaface_ir_101.onnx',
     # SCRFD
     SCRFDWeights.SCRFD_10G_KPS:      'https://github.com/yakhyo/uniface/releases/download/weights/scrfd_10g_kps.onnx',
     SCRFDWeights.SCRFD_500M_KPS:     'https://github.com/yakhyo/uniface/releases/download/weights/scrfd_500m_kps.onnx',
@@ -209,6 +221,9 @@ MODEL_SHA256: dict[Enum, str] = {
     # ArcFace
     ArcFaceWeights.MNET:             '9cc6e4a75f0e2bf0b1aed94578f144d15175f357bdc05e815e5c4a02b319eb4f',
     ArcFaceWeights.RESNET:           '4c06341c33c2ca1f86781dab0e829f88ad5b64be9fba56e56bc9ebdefc619e43',
+    # AdaFace
+    AdaFaceWeights.IR_18:            '6b6a35772fb636cdd4fa86520c1a259d0c41472a76f70f802b351837a00d9870',
+    AdaFaceWeights.IR_101:           'f2eb07d03de0af560a82e1214df799fec5e09375d43521e2868f9dc387e5a43e',
     # SCRFD
     SCRFDWeights.SCRFD_10G_KPS:      '5838f7fe053675b1c7a08b633df49e7af5495cee0493c7dcf6697200b85b5b91',
     SCRFDWeights.SCRFD_500M_KPS:     '5e4447f50245bbd7966bd6c0fa52938c61474a04ec7def48753668a9d8b4ea3a',

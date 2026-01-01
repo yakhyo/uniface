@@ -98,7 +98,7 @@ def detect(self, image: np.ndarray) -> list[Face]:
 ```
 uniface/
 ├── detection/      # Face detection (RetinaFace, SCRFD, YOLOv5Face)
-├── recognition/    # Face recognition (ArcFace, MobileFace, SphereFace)
+├── recognition/    # Face recognition (AdaFace, ArcFace, MobileFace, SphereFace)
 ├── landmark/       # 106-point landmarks
 ├── attribute/      # Age, gender, emotion, race
 ├── parsing/        # Face semantic segmentation

@@ -366,7 +366,7 @@ For detailed model comparisons, benchmarks, and selection guidance, see the [Mod
 | Detection (balanced) | `RetinaFace` (MNET_V2) | `YOLOv5Face` (YOLOV5S) |
 | Detection (speed) | `RetinaFace` (MNET_025) | `SCRFD` (SCRFD_500M) |
 | Detection (accuracy) | `SCRFD` (SCRFD_10G) | `RetinaFace` (RESNET34) |
-| Recognition | `ArcFace` (MNET) | `MobileFace` (MNET_V2) |
+| Recognition | `ArcFace` (MNET) | `AdaFace` (IR_18) |
 | Gaze | `MobileGaze` (RESNET34) | `MobileGaze` (MOBILEONE_S0) |
 | Parsing | `BiSeNet` (RESNET18) | `BiSeNet` (RESNET34) |
 
