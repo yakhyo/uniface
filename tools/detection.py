@@ -1,4 +1,4 @@
-# Copyright 2025 Yakhyokhuja Valikhujaev
+# Copyright 2025-2026 Yakhyokhuja Valikhujaev
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 

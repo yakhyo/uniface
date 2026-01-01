@@ -1,4 +1,4 @@
-# Copyright 2025 Yakhyokhuja Valikhujaev
+# Copyright 2025-2026 Yakhyokhuja Valikhujaev
 #
 # Licensed under the MIT License.
 # You may obtain a copy of the License at
@@ -28,7 +28,7 @@ from __future__ import annotations
 
 __license__ = 'MIT'
 __author__ = 'Yakhyokhuja Valikhujaev'
-__version__ = '2.0.2'
+__version__ = '2.1.0'
 
 from uniface.face_utils import compute_similarity, face_alignment
 from uniface.log import Logger, enable_logging
