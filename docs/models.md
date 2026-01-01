@@ -64,6 +64,27 @@ YOLOv5-Face models provide excellent detection accuracy with 5-point facial land
 
 ## Face Recognition Models
 
+### AdaFace
+
+High-quality face recognition using adaptive margin based on image quality. Achieves state-of-the-art results on challenging benchmarks.
+
+| Model Name  | Backbone | Dataset     | Size   | IJB-B TAR | IJB-C TAR | Use Case              |
+| ----------- | -------- | ----------- | ------ | --------- | --------- | --------------------- |
+| `IR_18` :material-check-circle: | IR-18    | WebFace4M   | 92 MB  | 93.03%    | 94.99%    | **Balanced (default)** |
+| `IR_101`  | IR-101   | WebFace12M  | 249 MB | -         | 97.66%    | Maximum accuracy       |
+
+!!! info "Training Data & Accuracy"
+    **Dataset**: WebFace4M (4M images) / WebFace12M (12M images)
+
+    **Accuracy**: IJB-B and IJB-C benchmarks, TAR@FAR=0.01%
+
+!!! tip "Key Innovation"
+    AdaFace introduces adaptive margin that adjusts based on image quality, providing better performance on low-quality images compared to fixed-margin approaches.
+
+**Reference**: [AdaFace: Quality Adaptive Margin for Face Recognition](https://github.com/mk-minchul/AdaFace) | [ONNX Export](https://github.com/yakhyo/adaface-onnx)
+
+---
+
 ### ArcFace
 
 State-of-the-art face recognition using additive angular margin loss.
@@ -300,6 +321,8 @@ Models are automatically downloaded and cached on first use.
 - **RetinaFace Training**: [yakhyo/retinaface-pytorch](https://github.com/yakhyo/retinaface-pytorch) - PyTorch implementation and training code
 - **YOLOv5-Face Original**: [deepcam-cn/yolov5-face](https://github.com/deepcam-cn/yolov5-face) - Original PyTorch implementation
 - **YOLOv5-Face ONNX**: [yakhyo/yolov5-face-onnx-inference](https://github.com/yakhyo/yolov5-face-onnx-inference) - ONNX inference implementation
+- **AdaFace Original**: [mk-minchul/AdaFace](https://github.com/mk-minchul/AdaFace) - Original PyTorch implementation
+- **AdaFace ONNX**: [yakhyo/adaface-onnx](https://github.com/yakhyo/adaface-onnx) - ONNX export and inference
 - **Face Recognition Training**: [yakhyo/face-recognition](https://github.com/yakhyo/face-recognition) - ArcFace, MobileFace, SphereFace training code
 - **Gaze Estimation Training**: [yakhyo/gaze-estimation](https://github.com/yakhyo/gaze-estimation) - MobileGaze training code and pretrained weights
 - **Face Parsing Training**: [yakhyo/face-parsing](https://github.com/yakhyo/face-parsing) - BiSeNet training code and pretrained weights
@@ -312,6 +335,7 @@ Models are automatically downloaded and cached on first use.
 - **RetinaFace**: [Single-Shot Multi-Level Face Localisation in the Wild](https://arxiv.org/abs/1905.00641)
 - **SCRFD**: [Sample and Computation Redistribution for Efficient Face Detection](https://arxiv.org/abs/2105.04714)
 - **YOLOv5-Face**: [YOLO5Face: Why Reinventing a Face Detector](https://arxiv.org/abs/2105.12931)
+- **AdaFace**: [AdaFace: Quality Adaptive Margin for Face Recognition](https://arxiv.org/abs/2204.00964)
 - **ArcFace**: [Additive Angular Margin Loss for Deep Face Recognition](https://arxiv.org/abs/1801.07698)
 - **SphereFace**: [Deep Hypersphere Embedding for Face Recognition](https://arxiv.org/abs/1704.08063)
 - **BiSeNet**: [Bilateral Segmentation Network for Real-time Semantic Segmentation](https://arxiv.org/abs/1808.00897)

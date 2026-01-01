@@ -15,7 +15,7 @@
 
 This library provides unified APIs for:
 - Face detection (RetinaFace, SCRFD, YOLOv5Face)
-- Face recognition (ArcFace, MobileFace, SphereFace)
+- Face recognition (AdaFace, ArcFace, MobileFace, SphereFace)
 - Facial landmarks (106-point detection)
 - Face parsing (semantic segmentation)
 - Gaze estimation
@@ -49,7 +49,7 @@ from .gaze import MobileGaze, create_gaze_estimator
 from .landmark import Landmark106, create_landmarker
 from .parsing import BiSeNet, create_face_parser
 from .privacy import BlurFace, anonymize_faces
-from .recognition import ArcFace, MobileFace, SphereFace, create_recognizer
+from .recognition import AdaFace, ArcFace, MobileFace, SphereFace, create_recognizer
 from .spoofing import MiniFASNet, create_spoofer
 from .types import AttributeResult, EmotionResult, Face, GazeResult, SpoofingResult
 
@@ -82,6 +82,7 @@ __all__ = [
     'SCRFD',
     'YOLOv5Face',
     # Recognition models
+    'AdaFace',
     'ArcFace',
     'MobileFace',
     'SphereFace',

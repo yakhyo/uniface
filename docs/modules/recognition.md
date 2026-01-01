@@ -8,9 +8,54 @@ Face recognition extracts embeddings for identity verification and face search.
 
 | Model | Backbone | Size | Embedding Dim | Best For |
 |-------|----------|------|---------------|----------|
+| **AdaFace** | IR-18/IR-101 | 92-249 MB | 512 | High-quality recognition |
 | **ArcFace** | MobileNet/ResNet | 8-166 MB | 512 | General use (recommended) |
 | **MobileFace** | MobileNet V2/V3 | 1-10 MB | 512 | Mobile/Edge |
 | **SphereFace** | Sphere20/36 | 50-92 MB | 512 | Research |
+
+---
+
+## AdaFace
+
+High-quality face recognition using adaptive margin based on image quality. AdaFace achieves state-of-the-art results on challenging benchmarks like IJB-B and IJB-C.
+
+### Basic Usage
+
+```python
+from uniface import RetinaFace, AdaFace
+
+detector = RetinaFace()
+recognizer = AdaFace()
+
+# Detect face
+faces = detector.detect(image)
+
+# Extract embedding
+if faces:
+    embedding = recognizer.get_normalized_embedding(image, faces[0].landmarks)
+    print(f"Embedding shape: {embedding.shape}")  # (1, 512)
+```
+
+### Model Variants
+
+```python
+from uniface import AdaFace
+from uniface.constants import AdaFaceWeights
+
+# Lightweight (default)
+recognizer = AdaFace(model_name=AdaFaceWeights.IR_18)
+
+# High accuracy
+recognizer = AdaFace(model_name=AdaFaceWeights.IR_101)
+```
+
+| Variant | Dataset | Size | IJB-B | IJB-C | Use Case |
+|---------|---------|------|-------|-------|----------|
+| **IR_18** :material-check-circle: | WebFace4M | 92 MB | 93.03% | 94.99% | Balanced (default) |
+| IR_101 | WebFace12M | 249 MB | - | 97.66% | Maximum accuracy |
+
+!!! info "Benchmark Metrics"
+    IJB-B and IJB-C accuracy reported as TAR@FAR=0.01%
 
 ---
 
@@ -228,7 +273,9 @@ else:
 ```python
 from uniface import create_recognizer
 
+# Available methods: 'arcface', 'adaface', 'mobileface', 'sphereface'
 recognizer = create_recognizer('arcface')
+recognizer = create_recognizer('adaface')
 ```
 
 ---
