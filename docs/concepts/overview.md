@@ -15,7 +15,7 @@ graph TB
     end
 
     subgraph Detection
-        DET[RetinaFace / SCRFD / YOLOv5Face]
+        DET[RetinaFace / SCRFD / YOLOv5Face / YOLOv8Face]
     end
 
     subgraph Analysis
@@ -97,7 +97,7 @@ def detect(self, image: np.ndarray) -> list[Face]:
 
 ```
 uniface/
-├── detection/      # Face detection (RetinaFace, SCRFD, YOLOv5Face)
+├── detection/      # Face detection (RetinaFace, SCRFD, YOLOv5Face, YOLOv8Face)
 ├── recognition/    # Face recognition (AdaFace, ArcFace, MobileFace, SphereFace)
 ├── landmark/       # 106-point landmarks
 ├── attribute/      # Age, gender, emotion, race

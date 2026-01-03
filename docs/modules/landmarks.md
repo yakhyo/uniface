@@ -6,12 +6,12 @@ Facial landmark detection provides precise localization of facial features.
 
 ## Available Models
 
-| Model | Points | Size | Use Case |
-|-------|--------|------|----------|
-| **Landmark106** | 106 | 14 MB | Detailed face analysis |
+| Model | Points | Size |
+|-------|--------|------|
+| **Landmark106** | 106 | 14 MB |
 
 !!! info "5-Point Landmarks"
-    Basic 5-point landmarks are included with all detection models (RetinaFace, SCRFD, YOLOv5-Face).
+    Basic 5-point landmarks are included with all detection models (RetinaFace, SCRFD, YOLOv5-Face, YOLOv8-Face).
 
 ---
 

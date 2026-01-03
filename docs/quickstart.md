@@ -357,18 +357,18 @@ cv2.destroyAllWindows()
 
 ## Model Selection
 
-For detailed model comparisons, benchmarks, and selection guidance, see the [Model Zoo](models.md).
+For detailed model comparisons and benchmarks, see the [Model Zoo](models.md).
 
-**Quick recommendations:**
+**Available models by task:**
 
-| Task | Recommended Model | Alternative |
-|------|-------------------|-------------|
-| Detection (balanced) | `RetinaFace` (MNET_V2) | `YOLOv5Face` (YOLOV5S) |
-| Detection (speed) | `RetinaFace` (MNET_025) | `SCRFD` (SCRFD_500M) |
-| Detection (accuracy) | `SCRFD` (SCRFD_10G) | `RetinaFace` (RESNET34) |
-| Recognition | `ArcFace` (MNET) | `AdaFace` (IR_18) |
-| Gaze | `MobileGaze` (RESNET34) | `MobileGaze` (MOBILEONE_S0) |
-| Parsing | `BiSeNet` (RESNET18) | `BiSeNet` (RESNET34) |
+| Task | Available Models |
+|------|------------------|
+| Detection | `RetinaFace`, `SCRFD`, `YOLOv5Face`, `YOLOv8Face` |
+| Recognition | `ArcFace`, `AdaFace`, `MobileFace`, `SphereFace` |
+| Gaze | `MobileGaze` (ResNet18/34/50, MobileNetV2, MobileOneS0) |
+| Parsing | `BiSeNet` (ResNet18/34) |
+| Attributes | `AgeGender`, `FairFace`, `Emotion` |
+| Anti-Spoofing | `MiniFASNet` (V1SE, V2) |
 
 ---
 

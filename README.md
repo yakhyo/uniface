@@ -23,7 +23,7 @@
 
 ## Features
 
-- **Face Detection** — RetinaFace, SCRFD, and YOLOv5-Face with 5-point landmarks
+- **Face Detection** — RetinaFace, SCRFD, YOLOv5-Face, and YOLOv8-Face with 5-point landmarks
 - **Face Recognition** — ArcFace, MobileFace, and SphereFace embeddings
 - **Facial Landmarks** — 106-point landmark localization
 - **Face Parsing** — BiSeNet semantic segmentation (19 classes)
@@ -107,6 +107,7 @@ for face in faces:
 
 - [yakhyo/retinaface-pytorch](https://github.com/yakhyo/retinaface-pytorch) — RetinaFace training
 - [yakhyo/yolov5-face-onnx-inference](https://github.com/yakhyo/yolov5-face-onnx-inference) — YOLOv5-Face ONNX
+- [yakhyo/yolov8-face-onnx-inference](https://github.com/yakhyo/yolov8-face-onnx-inference) — YOLOv8-Face ONNX
 - [yakhyo/face-recognition](https://github.com/yakhyo/face-recognition) — ArcFace, MobileFace, SphereFace
 - [yakhyo/face-parsing](https://github.com/yakhyo/face-parsing) — BiSeNet face parsing
 - [yakhyo/gaze-estimation](https://github.com/yakhyo/gaze-estimation) — MobileGaze training

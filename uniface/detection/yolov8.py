@@ -2,13 +2,20 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
+"""
+YOLOv8-Face detector implementation.
+
+Uses anchor-free design with DFL (Distribution Focal Loss) for bbox regression.
+Reference: https://github.com/yakhyo/yolov8-face-onnx-inference
+"""
+
 from typing import Any, Literal
 
 import cv2
 import numpy as np
 
 from uniface.common import non_max_suppression
-from uniface.constants import YOLOv5FaceWeights
+from uniface.constants import YOLOv8FaceWeights
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
 from uniface.onnx_utils import create_onnx_session
@@ -25,22 +32,23 @@ try:
 except ImportError:
     TORCHVISION_AVAILABLE = False
 
-__all__ = ['YOLOv5Face']
+__all__ = ['YOLOv8Face']
 
 
-class YOLOv5Face(BaseDetector):
+class YOLOv8Face(BaseDetector):
     """
-    Face detector based on the YOLOv5-Face architecture.
+    Face detector based on the YOLOv8-Face architecture.
 
-    Title: "YOLO5Face: Why Reinventing a Face Detector"
-    Paper: https://arxiv.org/abs/2105.12931
-    Code: https://github.com/yakhyo/yolov5-face-onnx-inference (ONNX inference implementation)
+    Uses anchor-free design with DFL (Distribution Focal Loss) for bbox regression.
+    Outputs 3 feature maps at different scales for multi-scale detection.
+
+    Reference: https://github.com/yakhyo/yolov8-face-onnx-inference
 
     Args:
-        model_name (YOLOv5FaceWeights): Predefined model enum (e.g., `YOLOV5S`).
-            Specifies the YOLOv5-Face variant to load. Defaults to YOLOV5S.
-        confidence_threshold (float): Confidence threshold for filtering detections. Defaults to 0.6.
-        nms_threshold (float): Non-Maximum Suppression threshold. Defaults to 0.5.
+        model_name (YOLOv8FaceWeights): Predefined model enum (e.g., `YOLOV8N`).
+            Specifies the YOLOv8-Face variant to load. Defaults to YOLOV8N.
+        confidence_threshold (float): Confidence threshold for filtering detections. Defaults to 0.5.
+        nms_threshold (float): Non-Maximum Suppression threshold. Defaults to 0.45.
         input_size (int): Input image size. Defaults to 640.
             Note: ONNX model is fixed at 640. Changing this will cause inference errors.
         nms_mode (str): NMS calculation method. Options: 'torchvision' (faster, requires torch)
@@ -49,7 +57,7 @@ class YOLOv5Face(BaseDetector):
             max_det (int): Maximum number of detections to return. Defaults to 750.
 
     Attributes:
-        model_name (YOLOv5FaceWeights): Selected model variant.
+        model_name (YOLOv8FaceWeights): Selected model variant.
         confidence_threshold (float): Threshold used to filter low-confidence detections.
         nms_threshold (float): Threshold used during NMS to suppress overlapping boxes.
         input_size (int): Image size to which inputs are resized before inference.
@@ -65,9 +73,9 @@ class YOLOv5Face(BaseDetector):
     def __init__(
         self,
         *,
-        model_name: YOLOv5FaceWeights = YOLOv5FaceWeights.YOLOV5S,
-        confidence_threshold: float = 0.6,
-        nms_threshold: float = 0.5,
+        model_name: YOLOv8FaceWeights = YOLOv8FaceWeights.YOLOV8N,
+        confidence_threshold: float = 0.5,
+        nms_threshold: float = 0.45,
         input_size: int = 640,
         nms_mode: Literal['torchvision', 'numpy'] = 'numpy',
         **kwargs: Any,
@@ -80,12 +88,12 @@ class YOLOv5Face(BaseDetector):
             nms_mode=nms_mode,
             **kwargs,
         )
-        self._supports_landmarks = True  # YOLOv5-Face supports landmarks
+        self._supports_landmarks = True  # YOLOv8-Face supports landmarks
 
         # Validate input size
         if input_size != 640:
             raise ValueError(
-                f'YOLOv5Face only supports input_size=640 (got {input_size}). The ONNX model has a fixed input shape.'
+                f'YOLOv8Face only supports input_size=640 (got {input_size}). The ONNX model has a fixed input shape.'
             )
 
         self.model_name = model_name
@@ -103,8 +111,11 @@ class YOLOv5Face(BaseDetector):
         # Advanced options from kwargs
         self.max_det = kwargs.get('max_det', 750)
 
+        # YOLOv8 strides for 640x640 input (3 feature maps: 80x80, 40x40, 20x20)
+        self.strides = [8, 16, 32]
+
         Logger.info(
-            f'Initializing YOLOv5Face with model={self.model_name}, confidence_threshold={self.confidence_threshold}, '
+            f'Initializing YOLOv8Face with model={self.model_name}, confidence_threshold={self.confidence_threshold}, '
             f'nms_threshold={self.nms_threshold}, input_size={self.input_size}, nms_mode={self.nms_mode}'
         )
 
@@ -136,13 +147,13 @@ class YOLOv5Face(BaseDetector):
 
     def preprocess(self, image: np.ndarray) -> tuple[np.ndarray, float, tuple[int, int]]:
         """
-        Preprocess image for inference.
+        Preprocess image for inference (letterbox resize with center padding).
 
         Args:
             image (np.ndarray): Input image (BGR format)
 
         Returns:
-            Tuple[np.ndarray, float, Tuple[int, int]]: Preprocessed image, scale ratio, and padding
+            Tuple[np.ndarray, float, Tuple[int, int]]: Preprocessed image, scale ratio, and padding (pad_w, pad_h)
         """
         # Get original image shape
         img_h, img_w = image.shape[:2]
@@ -154,17 +165,17 @@ class YOLOv5Face(BaseDetector):
         # Resize image
         img_resized = cv2.resize(image, (new_w, new_h), interpolation=cv2.INTER_LINEAR)
 
-        # Create padded image
+        # Create padded image with gray background (114, 114, 114)
         img_padded = np.full((self.input_size, self.input_size, 3), 114, dtype=np.uint8)
 
-        # Calculate padding
+        # Calculate padding (center the image)
         pad_h = (self.input_size - new_h) // 2
         pad_w = (self.input_size - new_w) // 2
 
         # Place resized image in center
         img_padded[pad_h : pad_h + new_h, pad_w : pad_w + new_w] = img_resized
 
-        # Convert to RGB and normalize
+        # Convert BGR to RGB and normalize
         img_rgb = cv2.cvtColor(img_padded, cv2.COLOR_BGR2RGB)
         img_normalized = img_rgb.astype(np.float32) / 255.0
 
@@ -182,49 +193,103 @@ class YOLOv5Face(BaseDetector):
             input_tensor (np.ndarray): Preprocessed input tensor.
 
         Returns:
-            List[np.ndarray]: Raw model outputs.
+            List[np.ndarray]: Raw model outputs (3 feature maps).
         """
         return self.session.run(self.output_names, {self.input_names: input_tensor})
 
+    @staticmethod
+    def _softmax(x: np.ndarray, axis: int = -1) -> np.ndarray:
+        """Compute softmax values for array x along specified axis."""
+        exp_x = np.exp(x - np.max(x, axis=axis, keepdims=True))
+        return exp_x / np.sum(exp_x, axis=axis, keepdims=True)
+
     def postprocess(
         self,
-        predictions: np.ndarray,
+        predictions: list[np.ndarray],
         scale: float,
         padding: tuple[int, int],
+        original_shape: tuple[int, int],
     ) -> tuple[np.ndarray, np.ndarray]:
         """
-        Postprocess model predictions.
+        Postprocess model predictions with DFL decoding and coordinate scaling.
 
         Args:
-            predictions (np.ndarray): Raw model output
+            predictions (List[np.ndarray]): Raw model outputs (3 feature maps)
             scale (float): Scale ratio used in preprocessing
-            padding (Tuple[int, int]): Padding used in preprocessing
+            padding (Tuple[int, int]): Padding (pad_w, pad_h) used in preprocessing
+            original_shape (Tuple[int, int]): Original image shape (height, width)
 
         Returns:
             Tuple[np.ndarray, np.ndarray]: Filtered detections and landmarks
-                - detections: [x1, y1, x2, y2, conf]
-                - landmarks: [5, 2] for each detection
+                - detections: [N, 5] as [x1, y1, x2, y2, conf]
+                - landmarks: [N, 5, 2] for each detection
         """
-        # predictions shape: (1, 25200, 16)
-        # 16 = [x, y, w, h, obj_conf, cls_conf, 10 landmarks (5 points * 2 coords)]
+        # YOLOv8-Face outputs 3 feature maps with Pose head
+        # Each output: (1, 80, H, W) where 80 = 64 (bbox DFL) + 1 (class) + 15 (5 keypoints * 3)
 
-        predictions = predictions[0]  # Remove batch dimension
+        boxes_list = []
+        scores_list = []
+        landmarks_list = []
 
-        # Filter by confidence
-        mask = predictions[:, 4] >= self.confidence_threshold
-        predictions = predictions[mask]
+        for pred, stride in zip(predictions, self.strides, strict=False):
+            # pred shape: (1, 80, H, W)
+            batch_size, channels, height, width = pred.shape
 
-        if len(predictions) == 0:
+            # Reshape: (1, 80, H, W) -> (1, 80, H*W) -> (1, H*W, 80) -> (H*W, 80)
+            pred = pred.reshape(batch_size, channels, -1).transpose(0, 2, 1)[0]
+
+            # Create grid with 0.5 offset (matching PyTorch's make_anchors)
+            grid_y, grid_x = np.meshgrid(np.arange(height) + 0.5, np.arange(width) + 0.5, indexing='ij')
+            grid_x = grid_x.flatten()
+            grid_y = grid_y.flatten()
+
+            # Extract components
+            bbox_pred = pred[:, :64]  # DFL bbox prediction (64 channels = 4 * 16)
+            cls_conf = pred[:, 64]  # Class confidence (1 channel)
+            kpt_pred = pred[:, 65:]  # Keypoints (15 channels = 5 points * 3: x, y, visibility)
+
+            # Decode bounding boxes from DFL
+            bbox_pred = bbox_pred.reshape(-1, 4, 16)
+            bbox_dist = self._softmax(bbox_pred, axis=-1) @ np.arange(16)
+
+            # Convert distances to xyxy format
+            x1 = (grid_x - bbox_dist[:, 0]) * stride
+            y1 = (grid_y - bbox_dist[:, 1]) * stride
+            x2 = (grid_x + bbox_dist[:, 2]) * stride
+            y2 = (grid_y + bbox_dist[:, 3]) * stride
+            boxes = np.stack([x1, y1, x2, y2], axis=-1)
+
+            # Decode keypoints: kpt = (kpt * 2.0 + grid) * stride
+            kpt_grid_y, kpt_grid_x = np.meshgrid(np.arange(height), np.arange(width), indexing='ij')
+            kpt_grid_x = kpt_grid_x.flatten()
+            kpt_grid_y = kpt_grid_y.flatten()
+
+            kpt_pred = kpt_pred.reshape(-1, 5, 3)  # 5 points * (x, y, visibility)
+            kpt_x = (kpt_pred[:, :, 0] * 2.0 + kpt_grid_x[:, None]) * stride
+            kpt_y = (kpt_pred[:, :, 1] * 2.0 + kpt_grid_y[:, None]) * stride
+            # Ignore visibility (kpt_pred[:, :, 2]) for uniface compatibility
+            landmarks = np.stack([kpt_x, kpt_y], axis=-1).reshape(-1, 10)
+
+            # Apply sigmoid to class confidence
+            scores = 1 / (1 + np.exp(-cls_conf))
+
+            boxes_list.append(boxes)
+            scores_list.append(scores)
+            landmarks_list.append(landmarks)
+
+        # Concatenate all predictions from all feature maps
+        boxes = np.concatenate(boxes_list, axis=0)
+        scores = np.concatenate(scores_list, axis=0)
+        landmarks = np.concatenate(landmarks_list, axis=0)
+
+        # Filter by confidence threshold
+        mask = scores >= self.confidence_threshold
+        boxes = boxes[mask]
+        scores = scores[mask]
+        landmarks = landmarks[mask]
+
+        if len(boxes) == 0:
             return np.array([]), np.array([])
-
-        # Convert from xywh to xyxy
-        boxes = self._xywh2xyxy(predictions[:, :4])
-
-        # Get confidence scores
-        scores = predictions[:, 4]
-
-        # Get landmarks (5 points, 10 coordinates)
-        landmarks = predictions[:, 5:15].copy()
 
         # Apply NMS based on selected mode
         if self.nms_mode == 'torchvision':
@@ -234,52 +299,40 @@ class YOLOv5Face(BaseDetector):
                 self.nms_threshold,
             ).numpy()
         else:
-            detections = np.hstack((boxes, scores[:, None])).astype(np.float32, copy=False)
-            keep = non_max_suppression(detections, self.nms_threshold)
+            detections_for_nms = np.hstack((boxes, scores[:, None])).astype(np.float32, copy=False)
+            keep = non_max_suppression(detections_for_nms, self.nms_threshold)
 
         if len(keep) == 0:
             return np.array([]), np.array([])
 
-        # Filter detections and limit to max_det
+        # Limit to max_det
         keep = keep[: self.max_det]
         boxes = boxes[keep]
         scores = scores[keep]
         landmarks = landmarks[keep]
 
-        # Scale back to original image coordinates
+        # === SCALE TO ORIGINAL IMAGE COORDINATES ===
         pad_w, pad_h = padding
+
+        # Scale boxes back to original image coordinates
         boxes[:, [0, 2]] = (boxes[:, [0, 2]] - pad_w) / scale
         boxes[:, [1, 3]] = (boxes[:, [1, 3]] - pad_h) / scale
 
-        # Scale landmarks
-        for i in range(5):
-            landmarks[:, i * 2] = (landmarks[:, i * 2] - pad_w) / scale
-            landmarks[:, i * 2 + 1] = (landmarks[:, i * 2 + 1] - pad_h) / scale
+        # Clip boxes to image boundaries
+        boxes[:, [0, 2]] = np.clip(boxes[:, [0, 2]], 0, original_shape[1])
+        boxes[:, [1, 3]] = np.clip(boxes[:, [1, 3]], 0, original_shape[0])
+
+        # Scale landmarks back to original image coordinates
+        landmarks[:, 0::2] = (landmarks[:, 0::2] - pad_w) / scale  # x coordinates
+        landmarks[:, 1::2] = (landmarks[:, 1::2] - pad_h) / scale  # y coordinates
 
         # Reshape landmarks to (N, 5, 2)
         landmarks = landmarks.reshape(-1, 5, 2)
 
-        # Combine results
+        # Combine box and score
         detections = np.concatenate([boxes, scores[:, None]], axis=1)
 
         return detections, landmarks
-
-    def _xywh2xyxy(self, x: np.ndarray) -> np.ndarray:
-        """
-        Convert bounding box format from xywh to xyxy.
-
-        Args:
-            x (np.ndarray): Boxes in [x, y, w, h] format
-
-        Returns:
-            np.ndarray: Boxes in [x1, y1, x2, y2] format
-        """
-        y = np.copy(x)
-        y[..., 0] = x[..., 0] - x[..., 2] / 2  # x1
-        y[..., 1] = x[..., 1] - x[..., 3] / 2  # y1
-        y[..., 2] = x[..., 0] + x[..., 2] / 2  # x2
-        y[..., 3] = x[..., 1] + x[..., 3] / 2  # y2
-        return y
 
     def detect(
         self,
@@ -293,7 +346,7 @@ class YOLOv5Face(BaseDetector):
         Perform face detection on an input image and return bounding boxes and facial landmarks.
 
         Args:
-            image (np.ndarray): Input image as a NumPy array of shape (H, W, C).
+            image (np.ndarray): Input image as a NumPy array of shape (H, W, C) in BGR format.
             max_num (int): Maximum number of detections to return. Use 0 to return all detections. Defaults to 0.
             metric (Literal["default", "max"]): Metric for ranking detections when `max_num` is limited.
                 - "default": Prioritize detections closer to the image center.
@@ -313,10 +366,7 @@ class YOLOv5Face(BaseDetector):
             ...     bbox = face.bbox  # np.ndarray with shape (4,)
             ...     confidence = face.confidence  # float
             ...     landmarks = face.landmarks  # np.ndarray with shape (5, 2)
-            ...     # Can pass landmarks directly to recognition
-            ...     embedding = recognizer.get_normalized_embedding(image, face.landmarks)
         """
-
         original_height, original_width = image.shape[:2]
 
         # Preprocess
@@ -325,8 +375,8 @@ class YOLOv5Face(BaseDetector):
         # ONNXRuntime inference
         outputs = self.inference(image_tensor)
 
-        # Postprocess
-        detections, landmarks = self.postprocess(outputs[0], scale, padding)
+        # Postprocess with original image shape for clipping
+        detections, landmarks = self.postprocess(outputs, scale, padding, (original_height, original_width))
 
         # Handle case when no faces are detected
         if len(detections) == 0:

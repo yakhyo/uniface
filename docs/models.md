@@ -1,6 +1,6 @@
 # Model Zoo
 
-Complete guide to all available models, their performance characteristics, and selection criteria.
+Complete guide to all available models and their performance characteristics.
 
 ---
 
@@ -8,16 +8,16 @@ Complete guide to all available models, their performance characteristics, and s
 
 ### RetinaFace Family
 
-RetinaFace models are trained on the WIDER FACE dataset and provide excellent accuracy-speed tradeoffs.
+RetinaFace models are trained on the WIDER FACE dataset.
 
-| Model Name     | Params | Size  | Easy   | Medium | Hard   | Use Case                      |
-| -------------- | ------ | ----- | ------ | ------ | ------ | ----------------------------- |
-| `MNET_025`   | 0.4M   | 1.7MB | 88.48% | 87.02% | 80.61% | Mobile/Edge devices           |
-| `MNET_050`   | 1.0M   | 2.6MB | 89.42% | 87.97% | 82.40% | Mobile/Edge devices           |
-| `MNET_V1`    | 3.5M   | 3.8MB | 90.59% | 89.14% | 84.13% | Balanced mobile               |
-| `MNET_V2` :material-check-circle: | 3.2M   | 3.5MB | 91.70% | 91.03% | 86.60% | **Default** |
-| `RESNET18`   | 11.7M  | 27MB  | 92.50% | 91.02% | 86.63% | Server/High accuracy          |
-| `RESNET34`   | 24.8M  | 56MB  | 94.16% | 93.12% | 88.90% | Maximum accuracy              |
+| Model Name     | Params | Size  | Easy   | Medium | Hard   |
+| -------------- | ------ | ----- | ------ | ------ | ------ |
+| `MNET_025`   | 0.4M   | 1.7MB | 88.48% | 87.02% | 80.61% |
+| `MNET_050`   | 1.0M   | 2.6MB | 89.42% | 87.97% | 82.40% |
+| `MNET_V1`    | 3.5M   | 3.8MB | 90.59% | 89.14% | 84.13% |
+| `MNET_V2` :material-check-circle: | 3.2M   | 3.5MB | 91.70% | 91.03% | 86.60% |
+| `RESNET18`   | 11.7M  | 27MB  | 92.50% | 91.02% | 86.63% |
+| `RESNET34`   | 24.8M  | 56MB  | 94.16% | 93.12% | 88.90% |
 
 !!! info "Accuracy & Benchmarks"
     **Accuracy**: WIDER FACE validation set (Easy/Medium/Hard subsets) - from [RetinaFace paper](https://arxiv.org/abs/1905.00641)
@@ -28,12 +28,12 @@ RetinaFace models are trained on the WIDER FACE dataset and provide excellent ac
 
 ### SCRFD Family
 
-SCRFD (Sample and Computation Redistribution for Efficient Face Detection) models offer state-of-the-art speed-accuracy tradeoffs.
+SCRFD (Sample and Computation Redistribution for Efficient Face Detection) models trained on WIDER FACE dataset.
 
-| Model Name       | Params | Size  | Easy   | Medium | Hard   | Use Case                        |
-| ---------------- | ------ | ----- | ------ | ------ | ------ | ------------------------------- |
-| `SCRFD_500M`   | 0.6M   | 2.5MB | 90.57% | 88.12% | 68.51% | Real-time applications          |
-| `SCRFD_10G` :material-check-circle: | 4.2M   | 17MB  | 95.16% | 93.87% | 83.05% | **High accuracy + speed** |
+| Model Name       | Params | Size  | Easy   | Medium | Hard   |
+| ---------------- | ------ | ----- | ------ | ------ | ------ |
+| `SCRFD_500M`   | 0.6M   | 2.5MB | 90.57% | 88.12% | 68.51% |
+| `SCRFD_10G` :material-check-circle: | 4.2M   | 17MB  | 95.16% | 93.87% | 83.05% |
 
 !!! info "Accuracy & Benchmarks"
     **Accuracy**: WIDER FACE validation set - from [SCRFD paper](https://arxiv.org/abs/2105.04714)
@@ -44,13 +44,13 @@ SCRFD (Sample and Computation Redistribution for Efficient Face Detection) model
 
 ### YOLOv5-Face Family
 
-YOLOv5-Face models provide excellent detection accuracy with 5-point facial landmarks, optimized for real-time applications.
+YOLOv5-Face models provide detection with 5-point facial landmarks, trained on WIDER FACE dataset.
 
-| Model Name     | Size | Easy   | Medium | Hard   | Use Case                       |
-| -------------- | ---- | ------ | ------ | ------ | ------------------------------ |
-| `YOLOV5N`    | 11MB | 93.61% | 91.52% | 80.53% | Lightweight/Mobile             |
-| `YOLOV5S` :material-check-circle: | 28MB | 94.33% | 92.61% | 83.15% | **Real-time + accuracy** |
-| `YOLOV5M`    | 82MB | 95.30% | 93.76% | 85.28% | High accuracy                  |
+| Model Name     | Size | Easy   | Medium | Hard   |
+| -------------- | ---- | ------ | ------ | ------ |
+| `YOLOV5N`    | 11MB | 93.61% | 91.52% | 80.53% |
+| `YOLOV5S` :material-check-circle: | 28MB | 94.33% | 92.61% | 83.15% |
+| `YOLOV5M`    | 82MB | 95.30% | 93.76% | 85.28% |
 
 !!! info "Accuracy & Benchmarks"
     **Accuracy**: WIDER FACE validation set - from [YOLOv5-Face paper](https://arxiv.org/abs/2105.12931)
@@ -58,7 +58,26 @@ YOLOv5-Face models provide excellent detection accuracy with 5-point facial land
     **Speed**: Benchmark on your own hardware using `python tools/detection.py --source <image> --iterations 100`
 
 !!! note "Fixed Input Size"
-    All YOLOv5-Face models use a fixed input size of 640×640. Models exported to ONNX from [deepcam-cn/yolov5-face](https://github.com/deepcam-cn/yolov5-face).
+    All YOLOv5-Face models use a fixed input size of 640×640.
+
+---
+
+### YOLOv8-Face Family
+
+YOLOv8-Face models use anchor-free design with DFL (Distribution Focal Loss) for bbox regression. Provides detection with 5-point facial landmarks.
+
+| Model Name       | Size   | Easy   | Medium | Hard   |
+| ---------------- | ------ | ------ | ------ | ------ |
+| `YOLOV8_LITE_S`| 7.4MB  | 93.4%  | 91.2%  | 78.6%  |
+| `YOLOV8N` :material-check-circle: | 12MB   | 94.6%  | 92.3%  | 79.6%  |
+
+!!! info "Accuracy & Benchmarks"
+    **Accuracy**: WIDER FACE validation set (Easy/Medium/Hard subsets)
+
+    **Speed**: Benchmark on your own hardware using `python tools/detection.py --source <image> --method yolov8face`
+
+!!! note "Fixed Input Size"
+    All YOLOv8-Face models use a fixed input size of 640×640.
 
 ---
 
@@ -66,12 +85,12 @@ YOLOv5-Face models provide excellent detection accuracy with 5-point facial land
 
 ### AdaFace
 
-High-quality face recognition using adaptive margin based on image quality. Achieves state-of-the-art results on challenging benchmarks.
+Face recognition using adaptive margin based on image quality.
 
-| Model Name  | Backbone | Dataset     | Size   | IJB-B TAR | IJB-C TAR | Use Case              |
-| ----------- | -------- | ----------- | ------ | --------- | --------- | --------------------- |
-| `IR_18` :material-check-circle: | IR-18    | WebFace4M   | 92 MB  | 93.03%    | 94.99%    | **Balanced (default)** |
-| `IR_101`  | IR-101   | WebFace12M  | 249 MB | -         | 97.66%    | Maximum accuracy       |
+| Model Name  | Backbone | Dataset     | Size   | IJB-B TAR | IJB-C TAR |
+| ----------- | -------- | ----------- | ------ | --------- | --------- |
+| `IR_18` :material-check-circle: | IR-18    | WebFace4M   | 92 MB  | 93.03%    | 94.99%    |
+| `IR_101`  | IR-101   | WebFace12M  | 249 MB | -         | 97.66%    |
 
 !!! info "Training Data & Accuracy"
     **Dataset**: WebFace4M (4M images) / WebFace12M (12M images)
@@ -81,44 +100,40 @@ High-quality face recognition using adaptive margin based on image quality. Achi
 !!! tip "Key Innovation"
     AdaFace introduces adaptive margin that adjusts based on image quality, providing better performance on low-quality images compared to fixed-margin approaches.
 
-**Reference**: [AdaFace: Quality Adaptive Margin for Face Recognition](https://github.com/mk-minchul/AdaFace) | [ONNX Export](https://github.com/yakhyo/adaface-onnx)
 
 ---
 
 ### ArcFace
 
-State-of-the-art face recognition using additive angular margin loss.
+Face recognition using additive angular margin loss.
 
-| Model Name  | Backbone  | Params | Size  | Use Case                         |
-| ----------- | --------- | ------ | ----- | -------------------------------- |
-| `MNET` :material-check-circle: | MobileNet | 2.0M   | 8MB   | **Balanced (recommended)** |
-| `RESNET`  | ResNet50  | 43.6M  | 166MB | Maximum accuracy                 |
+| Model Name  | Backbone  | Params | Size  | LFW    | CFP-FP | AgeDB-30 | IJB-C |
+| ----------- | --------- | ------ | ----- | ------ | ------ | -------- | ----- |
+| `MNET` :material-check-circle: | MobileNet | 2.0M   | 8MB   | 99.70% | 98.00% | 96.58%   | 95.02% |
+| `RESNET`  | ResNet50  | 43.6M  | 166MB | 99.83% | 99.33% | 98.23%   | 97.25% |
 
 !!! info "Training Data"
-    **Dataset**: Trained on MS1M-V2 (5.8M images, 85K identities)
+    **Dataset**: Trained on WebFace600K (600K images)
 
-    **Accuracy**: Benchmark on your own dataset or use standard face verification benchmarks
+    **Accuracy**: IJB-C accuracy reported as TAR@FAR=1e-4
 
 ---
 
 ### MobileFace
 
-Lightweight face recognition optimized for mobile devices.
+Lightweight face recognition models with MobileNet backbones.
 
-| Model Name        | Backbone         | Params | Size | LFW    | CALFW  | CPLFW  | AgeDB-30 | Use Case              |
-| ----------------- | ---------------- | ------ | ---- | ------ | ------ | ------ | -------- | --------------------- |
-| `MNET_025`      | MobileNetV1 0.25 | 0.36M  | 1MB  | 98.76% | 92.02% | 82.37% | 90.02%   | Ultra-lightweight     |
-| `MNET_V2` :material-check-circle:    | MobileNetV2      | 2.29M  | 4MB  | 99.55% | 94.87% | 86.89% | 95.16%   | **Mobile/Edge** |
-| `MNET_V3_SMALL` | MobileNetV3-S    | 1.25M  | 3MB  | 99.30% | 93.77% | 85.29% | 92.79%   | Mobile optimized      |
-| `MNET_V3_LARGE` | MobileNetV3-L    | 3.52M  | 10MB | 99.53% | 94.56% | 86.79% | 95.13%   | Balanced mobile       |
+| Model Name        | Backbone         | Params | Size | LFW    | CALFW  | CPLFW  | AgeDB-30 |
+| ----------------- | ---------------- | ------ | ---- | ------ | ------ | ------ | -------- |
+| `MNET_025`      | MobileNetV1 0.25 | 0.36M  | 1MB  | 98.76% | 92.02% | 82.37% | 90.02%   |
+| `MNET_V2` :material-check-circle:    | MobileNetV2      | 2.29M  | 4MB  | 99.55% | 94.87% | 86.89% | 95.16%   |
+| `MNET_V3_SMALL` | MobileNetV3-S    | 1.25M  | 3MB  | 99.30% | 93.77% | 85.29% | 92.79%   |
+| `MNET_V3_LARGE` | MobileNetV3-L    | 3.52M  | 10MB | 99.53% | 94.56% | 86.79% | 95.13%   |
 
 !!! info "Training Data"
     **Dataset**: Trained on MS1M-V2 (5.8M images, 85K identities)
 
     **Accuracy**: Evaluated on LFW, CALFW, CPLFW, and AgeDB-30 benchmarks
-
-!!! tip "Use Case"
-    These models are lightweight alternatives to ArcFace for resource-constrained environments.
 
 ---
 
@@ -126,10 +141,10 @@ Lightweight face recognition optimized for mobile devices.
 
 Face recognition using angular softmax loss.
 
-| Model Name   | Backbone | Params | Size | LFW    | CALFW  | CPLFW  | AgeDB-30 | Use Case            |
-| ------------ | -------- | ------ | ---- | ------ | ------ | ------ | -------- | ------------------- |
-| `SPHERE20` | Sphere20 | 24.5M  | 50MB | 99.67% | 95.61% | 88.75% | 96.58%   | Research/Comparison |
-| `SPHERE36` | Sphere36 | 34.6M  | 92MB | 99.72% | 95.64% | 89.92% | 96.83%   | Research/Comparison |
+| Model Name   | Backbone | Params | Size | LFW    | CALFW  | CPLFW  | AgeDB-30 |
+| ------------ | -------- | ------ | ---- | ------ | ------ | ------ | -------- |
+| `SPHERE20` | Sphere20 | 24.5M  | 50MB | 99.67% | 95.61% | 88.75% | 96.58%   |
+| `SPHERE36` | Sphere36 | 34.6M  | 92MB | 99.72% | 95.64% | 89.92% | 96.83%   |
 
 !!! info "Training Data"
     **Dataset**: Trained on MS1M-V2 (5.8M images, 85K identities)
@@ -145,11 +160,11 @@ Face recognition using angular softmax loss.
 
 ### 106-Point Landmark Detection
 
-High-precision facial landmark localization.
+Facial landmark localization model.
 
-| Model Name | Points | Params | Size | Use Case                 |
-| ---------- | ------ | ------ | ---- | ------------------------ |
-| `2D106`  | 106    | 3.7M   | 14MB | Face alignment, analysis |
+| Model Name | Points | Params | Size |
+| ---------- | ------ | ------ | ---- |
+| `2D106`  | 106    | 3.7M   | 14MB |
 
 **Landmark Groups:**
 
@@ -167,9 +182,9 @@ High-precision facial landmark localization.
 
 ### Age & Gender Detection
 
-| Model Name  | Attributes  | Params | Size | Use Case        |
-| ----------- | ----------- | ------ | ---- | --------------- |
-| `AgeGender` | Age, Gender | 2.1M   | 8MB  | General purpose |
+| Model Name  | Attributes  | Params | Size |
+| ----------- | ----------- | ------ | ---- |
+| `AgeGender` | Age, Gender | 2.1M   | 8MB  |
 
 !!! info "Training Data"
     **Dataset**: Trained on CelebA
@@ -181,9 +196,9 @@ High-precision facial landmark localization.
 
 ### FairFace Attributes
 
-| Model Name  | Attributes            | Params | Size  | Use Case                    |
-| ----------- | --------------------- | ------ | ----- | --------------------------- |
-| `FairFace` | Race, Gender, Age Group | -      | 44MB  | Balanced demographic prediction |
+| Model Name  | Attributes            | Params | Size  |
+| ----------- | --------------------- | ------ | ----- |
+| `FairFace` | Race, Gender, Age Group | -      | 44MB  |
 
 !!! info "Training Data"
     **Dataset**: Trained on FairFace dataset with balanced demographics
@@ -199,10 +214,10 @@ High-precision facial landmark localization.
 
 ### Emotion Detection
 
-| Model Name    | Classes | Params | Size | Use Case        |
-| ------------- | ------- | ------ | ---- | --------------- |
-| `AFFECNET7` | 7       | 0.5M   | 2MB  | 7-class emotion |
-| `AFFECNET8` | 8       | 0.5M   | 2MB  | 8-class emotion |
+| Model Name    | Classes | Params | Size |
+| ------------- | ------- | ------ | ---- |
+| `AFFECNET7` | 7       | 0.5M   | 2MB  |
+| `AFFECNET8` | 8       | 0.5M   | 2MB  |
 
 **Classes (7)**: Neutral, Happy, Sad, Surprise, Fear, Disgust, Anger
 
@@ -220,15 +235,15 @@ High-precision facial landmark localization.
 
 ### MobileGaze Family
 
-Real-time gaze direction prediction models trained on Gaze360 dataset. Returns pitch (vertical) and yaw (horizontal) angles in radians.
+Gaze direction prediction models trained on Gaze360 dataset. Returns pitch (vertical) and yaw (horizontal) angles in radians.
 
-| Model Name     | Params | Size    | MAE*  | Use Case                      |
-| -------------- | ------ | ------- | ----- | ----------------------------- |
-| `RESNET18`   | 11.7M  | 43 MB   | 12.84 | Balanced accuracy/speed       |
-| `RESNET34` :material-check-circle: | 24.8M  | 81.6 MB | 11.33 | **Default** |
-| `RESNET50`   | 25.6M  | 91.3 MB | 11.34 | High accuracy                 |
-| `MOBILENET_V2` | 3.5M   | 9.59 MB | 13.07 | Mobile/Edge devices           |
-| `MOBILEONE_S0` | 2.1M   | 4.8 MB  | 12.58 | Lightweight/Real-time         |
+| Model Name     | Params | Size    | MAE*  |
+| -------------- | ------ | ------- | ----- |
+| `RESNET18`   | 11.7M  | 43 MB   | 12.84 |
+| `RESNET34` :material-check-circle: | 24.8M  | 81.6 MB | 11.33 |
+| `RESNET50`   | 25.6M  | 91.3 MB | 11.34 |
+| `MOBILENET_V2` | 3.5M   | 9.59 MB | 13.07 |
+| `MOBILEONE_S0` | 2.1M   | 4.8 MB  | 12.58 |
 
 *MAE (Mean Absolute Error) in degrees on Gaze360 test set - lower is better
 
@@ -248,10 +263,10 @@ Real-time gaze direction prediction models trained on Gaze360 dataset. Returns p
 
 BiSeNet (Bilateral Segmentation Network) models for semantic face parsing. Segments face images into 19 facial component classes.
 
-| Model Name     | Params | Size    | Classes | Use Case                      |
-| -------------- | ------ | ------- | ------- | ----------------------------- |
-| `RESNET18` :material-check-circle: | 13.3M  | 50.7 MB | 19      | **Default** |
-| `RESNET34`   | 24.1M  | 89.2 MB | 19      | Higher accuracy               |
+| Model Name     | Params | Size    | Classes |
+| -------------- | ------ | ------- | ------- |
+| `RESNET18` :material-check-circle: | 13.3M  | 50.7 MB | 19      |
+| `RESNET34`   | 24.1M  | 89.2 MB | 19      |
 
 !!! info "Training Data"
     **Dataset**: Trained on CelebAMask-HQ
@@ -289,18 +304,18 @@ BiSeNet (Bilateral Segmentation Network) models for semantic face parsing. Segme
 
 ### MiniFASNet Family
 
-Lightweight face anti-spoofing models for liveness detection. Detect if a face is real (live) or fake (photo, video replay, mask).
+Face anti-spoofing models for liveness detection. Detect if a face is real (live) or fake (photo, video replay, mask).
 
-| Model Name | Size   | Scale | Use Case                      |
-| ---------- | ------ | ----- | ----------------------------- |
-| `V1SE`   | 1.2 MB | 4.0   | Squeeze-and-excitation variant |
-| `V2` :material-check-circle:  | 1.2 MB | 2.7   | **Default**       |
+| Model Name | Size   | Scale |
+| ---------- | ------ | ----- |
+| `V1SE`   | 1.2 MB | 4.0   |
+| `V2` :material-check-circle:  | 1.2 MB | 2.7   |
 
 !!! info "Output Format"
     **Output**: Returns `SpoofingResult(is_real, confidence)` where is_real: True=Real, False=Fake
 
 !!! note "Input Requirements"
-    Requires face bounding box from a detector. Use with RetinaFace, SCRFD, or YOLOv5Face.
+    Requires face bounding box from a detector.
 
 ---
 
@@ -321,6 +336,8 @@ Models are automatically downloaded and cached on first use.
 - **RetinaFace Training**: [yakhyo/retinaface-pytorch](https://github.com/yakhyo/retinaface-pytorch) - PyTorch implementation and training code
 - **YOLOv5-Face Original**: [deepcam-cn/yolov5-face](https://github.com/deepcam-cn/yolov5-face) - Original PyTorch implementation
 - **YOLOv5-Face ONNX**: [yakhyo/yolov5-face-onnx-inference](https://github.com/yakhyo/yolov5-face-onnx-inference) - ONNX inference implementation
+- **YOLOv8-Face Original**: [derronqi/yolov8-face](https://github.com/derronqi/yolov8-face) - Original PyTorch implementation
+- **YOLOv8-Face ONNX**: [yakhyo/yolov8-face-onnx-inference](https://github.com/yakhyo/yolov8-face-onnx-inference) - ONNX inference implementation
 - **AdaFace Original**: [mk-minchul/AdaFace](https://github.com/mk-minchul/AdaFace) - Original PyTorch implementation
 - **AdaFace ONNX**: [yakhyo/adaface-onnx](https://github.com/yakhyo/adaface-onnx) - ONNX export and inference
 - **Face Recognition Training**: [yakhyo/face-recognition](https://github.com/yakhyo/face-recognition) - ArcFace, MobileFace, SphereFace training code
