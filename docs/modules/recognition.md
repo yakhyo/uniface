@@ -6,18 +6,18 @@ Face recognition extracts embeddings for identity verification and face search.
 
 ## Available Models
 
-| Model | Backbone | Size | Embedding Dim | Best For |
-|-------|----------|------|---------------|----------|
-| **AdaFace** | IR-18/IR-101 | 92-249 MB | 512 | High-quality recognition |
-| **ArcFace** | MobileNet/ResNet | 8-166 MB | 512 | General use (recommended) |
-| **MobileFace** | MobileNet V2/V3 | 1-10 MB | 512 | Mobile/Edge |
-| **SphereFace** | Sphere20/36 | 50-92 MB | 512 | Research |
+| Model | Backbone | Size | Embedding Dim |
+|-------|----------|------|---------------|
+| **AdaFace** | IR-18/IR-101 | 92-249 MB | 512 |
+| **ArcFace** | MobileNet/ResNet | 8-166 MB | 512 |
+| **MobileFace** | MobileNet V2/V3 | 1-10 MB | 512 |
+| **SphereFace** | Sphere20/36 | 50-92 MB | 512 |
 
 ---
 
 ## AdaFace
 
-High-quality face recognition using adaptive margin based on image quality. AdaFace achieves state-of-the-art results on challenging benchmarks like IJB-B and IJB-C.
+Face recognition using adaptive margin based on image quality.
 
 ### Basic Usage
 
@@ -49,10 +49,10 @@ recognizer = AdaFace(model_name=AdaFaceWeights.IR_18)
 recognizer = AdaFace(model_name=AdaFaceWeights.IR_101)
 ```
 
-| Variant | Dataset | Size | IJB-B | IJB-C | Use Case |
-|---------|---------|------|-------|-------|----------|
-| **IR_18** :material-check-circle: | WebFace4M | 92 MB | 93.03% | 94.99% | Balanced (default) |
-| IR_101 | WebFace12M | 249 MB | - | 97.66% | Maximum accuracy |
+| Variant | Dataset | Size | IJB-B | IJB-C |
+|---------|---------|------|-------|-------|
+| **IR_18** :material-check-circle: | WebFace4M | 92 MB | 93.03% | 94.99% |
+| IR_101 | WebFace12M | 249 MB | - | 97.66% |
 
 !!! info "Benchmark Metrics"
     IJB-B and IJB-C accuracy reported as TAR@FAR=0.01%
@@ -61,7 +61,7 @@ recognizer = AdaFace(model_name=AdaFaceWeights.IR_101)
 
 ## ArcFace
 
-State-of-the-art recognition using additive angular margin loss.
+Face recognition using additive angular margin loss.
 
 ### Basic Usage
 
@@ -93,16 +93,21 @@ recognizer = ArcFace(model_name=ArcFaceWeights.MNET)
 recognizer = ArcFace(model_name=ArcFaceWeights.RESNET)
 ```
 
-| Variant | Backbone | Size | Use Case |
-|---------|----------|------|----------|
-| **MNET** :material-check-circle: | MobileNet | 8 MB | Balanced (recommended) |
-| RESNET | ResNet50 | 166 MB | Maximum accuracy |
+| Variant | Backbone | Size | LFW | CFP-FP | AgeDB-30 | IJB-C |
+|---------|----------|------|-----|--------|----------|-------|
+| **MNET** :material-check-circle: | MobileNet | 8 MB | 99.70% | 98.00% | 96.58% | 95.02% |
+| RESNET | ResNet50 | 166 MB | 99.83% | 99.33% | 98.23% | 97.25% |
+
+!!! info "Training Data & Metrics"
+    **Dataset**: Trained on WebFace600K (600K images)
+
+    **Accuracy**: IJB-C reported as TAR@FAR=1e-4
 
 ---
 
 ## MobileFace
 
-Lightweight recognition for resource-constrained environments.
+Lightweight face recognition models with MobileNet backbones.
 
 ### Basic Usage
 
@@ -129,18 +134,18 @@ recognizer = MobileFace(model_name=MobileFaceWeights.MNET_V2)
 recognizer = MobileFace(model_name=MobileFaceWeights.MNET_V3_LARGE)
 ```
 
-| Variant | Params | Size | LFW | Use Case |
-|---------|--------|------|-----|----------|
-| MNET_025 | 0.36M | 1 MB | 98.8% | Ultra-lightweight |
-| **MNET_V2** :material-check-circle: | 2.29M | 4 MB | 99.6% | Mobile/Edge |
-| MNET_V3_SMALL | 1.25M | 3 MB | 99.3% | Mobile optimized |
-| MNET_V3_LARGE | 3.52M | 10 MB | 99.5% | Balanced mobile |
+| Variant | Params | Size | LFW | CALFW | CPLFW | AgeDB-30 |
+|---------|--------|------|-----|-------|-------|----------|
+| MNET_025 | 0.36M | 1 MB | 98.76% | 92.02% | 82.37% | 90.02% |
+| **MNET_V2** :material-check-circle: | 2.29M | 4 MB | 99.55% | 94.87% | 86.89% | 95.16% |
+| MNET_V3_SMALL | 1.25M | 3 MB | 99.30% | 93.77% | 85.29% | 92.79% |
+| MNET_V3_LARGE | 3.52M | 10 MB | 99.53% | 94.56% | 86.79% | 95.13% |
 
 ---
 
 ## SphereFace
 
-Recognition using angular softmax loss (A-Softmax).
+Face recognition using angular softmax loss (A-Softmax).
 
 ### Basic Usage
 
@@ -152,10 +157,10 @@ recognizer = SphereFace(model_name=SphereFaceWeights.SPHERE20)
 embedding = recognizer.get_normalized_embedding(image, landmarks)
 ```
 
-| Variant | Params | Size | LFW | Use Case |
-|---------|--------|------|-----|----------|
-| SPHERE20 | 24.5M | 50 MB | 99.7% | Research |
-| SPHERE36 | 34.6M | 92 MB | 99.7% | Research |
+| Variant | Params | Size | LFW | CALFW | CPLFW | AgeDB-30 |
+|---------|--------|------|-----|-------|-------|----------|
+| SPHERE20 | 24.5M | 50 MB | 99.67% | 95.61% | 88.75% | 96.58% |
+| SPHERE36 | 34.6M | 92 MB | 99.72% | 95.64% | 89.92% | 96.83% |
 
 ---
 

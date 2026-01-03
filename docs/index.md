@@ -26,7 +26,7 @@ template: home.html
 
 <div class="feature-card" markdown>
 ### :material-face-recognition: Face Detection
-ONNX-optimized RetinaFace, SCRFD, and YOLOv5-Face models with 5-point landmarks.
+ONNX-optimized detectors (RetinaFace, SCRFD, YOLO) with 5-point landmarks.
 </div>
 
 <div class="feature-card" markdown>

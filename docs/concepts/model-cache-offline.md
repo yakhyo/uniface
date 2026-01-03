@@ -155,6 +155,8 @@ If a model fails verification, it's re-downloaded automatically.
 | YOLOv5n-Face | 11 MB | ✅ |
 | YOLOv5s-Face | 28 MB | ✅ |
 | YOLOv5m-Face | 82 MB | ✅ |
+| YOLOv8-Lite-S | 7.4 MB | ✅ |
+| YOLOv8n-Face | 12 MB | ✅ |
 
 ### Recognition Models
 

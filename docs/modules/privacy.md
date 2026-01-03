@@ -6,13 +6,13 @@ Face anonymization protects privacy by blurring or obscuring faces in images and
 
 ## Available Methods
 
-| Method | Description | Use Case |
-|--------|-------------|----------|
-| **pixelate** | Blocky pixelation | News media standard |
-| **gaussian** | Smooth blur | Natural appearance |
-| **blackout** | Solid color fill | Maximum privacy |
-| **elliptical** | Oval-shaped blur | Natural face shape |
-| **median** | Edge-preserving blur | Artistic effect |
+| Method | Description |
+|--------|-------------|
+| **pixelate** | Blocky pixelation |
+| **gaussian** | Smooth blur |
+| **blackout** | Solid color fill |
+| **elliptical** | Oval-shaped blur |
+| **median** | Edge-preserving blur |
 
 ---
 

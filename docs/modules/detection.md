@@ -1,22 +1,25 @@
 # Detection
 
-Face detection is the first step in any face analysis pipeline. UniFace provides three detection models.
+Face detection is the first step in any face analysis pipeline. UniFace provides four detection models.
 
 ---
 
 ## Available Models
 
-| Model | Backbone | Size | WIDER FACE (Easy/Medium/Hard) | Best For |
-|-------|----------|------|-------------------------------|----------|
-| **RetinaFace** | MobileNet V2 | 3.5 MB | 91.7% / 91.0% / 86.6% | Balanced (recommended) |
-| **SCRFD** | SCRFD-10G | 17 MB | 95.2% / 93.9% / 83.1% | High accuracy |
-| **YOLOv5-Face** | YOLOv5s | 28 MB | 94.3% / 92.6% / 83.2% | Real-time |
+| Model | Backbone | Size | Easy | Medium | Hard | Landmarks |
+|-------|----------|------|------|--------|------|:---------:|
+| **RetinaFace** | MobileNet V2 | 3.5 MB | 91.7% | 91.0% | 86.6% | :material-check: |
+| **SCRFD** | SCRFD-10G | 17 MB | 95.2% | 93.9% | 83.1% | :material-check: |
+| **YOLOv5-Face** | YOLOv5s | 28 MB | 94.3% | 92.6% | 83.2% | :material-check: |
+| **YOLOv8-Face** | YOLOv8n | 12 MB | 94.6% | 92.3% | 79.6% | :material-check: |
 
+!!! note "Dataset"
+    All models trained on WIDERFACE dataset.
 ---
 
 ## RetinaFace
 
-The recommended detector for most use cases.
+Single-shot face detector with multi-scale feature pyramid.
 
 ### Basic Usage
 
@@ -159,7 +162,55 @@ detector = YOLOv5Face(model_name=YOLOv5FaceWeights.YOLOV5M)
 detector = YOLOv5Face(
     model_name=YOLOv5FaceWeights.YOLOV5S,
     confidence_threshold=0.6,
-    nms_threshold=0.5
+    nms_threshold=0.5,
+    nms_mode='numpy'  # or 'torchvision' for faster NMS
+)
+```
+
+---
+
+## YOLOv8-Face
+
+Anchor-free detection with DFL (Distribution Focal Loss) for accurate bbox regression.
+
+### Basic Usage
+
+```python
+from uniface import YOLOv8Face
+
+detector = YOLOv8Face()
+faces = detector.detect(image)
+```
+
+### Model Variants
+
+```python
+from uniface import YOLOv8Face
+from uniface.constants import YOLOv8FaceWeights
+
+# Lightweight
+detector = YOLOv8Face(model_name=YOLOv8FaceWeights.YOLOV8_LITE_S)
+
+# Recommended (default)
+detector = YOLOv8Face(model_name=YOLOv8FaceWeights.YOLOV8N)
+```
+
+| Variant | Size | Easy | Medium | Hard |
+|---------|------|------|--------|------|
+| YOLOV8_LITE_S | 7.4 MB | 93.4% | 91.2% | 78.6% |
+| **YOLOV8N** :material-check-circle: | 12 MB | 94.6% | 92.3% | 79.6% |
+
+!!! note "Fixed Input Size"
+    YOLOv8-Face uses a fixed input size of 640×640.
+
+### Configuration
+
+```python
+detector = YOLOv8Face(
+    model_name=YOLOv8FaceWeights.YOLOV8N,
+    confidence_threshold=0.5,
+    nms_threshold=0.45,
+    nms_mode='numpy'  # or 'torchvision' for faster NMS
 )
 ```
 
@@ -177,6 +228,8 @@ detector = create_detector('retinaface')
 detector = create_detector('scrfd')
 # or
 detector = create_detector('yolov5face')
+# or
+detector = create_detector('yolov8face')
 ```
 
 ---
@@ -188,11 +241,11 @@ One-line detection:
 ```python
 from uniface import detect_faces
 
-faces = detect_faces(
-    image,
-    method='retinaface',
-    confidence_threshold=0.5
-)
+# Using RetinaFace (default)
+faces = detect_faces(image, method='retinaface', confidence_threshold=0.5)
+
+# Using YOLOv8-Face
+faces = detect_faces(image, method='yolov8face', confidence_threshold=0.5)
 ```
 
 ---

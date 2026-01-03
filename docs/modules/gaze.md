@@ -6,13 +6,13 @@ Gaze estimation predicts where a person is looking (pitch and yaw angles).
 
 ## Available Models
 
-| Model | Backbone | Size | MAE* | Best For |
-|-------|----------|------|------|----------|
-| ResNet18 | ResNet18 | 43 MB | 12.84° | Balanced |
-| **ResNet34** :material-check-circle: | ResNet34 | 82 MB | 11.33° | Recommended |
-| ResNet50 | ResNet50 | 91 MB | 11.34° | High accuracy |
-| MobileNetV2 | MobileNetV2 | 9.6 MB | 13.07° | Mobile |
-| MobileOne-S0 | MobileOne | 4.8 MB | 12.58° | Lightweight |
+| Model | Backbone | Size | MAE* |
+|-------|----------|------|------|
+| ResNet18 | ResNet18 | 43 MB | 12.84° |
+| **ResNet34** :material-check-circle: | ResNet34 | 82 MB | 11.33° |
+| ResNet50 | ResNet50 | 91 MB | 11.34° |
+| MobileNetV2 | MobileNetV2 | 9.6 MB | 13.07° |
+| MobileOne-S0 | MobileOne | 4.8 MB | 12.58° |
 
 *MAE = Mean Absolute Error on Gaze360 test set (lower is better)
 
