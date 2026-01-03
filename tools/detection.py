@@ -18,7 +18,7 @@ from pathlib import Path
 
 import cv2
 
-from uniface.detection import SCRFD, RetinaFace, YOLOv5Face
+from uniface.detection import SCRFD, RetinaFace, YOLOv5Face, YOLOv8Face
 from uniface.visualization import draw_detections
 
 IMAGE_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.bmp', '.webp', '.tiff'}
@@ -157,7 +157,9 @@ def run_camera(detector, camera_id: int = 0, threshold: float = 0.6):
 def main():
     parser = argparse.ArgumentParser(description='Run face detection')
     parser.add_argument('--source', type=str, required=True, help='Image/video path or camera ID (0, 1, ...)')
-    parser.add_argument('--method', type=str, default='retinaface', choices=['retinaface', 'scrfd', 'yolov5face'])
+    parser.add_argument(
+        '--method', type=str, default='retinaface', choices=['retinaface', 'scrfd', 'yolov5face', 'yolov8face']
+    )
     parser.add_argument('--threshold', type=float, default=0.25, help='Visualization threshold')
     parser.add_argument('--save-dir', type=str, default='outputs', help='Output directory')
     args = parser.parse_args()
@@ -167,10 +169,14 @@ def main():
         detector = RetinaFace()
     elif args.method == 'scrfd':
         detector = SCRFD()
-    else:
+    elif args.method == 'yolov5face':
         from uniface.constants import YOLOv5FaceWeights
 
         detector = YOLOv5Face(model_name=YOLOv5FaceWeights.YOLOV5M)
+    else:  # yolov8face
+        from uniface.constants import YOLOv8FaceWeights
+
+        detector = YOLOv8Face(model_name=YOLOv8FaceWeights.YOLOV8N)
 
     # Determine source type and process
     source_type = get_source_type(args.source)

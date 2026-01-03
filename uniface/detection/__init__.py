@@ -14,6 +14,7 @@ from .base import BaseDetector
 from .retinaface import RetinaFace
 from .scrfd import SCRFD
 from .yolov5 import YOLOv5Face
+from .yolov8 import YOLOv8Face
 
 # Global cache for detector instances (keyed by method name + config hash)
 _detector_cache: dict[str, BaseDetector] = {}
@@ -27,7 +28,7 @@ def detect_faces(image: np.ndarray, method: str = 'retinaface', **kwargs: Any) -
 
     Args:
         image: Input image as numpy array with shape (H, W, C) in BGR format.
-        method: Detection method to use. Options: 'retinaface', 'scrfd', 'yolov5face'.
+        method: Detection method to use. Options: 'retinaface', 'scrfd', 'yolov5face', 'yolov8face'.
         **kwargs: Additional arguments passed to the detector.
 
     Returns:
@@ -66,6 +67,7 @@ def create_detector(method: str = 'retinaface', **kwargs: Any) -> BaseDetector:
             - 'retinaface': RetinaFace detector (default)
             - 'scrfd': SCRFD detector (fast and accurate)
             - 'yolov5face': YOLOv5-Face detector (accurate with landmarks)
+            - 'yolov8face': YOLOv8-Face detector (anchor-free, accurate)
         **kwargs: Detector-specific parameters.
 
     Returns:
@@ -84,11 +86,9 @@ def create_detector(method: str = 'retinaface', **kwargs: Any) -> BaseDetector:
         ...     'scrfd', model_name=SCRFDWeights.SCRFD_10G_KPS, confidence_threshold=0.8, input_size=(640, 640)
         ... )
 
-        >>> # RetinaFace detector
-        >>> from uniface.constants import RetinaFaceWeights
-        >>> detector = create_detector(
-        ...     'retinaface', model_name=RetinaFaceWeights.MNET_V2, confidence_threshold=0.8, nms_threshold=0.4
-        ... )
+        >>> # YOLOv8-Face detector
+        >>> from uniface.constants import YOLOv8FaceWeights
+        >>> detector = create_detector('yolov8face', model_name=YOLOv8FaceWeights.YOLOV8N, confidence_threshold=0.5)
     """
     method = method.lower()
 
@@ -101,8 +101,11 @@ def create_detector(method: str = 'retinaface', **kwargs: Any) -> BaseDetector:
     elif method == 'yolov5face':
         return YOLOv5Face(**kwargs)
 
+    elif method == 'yolov8face':
+        return YOLOv8Face(**kwargs)
+
     else:
-        available_methods = ['retinaface', 'scrfd', 'yolov5face']
+        available_methods = ['retinaface', 'scrfd', 'yolov5face', 'yolov8face']
         raise ValueError(f"Unsupported detection method: '{method}'. Available methods: {available_methods}")
 
 
@@ -147,6 +150,17 @@ def list_available_detectors() -> dict[str, dict[str, Any]]:
                 'input_size': 640,
             },
         },
+        'yolov8face': {
+            'description': 'YOLOv8-Face detector - anchor-free design with DFL for accurate detection',
+            'supports_landmarks': True,
+            'paper': 'https://github.com/derronqi/yolov8-face',
+            'default_params': {
+                'model_name': 'yolov8n_face',
+                'confidence_threshold': 0.5,
+                'nms_threshold': 0.45,
+                'input_size': 640,
+            },
+        },
     }
 
 
@@ -155,6 +169,7 @@ __all__ = [
     'BaseDetector',
     'RetinaFace',
     'YOLOv5Face',
+    'YOLOv8Face',
     'create_detector',
     'detect_faces',
     'list_available_detectors',

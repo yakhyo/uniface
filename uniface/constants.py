@@ -79,6 +79,20 @@ class YOLOv5FaceWeights(str, Enum):
     YOLOV5M = "yolov5m"
 
 
+class YOLOv8FaceWeights(str, Enum):
+    """
+    YOLOv8-Face models trained on WIDER FACE dataset.
+    Uses anchor-free design with DFL (Distribution Focal Loss) for bbox regression.
+    Exported to ONNX from: https://github.com/yakhyo/yolov8-face-onnx-inference
+
+    Model Performance (WIDER FACE):
+    - YOLOV8_LITE_S: 7.4MB, 93.4% Easy / 91.2% Medium / 78.6% Hard (lightweight)
+    - YOLOV8N: 12MB, 94.6% Easy / 92.3% Medium / 79.6% Hard (recommended)
+    """
+    YOLOV8_LITE_S = "yolov8_lite_s"
+    YOLOV8N       = "yolov8n_face"
+
+
 class DDAMFNWeights(str, Enum):
     """
     Trained on AffectNet dataset.
@@ -179,6 +193,9 @@ MODEL_URLS: dict[Enum, str] = {
     YOLOv5FaceWeights.YOLOV5N:       'https://github.com/yakhyo/yolov5-face-onnx-inference/releases/download/weights/yolov5n_face.onnx',
     YOLOv5FaceWeights.YOLOV5S:       'https://github.com/yakhyo/yolov5-face-onnx-inference/releases/download/weights/yolov5s_face.onnx',
     YOLOv5FaceWeights.YOLOV5M:       'https://github.com/yakhyo/yolov5-face-onnx-inference/releases/download/weights/yolov5m_face.onnx',
+    # YOLOv8-Face
+    YOLOv8FaceWeights.YOLOV8_LITE_S: 'https://github.com/yakhyo/yolov8-face-onnx-inference/releases/download/weights/yolov8-lite-s.onnx',
+    YOLOv8FaceWeights.YOLOV8N:       'https://github.com/yakhyo/yolov8-face-onnx-inference/releases/download/weights/yolov8n-face.onnx',
     # DDAFM
     DDAMFNWeights.AFFECNET7:         'https://github.com/yakhyo/uniface/releases/download/weights/affecnet7.script',
     DDAMFNWeights.AFFECNET8:         'https://github.com/yakhyo/uniface/releases/download/weights/affecnet8.script',
@@ -231,6 +248,9 @@ MODEL_SHA256: dict[Enum, str] = {
     YOLOv5FaceWeights.YOLOV5N:       'eb244a06e36999db732b317c2b30fa113cd6cfc1a397eaf738f2d6f33c01f640',
     YOLOv5FaceWeights.YOLOV5S:       'fc682801cd5880e1e296184a14aea0035486b5146ec1a1389d2e7149cb134bb2',
     YOLOv5FaceWeights.YOLOV5M:       '04302ce27a15bde3e20945691b688e2dd018a10e92dd8932146bede6a49207b2',
+    # YOLOv8-Face
+    YOLOv8FaceWeights.YOLOV8_LITE_S: '11bc496be01356d2d960085bfd8abb8f103199900a034f239a8a1705a1b31dba',
+    YOLOv8FaceWeights.YOLOV8N:       '33f3951af7fc0c4d9b321b29cdcd8c9a59d0a29a8d4bdc01fcb5507d5c714809',
     # DDAFM
     DDAMFNWeights.AFFECNET7:         '10535bf8b6afe8e9d6ae26cea6c3add9a93036e9addb6adebfd4a972171d015d',
     DDAMFNWeights.AFFECNET8:         '8c66963bc71db42796a14dfcbfcd181b268b65a3fc16e87147d6a3a3d7e0f487',
