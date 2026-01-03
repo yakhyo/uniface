@@ -2270,7 +2270,6 @@
 <th>Backbone</th>
 <th>Size</th>
 <th>Embedding Dim</th>
-<th>Best For</th>
 </tr>
 </thead>
 <tbody>
@@ -2279,34 +2278,30 @@
 <td>IR-18/IR-101</td>
 <td>92-249 MB</td>
 <td>512</td>
-<td>High-quality recognition</td>
 </tr>
 <tr>
 <td><strong>ArcFace</strong></td>
 <td>MobileNet/ResNet</td>
 <td>8-166 MB</td>
 <td>512</td>
-<td>General use (recommended)</td>
 </tr>
 <tr>
 <td><strong>MobileFace</strong></td>
 <td>MobileNet V2/V3</td>
 <td>1-10 MB</td>
 <td>512</td>
-<td>Mobile/Edge</td>
 </tr>
 <tr>
 <td><strong>SphereFace</strong></td>
 <td>Sphere20/36</td>
 <td>50-92 MB</td>
 <td>512</td>
-<td>Research</td>
 </tr>
 </tbody>
 </table>
 <hr />
 <h2 id="adaface">AdaFace</h2>
-<p>High-quality face recognition using adaptive margin based on image quality. AdaFace achieves state-of-the-art results on challenging benchmarks like IJB-B and IJB-C.</p>
+<p>Face recognition using adaptive margin based on image quality.</p>
 <h3 id="basic-usage">Basic Usage</h3>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface</span><span class="w"> </span><span class="kn">import</span> <span class="n">RetinaFace</span><span class="p">,</span> <span class="n">AdaFace</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
@@ -2339,7 +2334,6 @@
 <th>Size</th>
 <th>IJB-B</th>
 <th>IJB-C</th>
-<th>Use Case</th>
 </tr>
 </thead>
 <tbody>
@@ -2349,7 +2343,6 @@
 <td>92 MB</td>
 <td>93.03%</td>
 <td>94.99%</td>
-<td>Balanced (default)</td>
 </tr>
 <tr>
 <td>IR_101</td>
@@ -2357,7 +2350,6 @@
 <td>249 MB</td>
 <td>-</td>
 <td>97.66%</td>
-<td>Maximum accuracy</td>
 </tr>
 </tbody>
 </table>
@@ -2367,7 +2359,7 @@
 </div>
 <hr />
 <h2 id="arcface">ArcFace</h2>
-<p>State-of-the-art recognition using additive angular margin loss.</p>
+<p>Face recognition using additive angular margin loss.</p>
 <h3 id="basic-usage_1">Basic Usage</h3>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface</span><span class="w"> </span><span class="kn">import</span> <span class="n">RetinaFace</span><span class="p">,</span> <span class="n">ArcFace</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
@@ -2398,7 +2390,10 @@
 <th>Variant</th>
 <th>Backbone</th>
 <th>Size</th>
-<th>Use Case</th>
+<th>LFW</th>
+<th>CFP-FP</th>
+<th>AgeDB-30</th>
+<th>IJB-C</th>
 </tr>
 </thead>
 <tbody>
@@ -2406,19 +2401,30 @@
 <td><strong>MNET</strong> <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2m-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8z"/></svg></span></td>
 <td>MobileNet</td>
 <td>8 MB</td>
-<td>Balanced (recommended)</td>
+<td>99.70%</td>
+<td>98.00%</td>
+<td>96.58%</td>
+<td>95.02%</td>
 </tr>
 <tr>
 <td>RESNET</td>
 <td>ResNet50</td>
 <td>166 MB</td>
-<td>Maximum accuracy</td>
+<td>99.83%</td>
+<td>99.33%</td>
+<td>98.23%</td>
+<td>97.25%</td>
 </tr>
 </tbody>
 </table>
+<div class="admonition info">
+<p class="admonition-title">Training Data &amp; Metrics</p>
+<p><strong>Dataset</strong>: Trained on WebFace600K (600K images)</p>
+<p><strong>Accuracy</strong>: IJB-C reported as TAR@FAR=1e-4</p>
+</div>
 <hr />
 <h2 id="mobileface">MobileFace</h2>
-<p>Lightweight recognition for resource-constrained environments.</p>
+<p>Lightweight face recognition models with MobileNet backbones.</p>
 <h3 id="basic-usage_2">Basic Usage</h3>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface</span><span class="w"> </span><span class="kn">import</span> <span class="n">MobileFace</span>
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
@@ -2445,7 +2451,9 @@
 <th>Params</th>
 <th>Size</th>
 <th>LFW</th>
-<th>Use Case</th>
+<th>CALFW</th>
+<th>CPLFW</th>
+<th>AgeDB-30</th>
 </tr>
 </thead>
 <tbody>
@@ -2453,35 +2461,43 @@
 <td>MNET_025</td>
 <td>0.36M</td>
 <td>1 MB</td>
-<td>98.8%</td>
-<td>Ultra-lightweight</td>
+<td>98.76%</td>
+<td>92.02%</td>
+<td>82.37%</td>
+<td>90.02%</td>
 </tr>
 <tr>
 <td><strong>MNET_V2</strong> <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2m-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8z"/></svg></span></td>
 <td>2.29M</td>
 <td>4 MB</td>
-<td>99.6%</td>
-<td>Mobile/Edge</td>
+<td>99.55%</td>
+<td>94.87%</td>
+<td>86.89%</td>
+<td>95.16%</td>
 </tr>
 <tr>
 <td>MNET_V3_SMALL</td>
 <td>1.25M</td>
 <td>3 MB</td>
-<td>99.3%</td>
-<td>Mobile optimized</td>
+<td>99.30%</td>
+<td>93.77%</td>
+<td>85.29%</td>
+<td>92.79%</td>
 </tr>
 <tr>
 <td>MNET_V3_LARGE</td>
 <td>3.52M</td>
 <td>10 MB</td>
-<td>99.5%</td>
-<td>Balanced mobile</td>
+<td>99.53%</td>
+<td>94.56%</td>
+<td>86.79%</td>
+<td>95.13%</td>
 </tr>
 </tbody>
 </table>
 <hr />
 <h2 id="sphereface">SphereFace</h2>
-<p>Recognition using angular softmax loss (A-Softmax).</p>
+<p>Face recognition using angular softmax loss (A-Softmax).</p>
 <h3 id="basic-usage_3">Basic Usage</h3>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface</span><span class="w"> </span><span class="kn">import</span> <span class="n">SphereFace</span>
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">SphereFaceWeights</span>
@@ -2496,7 +2512,9 @@
 <th>Params</th>
 <th>Size</th>
 <th>LFW</th>
-<th>Use Case</th>
+<th>CALFW</th>
+<th>CPLFW</th>
+<th>AgeDB-30</th>
 </tr>
 </thead>
 <tbody>
@@ -2504,15 +2522,19 @@
 <td>SPHERE20</td>
 <td>24.5M</td>
 <td>50 MB</td>
-<td>99.7%</td>
-<td>Research</td>
+<td>99.67%</td>
+<td>95.61%</td>
+<td>88.75%</td>
+<td>96.58%</td>
 </tr>
 <tr>
 <td>SPHERE36</td>
 <td>34.6M</td>
 <td>92 MB</td>
-<td>99.7%</td>
-<td>Research</td>
+<td>99.72%</td>
+<td>95.64%</td>
+<td>89.92%</td>
+<td>96.83%</td>
 </tr>
 </tbody>
 </table>
@@ -2666,7 +2688,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="January 1, 2026 15:23:24 UTC"><span class="timeago" datetime="2026-01-01T15:23:24+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="January 1, 2026 15:23:24 UTC">2026-01-01</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="January 3, 2026 10:08:41 UTC"><span class="timeago" datetime="2026-01-03T10:08:41+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="January 3, 2026 10:08:41 UTC">2026-01-03</span>
   </span>
 
     

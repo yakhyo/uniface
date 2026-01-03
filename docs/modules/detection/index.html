@@ -1232,6 +1232,56 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#yolov8-face" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        YOLOv8-Face
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="YOLOv8-Face">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-usage_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-variants_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Model Variants
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#factory-function" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2115,6 +2165,56 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#yolov8-face" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        YOLOv8-Face
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="YOLOv8-Face">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-usage_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-variants_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Model Variants
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#factory-function" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2214,7 +2314,7 @@
 
 
 <h1 id="detection">Detection</h1>
-<p>Face detection is the first step in any face analysis pipeline. UniFace provides three detection models.</p>
+<p>Face detection is the first step in any face analysis pipeline. UniFace provides four detection models.</p>
 <hr />
 <h2 id="available-models">Available Models</h2>
 <table>
@@ -2223,8 +2323,10 @@
 <th>Model</th>
 <th>Backbone</th>
 <th>Size</th>
-<th>WIDER FACE (Easy/Medium/Hard)</th>
-<th>Best For</th>
+<th>Easy</th>
+<th>Medium</th>
+<th>Hard</th>
+<th style="text-align: center;">Landmarks</th>
 </tr>
 </thead>
 <tbody>
@@ -2232,28 +2334,47 @@
 <td><strong>RetinaFace</strong></td>
 <td>MobileNet V2</td>
 <td>3.5 MB</td>
-<td>91.7% / 91.0% / 86.6%</td>
-<td>Balanced (recommended)</td>
+<td>91.7%</td>
+<td>91.0%</td>
+<td>86.6%</td>
+<td style="text-align: center;"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span></td>
 </tr>
 <tr>
 <td><strong>SCRFD</strong></td>
 <td>SCRFD-10G</td>
 <td>17 MB</td>
-<td>95.2% / 93.9% / 83.1%</td>
-<td>High accuracy</td>
+<td>95.2%</td>
+<td>93.9%</td>
+<td>83.1%</td>
+<td style="text-align: center;"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span></td>
 </tr>
 <tr>
 <td><strong>YOLOv5-Face</strong></td>
 <td>YOLOv5s</td>
 <td>28 MB</td>
-<td>94.3% / 92.6% / 83.2%</td>
-<td>Real-time</td>
+<td>94.3%</td>
+<td>92.6%</td>
+<td>83.2%</td>
+<td style="text-align: center;"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span></td>
+</tr>
+<tr>
+<td><strong>YOLOv8-Face</strong></td>
+<td>YOLOv8n</td>
+<td>12 MB</td>
+<td>94.6%</td>
+<td>92.3%</td>
+<td>79.6%</td>
+<td style="text-align: center;"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span></td>
 </tr>
 </tbody>
 </table>
+<div class="admonition note">
+<p class="admonition-title">Dataset</p>
+<p>All models trained on WIDERFACE dataset.</p>
+</div>
 <hr />
 <h2 id="retinaface">RetinaFace</h2>
-<p>The recommended detector for most use cases.</p>
+<p>Single-shot face detector with multi-scale feature pyramid.</p>
 <h3 id="basic-usage">Basic Usage</h3>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface</span><span class="w"> </span><span class="kn">import</span> <span class="n">RetinaFace</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
@@ -2470,63 +2591,124 @@
 <div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">detector</span> <span class="o">=</span> <span class="n">YOLOv5Face</span><span class="p">(</span>
 </span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>    <span class="n">model_name</span><span class="o">=</span><span class="n">YOLOv5FaceWeights</span><span class="o">.</span><span class="n">YOLOV5S</span><span class="p">,</span>
 </span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>    <span class="n">confidence_threshold</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>
-</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>    <span class="n">nms_threshold</span><span class="o">=</span><span class="mf">0.5</span>
-</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="p">)</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>    <span class="n">nms_threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>    <span class="n">nms_mode</span><span class="o">=</span><span class="s1">&#39;numpy&#39;</span>  <span class="c1"># or &#39;torchvision&#39; for faster NMS</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="p">)</span>
+</span></code></pre></div>
+<hr />
+<h2 id="yolov8-face">YOLOv8-Face</h2>
+<p>Anchor-free detection with DFL (Distribution Focal Loss) for accurate bbox regression.</p>
+<h3 id="basic-usage_3">Basic Usage</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface</span><span class="w"> </span><span class="kn">import</span> <span class="n">YOLOv8Face</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="n">detector</span> <span class="o">=</span> <span class="n">YOLOv8Face</span><span class="p">()</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="n">faces</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">detect</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+</span></code></pre></div>
+<h3 id="model-variants_3">Model Variants</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface</span><span class="w"> </span><span class="kn">import</span> <span class="n">YOLOv8Face</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">YOLOv8FaceWeights</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="c1"># Lightweight</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="n">detector</span> <span class="o">=</span> <span class="n">YOLOv8Face</span><span class="p">(</span><span class="n">model_name</span><span class="o">=</span><span class="n">YOLOv8FaceWeights</span><span class="o">.</span><span class="n">YOLOV8_LITE_S</span><span class="p">)</span>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="c1"># Recommended (default)</span>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="n">detector</span> <span class="o">=</span> <span class="n">YOLOv8Face</span><span class="p">(</span><span class="n">model_name</span><span class="o">=</span><span class="n">YOLOv8FaceWeights</span><span class="o">.</span><span class="n">YOLOV8N</span><span class="p">)</span>
+</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Size</th>
+<th>Easy</th>
+<th>Medium</th>
+<th>Hard</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>YOLOV8_LITE_S</td>
+<td>7.4 MB</td>
+<td>93.4%</td>
+<td>91.2%</td>
+<td>78.6%</td>
+</tr>
+<tr>
+<td><strong>YOLOV8N</strong> <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2m-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8z"/></svg></span></td>
+<td>12 MB</td>
+<td>94.6%</td>
+<td>92.3%</td>
+<td>79.6%</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Fixed Input Size</p>
+<p>YOLOv8-Face uses a fixed input size of 640×640.</p>
+</div>
+<h3 id="configuration_3">Configuration</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="n">detector</span> <span class="o">=</span> <span class="n">YOLOv8Face</span><span class="p">(</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>    <span class="n">model_name</span><span class="o">=</span><span class="n">YOLOv8FaceWeights</span><span class="o">.</span><span class="n">YOLOV8N</span><span class="p">,</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>    <span class="n">confidence_threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>    <span class="n">nms_threshold</span><span class="o">=</span><span class="mf">0.45</span><span class="p">,</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>    <span class="n">nms_mode</span><span class="o">=</span><span class="s1">&#39;numpy&#39;</span>  <span class="c1"># or &#39;torchvision&#39; for faster NMS</span>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="p">)</span>
 </span></code></pre></div>
 <hr />
 <h2 id="factory-function">Factory Function</h2>
 <p>Create detectors dynamically:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_detector</span>
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="n">detector</span> <span class="o">=</span> <span class="n">create_detector</span><span class="p">(</span><span class="s1">&#39;retinaface&#39;</span><span class="p">)</span>
-</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="c1"># or</span>
-</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="n">detector</span> <span class="o">=</span> <span class="n">create_detector</span><span class="p">(</span><span class="s1">&#39;scrfd&#39;</span><span class="p">)</span>
-</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="c1"># or</span>
-</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="n">detector</span> <span class="o">=</span> <span class="n">create_detector</span><span class="p">(</span><span class="s1">&#39;yolov5face&#39;</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_detector</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="n">detector</span> <span class="o">=</span> <span class="n">create_detector</span><span class="p">(</span><span class="s1">&#39;retinaface&#39;</span><span class="p">)</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="c1"># or</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="n">detector</span> <span class="o">=</span> <span class="n">create_detector</span><span class="p">(</span><span class="s1">&#39;scrfd&#39;</span><span class="p">)</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="c1"># or</span>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="n">detector</span> <span class="o">=</span> <span class="n">create_detector</span><span class="p">(</span><span class="s1">&#39;yolov5face&#39;</span><span class="p">)</span>
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="c1"># or</span>
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="n">detector</span> <span class="o">=</span> <span class="n">create_detector</span><span class="p">(</span><span class="s1">&#39;yolov8face&#39;</span><span class="p">)</span>
 </span></code></pre></div>
 <hr />
 <h2 id="high-level-api">High-Level API</h2>
 <p>One-line detection:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface</span><span class="w"> </span><span class="kn">import</span> <span class="n">detect_faces</span>
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="n">faces</span> <span class="o">=</span> <span class="n">detect_faces</span><span class="p">(</span>
-</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>    <span class="n">image</span><span class="p">,</span>
-</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>    <span class="n">method</span><span class="o">=</span><span class="s1">&#39;retinaface&#39;</span><span class="p">,</span>
-</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>    <span class="n">confidence_threshold</span><span class="o">=</span><span class="mf">0.5</span>
-</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface</span><span class="w"> </span><span class="kn">import</span> <span class="n">detect_faces</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="c1"># Using RetinaFace (default)</span>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="n">faces</span> <span class="o">=</span> <span class="n">detect_faces</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;retinaface&#39;</span><span class="p">,</span> <span class="n">confidence_threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="c1"># Using YOLOv8-Face</span>
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="n">faces</span> <span class="o">=</span> <span class="n">detect_faces</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;yolov8face&#39;</span><span class="p">,</span> <span class="n">confidence_threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 </span></code></pre></div>
 <hr />
 <h2 id="output-format">Output Format</h2>
 <p>All detectors return <code>list[Face]</code>:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="k">for</span> <span class="n">face</span> <span class="ow">in</span> <span class="n">faces</span><span class="p">:</span>
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>    <span class="c1"># Bounding box [x1, y1, x2, y2]</span>
-</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>    <span class="n">bbox</span> <span class="o">=</span> <span class="n">face</span><span class="o">.</span><span class="n">bbox</span>
-</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>
-</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>    <span class="c1"># Detection confidence (0-1)</span>
-</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>    <span class="n">confidence</span> <span class="o">=</span> <span class="n">face</span><span class="o">.</span><span class="n">confidence</span>
-</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>
-</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>    <span class="c1"># 5-point landmarks (5, 2)</span>
-</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>    <span class="n">landmarks</span> <span class="o">=</span> <span class="n">face</span><span class="o">.</span><span class="n">landmarks</span>
-</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>    <span class="c1"># [left_eye, right_eye, nose, left_mouth, right_mouth]</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="k">for</span> <span class="n">face</span> <span class="ow">in</span> <span class="n">faces</span><span class="p">:</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>    <span class="c1"># Bounding box [x1, y1, x2, y2]</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>    <span class="n">bbox</span> <span class="o">=</span> <span class="n">face</span><span class="o">.</span><span class="n">bbox</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>    <span class="c1"># Detection confidence (0-1)</span>
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>    <span class="n">confidence</span> <span class="o">=</span> <span class="n">face</span><span class="o">.</span><span class="n">confidence</span>
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>    <span class="c1"># 5-point landmarks (5, 2)</span>
+</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>    <span class="n">landmarks</span> <span class="o">=</span> <span class="n">face</span><span class="o">.</span><span class="n">landmarks</span>
+</span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>    <span class="c1"># [left_eye, right_eye, nose, left_mouth, right_mouth]</span>
 </span></code></pre></div>
 <hr />
 <h2 id="visualization">Visualization</h2>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">draw_detections</span>
-</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
-</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="n">draw_detections</span><span class="p">(</span>
-</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>    <span class="n">image</span><span class="o">=</span><span class="n">image</span><span class="p">,</span>
-</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>    <span class="n">bboxes</span><span class="o">=</span><span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">bbox</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">faces</span><span class="p">],</span>
-</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>    <span class="n">scores</span><span class="o">=</span><span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">confidence</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">faces</span><span class="p">],</span>
-</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>    <span class="n">landmarks</span><span class="o">=</span><span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">landmarks</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">faces</span><span class="p">],</span>
-</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>    <span class="n">vis_threshold</span><span class="o">=</span><span class="mf">0.6</span>
-</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="p">)</span>
-</span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>
-</span><span id="__span-12-11"><a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s2">&quot;result.jpg&quot;</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">draw_detections</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="n">draw_detections</span><span class="p">(</span>
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>    <span class="n">image</span><span class="o">=</span><span class="n">image</span><span class="p">,</span>
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>    <span class="n">bboxes</span><span class="o">=</span><span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">bbox</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">faces</span><span class="p">],</span>
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>    <span class="n">scores</span><span class="o">=</span><span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">confidence</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">faces</span><span class="p">],</span>
+</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a>    <span class="n">landmarks</span><span class="o">=</span><span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">landmarks</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">faces</span><span class="p">],</span>
+</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a>    <span class="n">vis_threshold</span><span class="o">=</span><span class="mf">0.6</span>
+</span><span id="__span-15-9"><a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a><span class="p">)</span>
+</span><span id="__span-15-10"><a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a>
+</span><span id="__span-15-11"><a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a><span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s2">&quot;result.jpg&quot;</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
 </span></code></pre></div>
 <hr />
 <h2 id="performance-comparison">Performance Comparison</h2>
 <p>Benchmark on your hardware:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>python<span class="w"> </span>tools/detection.py<span class="w"> </span>--source<span class="w"> </span>image.jpg<span class="w"> </span>--iterations<span class="w"> </span><span class="m">100</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>python<span class="w"> </span>tools/detection.py<span class="w"> </span>--source<span class="w"> </span>image.jpg<span class="w"> </span>--iterations<span class="w"> </span><span class="m">100</span>
 </span></code></pre></div>
 <hr />
 <h2 id="see-also">See Also</h2>
@@ -2558,7 +2740,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="December 31, 2025 09:07:04 UTC"><span class="timeago" datetime="2025-12-31T09:07:04+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="December 31, 2025 09:07:04 UTC">2025-12-31</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="January 3, 2026 10:08:41 UTC"><span class="timeago" datetime="2026-01-03T10:08:41+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="January 3, 2026 10:08:41 UTC">2026-01-03</span>
   </span>
 
     

@@ -2,110 +2,110 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://yakhyo.github.io/uniface/</loc>
-         <lastmod>2026-01-01</lastmod>
+         <lastmod>2026-01-03</lastmod>
     </url>
     <url>
          <loc>https://yakhyo.github.io/uniface/contributing/</loc>
-         <lastmod>2026-01-01</lastmod>
+         <lastmod>2026-01-03</lastmod>
     </url>
     <url>
          <loc>https://yakhyo.github.io/uniface/installation/</loc>
-         <lastmod>2026-01-01</lastmod>
+         <lastmod>2026-01-03</lastmod>
     </url>
     <url>
          <loc>https://yakhyo.github.io/uniface/license-attribution/</loc>
-         <lastmod>2026-01-01</lastmod>
+         <lastmod>2026-01-03</lastmod>
     </url>
     <url>
          <loc>https://yakhyo.github.io/uniface/models/</loc>
-         <lastmod>2026-01-01</lastmod>
+         <lastmod>2026-01-03</lastmod>
     </url>
     <url>
          <loc>https://yakhyo.github.io/uniface/notebooks/</loc>
-         <lastmod>2026-01-01</lastmod>
+         <lastmod>2026-01-03</lastmod>
     </url>
     <url>
          <loc>https://yakhyo.github.io/uniface/quickstart/</loc>
-         <lastmod>2026-01-01</lastmod>
+         <lastmod>2026-01-03</lastmod>
     </url>
     <url>
          <loc>https://yakhyo.github.io/uniface/concepts/coordinate-systems/</loc>
-         <lastmod>2026-01-01</lastmod>
+         <lastmod>2026-01-03</lastmod>
     </url>
     <url>
          <loc>https://yakhyo.github.io/uniface/concepts/execution-providers/</loc>
-         <lastmod>2026-01-01</lastmod>
+         <lastmod>2026-01-03</lastmod>
     </url>
     <url>
          <loc>https://yakhyo.github.io/uniface/concepts/inputs-outputs/</loc>
-         <lastmod>2026-01-01</lastmod>
+         <lastmod>2026-01-03</lastmod>
     </url>
     <url>
          <loc>https://yakhyo.github.io/uniface/concepts/model-cache-offline/</loc>
-         <lastmod>2026-01-01</lastmod>
+         <lastmod>2026-01-03</lastmod>
     </url>
     <url>
          <loc>https://yakhyo.github.io/uniface/concepts/overview/</loc>
-         <lastmod>2026-01-01</lastmod>
+         <lastmod>2026-01-03</lastmod>
     </url>
     <url>
          <loc>https://yakhyo.github.io/uniface/concepts/thresholds-calibration/</loc>
-         <lastmod>2026-01-01</lastmod>
+         <lastmod>2026-01-03</lastmod>
     </url>
     <url>
          <loc>https://yakhyo.github.io/uniface/modules/attributes/</loc>
-         <lastmod>2026-01-01</lastmod>
+         <lastmod>2026-01-03</lastmod>
     </url>
     <url>
          <loc>https://yakhyo.github.io/uniface/modules/detection/</loc>
-         <lastmod>2026-01-01</lastmod>
+         <lastmod>2026-01-03</lastmod>
     </url>
     <url>
          <loc>https://yakhyo.github.io/uniface/modules/gaze/</loc>
-         <lastmod>2026-01-01</lastmod>
+         <lastmod>2026-01-03</lastmod>
     </url>
     <url>
          <loc>https://yakhyo.github.io/uniface/modules/landmarks/</loc>
-         <lastmod>2026-01-01</lastmod>
+         <lastmod>2026-01-03</lastmod>
     </url>
     <url>
          <loc>https://yakhyo.github.io/uniface/modules/parsing/</loc>
-         <lastmod>2026-01-01</lastmod>
+         <lastmod>2026-01-03</lastmod>
     </url>
     <url>
          <loc>https://yakhyo.github.io/uniface/modules/privacy/</loc>
-         <lastmod>2026-01-01</lastmod>
+         <lastmod>2026-01-03</lastmod>
     </url>
     <url>
          <loc>https://yakhyo.github.io/uniface/modules/recognition/</loc>
-         <lastmod>2026-01-01</lastmod>
+         <lastmod>2026-01-03</lastmod>
     </url>
     <url>
          <loc>https://yakhyo.github.io/uniface/modules/spoofing/</loc>
-         <lastmod>2026-01-01</lastmod>
+         <lastmod>2026-01-03</lastmod>
     </url>
     <url>
          <loc>https://yakhyo.github.io/uniface/recipes/anonymize-stream/</loc>
-         <lastmod>2026-01-01</lastmod>
+         <lastmod>2026-01-03</lastmod>
     </url>
     <url>
          <loc>https://yakhyo.github.io/uniface/recipes/batch-processing/</loc>
-         <lastmod>2026-01-01</lastmod>
+         <lastmod>2026-01-03</lastmod>
     </url>
     <url>
          <loc>https://yakhyo.github.io/uniface/recipes/custom-models/</loc>
-         <lastmod>2026-01-01</lastmod>
+         <lastmod>2026-01-03</lastmod>
     </url>
     <url>
          <loc>https://yakhyo.github.io/uniface/recipes/face-search/</loc>
-         <lastmod>2026-01-01</lastmod>
+         <lastmod>2026-01-03</lastmod>
     </url>
     <url>
          <loc>https://yakhyo.github.io/uniface/recipes/image-pipeline/</loc>
-         <lastmod>2026-01-01</lastmod>
+         <lastmod>2026-01-03</lastmod>
     </url>
     <url>
          <loc>https://yakhyo.github.io/uniface/recipes/video-webcam/</loc>
-         <lastmod>2026-01-01</lastmod>
+         <lastmod>2026-01-03</lastmod>
     </url>
 </urlset>
