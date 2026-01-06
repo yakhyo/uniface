@@ -12,10 +12,10 @@ template: home.html
 
 <p class="hero-subtitle">A lightweight, production-ready face analysis library built on ONNX Runtime</p>
 
-[![PyPI](https://img.shields.io/pypi/v/uniface.svg)](https://pypi.org/project/uniface/)
-[![Python](https://img.shields.io/badge/Python-3.11%2B-blue)](https://www.python.org/)
+[![PyPI](https://img.shields.io/pypi/v/uniface.svg?label=PyPI)](https://pypi.org/project/uniface/)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Downloads](https://static.pepy.tech/badge/uniface)](https://pepy.tech/project/uniface)
+[![PyPI Downloads](https://static.pepy.tech/personalized-badge/uniface?period=total&units=INTERNATIONAL_SYSTEM&left_color=GRAY&right_color=BLUE&left_text=Downloads)](https://pepy.tech/projects/uniface)
 
 [Get Started](quickstart.md){ .md-button .md-button--primary }
 [View on GitHub](https://github.com/yakhyo/uniface){ .md-button }
