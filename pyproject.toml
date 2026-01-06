@@ -1,6 +1,6 @@
 [project]
 name = "uniface"
-version = "2.1.0"
+version = "2.2.0"
 description = "UniFace: A Comprehensive Library for Face Detection, Recognition, Landmark Analysis, Face Parsing, Gaze Estimation, Age, and Gender Detection"
 readme = "README.md"
 license = "MIT"
@@ -9,7 +9,7 @@ maintainers = [
     { name = "Yakhyokhuja Valikhujaev", email = "yakhyo9696@gmail.com" },
 ]
 
-requires-python = ">=3.11,<3.14"
+requires-python = ">=3.10,<3.14"
 keywords = [
     "face-detection",
     "face-recognition",
@@ -33,6 +33,7 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
@@ -71,7 +72,7 @@ uniface = ["py.typed"]
 
 [tool.ruff]
 line-length = 120
-target-version = "py311"
+target-version = "py310"
 exclude = [
     ".git",
     ".ruff_cache",
@@ -126,15 +127,6 @@ section-order = [
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
-
-[tool.mypy]
-python_version = "3.11"
-warn_return_any = false
-warn_unused_ignores = true
-ignore_missing_imports = true
-exclude = ["tests/", "scripts/", "examples/"]
-# Disable strict return type checking for numpy operations
-disable_error_code = ["no-any-return"]
 
 [tool.bandit]
 exclude_dirs = ["tests", "scripts", "examples"]
