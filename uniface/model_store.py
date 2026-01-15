@@ -51,6 +51,7 @@ def verify_model_weights(model_name: Enum, root: str = '~/.uniface/models') -> s
         '/home/user/.uniface/models/retinaface_mnet_v2.onnx'
     """
 
+    root = os.getenv('UNIFACE_CACHE_DIR', root)
     root = os.path.expanduser(root)
     os.makedirs(root, exist_ok=True)
 
