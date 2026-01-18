@@ -1,0 +1,180 @@
+---
+# Modern C++ style based on Google with enhancements
+Language: Cpp
+Standard: c++17
+
+BasedOnStyle: Google
+ColumnLimit: 100
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+
+# Access modifiers
+AccessModifierOffset: -4
+IndentAccessModifiers: false
+
+# Alignment
+AlignAfterOpenBracket: BlockIndent
+AlignArrayOfStructures: Right
+AlignConsecutiveAssignments:
+  Enabled: false
+AlignConsecutiveBitFields:
+  Enabled: true
+AlignConsecutiveDeclarations:
+  Enabled: false
+AlignConsecutiveMacros:
+  Enabled: true
+AlignEscapedNewlines: Left
+AlignOperands: AlignAfterOperator
+AlignTrailingComments:
+  Kind: Always
+  OverEmptyLines: 1
+
+# Arguments and parameters
+AllowAllArgumentsOnNextLine: true
+AllowAllParametersOfDeclarationOnNextLine: true
+BinPackArguments: false
+BinPackParameters: false
+
+# Short forms
+AllowShortBlocksOnASingleLine: Empty
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortEnumsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLambdasOnASingleLine: Inline
+AllowShortLoopsOnASingleLine: false
+
+# Break behavior
+AlwaysBreakAfterReturnType: None
+AlwaysBreakBeforeMultilineStrings: true
+AlwaysBreakTemplateDeclarations: Yes
+BreakAfterAttributes: Leave
+BreakBeforeBinaryOperators: None
+BreakBeforeBraces: Attach
+BreakBeforeConceptDeclarations: Always
+BreakBeforeTernaryOperators: true
+BreakConstructorInitializers: BeforeComma
+BreakInheritanceList: BeforeComma
+BreakStringLiterals: true
+
+# Braces
+InsertBraces: false
+RemoveBracesLLVM: false
+
+# Constructors
+PackConstructorInitializers: CurrentLine
+ConstructorInitializerIndentWidth: 4
+
+# Empty lines
+EmptyLineAfterAccessModifier: Never
+EmptyLineBeforeAccessModifier: LogicalBlock
+KeepEmptyLinesAtTheStartOfBlocks: false
+MaxEmptyLinesToKeep: 1
+SeparateDefinitionBlocks: Always
+
+# Includes
+IncludeBlocks: Regroup
+IncludeCategories:
+  # Main header (same name as source file)
+  - Regex: '^"([a-zA-Z0-9_]+)\.(h|hpp)"$'
+    Priority: 1
+    SortPriority: 1
+    CaseSensitive: true
+  # Project headers
+  - Regex: '^".*"$'
+    Priority: 2
+    SortPriority: 2
+  # C system headers
+  - Regex: '^<(assert|complex|ctype|errno|fenv|float|inttypes|iso646|limits|locale|math|setjmp|signal|stdalign|stdarg|stdatomic|stdbool|stddef|stdint|stdio|stdlib|stdnoreturn|string|tgmath|threads|time|uchar|wchar|wctype)\.h>$'
+    Priority: 3
+    SortPriority: 3
+  # C++ standard library
+  - Regex: '^<[a-z_]+>$'
+    Priority: 4
+    SortPriority: 4
+  # External libraries
+  - Regex: '^<.*>$'
+    Priority: 5
+    SortPriority: 5
+SortIncludes: CaseSensitive
+
+# Indentation
+IndentCaseBlocks: false
+IndentCaseLabels: true
+IndentExternBlock: NoIndent
+IndentGotoLabels: false
+IndentPPDirectives: AfterHash
+IndentRequiresClause: true
+IndentWrappedFunctionNames: false
+
+# Lambdas
+LambdaBodyIndentation: Signature
+
+# Namespaces
+CompactNamespaces: false
+FixNamespaceComments: true
+NamespaceIndentation: None
+ShortNamespaceLines: 0
+
+# Penalties (guide formatting decisions)
+PenaltyBreakAssignment: 25
+PenaltyBreakBeforeFirstCallParameter: 19
+PenaltyBreakComment: 300
+PenaltyBreakFirstLessLess: 120
+PenaltyBreakOpenParenthesis: 0
+PenaltyBreakString: 1000
+PenaltyBreakTemplateDeclaration: 10
+PenaltyExcessCharacter: 1000000
+PenaltyIndentedWhitespace: 0
+PenaltyReturnTypeOnItsOwnLine: 200
+
+# Pointers and references
+DerivePointerAlignment: false
+PointerAlignment: Left
+ReferenceAlignment: Pointer
+QualifierAlignment: Leave
+
+# Requires clause (C++20 concepts)
+RequiresClausePosition: OwnLine
+RequiresExpressionIndentation: OuterScope
+
+# Spacing
+BitFieldColonSpacing: Both
+SpaceAfterCStyleCast: false
+SpaceAfterLogicalNot: false
+SpaceAfterTemplateKeyword: true
+SpaceAroundPointerQualifiers: Default
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCaseColon: false
+SpaceBeforeCpp11BracedList: false
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+SpaceBeforeParens: ControlStatements
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceBeforeSquareBrackets: false
+SpaceInEmptyBlock: false
+SpaceInEmptyParentheses: false
+SpacesBeforeTrailingComments: 2
+SpacesInAngles: Never
+SpacesInCStyleCastParentheses: false
+SpacesInConditionalStatement: false
+SpacesInContainerLiterals: false
+SpacesInLineCommentPrefix:
+  Minimum: 1
+  Maximum: -1
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+
+# Other
+Cpp11BracedListStyle: true
+InsertNewlineAtEOF: true
+InsertTrailingCommas: None
+IntegerLiteralSeparator:
+  Binary: 4
+  Decimal: 3
+  Hex: 4
+ReflowComments: true
+RemoveSemicolon: false
+SortUsingDeclarations: LexicographicNumeric
+...
