@@ -31,6 +31,8 @@ class AdaFace(BaseRecognizer):
             Defaults to `AdaFaceWeights.IR_18`.
         preprocessing (Optional[PreprocessConfig]): An optional custom preprocessing
             configuration. If None, a default config for AdaFace is used.
+        providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
+            the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
 
     Example:
         >>> from uniface.recognition import AdaFace
@@ -46,11 +48,12 @@ class AdaFace(BaseRecognizer):
         self,
         model_name: AdaFaceWeights = AdaFaceWeights.IR_18,
         preprocessing: PreprocessConfig | None = None,
+        providers: list[str] | None = None,
     ) -> None:
         if preprocessing is None:
             preprocessing = PreprocessConfig(input_mean=127.5, input_std=127.5, input_size=(112, 112))
         model_path = verify_model_weights(model_name)
-        super().__init__(model_path=model_path, preprocessing=preprocessing)
+        super().__init__(model_path=model_path, preprocessing=preprocessing, providers=providers)
 
     def preprocess(self, face_img: np.ndarray) -> np.ndarray:
         """Preprocess the image: resize, normalize, and convert to blob.

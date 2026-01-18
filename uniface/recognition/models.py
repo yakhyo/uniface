@@ -24,6 +24,8 @@ class ArcFace(BaseRecognizer):
             Defaults to `ArcFaceWeights.MNET`.
         preprocessing (Optional[PreprocessConfig]): An optional custom preprocessing
             configuration. If None, a default config for ArcFace is used.
+        providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
+            the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
 
     Example:
         >>> from uniface.recognition import ArcFace
@@ -35,11 +37,12 @@ class ArcFace(BaseRecognizer):
         self,
         model_name: ArcFaceWeights = ArcFaceWeights.MNET,
         preprocessing: PreprocessConfig | None = None,
+        providers: list[str] | None = None,
     ) -> None:
         if preprocessing is None:
             preprocessing = PreprocessConfig(input_mean=127.5, input_std=127.5, input_size=(112, 112))
         model_path = verify_model_weights(model_name)
-        super().__init__(model_path=model_path, preprocessing=preprocessing)
+        super().__init__(model_path=model_path, preprocessing=preprocessing, providers=providers)
 
 
 class MobileFace(BaseRecognizer):
@@ -54,6 +57,8 @@ class MobileFace(BaseRecognizer):
             Defaults to `MobileFaceWeights.MNET_V2`.
         preprocessing (Optional[PreprocessConfig]): An optional custom preprocessing
             configuration. If None, a default config for MobileFaceNet is used.
+        providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
+            the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
 
     Example:
         >>> from uniface.recognition import MobileFace
@@ -65,11 +70,12 @@ class MobileFace(BaseRecognizer):
         self,
         model_name: MobileFaceWeights = MobileFaceWeights.MNET_V2,
         preprocessing: PreprocessConfig | None = None,
+        providers: list[str] | None = None,
     ) -> None:
         if preprocessing is None:
             preprocessing = PreprocessConfig(input_mean=127.5, input_std=127.5, input_size=(112, 112))
         model_path = verify_model_weights(model_name)
-        super().__init__(model_path=model_path, preprocessing=preprocessing)
+        super().__init__(model_path=model_path, preprocessing=preprocessing, providers=providers)
 
 
 class SphereFace(BaseRecognizer):
@@ -84,6 +90,8 @@ class SphereFace(BaseRecognizer):
             Defaults to `SphereFaceWeights.SPHERE20`.
         preprocessing (Optional[PreprocessConfig]): An optional custom preprocessing
             configuration. If None, a default config for SphereFace is used.
+        providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
+            the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
 
     Example:
         >>> from uniface.recognition import SphereFace
@@ -95,9 +103,10 @@ class SphereFace(BaseRecognizer):
         self,
         model_name: SphereFaceWeights = SphereFaceWeights.SPHERE20,
         preprocessing: PreprocessConfig | None = None,
+        providers: list[str] | None = None,
     ) -> None:
         if preprocessing is None:
             preprocessing = PreprocessConfig(input_mean=127.5, input_std=127.5, input_size=(112, 112))
 
         model_path = verify_model_weights(model_name)
-        super().__init__(model_path=model_path, preprocessing=preprocessing)
+        super().__init__(model_path=model_path, preprocessing=preprocessing, providers=providers)

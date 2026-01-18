@@ -23,6 +23,33 @@ detector = RetinaFace()
 
 ---
 
+## Explicit Provider Selection
+
+You can specify which execution provider to use by passing the `providers` parameter:
+
+```python
+from uniface import RetinaFace, ArcFace
+
+# Force CPU execution (even if GPU is available)
+detector = RetinaFace(providers=['CPUExecutionProvider'])
+recognizer = ArcFace(providers=['CPUExecutionProvider'])
+
+# Use CUDA with CPU fallback
+detector = RetinaFace(providers=['CUDAExecutionProvider', 'CPUExecutionProvider'])
+```
+
+All model classes accept the `providers` parameter:
+
+- Detection: `RetinaFace`, `SCRFD`, `YOLOv5Face`, `YOLOv8Face`
+- Recognition: `ArcFace`, `AdaFace`, `MobileFace`, `SphereFace`
+- Landmarks: `Landmark106`
+- Gaze: `MobileGaze`
+- Parsing: `BiSeNet`
+- Attributes: `AgeGender`, `FairFace`
+- Anti-Spoofing: `MiniFASNet`
+
+---
+
 ## Check Available Providers
 
 ```python

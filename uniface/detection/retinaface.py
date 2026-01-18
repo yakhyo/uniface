@@ -39,6 +39,8 @@ class RetinaFace(BaseDetector):
         input_size (Tuple[int, int]): Fixed input size (width, height) if `dynamic_size=False`.
             Defaults to (640, 640).
             Note: Non-default sizes may cause slower inference and CoreML compatibility issues.
+        providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
+            the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
         **kwargs: Advanced options:
             pre_nms_topk (int): Number of top-scoring boxes considered before NMS. Defaults to 5000.
             post_nms_topk (int): Max number of detections kept after NMS. Defaults to 750.
@@ -68,6 +70,7 @@ class RetinaFace(BaseDetector):
         confidence_threshold: float = 0.5,
         nms_threshold: float = 0.4,
         input_size: tuple[int, int] = (640, 640),
+        providers: list[str] | None = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(
@@ -75,6 +78,7 @@ class RetinaFace(BaseDetector):
             confidence_threshold=confidence_threshold,
             nms_threshold=nms_threshold,
             input_size=input_size,
+            providers=providers,
             **kwargs,
         )
         self._supports_landmarks = True  # RetinaFace supports landmarks
@@ -83,6 +87,7 @@ class RetinaFace(BaseDetector):
         self.confidence_threshold = confidence_threshold
         self.nms_threshold = nms_threshold
         self.input_size = input_size
+        self.providers = providers
 
         # Advanced options from kwargs
         self.pre_nms_topk = kwargs.get('pre_nms_topk', 5000)
@@ -116,7 +121,7 @@ class RetinaFace(BaseDetector):
             RuntimeError: If the model fails to load.
         """
         try:
-            self.session = create_onnx_session(model_path)
+            self.session = create_onnx_session(model_path, providers=self.providers)
             self.input_names = self.session.get_inputs()[0].name
             self.output_names = [x.name for x in self.session.get_outputs()]
             Logger.info(f'Successfully initialized the model from {model_path}')

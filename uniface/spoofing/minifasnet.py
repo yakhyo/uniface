@@ -44,6 +44,8 @@ class MiniFASNet(BaseSpoofer):
         scale (Optional[float]): Custom crop scale factor for face region.
             If None, uses the default scale for the selected model variant.
             V1SE uses 4.0, V2 uses 2.7.
+        providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
+            the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
 
     Attributes:
         scale (float): Crop scale factor for face region extraction.
@@ -68,11 +70,13 @@ class MiniFASNet(BaseSpoofer):
         self,
         model_name: MiniFASNetWeights = MiniFASNetWeights.V2,
         scale: float | None = None,
+        providers: list[str] | None = None,
     ) -> None:
         Logger.info(f'Initializing MiniFASNet with model={model_name.name}')
 
         # Use default scale for the model variant if not specified
         self.scale = scale if scale is not None else DEFAULT_SCALES.get(model_name, 2.7)
+        self.providers = providers
 
         self.model_path = verify_model_weights(model_name)
         self._initialize_model()
@@ -85,7 +89,7 @@ class MiniFASNet(BaseSpoofer):
             RuntimeError: If the model fails to load or initialize.
         """
         try:
-            self.session = create_onnx_session(self.model_path)
+            self.session = create_onnx_session(self.model_path, providers=self.providers)
 
             # Get input configuration
             input_cfg = self.session.get_inputs()[0]

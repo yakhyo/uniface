@@ -68,7 +68,8 @@ detector = RetinaFace(
     confidence_threshold=0.5,  # Min confidence
     nms_threshold=0.4,         # NMS IoU threshold
     input_size=(640, 640),     # Input resolution
-    dynamic_size=False         # Enable dynamic input size
+    dynamic_size=False,        # Enable dynamic input size
+    providers=None,            # Auto-detect, or ['CPUExecutionProvider']
 )
 ```
 
@@ -112,7 +113,8 @@ detector = SCRFD(
     model_name=SCRFDWeights.SCRFD_10G_KPS,
     confidence_threshold=0.5,
     nms_threshold=0.4,
-    input_size=(640, 640)
+    input_size=(640, 640),
+    providers=None,  # Auto-detect, or ['CPUExecutionProvider']
 )
 ```
 
@@ -163,7 +165,8 @@ detector = YOLOv5Face(
     model_name=YOLOv5FaceWeights.YOLOV5S,
     confidence_threshold=0.6,
     nms_threshold=0.5,
-    nms_mode='numpy'  # or 'torchvision' for faster NMS
+    nms_mode='numpy',  # or 'torchvision' for faster NMS
+    providers=None,    # Auto-detect, or ['CPUExecutionProvider']
 )
 ```
 
@@ -210,7 +213,8 @@ detector = YOLOv8Face(
     model_name=YOLOv8FaceWeights.YOLOV8N,
     confidence_threshold=0.5,
     nms_threshold=0.45,
-    nms_mode='numpy'  # or 'torchvision' for faster NMS
+    nms_mode='numpy',  # or 'torchvision' for faster NMS
+    providers=None,    # Auto-detect, or ['CPUExecutionProvider']
 )
 ```
 

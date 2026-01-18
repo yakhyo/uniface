@@ -31,6 +31,8 @@ class Landmark106(BaseLandmarker):
             Defaults to `LandmarkWeights.DEFAULT`.
         input_size (Tuple[int, int]): The resolution (width, height) for the model's
             input. Defaults to (192, 192).
+        providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
+            the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
 
     Example:
         >>> # Assume 'image' is a loaded image and 'bbox' is a face bounding box
@@ -46,11 +48,13 @@ class Landmark106(BaseLandmarker):
         self,
         model_name: LandmarkWeights = LandmarkWeights.DEFAULT,
         input_size: tuple[int, int] = (192, 192),
+        providers: list[str] | None = None,
     ) -> None:
         Logger.info(f'Initializing Facial Landmark with model={model_name}, input_size={input_size}')
         self.input_size = input_size
         self.input_std = 1.0
         self.input_mean = 0.0
+        self.providers = providers
         self.model_path = verify_model_weights(model_name)
         self._initialize_model()
 
@@ -62,7 +66,7 @@ class Landmark106(BaseLandmarker):
             RuntimeError: If the model fails to load or initialize.
         """
         try:
-            self.session = create_onnx_session(self.model_path)
+            self.session = create_onnx_session(self.model_path, providers=self.providers)
 
             # Get input configuration
             input_metadata = self.session.get_inputs()[0]

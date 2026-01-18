@@ -44,12 +44,15 @@ class FairFace(Attribute):
             Defaults to `FairFaceWeights.DEFAULT`.
         input_size (Optional[Tuple[int, int]]): Input size (height, width).
             If None, defaults to (224, 224). Defaults to None.
+        providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
+            the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
     """
 
     def __init__(
         self,
         model_name: FairFaceWeights = FairFaceWeights.DEFAULT,
         input_size: tuple[int, int] | None = None,
+        providers: list[str] | None = None,
     ) -> None:
         """
         Initializes the FairFace prediction model.
@@ -58,10 +61,13 @@ class FairFace(Attribute):
             model_name (FairFaceWeights): The enum specifying the model weights to load.
             input_size (Optional[Tuple[int, int]]): Input size (height, width).
                 If None, defaults to (224, 224).
+            providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
+                the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
         """
         Logger.info(f'Initializing FairFace with model={model_name.name}')
         self.model_path = verify_model_weights(model_name)
         self.input_size = input_size if input_size is not None else (224, 224)
+        self.providers = providers
         self._initialize_model()
 
     def _initialize_model(self) -> None:
@@ -69,7 +75,7 @@ class FairFace(Attribute):
         Initializes the ONNX model and creates an inference session.
         """
         try:
-            self.session = create_onnx_session(self.model_path)
+            self.session = create_onnx_session(self.model_path, providers=self.providers)
             # Get model input details from the loaded model
             input_meta = self.session.get_inputs()[0]
             self.input_name = input_meta.name

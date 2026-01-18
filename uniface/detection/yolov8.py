@@ -52,7 +52,9 @@ class YOLOv8Face(BaseDetector):
         input_size (int): Input image size. Defaults to 640.
             Note: ONNX model is fixed at 640. Changing this will cause inference errors.
         nms_mode (str): NMS calculation method. Options: 'torchvision' (faster, requires torch)
-            or 'numpy' (no dependencies). Defaults to 'torchvision' if available.
+            or 'numpy' (no dependencies). Defaults to 'numpy'.
+        providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
+            the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
         **kwargs: Advanced options:
             max_det (int): Maximum number of detections to return. Defaults to 750.
 
@@ -78,6 +80,7 @@ class YOLOv8Face(BaseDetector):
         nms_threshold: float = 0.45,
         input_size: int = 640,
         nms_mode: Literal['torchvision', 'numpy'] = 'numpy',
+        providers: list[str] | None = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(
@@ -86,6 +89,7 @@ class YOLOv8Face(BaseDetector):
             nms_threshold=nms_threshold,
             input_size=input_size,
             nms_mode=nms_mode,
+            providers=providers,
             **kwargs,
         )
         self._supports_landmarks = True  # YOLOv8-Face supports landmarks
@@ -100,6 +104,7 @@ class YOLOv8Face(BaseDetector):
         self.confidence_threshold = confidence_threshold
         self.nms_threshold = nms_threshold
         self.input_size = input_size
+        self.providers = providers
 
         # Set NMS mode with automatic fallback
         if nms_mode == 'torchvision' and not TORCHVISION_AVAILABLE:
@@ -137,7 +142,7 @@ class YOLOv8Face(BaseDetector):
             RuntimeError: If the model fails to load, logs an error and raises an exception.
         """
         try:
-            self.session = create_onnx_session(model_path)
+            self.session = create_onnx_session(model_path, providers=self.providers)
             self.input_names = self.session.get_inputs()[0].name
             self.output_names = [x.name for x in self.session.get_outputs()]
             Logger.info(f'Successfully initialized the model from {model_path}')
