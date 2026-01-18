@@ -23,11 +23,15 @@ elseif(MSVC)
 endif()
 
 # Find dependencies
-find_package(OpenCV REQUIRED COMPONENTS core imgproc dnn)
+find_package(OpenCV REQUIRED COMPONENTS core imgproc dnn calib3d)
 
 # Library
 add_library(uniface
+    src/utils.cpp
     src/detector.cpp
+    src/recognizer.cpp
+    src/landmarker.cpp
+    src/analyzer.cpp
 )
 
 target_include_directories(uniface
