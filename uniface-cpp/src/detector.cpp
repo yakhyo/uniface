@@ -1,9 +1,6 @@
-/**
- * @file detector.cpp
- * @brief RetinaFace detector implementation
- */
-
 #include "uniface/detector.hpp"
+
+#include "uniface/utils.hpp"
 
 #include <cmath>
 #include <iostream>
@@ -30,40 +27,6 @@ const std::vector<std::vector<int>> kMinSizes = {
     { 64, 128},
     {256, 512}
 };
-
-/**
- * @brief Resize image while preserving aspect ratio with letterbox padding
- */
-float letterboxResize(const cv::Mat& src, cv::Mat& dst, const cv::Size& target_size) {
-    const auto src_height = static_cast<float>(src.rows);
-    const auto src_width = static_cast<float>(src.cols);
-    const auto target_height = static_cast<float>(target_size.height);
-    const auto target_width = static_cast<float>(target_size.width);
-
-    const float im_ratio = src_height / src_width;
-    const float model_ratio = target_height / target_width;
-
-    int new_width = 0;
-    int new_height = 0;
-
-    if (im_ratio > model_ratio) {
-        new_height = static_cast<int>(target_height);
-        new_width = static_cast<int>(static_cast<float>(new_height) / im_ratio);
-    } else {
-        new_width = static_cast<int>(target_width);
-        new_height = static_cast<int>(static_cast<float>(new_width) * im_ratio);
-    }
-
-    const float resize_factor = static_cast<float>(new_height) / src_height;
-
-    cv::Mat resized;
-    cv::resize(src, resized, cv::Size(new_width, new_height));
-
-    dst = cv::Mat::zeros(target_size, CV_8UC3);
-    resized.copyTo(dst(cv::Rect(0, 0, new_width, new_height)));
-
-    return resize_factor;
-}
 
 }  // namespace
 
@@ -194,7 +157,7 @@ std::vector<Face> RetinaFace::detect(const cv::Mat& image) {
     // Decode detections
     std::vector<cv::Rect2f> decoded_boxes;
     std::vector<float> scores;
-    std::vector<std::vector<cv::Point2f>> decoded_landmarks;
+    std::vector<std::array<cv::Point2f, 5>> decoded_landmarks;
 
     decoded_boxes.reserve(num_priors);
     scores.reserve(num_priors);
@@ -236,17 +199,15 @@ std::vector<Face> RetinaFace::detect(const cv::Mat& image) {
         scores.push_back(score);
 
         // Decode landmarks
-        std::vector<cv::Point2f> landmarks;
-        landmarks.reserve(kNumLandmarks);
-
+        std::array<cv::Point2f, 5> landmarks{};
         for (int k = 0; k < kNumLandmarks; ++k) {
             const float ldx = land_data[i * 10 + static_cast<size_t>(k) * 2 + 0];
             const float ldy = land_data[i * 10 + static_cast<size_t>(k) * 2 + 1];
             const float lx = (px + ldx * kVariance[0] * pw) * scale_w / resize_factor;
             const float ly = (py + ldy * kVariance[0] * ph) * scale_h / resize_factor;
-            landmarks.emplace_back(lx, ly);
+            landmarks[static_cast<size_t>(k)] = cv::Point2f(lx, ly);
         }
-        decoded_landmarks.push_back(std::move(landmarks));
+        decoded_landmarks.push_back(landmarks);
     }
 
     // Apply Non-Maximum Suppression
