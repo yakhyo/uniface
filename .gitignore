@@ -1,5 +1,6 @@
 tmp_*
 .vscode/
+*.onnx
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
