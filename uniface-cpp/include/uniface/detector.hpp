@@ -1,8 +1,3 @@
-/**
- * @file detector.hpp
- * @brief RetinaFace face detector
- */
-
 #ifndef UNIFACE_DETECTOR_HPP_
 #define UNIFACE_DETECTOR_HPP_
 

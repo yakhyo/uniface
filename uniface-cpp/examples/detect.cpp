@@ -1,8 +1,3 @@
-/**
- * @file detect.cpp
- * @brief Face detection on a single image
- */
-
 #include <iostream>
 
 #include <opencv2/highgui.hpp>
