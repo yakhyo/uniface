@@ -1,0 +1,137 @@
+/**
+ * @file webcam.cpp
+ * @brief Real-time face detection using webcam
+ */
+
+#include <chrono>
+#include <iostream>
+
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/videoio.hpp>
+#include <uniface/uniface.hpp>
+
+int main(int argc, char** argv) {
+    if (argc < 2) {
+        std::cout << "Usage: " << argv[0] << " <model_path> [camera_id]" << std::endl;
+        std::cout << "  camera_id: Camera device ID (default: 0)" << std::endl;
+        return 1;
+    }
+
+    const std::string model_path = argv[1];
+    const int camera_id = (argc >= 3) ? std::atoi(argv[2]) : 0;
+
+    try {
+        std::cout << "Loading model: " << model_path << std::endl;
+        uniface::RetinaFace detector(model_path);
+        std::cout << "Model loaded successfully!" << std::endl;
+
+        cv::VideoCapture cap(camera_id);
+        if (!cap.isOpened()) {
+            std::cerr << "Error: Cannot open camera " << camera_id << std::endl;
+            return 1;
+        }
+
+        const int frame_width = static_cast<int>(cap.get(cv::CAP_PROP_FRAME_WIDTH));
+        const int frame_height = static_cast<int>(cap.get(cv::CAP_PROP_FRAME_HEIGHT));
+        std::cout << "Camera opened: " << frame_width << "x" << frame_height << std::endl;
+        std::cout << "Press 'q' to quit, 's' to save screenshot" << std::endl;
+
+        cv::Mat frame;
+        int frame_count = 0;
+        double total_time = 0.0;
+
+        while (true) {
+            cap >> frame;
+            if (frame.empty()) {
+                std::cerr << "Error: Empty frame captured" << std::endl;
+                break;
+            }
+
+            const auto start = std::chrono::high_resolution_clock::now();
+            const auto faces = detector.detect(frame);
+            const auto end = std::chrono::high_resolution_clock::now();
+
+            const std::chrono::duration<double, std::milli> elapsed = end - start;
+            const double inference_time = elapsed.count();
+
+            ++frame_count;
+            total_time += inference_time;
+            const double avg_time = total_time / static_cast<double>(frame_count);
+            const double fps = 1000.0 / avg_time;
+
+            // Draw results
+            for (const auto& face : faces) {
+                cv::rectangle(frame, face.bbox, cv::Scalar(0, 255, 0), 2);
+
+                for (size_t i = 0; i < face.landmarks.size(); ++i) {
+                    cv::Scalar color;
+                    if (i < 2) {
+                        color = cv::Scalar(255, 0, 0);  // Eyes - Blue
+                    } else if (i == 2) {
+                        color = cv::Scalar(0, 255, 0);  // Nose - Green
+                    } else {
+                        color = cv::Scalar(0, 0, 255);  // Mouth - Red
+                    }
+                    cv::circle(frame, face.landmarks[i], 3, color, -1);
+                }
+
+                // Draw confidence
+                const std::string conf_text = cv::format("%.2f", face.confidence);
+                const cv::Point text_org(
+                    static_cast<int>(face.bbox.x), static_cast<int>(face.bbox.y) - 5
+                );
+                cv::putText(
+                    frame,
+                    conf_text,
+                    text_org,
+                    cv::FONT_HERSHEY_SIMPLEX,
+                    0.5,
+                    cv::Scalar(0, 255, 0),
+                    1
+                );
+            }
+
+            // Draw FPS info
+            const std::string info_text = cv::format(
+                "FPS: %.1f | Faces: %zu | Time: %.1fms", fps, faces.size(), inference_time
+            );
+            cv::putText(
+                frame,
+                info_text,
+                cv::Point(10, 30),
+                cv::FONT_HERSHEY_SIMPLEX,
+                0.7,
+                cv::Scalar(0, 255, 0),
+                2
+            );
+
+            cv::imshow("Uniface - Face Detection", frame);
+
+            const char key = static_cast<char>(cv::waitKey(1));
+            if (key == 'q' || key == 27) {
+                break;
+            } else if (key == 's') {
+                const std::string filename = cv::format("screenshot_%d.jpg", frame_count);
+                cv::imwrite(filename, frame);
+                std::cout << "Screenshot saved: " << filename << std::endl;
+            }
+        }
+
+        cap.release();
+        cv::destroyAllWindows();
+
+        std::cout << "\n=== Statistics ===" << std::endl;
+        std::cout << "Total frames: " << frame_count << std::endl;
+        std::cout << "Average inference time: " << (total_time / frame_count) << " ms" << std::endl;
+
+    } catch (const cv::Exception& e) {
+        std::cerr << "OpenCV Error: " << e.what() << std::endl;
+        return 1;
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return 1;
+    }
+
+    return 0;
+}
