@@ -30,12 +30,15 @@ class AgeGender(Attribute):
             Defaults to `AgeGenderWeights.DEFAULT`.
         input_size (Optional[Tuple[int, int]]): Input size (height, width).
             If None, automatically detected from model metadata. Defaults to None.
+        providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
+            the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
     """
 
     def __init__(
         self,
         model_name: AgeGenderWeights = AgeGenderWeights.DEFAULT,
         input_size: tuple[int, int] | None = None,
+        providers: list[str] | None = None,
     ) -> None:
         """
         Initializes the AgeGender prediction model.
@@ -44,10 +47,13 @@ class AgeGender(Attribute):
             model_name (AgeGenderWeights): The enum specifying the model weights to load.
             input_size (Optional[Tuple[int, int]]): Input size (height, width).
                 If None, automatically detected from model metadata. Defaults to None.
+            providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
+                the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
         """
         Logger.info(f'Initializing AgeGender with model={model_name.name}')
         self.model_path = verify_model_weights(model_name)
         self._user_input_size = input_size  # Store user preference
+        self.providers = providers
         self._initialize_model()
 
     def _initialize_model(self) -> None:
@@ -55,7 +61,7 @@ class AgeGender(Attribute):
         Initializes the ONNX model and creates an inference session.
         """
         try:
-            self.session = create_onnx_session(self.model_path)
+            self.session = create_onnx_session(self.model_path, providers=self.providers)
             # Get model input details from the loaded model
             input_meta = self.session.get_inputs()[0]
             self.input_name = input_meta.name

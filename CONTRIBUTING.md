@@ -59,12 +59,12 @@ This project uses [Ruff](https://docs.astral.sh/ruff/) for linting and formattin
 #### General Rules
 
 - **Line length:** 120 characters maximum
-- **Python version:** 3.11+ (use modern syntax)
+- **Python version:** 3.10+ (use modern syntax)
 - **Quote style:** Single quotes for strings, double quotes for docstrings
 
 #### Type Hints
 
-Use modern Python 3.11+ type hints (PEP 585 and PEP 604):
+Use modern Python 3.10+ type hints (PEP 585 and PEP 604):
 
 ```python
 # Preferred (modern)

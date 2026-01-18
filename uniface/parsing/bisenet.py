@@ -37,6 +37,8 @@ class BiSeNet(BaseFaceParser):
             Defaults to `ParsingWeights.RESNET18`.
         input_size (Tuple[int, int]): The resolution (width, height) for the model's
             input. Defaults to (512, 512).
+        providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
+            the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
 
     Attributes:
         input_size (Tuple[int, int]): Model input dimensions.
@@ -64,12 +66,14 @@ class BiSeNet(BaseFaceParser):
         self,
         model_name: ParsingWeights = ParsingWeights.RESNET18,
         input_size: tuple[int, int] = (512, 512),
+        providers: list[str] | None = None,
     ) -> None:
         Logger.info(f'Initializing BiSeNet with model={model_name}, input_size={input_size}')
 
         self.input_size = input_size
         self.input_mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
         self.input_std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
+        self.providers = providers
 
         self.model_path = verify_model_weights(model_name)
         self._initialize_model()
@@ -82,7 +86,7 @@ class BiSeNet(BaseFaceParser):
             RuntimeError: If the model fails to load or initialize.
         """
         try:
-            self.session = create_onnx_session(self.model_path)
+            self.session = create_onnx_session(self.model_path, providers=self.providers)
 
             # Get input configuration
             input_cfg = self.session.get_inputs()[0]

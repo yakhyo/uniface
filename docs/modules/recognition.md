@@ -47,6 +47,9 @@ recognizer = AdaFace(model_name=AdaFaceWeights.IR_18)
 
 # High accuracy
 recognizer = AdaFace(model_name=AdaFaceWeights.IR_101)
+
+# Force CPU execution
+recognizer = AdaFace(providers=['CPUExecutionProvider'])
 ```
 
 | Variant | Dataset | Size | IJB-B | IJB-C |
@@ -91,6 +94,9 @@ recognizer = ArcFace(model_name=ArcFaceWeights.MNET)
 
 # High accuracy
 recognizer = ArcFace(model_name=ArcFaceWeights.RESNET)
+
+# Force CPU execution
+recognizer = ArcFace(providers=['CPUExecutionProvider'])
 ```
 
 | Variant | Backbone | Size | LFW | CFP-FP | AgeDB-30 | IJB-C |

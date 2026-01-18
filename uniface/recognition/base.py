@@ -39,19 +39,27 @@ class BaseRecognizer(ABC):
     """
 
     @abstractmethod
-    def __init__(self, model_path: str, preprocessing: PreprocessConfig) -> None:
+    def __init__(
+        self,
+        model_path: str,
+        preprocessing: PreprocessConfig,
+        providers: list[str] | None = None,
+    ) -> None:
         """
         Initializes the model. Subclasses must call this.
 
         Args:
             model_path (str): The direct path to the verified ONNX model.
             preprocessing (PreprocessConfig): The configuration for preprocessing.
+            providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
+                the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
         """
         self.input_mean = preprocessing.input_mean
         self.input_std = preprocessing.input_std
         self.input_size = preprocessing.input_size
 
         self.model_path = model_path
+        self.providers = providers
         self._initialize_model()
 
     def _initialize_model(self) -> None:
@@ -63,7 +71,7 @@ class BaseRecognizer(ABC):
         """
         try:
             # Initialize model session with available providers
-            self.session = create_onnx_session(self.model_path)
+            self.session = create_onnx_session(self.model_path, providers=self.providers)
 
             # Extract input configuration
             input_cfg = self.session.get_inputs()[0]

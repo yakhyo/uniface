@@ -105,15 +105,18 @@ for face in faces:
 
 ## References
 
-- [yakhyo/retinaface-pytorch](https://github.com/yakhyo/retinaface-pytorch) — RetinaFace training
-- [yakhyo/yolov5-face-onnx-inference](https://github.com/yakhyo/yolov5-face-onnx-inference) — YOLOv5-Face ONNX
-- [yakhyo/yolov8-face-onnx-inference](https://github.com/yakhyo/yolov8-face-onnx-inference) — YOLOv8-Face ONNX
-- [yakhyo/face-recognition](https://github.com/yakhyo/face-recognition) — ArcFace, MobileFace, SphereFace
-- [yakhyo/face-parsing](https://github.com/yakhyo/face-parsing) — BiSeNet face parsing
-- [yakhyo/gaze-estimation](https://github.com/yakhyo/gaze-estimation) — MobileGaze training
-- [yakhyo/face-anti-spoofing](https://github.com/yakhyo/face-anti-spoofing) — MiniFASNet inference
-- [yakhyo/fairface-onnx](https://github.com/yakhyo/fairface-onnx) — FairFace attributes
-- [deepinsight/insightface](https://github.com/deepinsight/insightface) — Model architectures
+| Feature | Repository | Training | Description |
+|---------|------------|:--------:|-------------|
+| Detection | [retinaface-pytorch](https://github.com/yakhyo/retinaface-pytorch) | [x] | RetinaFace PyTorch Training & Export |
+| Detection | [yolov5-face-onnx-inference](https://github.com/yakhyo/yolov5-face-onnx-inference) | - | YOLOv5-Face ONNX Inference |
+| Detection | [yolov8-face-onnx-inference](https://github.com/yakhyo/yolov8-face-onnx-inference) | - | YOLOv8-Face ONNX Inference |
+| Recognition | [face-recognition](https://github.com/yakhyo/face-recognition) | [x] | MobileFace, SphereFace Training |
+| Parsing | [face-parsing](https://github.com/yakhyo/face-parsing) | [x] | BiSeNet Face Parsing |
+| Gaze | [gaze-estimation](https://github.com/yakhyo/gaze-estimation) | [x] | MobileGaze Training |
+| Anti-Spoofing | [face-anti-spoofing](https://github.com/yakhyo/face-anti-spoofing) | - | MiniFASNet Inference |
+| Attributes | [fairface-onnx](https://github.com/yakhyo/fairface-onnx) | - | FairFace ONNX Inference |
+
+*SCRFD and ArcFace models are from [InsightFace](https://github.com/deepinsight/insightface).
 
 ---
 

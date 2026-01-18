@@ -38,6 +38,8 @@ class MobileGaze(BaseGazeEstimator):
             Defaults to `GazeWeights.RESNET18`.
         input_size (Tuple[int, int]): The resolution (width, height) for the model's
             input. Defaults to (448, 448).
+        providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
+            the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
 
     Attributes:
         input_size (Tuple[int, int]): Model input dimensions.
@@ -65,12 +67,14 @@ class MobileGaze(BaseGazeEstimator):
         self,
         model_name: GazeWeights = GazeWeights.RESNET34,
         input_size: tuple[int, int] = (448, 448),
+        providers: list[str] | None = None,
     ) -> None:
         Logger.info(f'Initializing MobileGaze with model={model_name}, input_size={input_size}')
 
         self.input_size = input_size
         self.input_mean = [0.485, 0.456, 0.406]
         self.input_std = [0.229, 0.224, 0.225]
+        self.providers = providers
 
         # Model specific parameters for bin-based classification (Gaze360 config)
         self._bins = 90
@@ -89,7 +93,7 @@ class MobileGaze(BaseGazeEstimator):
             RuntimeError: If the model fails to load or initialize.
         """
         try:
-            self.session = create_onnx_session(self.model_path)
+            self.session = create_onnx_session(self.model_path, providers=self.providers)
 
             # Get input configuration
             input_cfg = self.session.get_inputs()[0]

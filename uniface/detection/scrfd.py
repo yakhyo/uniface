@@ -36,6 +36,8 @@ class SCRFD(BaseDetector):
         input_size (Tuple[int, int]): Input image size (width, height).
             Defaults to (640, 640).
             Note: Non-default sizes may cause slower inference and CoreML compatibility issues.
+        providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
+            the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
         **kwargs: Reserved for future advanced options.
 
     Attributes:
@@ -61,6 +63,7 @@ class SCRFD(BaseDetector):
         confidence_threshold: float = 0.5,
         nms_threshold: float = 0.4,
         input_size: tuple[int, int] = (640, 640),
+        providers: list[str] | None = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(
@@ -68,6 +71,7 @@ class SCRFD(BaseDetector):
             confidence_threshold=confidence_threshold,
             nms_threshold=nms_threshold,
             input_size=input_size,
+            providers=providers,
             **kwargs,
         )
         self._supports_landmarks = True  # SCRFD supports landmarks
@@ -76,6 +80,7 @@ class SCRFD(BaseDetector):
         self.confidence_threshold = confidence_threshold
         self.nms_threshold = nms_threshold
         self.input_size = input_size
+        self.providers = providers
 
         # ------- SCRFD model params ------
         self._num_feature_maps = 3
@@ -106,7 +111,7 @@ class SCRFD(BaseDetector):
             RuntimeError: If the model fails to load.
         """
         try:
-            self.session = create_onnx_session(model_path)
+            self.session = create_onnx_session(model_path, providers=self.providers)
             self.input_names = self.session.get_inputs()[0].name
             self.output_names = [x.name for x in self.session.get_outputs()]
             Logger.info(f'Successfully initialized the model from {model_path}')
