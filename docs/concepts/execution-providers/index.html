@@ -1461,6 +1461,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#explicit-provider-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Explicit Provider Selection
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#check-available-providers" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1921,6 +1932,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#explicit-provider-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Explicit Provider Selection
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#check-available-providers" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2142,25 +2164,47 @@
 <li><strong>CPUExecutionProvider</strong> - Fallback</li>
 </ol>
 <hr />
-<h2 id="check-available-providers">Check Available Providers</h2>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">onnxruntime</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ort</span>
+<h2 id="explicit-provider-selection">Explicit Provider Selection</h2>
+<p>You can specify which execution provider to use by passing the <code>providers</code> parameter:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface</span><span class="w"> </span><span class="kn">import</span> <span class="n">RetinaFace</span><span class="p">,</span> <span class="n">ArcFace</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">providers</span> <span class="o">=</span> <span class="n">ort</span><span class="o">.</span><span class="n">get_available_providers</span><span class="p">()</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Available providers:&quot;</span><span class="p">,</span> <span class="n">providers</span><span class="p">)</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1"># Force CPU execution (even if GPU is available)</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">detector</span> <span class="o">=</span> <span class="n">RetinaFace</span><span class="p">(</span><span class="n">providers</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;CPUExecutionProvider&#39;</span><span class="p">])</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">recognizer</span> <span class="o">=</span> <span class="n">ArcFace</span><span class="p">(</span><span class="n">providers</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;CPUExecutionProvider&#39;</span><span class="p">])</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="c1"># Use CUDA with CPU fallback</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="n">detector</span> <span class="o">=</span> <span class="n">RetinaFace</span><span class="p">(</span><span class="n">providers</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;CUDAExecutionProvider&#39;</span><span class="p">,</span> <span class="s1">&#39;CPUExecutionProvider&#39;</span><span class="p">])</span>
+</span></code></pre></div>
+<p>All model classes accept the <code>providers</code> parameter:</p>
+<ul>
+<li>Detection: <code>RetinaFace</code>, <code>SCRFD</code>, <code>YOLOv5Face</code>, <code>YOLOv8Face</code></li>
+<li>Recognition: <code>ArcFace</code>, <code>AdaFace</code>, <code>MobileFace</code>, <code>SphereFace</code></li>
+<li>Landmarks: <code>Landmark106</code></li>
+<li>Gaze: <code>MobileGaze</code></li>
+<li>Parsing: <code>BiSeNet</code></li>
+<li>Attributes: <code>AgeGender</code>, <code>FairFace</code></li>
+<li>Anti-Spoofing: <code>MiniFASNet</code></li>
+</ul>
+<hr />
+<h2 id="check-available-providers">Check Available Providers</h2>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">onnxruntime</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ort</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="n">providers</span> <span class="o">=</span> <span class="n">ort</span><span class="o">.</span><span class="n">get_available_providers</span><span class="p">()</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Available providers:&quot;</span><span class="p">,</span> <span class="n">providers</span><span class="p">)</span>
 </span></code></pre></div>
 <p><strong>Example outputs:</strong></p>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">macOS (Apple Silicon)</label><label for="__tabbed_1_2">Linux (NVIDIA GPU)</label><label for="__tabbed_1_3">Windows (CPU)</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>[&#39;CoreMLExecutionProvider&#39;, &#39;CPUExecutionProvider&#39;]
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>[&#39;CoreMLExecutionProvider&#39;, &#39;CPUExecutionProvider&#39;]
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>[&#39;CUDAExecutionProvider&#39;, &#39;CPUExecutionProvider&#39;]
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>[&#39;CUDAExecutionProvider&#39;, &#39;CPUExecutionProvider&#39;]
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>[&#39;CPUExecutionProvider&#39;]
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>[&#39;CPUExecutionProvider&#39;]
 </span></code></pre></div>
 </div>
 </div>
@@ -2169,11 +2213,11 @@
 <h2 id="platform-specific-setup">Platform-Specific Setup</h2>
 <h3 id="apple-silicon-m1m2m3m4">Apple Silicon (M1/M2/M3/M4)</h3>
 <p>No additional setup required. ARM64 optimizations are built into <code>onnxruntime</code>:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>pip<span class="w"> </span>install<span class="w"> </span>uniface
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>pip<span class="w"> </span>install<span class="w"> </span>uniface
 </span></code></pre></div>
 <p>Verify ARM64:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import platform; print(platform.machine())&quot;</span>
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="c1"># Should show: arm64</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import platform; print(platform.machine())&quot;</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="c1"># Should show: arm64</span>
 </span></code></pre></div>
 <div class="admonition tip">
 <p class="admonition-title">Performance</p>
@@ -2182,7 +2226,7 @@
 <hr />
 <h3 id="nvidia-gpu-cuda">NVIDIA GPU (CUDA)</h3>
 <p>Install with GPU support:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>pip<span class="w"> </span>install<span class="w"> </span>uniface<span class="o">[</span>gpu<span class="o">]</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>pip<span class="w"> </span>install<span class="w"> </span>uniface<span class="o">[</span>gpu<span class="o">]</span>
 </span></code></pre></div>
 <p><strong>Requirements:</strong></p>
 <ul>
@@ -2191,54 +2235,54 @@
 <li>Compatible NVIDIA driver</li>
 </ul>
 <p>Verify CUDA:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">onnxruntime</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ort</span>
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="k">if</span> <span class="s1">&#39;CUDAExecutionProvider&#39;</span> <span class="ow">in</span> <span class="n">ort</span><span class="o">.</span><span class="n">get_available_providers</span><span class="p">():</span>
-</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CUDA is available!&quot;</span><span class="p">)</span>
-</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="k">else</span><span class="p">:</span>
-</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CUDA not available, using CPU&quot;</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">onnxruntime</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ort</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="k">if</span> <span class="s1">&#39;CUDAExecutionProvider&#39;</span> <span class="ow">in</span> <span class="n">ort</span><span class="o">.</span><span class="n">get_available_providers</span><span class="p">():</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CUDA is available!&quot;</span><span class="p">)</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="k">else</span><span class="p">:</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CUDA not available, using CPU&quot;</span><span class="p">)</span>
 </span></code></pre></div>
 <hr />
 <h3 id="cpu-fallback">CPU Fallback</h3>
 <p>CPU execution is always available:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>pip<span class="w"> </span>install<span class="w"> </span>uniface
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>pip<span class="w"> </span>install<span class="w"> </span>uniface
 </span></code></pre></div>
 <p>Works on all platforms without additional configuration.</p>
 <hr />
 <h2 id="internal-api">Internal API</h2>
 <p>For advanced use cases, you can access the provider utilities:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.onnx_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_available_providers</span><span class="p">,</span> <span class="n">create_onnx_session</span>
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="c1"># Check available providers</span>
-</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="n">providers</span> <span class="o">=</span> <span class="n">get_available_providers</span><span class="p">()</span>
-</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Available: </span><span class="si">{</span><span class="n">providers</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>
-</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="c1"># Models use create_onnx_session() internally</span>
-</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="c1"># which auto-selects the best provider</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.onnx_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_available_providers</span><span class="p">,</span> <span class="n">create_onnx_session</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="c1"># Check available providers</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="n">providers</span> <span class="o">=</span> <span class="n">get_available_providers</span><span class="p">()</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Available: </span><span class="si">{</span><span class="n">providers</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="c1"># Models use create_onnx_session() internally</span>
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="c1"># which auto-selects the best provider</span>
 </span></code></pre></div>
 <hr />
 <h2 id="performance-tips">Performance Tips</h2>
 <h3 id="1-use-gpu-when-available">1. Use GPU When Available</h3>
 <p>For batch processing or real-time applications, GPU acceleration provides significant speedups:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>pip<span class="w"> </span>install<span class="w"> </span>uniface<span class="o">[</span>gpu<span class="o">]</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>pip<span class="w"> </span>install<span class="w"> </span>uniface<span class="o">[</span>gpu<span class="o">]</span>
 </span></code></pre></div>
 <h3 id="2-optimize-input-size">2. Optimize Input Size</h3>
 <p>Smaller input sizes are faster but may reduce accuracy:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface</span><span class="w"> </span><span class="kn">import</span> <span class="n">RetinaFace</span>
-</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
-</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="c1"># Faster, lower accuracy</span>
-</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="n">detector</span> <span class="o">=</span> <span class="n">RetinaFace</span><span class="p">(</span><span class="n">input_size</span><span class="o">=</span><span class="p">(</span><span class="mi">320</span><span class="p">,</span> <span class="mi">320</span><span class="p">))</span>
-</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>
-</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="c1"># Balanced (default)</span>
-</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="n">detector</span> <span class="o">=</span> <span class="n">RetinaFace</span><span class="p">(</span><span class="n">input_size</span><span class="o">=</span><span class="p">(</span><span class="mi">640</span><span class="p">,</span> <span class="mi">640</span><span class="p">))</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface</span><span class="w"> </span><span class="kn">import</span> <span class="n">RetinaFace</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="c1"># Faster, lower accuracy</span>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="n">detector</span> <span class="o">=</span> <span class="n">RetinaFace</span><span class="p">(</span><span class="n">input_size</span><span class="o">=</span><span class="p">(</span><span class="mi">320</span><span class="p">,</span> <span class="mi">320</span><span class="p">))</span>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="c1"># Balanced (default)</span>
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="n">detector</span> <span class="o">=</span> <span class="n">RetinaFace</span><span class="p">(</span><span class="n">input_size</span><span class="o">=</span><span class="p">(</span><span class="mi">640</span><span class="p">,</span> <span class="mi">640</span><span class="p">))</span>
 </span></code></pre></div>
 <h3 id="3-batch-processing">3. Batch Processing</h3>
 <p>Process multiple images to maximize GPU utilization:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1"># Process images in batch (GPU-efficient)</span>
-</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="k">for</span> <span class="n">image_path</span> <span class="ow">in</span> <span class="n">image_paths</span><span class="p">:</span>
-</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>    <span class="n">image</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">image_path</span><span class="p">)</span>
-</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>    <span class="n">faces</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">detect</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
-</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>    <span class="c1"># ...</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="c1"># Process images in batch (GPU-efficient)</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="k">for</span> <span class="n">image_path</span> <span class="ow">in</span> <span class="n">image_paths</span><span class="p">:</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>    <span class="n">image</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">image_path</span><span class="p">)</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>    <span class="n">faces</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">detect</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>    <span class="c1"># ...</span>
 </span></code></pre></div>
 <hr />
 <h2 id="troubleshooting">Troubleshooting</h2>
@@ -2246,7 +2290,7 @@
 <ol>
 <li>
 <p>Verify CUDA installation:
-   <div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>nvidia-smi
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>nvidia-smi
 </span></code></pre></div></p>
 </li>
 <li>
@@ -2254,15 +2298,15 @@
 </li>
 <li>
 <p>Reinstall with GPU support:
-   <div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>pip<span class="w"> </span>uninstall<span class="w"> </span>onnxruntime<span class="w"> </span>onnxruntime-gpu
-</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>pip<span class="w"> </span>install<span class="w"> </span>uniface<span class="o">[</span>gpu<span class="o">]</span>
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>pip<span class="w"> </span>uninstall<span class="w"> </span>onnxruntime<span class="w"> </span>onnxruntime-gpu
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>pip<span class="w"> </span>install<span class="w"> </span>uniface<span class="o">[</span>gpu<span class="o">]</span>
 </span></code></pre></div></p>
 </li>
 </ol>
 <h3 id="slow-performance-on-mac">Slow Performance on Mac</h3>
 <p>Verify you're using ARM64 Python (not Rosetta):</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import platform; print(platform.machine())&quot;</span>
-</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="c1"># Should show: arm64 (not x86_64)</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import platform; print(platform.machine())&quot;</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="c1"># Should show: arm64 (not x86_64)</span>
 </span></code></pre></div>
 <hr />
 <h2 id="next-steps">Next Steps</h2>
@@ -2292,7 +2336,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="December 30, 2025 10:29:39 UTC"><span class="timeago" datetime="2025-12-30T10:29:39+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="December 30, 2025 10:29:39 UTC">2025-12-30</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="January 18, 2026 13:29:15 UTC"><span class="timeago" datetime="2026-01-18T13:29:15+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="January 18, 2026 13:29:15 UTC">2026-01-18</span>
   </span>
 
     
