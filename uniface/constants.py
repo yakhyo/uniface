@@ -150,6 +150,15 @@ class ParsingWeights(str, Enum):
     RESNET34 = "parsing_resnet34"
 
 
+class XSegWeights(str, Enum):
+    """
+    XSeg face occlusion segmentation model from DeepFaceLab.
+    Outputs binary mask for face region.
+    https://github.com/iperov/DeepFaceLab
+    """
+    DEFAULT = "xseg"
+
+
 class MiniFASNetWeights(str, Enum):
     """
     MiniFASNet: Lightweight Face Anti-Spoofing models.
@@ -217,6 +226,8 @@ MODEL_URLS: dict[Enum, str] = {
     # Anti-Spoofing (MiniFASNet)
     MiniFASNetWeights.V1SE:          'https://github.com/yakhyo/face-anti-spoofing/releases/download/weights/MiniFASNetV1SE.onnx',
     MiniFASNetWeights.V2:            'https://github.com/yakhyo/face-anti-spoofing/releases/download/weights/MiniFASNetV2.onnx',
+    # XSeg
+    XSegWeights.DEFAULT:             'https://github.com/yakhyo/face-segmentation/releases/download/weights/xseg.onnx',
 }
 
 MODEL_SHA256: dict[Enum, str] = {
@@ -272,6 +283,8 @@ MODEL_SHA256: dict[Enum, str] = {
     # Anti-Spoofing (MiniFASNet)
     MiniFASNetWeights.V1SE:          'ebab7f90c7833fbccd46d3a555410e78d969db5438e169b6524be444862b3676',
     MiniFASNetWeights.V2:            'b32929adc2d9c34b9486f8c4c7bc97c1b69bc0ea9befefc380e4faae4e463907',
+    # XSeg
+    XSegWeights.DEFAULT:             '0b57328efcb839d85973164b617ceee9dfe6cfcb2c82e8a033bba9f4f09b27e5',  # TODO: Add SHA256 hash when model is hosted
 }
 
 CHUNK_SIZE = 8192

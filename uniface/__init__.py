@@ -48,7 +48,7 @@ from .detection import (
 )
 from .gaze import MobileGaze, create_gaze_estimator
 from .landmark import Landmark106, create_landmarker
-from .parsing import BiSeNet, create_face_parser
+from .parsing import BiSeNet, XSeg, create_face_parser
 from .privacy import BlurFace, anonymize_faces
 from .recognition import AdaFace, ArcFace, MobileFace, SphereFace, create_recognizer
 from .spoofing import MiniFASNet, create_spoofer
@@ -95,6 +95,7 @@ __all__ = [
     'MobileGaze',
     # Parsing models
     'BiSeNet',
+    'XSeg',
     # Attribute models
     'AgeGender',
     'AttributeResult',
