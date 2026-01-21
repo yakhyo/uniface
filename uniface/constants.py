@@ -152,8 +152,8 @@ class ParsingWeights(str, Enum):
 
 class XSegWeights(str, Enum):
     """
-    XSeg face occlusion segmentation model from DeepFaceLab.
-    Outputs binary mask for face region.
+    XSeg face segmentation model from DeepFaceLab.
+    Outputs mask for face region.
     https://github.com/iperov/DeepFaceLab
     """
     DEFAULT = "xseg"
@@ -284,7 +284,7 @@ MODEL_SHA256: dict[Enum, str] = {
     MiniFASNetWeights.V1SE:          'ebab7f90c7833fbccd46d3a555410e78d969db5438e169b6524be444862b3676',
     MiniFASNetWeights.V2:            'b32929adc2d9c34b9486f8c4c7bc97c1b69bc0ea9befefc380e4faae4e463907',
     # XSeg
-    XSegWeights.DEFAULT:             '0b57328efcb839d85973164b617ceee9dfe6cfcb2c82e8a033bba9f4f09b27e5',  # TODO: Add SHA256 hash when model is hosted
+    XSegWeights.DEFAULT:             '0b57328efcb839d85973164b617ceee9dfe6cfcb2c82e8a033bba9f4f09b27e5',
 }
 
 CHUNK_SIZE = 8192

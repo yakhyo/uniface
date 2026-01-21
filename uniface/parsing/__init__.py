@@ -17,19 +17,12 @@ def create_face_parser(
     model_name: str | ParsingWeights | XSegWeights = ParsingWeights.RESNET18,
     **kwargs,
 ) -> BaseFaceParser:
-    """Factory function to create a face parsing model instance.
-
-    This function provides a convenient way to instantiate face parsing models
-    without directly importing the specific model classes.
+    """Factory function to create a face parsing model.
 
     Args:
-        model_name: The face parsing model to create. Can be either a string
-            or an enum value. Available options:
-            - 'parsing_resnet18' or ParsingWeights.RESNET18 (default) - BiSeNet
-            - 'parsing_resnet34' or ParsingWeights.RESNET34 - BiSeNet
-            - 'xseg' or XSegWeights.DEFAULT - XSeg (requires landmarks)
+        model_name: Model to create. Options: ParsingWeights.RESNET18/RESNET34 (BiSeNet),
+            XSegWeights.DEFAULT (XSeg, requires landmarks).
         **kwargs: Additional arguments passed to the model constructor.
-            For XSeg: align_size (int), blur_sigma (float), providers (list).
 
     Returns:
         An instance of the requested face parsing model.
@@ -38,14 +31,8 @@ def create_face_parser(
         ValueError: If the model_name is not recognized.
 
     Example:
-        >>> from uniface.parsing import create_face_parser
-        >>> from uniface.constants import ParsingWeights, XSegWeights
-        >>> # BiSeNet parser
         >>> parser = create_face_parser(ParsingWeights.RESNET18)
         >>> mask = parser.parse(face_crop)
-        >>> # XSeg parser (requires landmarks)
-        >>> xseg = create_face_parser(XSegWeights.DEFAULT, blur_sigma=5)
-        >>> mask = xseg.parse(image, landmarks)
     """
     # Handle XSegWeights
     if isinstance(model_name, XSegWeights):

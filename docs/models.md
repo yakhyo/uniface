@@ -300,6 +300,32 @@ BiSeNet (Bilateral Segmentation Network) models for semantic face parsing. Segme
 
 ---
 
+### XSeg
+
+XSeg from DeepFaceLab outputs masks for face regions. Requires 5-point landmarks for face alignment.
+
+| Model Name | Size   | Output |
+|------------|--------|--------|
+| `DEFAULT`  | 67 MB  | Mask [0, 1] |
+
+!!! info "Model Details"
+    **Origin**: DeepFaceLab
+
+    **Input**: NHWC format, normalized to [0, 1]
+
+    **Alignment**: Requires 5-point landmarks (not bbox crops)
+
+**Applications:**
+
+- Face region extraction
+- Face swapping pipelines
+- Occlusion handling
+
+!!! note "Input Requirements"
+    Requires 5-point facial landmarks. Use a face detector like RetinaFace to obtain landmarks first.
+
+---
+
 ## Anti-Spoofing Models
 
 ### MiniFASNet Family

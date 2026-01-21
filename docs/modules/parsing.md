@@ -1,15 +1,16 @@
 # Parsing
 
-Face parsing segments faces into semantic components (skin, eyes, nose, mouth, hair, etc.).
+Face parsing segments faces into semantic components or face regions.
 
 ---
 
 ## Available Models
 
-| Model | Backbone | Size | Classes |
-|-------|----------|------|---------|
-| **BiSeNet ResNet18** :material-check-circle: | ResNet18 | 51 MB | 19 |
-| BiSeNet ResNet34 | ResNet34 | 89 MB | 19 |
+| Model | Backbone | Size | Output |
+|-------|----------|------|--------|
+| **BiSeNet ResNet18** :material-check-circle: | ResNet18 | 51 MB | 19 classes |
+| BiSeNet ResNet34 | ResNet34 | 89 MB | 19 classes |
+| XSeg | - | 67 MB | Mask |
 
 ---
 
@@ -248,12 +249,83 @@ vis_result = vis_parsing_maps(
 
 ---
 
+## XSeg
+
+XSeg outputs a mask for face regions. Unlike BiSeNet which works on bbox crops, XSeg requires 5-point landmarks for face alignment.
+
+### Basic Usage
+
+```python
+import cv2
+from uniface import RetinaFace
+from uniface.parsing import XSeg
+
+detector = RetinaFace()
+parser = XSeg()
+
+image = cv2.imread("photo.jpg")
+faces = detector.detect(image)
+
+for face in faces:
+    if face.landmarks is not None:
+        mask = parser.parse(image, face.landmarks)
+        print(f"Mask shape: {mask.shape}")  # (H, W), values in [0, 1]
+```
+
+### Parameters
+
+```python
+from uniface.parsing import XSeg
+
+# Default settings
+parser = XSeg()
+
+# Custom settings
+parser = XSeg(
+    align_size=256,   # Face alignment size
+    blur_sigma=5,     # Gaussian blur for smoothing (0 = raw)
+)
+```
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `align_size` | 256 | Face alignment output size |
+| `blur_sigma` | 0 | Mask smoothing (0 = no blur) |
+
+### Methods
+
+```python
+# Full pipeline: align -> segment -> warp back to original space
+mask = parser.parse(image, landmarks)
+
+# For pre-aligned face crops
+mask = parser.parse_aligned(face_crop)
+
+# Get mask + crop + inverse matrix for custom warping
+mask, face_crop, inverse_matrix = parser.parse_with_inverse(image, landmarks)
+```
+
+### BiSeNet vs XSeg
+
+| Feature | BiSeNet | XSeg |
+|---------|---------|------|
+| Output | 19 class labels | Mask [0, 1] |
+| Input | Bbox crop | Requires landmarks |
+| Use case | Facial components | Face region extraction |
+
+---
+
 ## Factory Function
 
 ```python
 from uniface import create_face_parser
+from uniface.constants import ParsingWeights, XSegWeights
 
-parser = create_face_parser()  # Returns BiSeNet
+# BiSeNet (default)
+parser = create_face_parser()
+
+# XSeg
+parser = create_face_parser(XSegWeights.DEFAULT)
 ```
 
 ---
