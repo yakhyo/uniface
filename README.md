@@ -113,6 +113,7 @@ for face in faces:
 | Detection | [yolov8-face-onnx-inference](https://github.com/yakhyo/yolov8-face-onnx-inference) | - | YOLOv8-Face ONNX Inference |
 | Recognition | [face-recognition](https://github.com/yakhyo/face-recognition) | [x] | MobileFace, SphereFace Training |
 | Parsing | [face-parsing](https://github.com/yakhyo/face-parsing) | [x] | BiSeNet Face Parsing |
+| Parsing | [face-segmentation](https://github.com/yakhyo/face-segmentation) | - | XSeg Face Segmentation |
 | Gaze | [gaze-estimation](https://github.com/yakhyo/gaze-estimation) | [x] | MobileGaze Training |
 | Anti-Spoofing | [face-anti-spoofing](https://github.com/yakhyo/face-anti-spoofing) | - | MiniFASNet Inference |
 | Attributes | [fairface-onnx](https://github.com/yakhyo/fairface-onnx) | - | FairFace ONNX Inference |
