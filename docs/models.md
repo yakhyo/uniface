@@ -300,6 +300,32 @@ BiSeNet (Bilateral Segmentation Network) models for semantic face parsing. Segme
 
 ---
 
+### XSeg
+
+XSeg from DeepFaceLab outputs masks for face regions. Requires 5-point landmarks for face alignment.
+
+| Model Name | Size   | Output |
+|------------|--------|--------|
+| `DEFAULT`  | 67 MB  | Mask [0, 1] |
+
+!!! info "Model Details"
+    **Origin**: DeepFaceLab
+
+    **Input**: NHWC format, normalized to [0, 1]
+
+    **Alignment**: Requires 5-point landmarks (not bbox crops)
+
+**Applications:**
+
+- Face region extraction
+- Face swapping pipelines
+- Occlusion handling
+
+!!! note "Input Requirements"
+    Requires 5-point facial landmarks. Use a face detector like RetinaFace to obtain landmarks first.
+
+---
+
 ## Anti-Spoofing Models
 
 ### MiniFASNet Family
@@ -343,6 +369,7 @@ Models are automatically downloaded and cached on first use.
 - **Face Recognition Training**: [yakhyo/face-recognition](https://github.com/yakhyo/face-recognition) - ArcFace, MobileFace, SphereFace training code
 - **Gaze Estimation Training**: [yakhyo/gaze-estimation](https://github.com/yakhyo/gaze-estimation) - MobileGaze training code and pretrained weights
 - **Face Parsing Training**: [yakhyo/face-parsing](https://github.com/yakhyo/face-parsing) - BiSeNet training code and pretrained weights
+- **Face Segmentation**: [yakhyo/face-segmentation](https://github.com/yakhyo/face-segmentation) - XSeg ONNX Inference
 - **Face Anti-Spoofing**: [yakhyo/face-anti-spoofing](https://github.com/yakhyo/face-anti-spoofing) - MiniFASNet ONNX inference (weights from [minivision-ai/Silent-Face-Anti-Spoofing](https://github.com/minivision-ai/Silent-Face-Anti-Spoofing))
 - **FairFace**: [yakhyo/fairface-onnx](https://github.com/yakhyo/fairface-onnx) - FairFace ONNX inference for race, gender, age prediction
 - **InsightFace**: [deepinsight/insightface](https://github.com/deepinsight/insightface) - Model architectures and pretrained weights

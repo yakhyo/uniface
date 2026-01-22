@@ -4,27 +4,25 @@
 
 from __future__ import annotations
 
-from uniface.constants import ParsingWeights
+from uniface.constants import ParsingWeights, XSegWeights
 
 from .base import BaseFaceParser
 from .bisenet import BiSeNet
+from .xseg import XSeg
 
-__all__ = ['BaseFaceParser', 'BiSeNet', 'create_face_parser']
+__all__ = ['BaseFaceParser', 'BiSeNet', 'XSeg', 'create_face_parser']
 
 
 def create_face_parser(
-    model_name: str | ParsingWeights = ParsingWeights.RESNET18,
+    model_name: str | ParsingWeights | XSegWeights = ParsingWeights.RESNET18,
+    **kwargs,
 ) -> BaseFaceParser:
-    """Factory function to create a face parsing model instance.
-
-    This function provides a convenient way to instantiate face parsing models
-    without directly importing the specific model classes.
+    """Factory function to create a face parsing model.
 
     Args:
-        model_name: The face parsing model to create. Can be either a string
-            or a ParsingWeights enum value. Available options:
-            - 'parsing_resnet18' or ParsingWeights.RESNET18 (default)
-            - 'parsing_resnet34' or ParsingWeights.RESNET34
+        model_name: Model to create. Options: ParsingWeights.RESNET18/RESNET34 (BiSeNet),
+            XSegWeights.DEFAULT (XSeg, requires landmarks).
+        **kwargs: Additional arguments passed to the model constructor.
 
     Returns:
         An instance of the requested face parsing model.
@@ -33,20 +31,32 @@ def create_face_parser(
         ValueError: If the model_name is not recognized.
 
     Example:
-        >>> from uniface.parsing import create_face_parser
-        >>> from uniface.constants import ParsingWeights
         >>> parser = create_face_parser(ParsingWeights.RESNET18)
         >>> mask = parser.parse(face_crop)
     """
+    # Handle XSegWeights
+    if isinstance(model_name, XSegWeights):
+        return XSeg(model_name=model_name, **kwargs)
+
     # Convert string to enum if necessary
     if isinstance(model_name, str):
+        # Try XSegWeights first
+        try:
+            xseg_model = XSegWeights(model_name)
+            return XSeg(model_name=xseg_model, **kwargs)
+        except ValueError:
+            pass
+
+        # Try ParsingWeights
         try:
             model_name = ParsingWeights(model_name)
         except ValueError as e:
-            valid_models = [e.value for e in ParsingWeights]
+            valid_parsing = [m.value for m in ParsingWeights]
+            valid_xseg = [m.value for m in XSegWeights]
+            valid_models = valid_parsing + valid_xseg
             raise ValueError(
                 f"Unknown face parsing model: '{model_name}'. Valid options are: {', '.join(valid_models)}"
             ) from e
 
-    # All parsing models use the same BiSeNet class
-    return BiSeNet(model_name=model_name)
+    # BiSeNet models
+    return BiSeNet(model_name=model_name, **kwargs)

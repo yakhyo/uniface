@@ -17,7 +17,8 @@ CLI utilities for testing and running UniFace features.
 | `face_search.py` | Real-time face matching against reference |
 | `fairface.py` | FairFace attribute prediction (race, gender, age) |
 | `spoofing.py` | Face anti-spoofing detection |
-| `face_parsing.py` | Face semantic segmentation |
+| `face_parsing.py` | Face semantic segmentation (BiSeNet) |
+| `xseg.py` | Face segmentation (XSeg) |
 | `video_detection.py` | Face detection on video files with progress bar |
 | `batch_process.py` | Batch process folder of images |
 | `download_model.py` | Download model weights |
@@ -63,9 +64,13 @@ python tools/landmarks.py --source 0
 python tools/fairface.py --source assets/test.jpg
 python tools/fairface.py --source 0
 
-# Face parsing
+# Face parsing (BiSeNet)
 python tools/face_parsing.py --source assets/test.jpg
 python tools/face_parsing.py --source 0
+
+# Face segmentation (XSeg)
+python tools/xseg.py --source assets/test.jpg
+python tools/xseg.py --source 0
 
 # Face anti-spoofing
 python tools/spoofing.py --source assets/test.jpg

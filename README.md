@@ -26,7 +26,7 @@
 - **Face Detection** — RetinaFace, SCRFD, YOLOv5-Face, and YOLOv8-Face with 5-point landmarks
 - **Face Recognition** — ArcFace, MobileFace, and SphereFace embeddings
 - **Facial Landmarks** — 106-point landmark localization
-- **Face Parsing** — BiSeNet semantic segmentation (19 classes)
+- **Face Parsing** — BiSeNet semantic segmentation (19 classes), XSeg face masking
 - **Gaze Estimation** — Real-time gaze direction with MobileGaze
 - **Attribute Analysis** — Age, gender, race (FairFace), and emotion
 - **Anti-Spoofing** — Face liveness detection with MiniFASNet
@@ -100,6 +100,7 @@ for face in faces:
 | [06_face_parsing.ipynb](examples/06_face_parsing.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/06_face_parsing.ipynb) | Semantic face segmentation |
 | [07_face_anonymization.ipynb](examples/07_face_anonymization.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/07_face_anonymization.ipynb) | Privacy-preserving blur |
 | [08_gaze_estimation.ipynb](examples/08_gaze_estimation.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/08_gaze_estimation.ipynb) | Gaze direction estimation |
+| [09_face_segmentation.ipynb](examples/09_face_segmentation.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/09_face_segmentation.ipynb) | Face segmentation with XSeg |
 
 ---
 
@@ -112,6 +113,7 @@ for face in faces:
 | Detection | [yolov8-face-onnx-inference](https://github.com/yakhyo/yolov8-face-onnx-inference) | - | YOLOv8-Face ONNX Inference |
 | Recognition | [face-recognition](https://github.com/yakhyo/face-recognition) | [x] | MobileFace, SphereFace Training |
 | Parsing | [face-parsing](https://github.com/yakhyo/face-parsing) | [x] | BiSeNet Face Parsing |
+| Parsing | [face-segmentation](https://github.com/yakhyo/face-segmentation) | - | XSeg Face Segmentation |
 | Gaze | [gaze-estimation](https://github.com/yakhyo/gaze-estimation) | [x] | MobileGaze Training |
 | Anti-Spoofing | [face-anti-spoofing](https://github.com/yakhyo/face-anti-spoofing) | - | MiniFASNet Inference |
 | Attributes | [fairface-onnx](https://github.com/yakhyo/fairface-onnx) | - | FairFace ONNX Inference |
