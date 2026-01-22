@@ -43,7 +43,6 @@ RetinaFace::RetinaFace(
 void RetinaFace::generateAnchors() {
     anchors_.clear();
 
-    // Pre-calculate approximate anchor count for reservation
     size_t estimated_anchors = 0;
     for (size_t k = 0; k < kFeatureStrides.size(); ++k) {
         const int step = kFeatureStrides[k];
@@ -57,7 +56,6 @@ void RetinaFace::generateAnchors() {
     }
     anchors_.reserve(estimated_anchors);
 
-    // Generate anchors for each feature map level
     for (size_t k = 0; k < kFeatureStrides.size(); ++k) {
         const int step = kFeatureStrides[k];
         const int feature_h = static_cast<int>(
@@ -87,22 +85,18 @@ void RetinaFace::generateAnchors() {
 }
 
 std::vector<Face> RetinaFace::detect(const cv::Mat& image) {
-    // Preprocess image
     cv::Mat input_blob;
     const float resize_factor = letterboxResize(image, input_blob, input_size_);
 
-    // Create blob with mean subtraction
     const cv::Mat blob = cv::dnn::blobFromImage(
         input_blob, 1.0, cv::Size(), cv::Scalar(kMeanB, kMeanG, kMeanR), false, false
     );
 
-    // Run inference
     net_.setInput(blob);
     const auto output_names = net_.getUnconnectedOutLayersNames();
     std::vector<cv::Mat> outputs;
     net_.forward(outputs, output_names);
 
-    // Validate output count
     if (outputs.size() < 3) {
         std::cerr << "Error: Model output count mismatch. Expected at least 3, got "
                   << outputs.size() << std::endl;
@@ -110,42 +104,27 @@ std::vector<Face> RetinaFace::detect(const cv::Mat& image) {
     }
 
     // Identify outputs by shape: loc(N,4), conf(N,2), landmarks(N,10)
-    cv::Mat loc_output;
-    cv::Mat conf_output;
-    cv::Mat land_output;
+    cv::Mat loc_output, conf_output, land_output;
 
     for (const auto& output : outputs) {
         switch (output.size[2]) {
-            case 4:
-                loc_output = output;
-                break;
-            case 2:
-                conf_output = output;
-                break;
-            case 10:
-                land_output = output;
-                break;
-            default:
-                break;
+            case 4:  loc_output = output; break;
+            case 2:  conf_output = output; break;
+            case 10: land_output = output; break;
+            default: break;
         }
     }
 
-    // Fallback to positional outputs if shape matching failed
-    if (loc_output.empty())
-        loc_output = outputs[0];
-    if (conf_output.empty())
-        conf_output = outputs[1];
-    if (land_output.empty())
-        land_output = outputs[2];
+    // Fallback to positional outputs
+    if (loc_output.empty()) loc_output = outputs[0];
+    if (conf_output.empty()) conf_output = outputs[1];
+    if (land_output.empty()) land_output = outputs[2];
 
-    // Get raw data pointers
     const auto* loc_data = reinterpret_cast<const float*>(loc_output.data);
     const auto* conf_data = reinterpret_cast<const float*>(conf_output.data);
     const auto* land_data = reinterpret_cast<const float*>(land_output.data);
-
     const auto num_priors = static_cast<size_t>(loc_output.size[1]);
 
-    // Validate anchor count
     if (num_priors != anchors_.size()) {
         std::cerr << "Error: Anchor count mismatch! Expected " << anchors_.size()
                   << " anchors but model output has " << num_priors << " priors.\n"
@@ -154,11 +133,9 @@ std::vector<Face> RetinaFace::detect(const cv::Mat& image) {
         return {};
     }
 
-    // Decode detections
     std::vector<cv::Rect2f> decoded_boxes;
     std::vector<float> scores;
     std::vector<std::array<cv::Point2f, 5>> decoded_landmarks;
-
     decoded_boxes.reserve(num_priors);
     scores.reserve(num_priors);
     decoded_landmarks.reserve(num_priors);
@@ -168,17 +145,13 @@ std::vector<Face> RetinaFace::detect(const cv::Mat& image) {
 
     for (size_t i = 0; i < num_priors; ++i) {
         const float score = conf_data[i * 2 + 1];
-        if (score < confidence_threshold_) {
-            continue;
-        }
+        if (score < confidence_threshold_) continue;
 
-        // Get anchor parameters
         const float px = anchors_[i][0];
         const float py = anchors_[i][1];
         const float pw = anchors_[i][2];
         const float ph = anchors_[i][3];
 
-        // Decode bounding box
         const float dx = loc_data[i * 4 + 0];
         const float dy = loc_data[i * 4 + 1];
         const float dw = loc_data[i * 4 + 2];
@@ -189,7 +162,6 @@ std::vector<Face> RetinaFace::detect(const cv::Mat& image) {
         const float w = pw * std::exp(dw * kVariance[1]);
         const float h = ph * std::exp(dh * kVariance[1]);
 
-        // Convert center format to corner format and scale to original image
         const float x1 = (cx - w / 2.0f) * scale_w / resize_factor;
         const float y1 = (cy - h / 2.0f) * scale_h / resize_factor;
         const float x2 = (cx + w / 2.0f) * scale_w / resize_factor;
@@ -198,7 +170,6 @@ std::vector<Face> RetinaFace::detect(const cv::Mat& image) {
         decoded_boxes.emplace_back(x1, y1, x2 - x1, y2 - y1);
         scores.push_back(score);
 
-        // Decode landmarks
         std::array<cv::Point2f, 5> landmarks{};
         for (int k = 0; k < kNumLandmarks; ++k) {
             const float ldx = land_data[i * 10 + static_cast<size_t>(k) * 2 + 0];
@@ -210,10 +181,9 @@ std::vector<Face> RetinaFace::detect(const cv::Mat& image) {
         decoded_landmarks.push_back(landmarks);
     }
 
-    // Apply Non-Maximum Suppression
+    // NMS
     std::vector<cv::Rect2d> boxes_for_nms;
     boxes_for_nms.reserve(decoded_boxes.size());
-
     for (const auto& box : decoded_boxes) {
         boxes_for_nms.emplace_back(box.x, box.y, box.width, box.height);
     }
@@ -221,10 +191,8 @@ std::vector<Face> RetinaFace::detect(const cv::Mat& image) {
     std::vector<int> nms_indices;
     cv::dnn::NMSBoxes(boxes_for_nms, scores, confidence_threshold_, nms_threshold_, nms_indices);
 
-    // Build final results
     std::vector<Face> results;
     results.reserve(nms_indices.size());
-
     for (const int idx : nms_indices) {
         const auto uidx = static_cast<size_t>(idx);
         results.push_back({decoded_boxes[uidx], scores[uidx], decoded_landmarks[uidx]});
