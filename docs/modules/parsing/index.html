@@ -1355,6 +1355,67 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#xseg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        XSeg
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="XSeg">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-usage_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Methods
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bisenet-vs-xseg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BiSeNet vs XSeg
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#factory-function" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2093,6 +2154,67 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#xseg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        XSeg
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="XSeg">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-usage_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Methods
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bisenet-vs-xseg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BiSeNet vs XSeg
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#factory-function" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2148,7 +2270,7 @@
 
 
 <h1 id="parsing">Parsing</h1>
-<p>Face parsing segments faces into semantic components (skin, eyes, nose, mouth, hair, etc.).</p>
+<p>Face parsing segments faces into semantic components or face regions.</p>
 <hr />
 <h2 id="available-models">Available Models</h2>
 <table>
@@ -2157,7 +2279,7 @@
 <th>Model</th>
 <th>Backbone</th>
 <th>Size</th>
-<th>Classes</th>
+<th>Output</th>
 </tr>
 </thead>
 <tbody>
@@ -2165,13 +2287,19 @@
 <td><strong>BiSeNet ResNet18</strong> <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2m-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8z"/></svg></span></td>
 <td>ResNet18</td>
 <td>51 MB</td>
-<td>19</td>
+<td>19 classes</td>
 </tr>
 <tr>
 <td>BiSeNet ResNet34</td>
 <td>ResNet34</td>
 <td>89 MB</td>
-<td>19</td>
+<td>19 classes</td>
+</tr>
+<tr>
+<td>XSeg</td>
+<td>-</td>
+<td>67 MB</td>
+<td>Mask</td>
 </tr>
 </tbody>
 </table>
@@ -2447,10 +2575,104 @@
 </span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="p">)</span>
 </span></code></pre></div>
 <hr />
+<h2 id="xseg">XSeg</h2>
+<p>XSeg outputs a mask for face regions. Unlike BiSeNet which works on bbox crops, XSeg requires 5-point landmarks for face alignment.</p>
+<h3 id="basic-usage_1">Basic Usage</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">cv2</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface</span><span class="w"> </span><span class="kn">import</span> <span class="n">RetinaFace</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.parsing</span><span class="w"> </span><span class="kn">import</span> <span class="n">XSeg</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="n">detector</span> <span class="o">=</span> <span class="n">RetinaFace</span><span class="p">()</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="n">parser</span> <span class="o">=</span> <span class="n">XSeg</span><span class="p">()</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="n">image</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&quot;photo.jpg&quot;</span><span class="p">)</span>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="n">faces</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">detect</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="k">for</span> <span class="n">face</span> <span class="ow">in</span> <span class="n">faces</span><span class="p">:</span>
+</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>    <span class="k">if</span> <span class="n">face</span><span class="o">.</span><span class="n">landmarks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-9-13"><a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a>        <span class="n">mask</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">face</span><span class="o">.</span><span class="n">landmarks</span><span class="p">)</span>
+</span><span id="__span-9-14"><a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mask shape: </span><span class="si">{</span><span class="n">mask</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># (H, W), values in [0, 1]</span>
+</span></code></pre></div>
+<h3 id="parameters">Parameters</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.parsing</span><span class="w"> </span><span class="kn">import</span> <span class="n">XSeg</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="c1"># Default settings</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="n">parser</span> <span class="o">=</span> <span class="n">XSeg</span><span class="p">()</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="c1"># Custom settings</span>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="n">parser</span> <span class="o">=</span> <span class="n">XSeg</span><span class="p">(</span>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>    <span class="n">align_size</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span>   <span class="c1"># Face alignment size</span>
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>    <span class="n">blur_sigma</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>     <span class="c1"># Gaussian blur for smoothing (0 = raw)</span>
+</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="p">)</span>
+</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>align_size</code></td>
+<td>256</td>
+<td>Face alignment output size</td>
+</tr>
+<tr>
+<td><code>blur_sigma</code></td>
+<td>0</td>
+<td>Mask smoothing (0 = no blur)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="methods">Methods</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># Full pipeline: align -&gt; segment -&gt; warp back to original space</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="n">mask</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">landmarks</span><span class="p">)</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="c1"># For pre-aligned face crops</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="n">mask</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_aligned</span><span class="p">(</span><span class="n">face_crop</span><span class="p">)</span>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="c1"># Get mask + crop + inverse matrix for custom warping</span>
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="n">mask</span><span class="p">,</span> <span class="n">face_crop</span><span class="p">,</span> <span class="n">inverse_matrix</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_with_inverse</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">landmarks</span><span class="p">)</span>
+</span></code></pre></div>
+<h3 id="bisenet-vs-xseg">BiSeNet vs XSeg</h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>BiSeNet</th>
+<th>XSeg</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Output</td>
+<td>19 class labels</td>
+<td>Mask [0, 1]</td>
+</tr>
+<tr>
+<td>Input</td>
+<td>Bbox crop</td>
+<td>Requires landmarks</td>
+</tr>
+<tr>
+<td>Use case</td>
+<td>Facial components</td>
+<td>Face region extraction</td>
+</tr>
+</tbody>
+</table>
+<hr />
 <h2 id="factory-function">Factory Function</h2>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_face_parser</span>
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="n">parser</span> <span class="o">=</span> <span class="n">create_face_parser</span><span class="p">()</span>  <span class="c1"># Returns BiSeNet</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_face_parser</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParsingWeights</span><span class="p">,</span> <span class="n">XSegWeights</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="c1"># BiSeNet (default)</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="n">parser</span> <span class="o">=</span> <span class="n">create_face_parser</span><span class="p">()</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="c1"># XSeg</span>
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="n">parser</span> <span class="o">=</span> <span class="n">create_face_parser</span><span class="p">(</span><span class="n">XSegWeights</span><span class="o">.</span><span class="n">DEFAULT</span><span class="p">)</span>
 </span></code></pre></div>
 <hr />
 <h2 id="next-steps">Next Steps</h2>
@@ -2481,7 +2703,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="January 3, 2026 10:08:41 UTC"><span class="timeago" datetime="2026-01-03T10:08:41+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="January 3, 2026 10:08:41 UTC">2026-01-03</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="January 22, 2026 13:33:31 UTC"><span class="timeago" datetime="2026-01-22T13:33:31+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="January 22, 2026 13:33:31 UTC">2026-01-22</span>
   </span>
 
     
