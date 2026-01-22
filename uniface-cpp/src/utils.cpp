@@ -5,33 +5,24 @@
 
 namespace uniface {
 
-cv::Mat alignFace(
-    const cv::Mat& image, const std::array<cv::Point2f, 5>& landmarks, cv::Size output_size
-) {
-    // Calculate scale ratio based on output size
+cv::Mat alignFace(const cv::Mat& image, const std::array<cv::Point2f, 5>& landmarks, cv::Size output_size) {
     const float ratio = static_cast<float>(output_size.width) / 112.0f;
 
-    // Build reference points scaled to output size
     std::vector<cv::Point2f> dst_points(5);
     for (int i = 0; i < 5; ++i) {
         dst_points[i].x = kReferenceAlignment[static_cast<size_t>(i) * 2] * ratio;
         dst_points[i].y = kReferenceAlignment[static_cast<size_t>(i) * 2 + 1] * ratio;
     }
 
-    // Convert source landmarks to vector
     std::vector<cv::Point2f> src_points(landmarks.begin(), landmarks.end());
-
-    // Estimate similarity transform (rotation, scale, translation)
     cv::Mat transform = cv::estimateAffinePartial2D(src_points, dst_points);
 
     if (transform.empty()) {
-        // Fallback: return resized image if transform estimation fails
         cv::Mat resized;
         cv::resize(image, resized, output_size);
         return resized;
     }
 
-    // Apply affine transformation
     cv::Mat aligned;
     cv::warpAffine(image, aligned, transform, output_size, cv::INTER_LINEAR, cv::BORDER_CONSTANT);
 

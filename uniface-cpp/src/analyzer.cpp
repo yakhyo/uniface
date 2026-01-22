@@ -30,10 +30,8 @@ std::vector<AnalyzedFace> FaceAnalyzer::analyze(const cv::Mat& image) {
         throw std::runtime_error("FaceAnalyzer: detector not loaded. Call loadDetector() first.");
     }
 
-    // Detect faces
     auto faces = detector_->detect(image);
 
-    // Build results
     std::vector<AnalyzedFace> results;
     results.reserve(faces.size());
 
@@ -41,12 +39,9 @@ std::vector<AnalyzedFace> FaceAnalyzer::analyze(const cv::Mat& image) {
         AnalyzedFace result;
         result.face = face;
 
-        // Get 106-point landmarks if landmarker is loaded
         if (landmarker_) {
             result.landmarks = landmarker_->getLandmarks(image, face.bbox);
         }
-
-        // Get embedding if recognizer is loaded
         if (recognizer_) {
             result.embedding = recognizer_->getNormalizedEmbedding(image, face.landmarks);
         }

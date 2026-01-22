@@ -20,28 +20,21 @@ cv::Mat ArcFace::preprocess(const cv::Mat& face_image) {
         resized = face_image;
     }
 
-    // Convert BGR to RGB and normalize: (pixel - mean) / std
+    // Normalize: (pixel - mean) / std, BGR -> RGB
     cv::Mat blob = cv::dnn::blobFromImage(
-        resized,
-        1.0 / config_.input_std,
-        config_.input_size,
-        cv::Scalar(config_.input_mean, config_.input_mean, config_.input_mean),
-        true,  // swapRB: BGR -> RGB
-        false  // crop
+        resized, 1.0 / config_.input_std, config_.input_size,
+        cv::Scalar(config_.input_mean, config_.input_mean, config_.input_mean), true, false
     );
 
     return blob;
 }
 
 Embedding ArcFace::getEmbedding(const cv::Mat& aligned_face) {
-    // Preprocess
     cv::Mat blob = preprocess(aligned_face);
 
-    // Run inference
     net_.setInput(blob);
     cv::Mat output = net_.forward();
 
-    // Extract embedding from output
     Embedding embedding{};
     const auto* output_data = reinterpret_cast<const float*>(output.data);
     const size_t embedding_size = std::min(static_cast<size_t>(output.total()), embedding.size());
@@ -54,26 +47,20 @@ Embedding ArcFace::getEmbedding(const cv::Mat& aligned_face) {
 }
 
 Embedding ArcFace::getEmbedding(const cv::Mat& image, const std::array<cv::Point2f, 5>& landmarks) {
-    // Align face using landmarks
     cv::Mat aligned = alignFace(image, landmarks, config_.input_size);
-
-    // Get embedding from aligned face
     return getEmbedding(aligned);
 }
 
-Embedding ArcFace::getNormalizedEmbedding(
-    const cv::Mat& image, const std::array<cv::Point2f, 5>& landmarks
-) {
+Embedding ArcFace::getNormalizedEmbedding(const cv::Mat& image, const std::array<cv::Point2f, 5>& landmarks) {
     Embedding embedding = getEmbedding(image, landmarks);
 
-    // Compute L2 norm
+    // L2 normalize
     float norm = 0.0f;
     for (const float val : embedding) {
         norm += val * val;
     }
     norm = std::sqrt(norm);
 
-    // Normalize
     if (norm > 1e-8f) {
         for (float& val : embedding) {
             val /= norm;
