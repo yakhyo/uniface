@@ -9,6 +9,13 @@
 [![PyPI Downloads](https://static.pepy.tech/personalized-badge/uniface?period=total&units=INTERNATIONAL_SYSTEM&left_color=GRAY&right_color=BLUE&left_text=Downloads)](https://pepy.tech/projects/uniface)
 [![Docs](https://img.shields.io/badge/Docs-UniFace-blue.svg)](https://yakhyo.github.io/uniface/)
 
+![PyPI - Version](https://img.shields.io/pypi/v/uniface?style=social&label=PyPI)
+![GitHub License](https://img.shields.io/github/license/yakhyo/uniface?style=social&logoSize=License)
+![GitHub Repo stars](https://img.shields.io/github/stars/yakhyo/uniface)
+![GitHub forks](https://img.shields.io/github/forks/yakhyo/uniface)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/uniface?style=social&logoColor=blue)
+
+
 </div>
 
 <div align="center">
