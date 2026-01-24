@@ -11,10 +11,10 @@
 ![Static Badge](https://img.shields.io/badge/Kaggle-Notebooks?style=flat&label=Kaggle%20Notebooks&link=https%3A%2F%2Fwww.kaggle.com%2Fyakhyokhuja%2Fcode)
 
 
-![PyPI - Version](https://img.shields.io/pypi/v/uniface?style=social&label=PyPI)
-![GitHub License](https://img.shields.io/github/license/yakhyo/uniface?style=social&logoSize=License)
-![GitHub Repo stars](https://img.shields.io/github/stars/yakhyo/uniface)
-![GitHub forks](https://img.shields.io/github/forks/yakhyo/uniface)
+[![PyPI - Version](https://img.shields.io/pypi/v/uniface?style=social&label=PyPI)](https://pypi.org/project/uniface/)
+[![GitHub License](https://img.shields.io/github/license/yakhyo/uniface?style=social&logoSize=License)](https://github.com/yakhyo/uniface/blob/main/LICENSE)
+[![GitHub Repo stars](https://img.shields.io/github/stars/yakhyo/uniface)](https://github.com/yakhyo/uniface/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/yakhyo/uniface)](https://github.com/yakhyo/uniface/forks)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/uniface?style=social&logoColor=blue)
 
 
