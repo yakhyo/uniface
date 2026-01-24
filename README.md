@@ -8,6 +8,8 @@
 [![CI](https://github.com/yakhyo/uniface/actions/workflows/ci.yml/badge.svg)](https://github.com/yakhyo/uniface/actions)
 [![PyPI Downloads](https://static.pepy.tech/personalized-badge/uniface?period=total&units=INTERNATIONAL_SYSTEM&left_color=GRAY&right_color=BLUE&left_text=Downloads)](https://pepy.tech/projects/uniface)
 [![Docs](https://img.shields.io/badge/Docs-UniFace-blue.svg)](https://yakhyo.github.io/uniface/)
+![Static Badge](https://img.shields.io/badge/Kaggle-Notebooks?style=flat&label=Kaggle%20Notebooks&link=https%3A%2F%2Fwww.kaggle.com%2Fyakhyokhuja%2Fcode)
+
 
 ![PyPI - Version](https://img.shields.io/pypi/v/uniface?style=social&label=PyPI)
 ![GitHub License](https://img.shields.io/github/license/yakhyo/uniface?style=social&logoSize=License)
