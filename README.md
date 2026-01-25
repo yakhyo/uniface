@@ -13,7 +13,7 @@
 </div>
 
 <div align="center">
-    <img src="https://raw.githubusercontent.com/yakhyo/uniface/main/.github/logos/logo_web.webp" width="80%">
+    <img src="https://raw.githubusercontent.com/yakhyo/uniface/main/.github/logos/new/uniface_rounded_q80.webp" width="80%">
 </div>
 
 ##
