@@ -69,20 +69,21 @@ spoofer = MiniFASNet(model_name=MiniFASNetWeights.V1SE)
 
 ## Confidence Thresholds
 
-The default threshold is 0.5. Adjust for your use case:
+`result.is_real` is based on the model's top predicted class (argmax). If you want stricter behavior,
+apply your own confidence threshold:
 
 ```python
 result = spoofer.predict(image, face.bbox)
 
 # High security (fewer false accepts)
 HIGH_THRESHOLD = 0.7
-if result.confidence > HIGH_THRESHOLD:
+if result.is_real and result.confidence > HIGH_THRESHOLD:
     print("Real (high confidence)")
 else:
     print("Suspicious")
 
-# Balanced
-if result.is_real:  # Uses default 0.5 threshold
+# Balanced (argmax decision)
+if result.is_real:
     print("Real")
 else:
     print("Fake")

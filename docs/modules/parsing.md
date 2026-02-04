@@ -46,16 +46,16 @@ cv2.imwrite("parsed.jpg", vis_bgr)
 
 | ID | Class | ID | Class |
 |----|-------|----|-------|
-| 0 | Background | 10 | Ear Ring |
-| 1 | Skin | 11 | Nose |
-| 2 | Left Eyebrow | 12 | Mouth |
-| 3 | Right Eyebrow | 13 | Upper Lip |
-| 4 | Left Eye | 14 | Lower Lip |
-| 5 | Right Eye | 15 | Neck |
-| 6 | Eye Glasses | 16 | Neck Lace |
-| 7 | Left Ear | 17 | Cloth |
-| 8 | Right Ear | 18 | Hair |
-| 9 | Hat | | |
+| 0 | Background | 10 | Nose |
+| 1 | Skin | 11 | Mouth |
+| 2 | Left Eyebrow | 12 | Upper Lip |
+| 3 | Right Eyebrow | 13 | Lower Lip |
+| 4 | Left Eye | 14 | Neck |
+| 5 | Right Eye | 15 | Necklace |
+| 6 | Eyeglasses | 16 | Cloth |
+| 7 | Left Ear | 17 | Hair |
+| 8 | Right Ear | 18 | Hat |
+| 9 | Earring | | |
 
 ---
 
@@ -126,7 +126,7 @@ mask = parser.parse(face_image)
 
 # Extract specific component
 SKIN = 1
-HAIR = 18
+HAIR = 17
 LEFT_EYE = 4
 RIGHT_EYE = 5
 
@@ -149,10 +149,10 @@ mask = parser.parse(face_image)
 
 component_names = {
     0: 'Background', 1: 'Skin', 2: 'L-Eyebrow', 3: 'R-Eyebrow',
-    4: 'L-Eye', 5: 'R-Eye', 6: 'Glasses', 7: 'L-Ear', 8: 'R-Ear',
-    9: 'Hat', 10: 'Earring', 11: 'Nose', 12: 'Mouth',
-    13: 'U-Lip', 14: 'L-Lip', 15: 'Neck', 16: 'Necklace',
-    17: 'Cloth', 18: 'Hair'
+    4: 'L-Eye', 5: 'R-Eye', 6: 'Eyeglasses', 7: 'L-Ear', 8: 'R-Ear',
+    9: 'Earring', 10: 'Nose', 11: 'Mouth',
+    12: 'U-Lip', 13: 'L-Lip', 14: 'Neck', 15: 'Necklace',
+    16: 'Cloth', 17: 'Hair', 18: 'Hat'
 }
 
 for class_id in np.unique(mask):
@@ -219,7 +219,7 @@ def replace_background(image, mask, background):
 ```python
 def get_hair_mask(mask):
     """Extract clean hair mask."""
-    hair_mask = (mask == 18).astype(np.uint8) * 255
+    hair_mask = (mask == 17).astype(np.uint8) * 255
 
     # Clean up with morphological operations
     kernel = np.ones((5, 5), np.uint8)

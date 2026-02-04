@@ -32,9 +32,9 @@ Default cache directory:
 
 ```
 ~/.uniface/models/
-├── retinaface_mv2.onnx
-├── w600k_mbf.onnx
-├── 2d106det.onnx
+├── retinaface_mnet_v2.onnx
+├── arcface_mnet.onnx
+├── 2d_106.onnx
 ├── gaze_resnet34.onnx
 ├── parsing_resnet18.onnx
 └── ...

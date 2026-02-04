@@ -107,7 +107,9 @@ UniFace has minimal dependencies:
 |---------|---------|
 | `numpy` | Array operations |
 | `opencv-python` | Image processing |
+| `onnx` | ONNX model format support |
 | `onnxruntime` | Model inference |
+| `scikit-image` | Geometric transforms |
 | `requests` | Model download |
 | `tqdm` | Progress bars |
 

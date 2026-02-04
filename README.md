@@ -13,14 +13,12 @@
 </div>
 
 <div align="center">
-    <img src="https://raw.githubusercontent.com/yakhyo/uniface/main/.github/logos/new/uniface_rounded_q80.webp" width="80%">
+    <img src="https://raw.githubusercontent.com/yakhyo/uniface/main/.github/logos/new/uniface_rounded_q80.webp" width="90%">
 </div>
 
-##
+---
 
 **UniFace** is a lightweight, production-ready face analysis library built on ONNX Runtime. It provides high-performance face detection, recognition, landmark detection, face parsing, gaze estimation, and attribute analysis with hardware acceleration support across platforms.
-
-> 💬 **Have questions?** [Chat with this codebase on DeepWiki](https://deepwiki.com/yakhyo/uniface) - AI-powered docs that let you ask anything about UniFace.
 
 ---
 
@@ -28,7 +26,7 @@
 
 - **Face Detection** — RetinaFace, SCRFD, YOLOv5-Face, and YOLOv8-Face with 5-point landmarks
 - **Face Recognition** — ArcFace, MobileFace, and SphereFace embeddings
-- **Facial Landmarks** — 106-point landmark localization
+- **Facial Landmarks** — 106-point landmark localization module (separate from 5-point detector landmarks)
 - **Face Parsing** — BiSeNet semantic segmentation (19 classes), XSeg face masking
 - **Gaze Estimation** — Real-time gaze direction with MobileGaze
 - **Attribute Analysis** — Age, gender, race (FairFace), and emotion
@@ -40,31 +38,55 @@
 
 ## Installation
 
+**Standard installation**
+
 ```bash
-# Standard installation
 pip install uniface
+```
 
-# GPU support (CUDA)
+**GPU support (CUDA)**
+
+```bash
 pip install uniface[gpu]
+```
 
-# From source
+**From source (latest version)**
+
+```bash
 git clone https://github.com/yakhyo/uniface.git
 cd uniface && pip install -e .
 ```
 
+**Optional dependencies**
+- Emotion model uses TorchScript and requires `torch`:
+  `pip install torch` (choose the correct build for your OS/CUDA)
+- YOLOv5-Face and YOLOv8-Face support faster NMS with `torchvision`:
+  `pip install torch torchvision` then use `nms_mode='torchvision'`
+
 ---
 
-## Quick Example
+## Model Downloads and Cache
+
+Models are downloaded automatically on first use and verified via SHA-256.
+
+Default cache location: `~/.uniface/models`
+
+You can override it with `UNIFACE_CACHE_DIR=/your/cache/path`
+
+---
+
+## Quick Example (Detection)
 
 ```python
 import cv2
 from uniface import RetinaFace
 
-# Initialize detector (models auto-download on first use)
 detector = RetinaFace()
 
-# Detect faces
 image = cv2.imread("photo.jpg")
+if image is None:
+    raise ValueError("Failed to load image. Check the path to 'photo.jpg'.")
+
 faces = detector.detect(image)
 
 for face in faces:
@@ -74,14 +96,52 @@ for face in faces:
 ```
 
 <div align="center">
-    <img src="assets/test_result.png">
+    <img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/test_result.png" width="90%">
+    <p>Face Detection Model Output</p>
 </div>
+
+---
+
+## Example (Face Analyzer)
+
+```python
+import cv2
+from uniface import RetinaFace, ArcFace, FaceAnalyzer
+
+detector = RetinaFace()
+recognizer = ArcFace()
+
+analyzer = FaceAnalyzer(detector, recognizer=recognizer)
+
+image = cv2.imread("photo.jpg")
+if image is None:
+    raise ValueError("Failed to load image. Check the path to 'photo.jpg'.")
+
+faces = analyzer.analyze(image)
+
+for face in faces:
+    print(face.bbox, face.embedding.shape if face.embedding is not None else None)
+```
+
+---
+
+## Execution Providers (ONNX Runtime)
+
+```python
+from uniface import RetinaFace
+
+# Force CPU-only inference
+detector = RetinaFace(providers=["CPUExecutionProvider"])
+```
+
+See more in the docs:
+https://yakhyo.github.io/uniface/concepts/execution-providers/
 
 ---
 
 ## Documentation
 
-📚 **Full documentation**: [yakhyo.github.io/uniface](https://yakhyo.github.io/uniface/)
+Full documentation: https://yakhyo.github.io/uniface/
 
 | Resource | Description |
 |----------|-------------|
@@ -91,7 +151,9 @@ for face in faces:
 | [Tutorials](https://yakhyo.github.io/uniface/recipes/image-pipeline/) | Step-by-step workflow examples |
 | [Guides](https://yakhyo.github.io/uniface/concepts/overview/) | Architecture and design principles |
 
-### Jupyter Notebooks
+---
+
+## Jupyter Notebooks
 
 | Example | Colab | Description |
 |---------|:-----:|-------------|
@@ -107,17 +169,30 @@ for face in faces:
 
 ---
 
+## Licensing and Model Usage
+
+UniFace is MIT-licensed, but several pretrained models carry their own licenses.
+Review: https://yakhyo.github.io/uniface/license-attribution/
+
+Notable examples:
+- YOLOv5-Face and YOLOv8-Face weights are GPL-3.0
+- FairFace weights are CC BY 4.0
+
+If you plan commercial use, verify model license compatibility.
+
+---
+
 ## References
 
 | Feature | Repository | Training | Description |
 |---------|------------|:--------:|-------------|
-| Detection | [retinaface-pytorch](https://github.com/yakhyo/retinaface-pytorch) | [x] | RetinaFace PyTorch Training & Export |
+| Detection | [retinaface-pytorch](https://github.com/yakhyo/retinaface-pytorch) | ✓ | RetinaFace PyTorch Training & Export |
 | Detection | [yolov5-face-onnx-inference](https://github.com/yakhyo/yolov5-face-onnx-inference) | - | YOLOv5-Face ONNX Inference |
 | Detection | [yolov8-face-onnx-inference](https://github.com/yakhyo/yolov8-face-onnx-inference) | - | YOLOv8-Face ONNX Inference |
-| Recognition | [face-recognition](https://github.com/yakhyo/face-recognition) | [x] | MobileFace, SphereFace Training |
-| Parsing | [face-parsing](https://github.com/yakhyo/face-parsing) | [x] | BiSeNet Face Parsing |
+| Recognition | [face-recognition](https://github.com/yakhyo/face-recognition) | ✓ | MobileFace, SphereFace Training |
+| Parsing | [face-parsing](https://github.com/yakhyo/face-parsing) | ✓ | BiSeNet Face Parsing |
 | Parsing | [face-segmentation](https://github.com/yakhyo/face-segmentation) | - | XSeg Face Segmentation |
-| Gaze | [gaze-estimation](https://github.com/yakhyo/gaze-estimation) | [x] | MobileGaze Training |
+| Gaze | [gaze-estimation](https://github.com/yakhyo/gaze-estimation) | ✓ | MobileGaze Training |
 | Anti-Spoofing | [face-anti-spoofing](https://github.com/yakhyo/face-anti-spoofing) | - | MiniFASNet Inference |
 | Attributes | [fairface-onnx](https://github.com/yakhyo/fairface-onnx) | - | FairFace ONNX Inference |
 
@@ -127,7 +202,15 @@ for face in faces:
 
 ## Contributing
 
-Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Contributions are welcome. Please see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Support
+
+If you find this project useful, consider giving it a ⭐ on GitHub — it helps others discover it!
+
+Questions or feedback:
+- GitHub Issues: https://github.com/yakhyo/uniface/issues
+- DeepWiki Q&A: https://deepwiki.com/yakhyo/uniface
 
 ## License
 

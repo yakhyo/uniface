@@ -64,7 +64,7 @@ blurrer = BlurFace(method='pixelate', pixel_blocks=10)
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `pixel_blocks` | 10 | Number of blocks (lower = more pixelated) |
+| `pixel_blocks` | 15 | Number of blocks (lower = more pixelated) |
 
 ### Gaussian
 

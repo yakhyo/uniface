@@ -296,7 +296,7 @@ cv2.imwrite("result.jpg", image)
 Benchmark on your hardware:
 
 ```bash
-python tools/detection.py --source image.jpg --iterations 100
+python tools/detection.py --source image.jpg
 ```
 
 ---
