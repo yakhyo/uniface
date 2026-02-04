@@ -125,7 +125,7 @@ from uniface.attribute import Emotion
 from uniface.constants import DDAMFNWeights
 
 detector = RetinaFace()
-emotion = Emotion(model_name=DDAMFNWeights.AFFECNET7)
+emotion = Emotion(model_weights=DDAMFNWeights.AFFECNET7)
 
 faces = detector.detect(image)
 
@@ -169,10 +169,10 @@ from uniface.attribute import Emotion
 from uniface.constants import DDAMFNWeights
 
 # 7-class emotion
-emotion = Emotion(model_name=DDAMFNWeights.AFFECNET7)
+emotion = Emotion(model_weights=DDAMFNWeights.AFFECNET7)
 
 # 8-class emotion
-emotion = Emotion(model_name=DDAMFNWeights.AFFECNET8)
+emotion = Emotion(model_weights=DDAMFNWeights.AFFECNET8)
 ```
 
 ---
@@ -206,12 +206,11 @@ for face in faces:
 ### Using FaceAnalyzer
 
 ```python
-from uniface import FaceAnalyzer
+from uniface import FaceAnalyzer, RetinaFace, AgeGender
 
 analyzer = FaceAnalyzer(
-    detect=True,
-    recognize=False,
-    attributes=True  # Uses AgeGender
+    RetinaFace(),
+    age_gender=AgeGender(),
 )
 
 faces = analyzer.analyze(image)

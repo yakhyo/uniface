@@ -17,8 +17,8 @@ detector = RetinaFace()
 
 **Priority order:**
 
-1. **CUDAExecutionProvider** - NVIDIA GPU
-2. **CoreMLExecutionProvider** - Apple Silicon
+1. **CoreMLExecutionProvider** - Apple Silicon
+2. **CUDAExecutionProvider** - NVIDIA GPU
 3. **CPUExecutionProvider** - Fallback
 
 ---

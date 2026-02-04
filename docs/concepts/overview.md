@@ -151,12 +151,18 @@ for face in faces:
 For convenience, `FaceAnalyzer` combines multiple modules:
 
 ```python
-from uniface import FaceAnalyzer
+from uniface import FaceAnalyzer, RetinaFace, ArcFace, AgeGender, FairFace
+
+detector = RetinaFace()
+recognizer = ArcFace()
+age_gender = AgeGender()
+fairface = FairFace()
 
 analyzer = FaceAnalyzer(
-    detect=True,
-    recognize=True,
-    attributes=True
+    detector,
+    recognizer=recognizer,
+    age_gender=age_gender,
+    fairface=fairface,
 )
 
 faces = analyzer.analyze(image)

@@ -27,29 +27,29 @@ import numpy as np
 
 class MyDetector(BaseDetector):
     def __init__(self, model_path: str, confidence_threshold: float = 0.5):
+        super().__init__(confidence_threshold=confidence_threshold)
         self.session = create_onnx_session(model_path)
         self.threshold = confidence_threshold
 
+    def preprocess(self, image: np.ndarray) -> np.ndarray:
+        # Your preprocessing logic
+        # e.g., resize, normalize, transpose
+        raise NotImplementedError
+
+    def postprocess(self, outputs, shape) -> list[Face]:
+        # Your postprocessing logic
+        # e.g., decode boxes, apply NMS, create Face objects
+        raise NotImplementedError
+
     def detect(self, image: np.ndarray) -> list[Face]:
         # 1. Preprocess image
-        input_tensor = self._preprocess(image)
+        input_tensor = self.preprocess(image)
 
         # 2. Run inference
         outputs = self.session.run(None, {'input': input_tensor})
 
         # 3. Postprocess outputs to Face objects
-        faces = self._postprocess(outputs, image.shape)
-        return faces
-
-    def _preprocess(self, image):
-        # Your preprocessing logic
-        # e.g., resize, normalize, transpose
-        pass
-
-    def _postprocess(self, outputs, shape):
-        # Your postprocessing logic
-        # e.g., decode boxes, apply NMS, create Face objects
-        pass
+        return self.postprocess(outputs, image.shape)
 ```
 
 ---
@@ -57,36 +57,14 @@ class MyDetector(BaseDetector):
 ## Add Custom Recognition Model
 
 ```python
-from uniface.recognition.base import BaseRecognizer
-from uniface.onnx_utils import create_onnx_session
-from uniface import face_alignment
-import numpy as np
+from uniface.recognition.base import BaseRecognizer, PreprocessConfig
 
 class MyRecognizer(BaseRecognizer):
-    def __init__(self, model_path: str):
-        self.session = create_onnx_session(model_path)
+    def __init__(self, model_path: str, providers=None):
+        preprocessing = PreprocessConfig(input_mean=127.5, input_std=127.5, input_size=(112, 112))
+        super().__init__(model_path, preprocessing, providers=providers)
 
-    def get_normalized_embedding(
-        self,
-        image: np.ndarray,
-        landmarks: np.ndarray
-    ) -> np.ndarray:
-        # 1. Align face
-        aligned = face_alignment(image, landmarks)
-
-        # 2. Preprocess
-        input_tensor = self._preprocess(aligned)
-
-        # 3. Run inference
-        embedding = self.session.run(None, {'input': input_tensor})[0]
-
-        # 4. Normalize
-        embedding = embedding / np.linalg.norm(embedding)
-        return embedding
-
-    def _preprocess(self, image):
-        # Your preprocessing logic
-        pass
+    # Optional: override preprocess() if your model expects custom normalization.
 ```
 
 ---

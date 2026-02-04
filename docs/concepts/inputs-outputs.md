@@ -199,16 +199,16 @@ print(f"Classes: {np.unique(mask)}")  # [0, 1, 2, ...]
 
 | ID | Class | ID | Class |
 |----|-------|----|-------|
-| 0 | Background | 10 | Ear Ring |
-| 1 | Skin | 11 | Nose |
-| 2 | Left Eyebrow | 12 | Mouth |
-| 3 | Right Eyebrow | 13 | Upper Lip |
-| 4 | Left Eye | 14 | Lower Lip |
-| 5 | Right Eye | 15 | Neck |
-| 6 | Eye Glasses | 16 | Neck Lace |
-| 7 | Left Ear | 17 | Cloth |
-| 8 | Right Ear | 18 | Hair |
-| 9 | Hat | | |
+| 0 | Background | 10 | Nose |
+| 1 | Skin | 11 | Mouth |
+| 2 | Left Eyebrow | 12 | Upper Lip |
+| 3 | Right Eyebrow | 13 | Lower Lip |
+| 4 | Left Eye | 14 | Neck |
+| 5 | Right Eye | 15 | Necklace |
+| 6 | Eyeglasses | 16 | Cloth |
+| 7 | Left Ear | 17 | Hair |
+| 8 | Right Ear | 18 | Hat |
+| 9 | Earring | | |
 
 ---
 

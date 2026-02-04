@@ -22,7 +22,7 @@ RetinaFace models are trained on the WIDER FACE dataset.
 !!! info "Accuracy & Benchmarks"
     **Accuracy**: WIDER FACE validation set (Easy/Medium/Hard subsets) - from [RetinaFace paper](https://arxiv.org/abs/1905.00641)
 
-    **Speed**: Benchmark on your own hardware using `python tools/detection.py --source <image> --iterations 100`
+    **Speed**: Benchmark on your own hardware using `python tools/detection.py --source <image>`
 
 ---
 
@@ -32,13 +32,13 @@ SCRFD (Sample and Computation Redistribution for Efficient Face Detection) model
 
 | Model Name       | Params | Size  | Easy   | Medium | Hard   |
 | ---------------- | ------ | ----- | ------ | ------ | ------ |
-| `SCRFD_500M`   | 0.6M   | 2.5MB | 90.57% | 88.12% | 68.51% |
-| `SCRFD_10G` :material-check-circle: | 4.2M   | 17MB  | 95.16% | 93.87% | 83.05% |
+| `SCRFD_500M_KPS`   | 0.6M   | 2.5MB | 90.57% | 88.12% | 68.51% |
+| `SCRFD_10G_KPS` :material-check-circle: | 4.2M   | 17MB  | 95.16% | 93.87% | 83.05% |
 
 !!! info "Accuracy & Benchmarks"
     **Accuracy**: WIDER FACE validation set - from [SCRFD paper](https://arxiv.org/abs/2105.04714)
 
-    **Speed**: Benchmark on your own hardware using `python tools/detection.py --source <image> --iterations 100`
+    **Speed**: Benchmark on your own hardware using `python tools/detection.py --source <image>`
 
 ---
 
@@ -55,7 +55,7 @@ YOLOv5-Face models provide detection with 5-point facial landmarks, trained on W
 !!! info "Accuracy & Benchmarks"
     **Accuracy**: WIDER FACE validation set - from [YOLOv5-Face paper](https://arxiv.org/abs/2105.12931)
 
-    **Speed**: Benchmark on your own hardware using `python tools/detection.py --source <image> --iterations 100`
+    **Speed**: Benchmark on your own hardware using `python tools/detection.py --source <image>`
 
 !!! note "Fixed Input Size"
     All YOLOv5-Face models use a fixed input size of 640×640.

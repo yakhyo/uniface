@@ -67,14 +67,18 @@ cv2.imwrite("result.jpg", result_image)
 For convenience, use the built-in `FaceAnalyzer`:
 
 ```python
-from uniface import FaceAnalyzer
+from uniface import FaceAnalyzer, RetinaFace, ArcFace, AgeGender
 import cv2
 
 # Initialize with desired modules
+detector = RetinaFace()
+recognizer = ArcFace()
+age_gender = AgeGender()
+
 analyzer = FaceAnalyzer(
-    detect=True,
-    recognize=True,
-    attributes=True
+    detector,
+    recognizer=recognizer,
+    age_gender=age_gender,
 )
 
 # Process image
