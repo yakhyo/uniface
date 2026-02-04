@@ -96,7 +96,8 @@ for face in faces:
 ```
 
 <div align="center">
-    <img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/test_result.png">
+    <img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/test_result.png" width="90%">
+    <p>Face Detection Model Output</p>
 </div>
 
 ---
