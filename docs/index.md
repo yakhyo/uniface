@@ -10,12 +10,16 @@ template: home.html
 
 # UniFace { .hero-title }
 
-<p class="hero-subtitle">A lightweight, production-ready face analysis library built on ONNX Runtime</p>
+<p class="hero-subtitle">All-in-One Open-Source Face Analysis Library</p>
 
-[![PyPI](https://img.shields.io/pypi/v/uniface.svg?label=PyPI)](https://pypi.org/project/uniface/)
-[![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://www.python.org/)
+[![PyPI Version](https://img.shields.io/pypi/v/uniface.svg?label=Version)](https://pypi.org/project/uniface/)
+[![Python Version](https://img.shields.io/badge/Python-3.10%2B-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Github Build Status](https://github.com/yakhyo/uniface/actions/workflows/ci.yml/badge.svg)](https://github.com/yakhyo/uniface/actions)
 [![PyPI Downloads](https://static.pepy.tech/personalized-badge/uniface?period=total&units=INTERNATIONAL_SYSTEM&left_color=GRAY&right_color=BLUE&left_text=Downloads)](https://pepy.tech/projects/uniface)
+[![Kaggle Badge](https://img.shields.io/badge/Notebooks-Kaggle?label=Kaggle&color=blue)](https://www.kaggle.com/yakhyokhuja/code)
+
+<img src="https://raw.githubusercontent.com/yakhyo/uniface/main/.github/logos/new/uniface_rounded_q80.webp" alt="UniFace - All-in-One Open-Source Face Analysis Library" style="max-width: 90%; margin: 1rem 0;">
 
 [Get Started](quickstart.md){ .md-button .md-button--primary }
 [View on GitHub](https://github.com/yakhyo/uniface){ .md-button }
