@@ -13,7 +13,7 @@
 </div>
 
 <div align="center">
-    <img src="https://raw.githubusercontent.com/yakhyo/uniface/main/.github/logos/new/uniface_rounded_q80.webp" width="90%">
+    <img src="https://raw.githubusercontent.com/yakhyo/uniface/main/.github/logos/new/uniface_rounded_q80.webp" width="90%" alt="UniFace - All-in-One Open-Source Face Analysis Library">
 </div>
 
 ---
