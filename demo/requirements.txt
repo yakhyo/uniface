@@ -1,0 +1,8 @@
+gradio>=4.0.0
+uniface>=2.3.0
+numpy>=1.21.0
+opencv-python-headless>=4.5.0
+onnxruntime>=1.16.0
+scikit-image>=0.19.0
+requests>=2.28.0
+tqdm>=4.64.0
