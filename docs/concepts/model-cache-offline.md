@@ -44,44 +44,57 @@ Default cache directory:
 
 ## Custom Cache Directory
 
-Specify a custom cache location:
+Use the programmatic API to change the cache location at runtime:
 
 ```python
-from uniface.model_store import verify_model_weights
-from uniface.constants import RetinaFaceWeights
+from uniface import set_cache_dir, get_cache_dir
 
-# Download to custom directory
-model_path = verify_model_weights(
-    RetinaFaceWeights.MNET_V2,
-    root='./my_models'
-)
-print(f"Model at: {model_path}")
+# Set a custom cache directory
+set_cache_dir('/data/models')
+
+# Verify the current path
+print(get_cache_dir())  # /data/models
+
+# All subsequent model loads use the new directory
+from uniface import RetinaFace
+detector = RetinaFace()  # Downloads to /data/models/
 ```
+
+Or set the `UNIFACE_CACHE_DIR` environment variable (see [Environment Variables](#environment-variables) below).
 
 ---
 
 ## Pre-Download Models
 
-Download models before deployment:
+Download models before deployment using the concurrent downloader:
 
 ```python
-from uniface.model_store import verify_model_weights
+from uniface import download_models
 from uniface.constants import (
     RetinaFaceWeights,
     ArcFaceWeights,
     AgeGenderWeights,
 )
 
-# Download all needed models
-models = [
+# Download multiple models concurrently (up to 4 threads by default)
+paths = download_models([
     RetinaFaceWeights.MNET_V2,
     ArcFaceWeights.MNET,
     AgeGenderWeights.DEFAULT,
-]
+])
 
-for model in models:
-    path = verify_model_weights(model)
-    print(f"Downloaded: {path}")
+for model, path in paths.items():
+    print(f"{model.value} -> {path}")
+```
+
+Or download one at a time:
+
+```python
+from uniface.model_store import verify_model_weights
+from uniface.constants import RetinaFaceWeights
+
+path = verify_model_weights(RetinaFaceWeights.MNET_V2)
+print(f"Downloaded: {path}")
 ```
 
 Or use the CLI tool:
@@ -115,7 +128,16 @@ print(f"Copy from: {path}")
 scp -r ~/.uniface/models/ user@offline-machine:~/.uniface/models/
 ```
 
-### 3. Use normally
+### 3. Point to the cache (if non-default location)
+
+```python
+from uniface import set_cache_dir
+
+# Only needed if the models are not at ~/.uniface/models/
+set_cache_dir('/path/to/copied/models')
+```
+
+### 4. Use normally
 
 ```python
 # Models load from local cache
@@ -182,7 +204,12 @@ If a model fails verification, it's re-downloaded automatically.
 
 ## Clear Cache
 
-Remove cached models:
+Find and remove cached models:
+
+```python
+from uniface import get_cache_dir
+print(get_cache_dir())  # shows the active cache path
+```
 
 ```bash
 # Remove all cached models
@@ -198,11 +225,18 @@ Models will be re-downloaded on next use.
 
 ## Environment Variables
 
-Set custom cache location via environment variable:
+There are three equivalent ways to configure the cache directory:
 
-```bash
-export UNIFACE_CACHE_DIR=/path/to/custom/cache
+**1. Programmatic API (recommended)**
+
+```python
+from uniface import set_cache_dir, get_cache_dir
+
+set_cache_dir('/path/to/custom/cache')
+print(get_cache_dir())  # /path/to/custom/cache
 ```
+
+**2. Direct environment variable (Python)**
 
 ```python
 import os
@@ -211,6 +245,14 @@ os.environ['UNIFACE_CACHE_DIR'] = '/path/to/custom/cache'
 from uniface import RetinaFace
 detector = RetinaFace()  # Uses custom cache
 ```
+
+**3. Shell environment variable**
+
+```bash
+export UNIFACE_CACHE_DIR=/path/to/custom/cache
+```
+
+All three methods set the same `UNIFACE_CACHE_DIR` environment variable under the hood. `get_cache_dir()` always returns the resolved path.
 
 ---
 

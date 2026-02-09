@@ -9,6 +9,7 @@
 [![PyPI Downloads](https://static.pepy.tech/personalized-badge/uniface?period=total&units=INTERNATIONAL_SYSTEM&left_color=GRAY&right_color=BLUE&left_text=Downloads)](https://pepy.tech/projects/uniface)
 [![UniFace Documentation](https://img.shields.io/badge/Docs-UniFace-blue.svg)](https://yakhyo.github.io/uniface/)
 [![Kaggle Badge](https://img.shields.io/badge/Notebooks-Kaggle?label=Kaggle&color=blue)](https://www.kaggle.com/yakhyokhuja/code)
+[![Discord](https://img.shields.io/badge/Discord-Join%20Server-5865F2?logo=discord&logoColor=white)](https://discord.gg/wdzrjr7R5j)
 
 </div>
 
@@ -71,7 +72,18 @@ Models are downloaded automatically on first use and verified via SHA-256.
 
 Default cache location: `~/.uniface/models`
 
-You can override it with `UNIFACE_CACHE_DIR=/your/cache/path`
+Override with the programmatic API or environment variable:
+
+```python
+from uniface import set_cache_dir, get_cache_dir
+
+set_cache_dir('/data/models')
+print(get_cache_dir())  # /data/models
+```
+
+```bash
+export UNIFACE_CACHE_DIR=/data/models
+```
 
 ---
 
@@ -209,6 +221,7 @@ Contributions are welcome. Please see [CONTRIBUTING.md](CONTRIBUTING.md).
 If you find this project useful, consider giving it a ⭐ on GitHub — it helps others discover it!
 
 Questions or feedback:
+- Discord: https://discord.gg/wdzrjr7R5j
 - GitHub Issues: https://github.com/yakhyo/uniface/issues
 - DeepWiki Q&A: https://deepwiki.com/yakhyo/uniface
 
