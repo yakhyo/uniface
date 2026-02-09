@@ -200,7 +200,10 @@ def detect_faces_fn(
         lmk = f.landmarks.astype(int)
         faces_json[f'face_{i}'] = {
             'confidence': round(float(f.confidence), 4),
-            'x1': x1, 'y1': y1, 'x2': x2, 'y2': y2,
+            'x1': x1,
+            'y1': y1,
+            'x2': x2,
+            'y2': y2,
             'left_eye': {'x': int(lmk[0][0]), 'y': int(lmk[0][1])},
             'right_eye': {'x': int(lmk[1][0]), 'y': int(lmk[1][1])},
             'nose': {'x': int(lmk[2][0]), 'y': int(lmk[2][1])},
@@ -260,11 +263,18 @@ def verify_faces_fn(
 
     verdict = 'Same Person' if similarity > 0.4 else 'Different Person'
 
-    return _bgr_to_rgb(crop_a), _bgr_to_rgb(crop_b), json.dumps({
-        'cosine_similarity': round(similarity, 4),
-        'threshold': 0.4,
-        'verdict': verdict,
-    }, indent=2)
+    return (
+        _bgr_to_rgb(crop_a),
+        _bgr_to_rgb(crop_b),
+        json.dumps(
+            {
+                'cosine_similarity': round(similarity, 4),
+                'threshold': 0.4,
+                'verdict': verdict,
+            },
+            indent=2,
+        ),
+    )
 
 
 # ===================================================================
@@ -363,7 +373,10 @@ def landmarks_fn(image: np.ndarray) -> tuple[np.ndarray, str]:
         x1, y1, x2, y2 = map(int, face.bbox)
         lmk_dict = {f'pt_{j}': {'x': int(pt[0]), 'y': int(pt[1])} for j, pt in enumerate(lmk106)}
         faces_json[f'face_{i + 1}'] = {
-            'x1': x1, 'y1': y1, 'x2': x2, 'y2': y2,
+            'x1': x1,
+            'y1': y1,
+            'x2': x2,
+            'y2': y2,
             'num_landmarks': len(lmk106),
             'landmarks': lmk_dict,
         }
@@ -405,7 +418,10 @@ def parsing_fn(
         unique_classes = sorted(set(mask.flatten()))
         class_names = [FACE_PARSING_LABELS[c] for c in unique_classes if c < len(FACE_PARSING_LABELS)]
         faces_json[f'face_{i + 1}'] = {
-            'x1': x1, 'y1': y1, 'x2': x2, 'y2': y2,
+            'x1': x1,
+            'y1': y1,
+            'x2': x2,
+            'y2': y2,
             'num_classes': len(unique_classes),
             'classes': ', '.join(class_names),
         }
@@ -422,12 +438,15 @@ def parsing_fn(
         r, g, b = FACE_PARSING_COLORS[idx]
         legend[name] = f'rgb({r}, {g}, {b})'
 
-    return _bgr_to_rgb(result), json.dumps({
-        'model': model_variant,
-        'num_faces': len(faces),
-        **faces_json,
-        'legend': legend,
-    }, indent=2)
+    return _bgr_to_rgb(result), json.dumps(
+        {
+            'model': model_variant,
+            'num_faces': len(faces),
+            **faces_json,
+            'legend': legend,
+        },
+        indent=2,
+    )
 
 
 # ===================================================================
@@ -460,7 +479,10 @@ def gaze_fn(
         pitch_deg = float(np.degrees(gaze_result.pitch))
         yaw_deg = float(np.degrees(gaze_result.yaw))
         faces_json[f'face_{i + 1}'] = {
-            'x1': x1, 'y1': y1, 'x2': x2, 'y2': y2,
+            'x1': x1,
+            'y1': y1,
+            'x2': x2,
+            'y2': y2,
             'pitch_deg': round(pitch_deg, 2),
             'yaw_deg': round(yaw_deg, 2),
         }
@@ -501,7 +523,10 @@ def spoofing_fn(
         color = (0, 255, 0) if spoof_result.is_real else (0, 0, 255)
         x1, y1, x2, y2 = map(int, face.bbox)
         faces_json[f'face_{i + 1}'] = {
-            'x1': x1, 'y1': y1, 'x2': x2, 'y2': y2,
+            'x1': x1,
+            'y1': y1,
+            'x2': x2,
+            'y2': y2,
             'verdict': label,
             'is_real': bool(spoof_result.is_real),
             'confidence': round(float(spoof_result.confidence), 4),
@@ -605,16 +630,16 @@ def build_app() -> gr.Blocks:
                     ver_image_a = gr.Image(label='Image A', type='numpy')
                     ver_image_b = gr.Image(label='Image B', type='numpy')
                     with gr.Accordion('Settings', open=False), gr.Row():
-                            ver_family = gr.Dropdown(
-                                choices=list(RECOGNIZER_VARIANTS.keys()),
-                                value='ArcFace',
-                                label='Recognizer',
-                            )
-                            ver_variant = gr.Dropdown(
-                                choices=RECOGNIZER_VARIANTS['ArcFace'],
-                                value=ArcFaceWeights.RESNET.value,
-                                label='Model Variant',
-                            )
+                        ver_family = gr.Dropdown(
+                            choices=list(RECOGNIZER_VARIANTS.keys()),
+                            value='ArcFace',
+                            label='Recognizer',
+                        )
+                        ver_variant = gr.Dropdown(
+                            choices=RECOGNIZER_VARIANTS['ArcFace'],
+                            value=ArcFaceWeights.RESNET.value,
+                            label='Model Variant',
+                        )
                     ver_btn = gr.Button('Verify', variant='primary')
                 with gr.Column():
                     with gr.Row():
