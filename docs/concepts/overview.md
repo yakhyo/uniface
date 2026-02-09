@@ -176,7 +176,7 @@ for face in faces:
 ## Model Lifecycle
 
 1. **First use**: Model is downloaded from GitHub releases
-2. **Cached**: Stored in `~/.uniface/models/`
+2. **Cached**: Stored in `~/.uniface/models/` (configurable via `set_cache_dir()` or `UNIFACE_CACHE_DIR`)
 3. **Verified**: SHA-256 checksum validation
 4. **Loaded**: ONNX Runtime session created
 5. **Inference**: Hardware-accelerated execution
@@ -184,6 +184,11 @@ for face in faces:
 ```python
 # Models auto-download on first use
 detector = RetinaFace()  # Downloads if not cached
+
+# Optionally configure cache location
+from uniface import set_cache_dir, get_cache_dir
+set_cache_dir('/data/models')
+print(get_cache_dir())  # /data/models
 
 # Or manually pre-download
 from uniface.model_store import verify_model_weights

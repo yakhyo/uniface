@@ -349,9 +349,13 @@ Face anti-spoofing models for liveness detection. Detect if a face is real (live
 
 Models are automatically downloaded and cached on first use.
 
-- **Cache location**: `~/.uniface/models/`
+- **Cache location**: `~/.uniface/models/` (configurable via `set_cache_dir()` or `UNIFACE_CACHE_DIR` env var)
+- **Inspect cache path**: `get_cache_dir()` returns the resolved active path
 - **Verification**: Models are verified with SHA-256 checksums
+- **Concurrent download**: `download_models([...])` fetches multiple models in parallel
 - **Manual download**: Use `python tools/download_model.py` to pre-download models
+
+See [Model Cache & Offline Use](concepts/model-cache-offline.md) for full details.
 
 ---
 

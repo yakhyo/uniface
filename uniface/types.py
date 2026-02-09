@@ -17,6 +17,7 @@ Note on mutability:
 from __future__ import annotations
 
 from dataclasses import dataclass, fields
+import json
 
 import numpy as np
 
@@ -181,6 +182,34 @@ class Face:
     def to_dict(self) -> dict:
         """Convert to dictionary."""
         return {f.name: getattr(self, f.name) for f in fields(self)}
+
+    def to_json(self, indent: int | None = None) -> str:
+        """Serialize the Face object to a JSON string.
+
+        Converts numpy arrays to Python lists and numpy scalar types to
+        native Python types so the result is fully JSON-serializable.
+
+        Args:
+            indent: Number of spaces for pretty-printing. None for compact output.
+
+        Returns:
+            JSON string representation of this Face object.
+
+        Example:
+            >>> face = faces[0]
+            >>> print(face.to_json(indent=2))
+        """
+        data: dict = {}
+        for f in fields(self):
+            value = getattr(self, f.name)
+            if isinstance(value, np.ndarray):
+                value = value.tolist()
+            elif isinstance(value, np.floating):
+                value = float(value)
+            elif isinstance(value, np.integer):
+                value = int(value)
+            data[f.name] = value
+        return json.dumps(data, indent=indent)
 
     @property
     def sex(self) -> str | None:
