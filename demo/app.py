@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import cv2
@@ -35,9 +36,19 @@ from uniface.visualization import (
 # ---------------------------------------------------------------------------
 # Resolve asset paths relative to this script so examples work from any cwd
 # ---------------------------------------------------------------------------
-_ASSETS_DIR = Path(__file__).resolve().parent.parent / 'assets'
-EXAMPLE_SCIENTISTS = str(_ASSETS_DIR / 'scientists.png')
-EXAMPLE_TEST = str(_ASSETS_DIR / 'test.jpg')
+_DEMO_ASSETS_DIR = Path(__file__).resolve().parent / 'assets'
+EXAMPLE_DEFAULT = str(_DEMO_ASSETS_DIR / 'image.png')
+EXAMPLE_VER_IMG1 = str(_DEMO_ASSETS_DIR / 'verification' / 'image1.png')
+EXAMPLE_VER_IMG2 = str(_DEMO_ASSETS_DIR / 'verification' / 'image2.png')
+EXAMPLE_VER_IMG3 = str(_DEMO_ASSETS_DIR / 'verification' / 'image3.png')
+EXAMPLE_ATTR_1 = str(_DEMO_ASSETS_DIR / 'attribute' / 'image1.png')
+EXAMPLE_ATTR_2 = str(_DEMO_ASSETS_DIR / 'attribute' / 'image2.png')
+EXAMPLE_GAZE_1 = str(_DEMO_ASSETS_DIR / 'gaze' / 'image1.png')
+EXAMPLE_GAZE_2 = str(_DEMO_ASSETS_DIR / 'gaze' / 'image2.png')
+EXAMPLE_SPOOF_1 = str(_DEMO_ASSETS_DIR / 'spoofing' / 'image1.jpg')
+EXAMPLE_SPOOF_2 = str(_DEMO_ASSETS_DIR / 'spoofing' / 'image2.jpg')
+EXAMPLE_SPOOF_3 = str(_DEMO_ASSETS_DIR / 'spoofing' / 'image3.jpg')
+EXAMPLE_ANONYMIZE = str(_DEMO_ASSETS_DIR / 'anonymize' / 'image.png')
 
 # ---------------------------------------------------------------------------
 # Model cache: lazily create and reuse model instances
@@ -160,7 +171,7 @@ def detect_faces_fn(
     nms_threshold: float,
 ) -> tuple[np.ndarray, str]:
     if image is None:
-        return None, 'Please upload an image.'
+        return None, ''
 
     bgr = _rgb_to_bgr(image)
     method = DETECTOR_METHOD_MAP[detector_family]
@@ -183,12 +194,21 @@ def detect_faces_fn(
     landmarks = [f.landmarks for f in faces]
     draw_detections(image=result, bboxes=bboxes, scores=scores, landmarks=landmarks, draw_score=True, fancy_bbox=True)
 
-    lines = [f'Detected {len(faces)} face(s)\n']
+    faces_json = {}
     for i, f in enumerate(faces, 1):
         x1, y1, x2, y2 = map(int, f.bbox)
-        lines.append(f'  Face {i}: confidence={f.confidence:.3f}, bbox=[{x1}, {y1}, {x2}, {y2}]')
+        lmk = f.landmarks.astype(int)
+        faces_json[f'face_{i}'] = {
+            'confidence': round(float(f.confidence), 4),
+            'x1': x1, 'y1': y1, 'x2': x2, 'y2': y2,
+            'left_eye': {'x': int(lmk[0][0]), 'y': int(lmk[0][1])},
+            'right_eye': {'x': int(lmk[1][0]), 'y': int(lmk[1][1])},
+            'nose': {'x': int(lmk[2][0]), 'y': int(lmk[2][1])},
+            'mouth_left': {'x': int(lmk[3][0]), 'y': int(lmk[3][1])},
+            'mouth_right': {'x': int(lmk[4][0]), 'y': int(lmk[4][1])},
+        }
 
-    return _bgr_to_rgb(result), '\n'.join(lines)
+    return _bgr_to_rgb(result), json.dumps({'num_faces': len(faces), **faces_json}, indent=2)
 
 
 # ===================================================================
@@ -206,7 +226,7 @@ def verify_faces_fn(
     recognizer_variant: str,
 ) -> tuple[np.ndarray | None, np.ndarray | None, str]:
     if image_a is None or image_b is None:
-        return None, None, 'Please upload both images.'
+        return None, None, json.dumps({'error': 'Please upload both images.'}, indent=2)
 
     bgr_a = _rgb_to_bgr(image_a)
     bgr_b = _rgb_to_bgr(image_b)
@@ -223,9 +243,9 @@ def verify_faces_fn(
     faces_b = det.detect(bgr_b)
 
     if not faces_a:
-        return None, None, 'No face detected in Image A.'
+        return None, None, json.dumps({'error': 'No face detected in Image A.'}, indent=2)
     if not faces_b:
-        return None, None, 'No face detected in Image B.'
+        return None, None, json.dumps({'error': 'No face detected in Image B.'}, indent=2)
 
     face_a = faces_a[0]
     face_b = faces_b[0]
@@ -239,9 +259,12 @@ def verify_faces_fn(
     crop_b, _ = uniface.face_alignment(bgr_b, face_b.landmarks, image_size=112)
 
     verdict = 'Same Person' if similarity > 0.4 else 'Different Person'
-    text = f'Cosine Similarity: {similarity:.4f}\nVerdict: {verdict} (threshold=0.4)'
 
-    return _bgr_to_rgb(crop_a), _bgr_to_rgb(crop_b), text
+    return _bgr_to_rgb(crop_a), _bgr_to_rgb(crop_b), json.dumps({
+        'cosine_similarity': round(similarity, 4),
+        'threshold': 0.4,
+        'verdict': verdict,
+    }, indent=2)
 
 
 # ===================================================================
@@ -252,7 +275,7 @@ def analyze_faces_fn(
     attr_model: str,
 ) -> tuple[np.ndarray, str]:
     if image is None:
-        return None, 'Please upload an image.'
+        return None, ''
 
     bgr = _rgb_to_bgr(image)
 
@@ -291,20 +314,21 @@ def analyze_faces_fn(
             cv2.rectangle(result, (x1, y1 - th - 10), (x1 + tw + 10, y1), (0, 255, 0), -1)
             cv2.putText(result, label, (x1 + 5, y1 - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 2)
 
-    lines = [f'Detected {len(faces)} face(s)\n']
+    faces_json = {}
     for i, face in enumerate(faces, 1):
-        parts = [f'  Face {i}:']
+        x1, y1, x2, y2 = map(int, face.bbox)
+        entry: dict = {'x1': x1, 'y1': y1, 'x2': x2, 'y2': y2}
         if face.sex is not None:
-            parts.append(f'gender={face.sex}')
+            entry['gender'] = face.sex
         if face.age is not None:
-            parts.append(f'age={face.age}')
+            entry['age'] = face.age
         if face.age_group is not None:
-            parts.append(f'age_group={face.age_group}')
+            entry['age_group'] = face.age_group
         if face.race is not None:
-            parts.append(f'race={face.race}')
-        lines.append(', '.join(parts))
+            entry['race'] = face.race
+        faces_json[f'face_{i}'] = entry
 
-    return _bgr_to_rgb(result), '\n'.join(lines)
+    return _bgr_to_rgb(result), json.dumps({'model': attr_model, 'num_faces': len(faces), **faces_json}, indent=2)
 
 
 # ===================================================================
@@ -312,7 +336,7 @@ def analyze_faces_fn(
 # ===================================================================
 def landmarks_fn(image: np.ndarray) -> tuple[np.ndarray, str]:
     if image is None:
-        return None, 'Please upload an image.'
+        return None, ''
 
     bgr = _rgb_to_bgr(image)
     det = _get_model('det_retina_default', uniface.create_detector, 'retinaface')
@@ -320,12 +344,6 @@ def landmarks_fn(image: np.ndarray) -> tuple[np.ndarray, str]:
 
     faces = det.detect(bgr)
     result = bgr.copy()
-
-    # Draw detection bboxes
-    bboxes = [f.bbox for f in faces]
-    scores = [f.confidence for f in faces]
-    lmks5 = [f.landmarks for f in faces]
-    draw_detections(image=result, bboxes=bboxes, scores=scores, landmarks=lmks5, fancy_bbox=True)
 
     # Color palette for 106 landmarks
     colors = [
@@ -339,16 +357,22 @@ def landmarks_fn(image: np.ndarray) -> tuple[np.ndarray, str]:
         (255, 128, 0),
     ]
 
-    lines = [f'Detected {len(faces)} face(s)\n']
+    faces_json = {}
     for i, face in enumerate(faces):
         lmk106 = landmarker.get_landmarks(bgr, face.bbox)
-        lines.append(f'  Face {i + 1}: 106 landmarks detected')
+        x1, y1, x2, y2 = map(int, face.bbox)
+        lmk_dict = {f'pt_{j}': {'x': int(pt[0]), 'y': int(pt[1])} for j, pt in enumerate(lmk106)}
+        faces_json[f'face_{i + 1}'] = {
+            'x1': x1, 'y1': y1, 'x2': x2, 'y2': y2,
+            'num_landmarks': len(lmk106),
+            'landmarks': lmk_dict,
+        }
 
         for j, pt in enumerate(lmk106):
             color = colors[j % len(colors)]
             cv2.circle(result, (int(pt[0]), int(pt[1])), 2, color, -1)
 
-    return _bgr_to_rgb(result), '\n'.join(lines)
+    return _bgr_to_rgb(result), json.dumps({'num_faces': len(faces), **faces_json}, indent=2)
 
 
 # ===================================================================
@@ -359,7 +383,7 @@ def parsing_fn(
     model_variant: str,
 ) -> tuple[np.ndarray, str]:
     if image is None:
-        return None, 'Please upload an image.'
+        return None, ''
 
     bgr = _rgb_to_bgr(image)
     det = _get_model('det_retina_default', uniface.create_detector, 'retinaface')
@@ -370,7 +394,7 @@ def parsing_fn(
     faces = det.detect(bgr)
     result = bgr.copy()
 
-    lines = [f'Detected {len(faces)} face(s)\n']
+    faces_json = {}
     for i, face in enumerate(faces):
         x1, y1, x2, y2 = _expand_bbox(face.bbox, bgr.shape)
         crop = bgr[y1:y2, x1:x2]
@@ -380,22 +404,30 @@ def parsing_fn(
         mask = parser.parse(crop)
         unique_classes = sorted(set(mask.flatten()))
         class_names = [FACE_PARSING_LABELS[c] for c in unique_classes if c < len(FACE_PARSING_LABELS)]
-        lines.append(f'  Face {i + 1}: {len(unique_classes)} classes — {", ".join(class_names)}')
+        faces_json[f'face_{i + 1}'] = {
+            'x1': x1, 'y1': y1, 'x2': x2, 'y2': y2,
+            'num_classes': len(unique_classes),
+            'classes': ', '.join(class_names),
+        }
 
         crop_rgb = cv2.cvtColor(crop, cv2.COLOR_BGR2RGB)
         vis = vis_parsing_maps(crop_rgb, mask, save_image=False)
         result[y1:y2, x1:x2] = vis
 
-    # Build legend text
-    legend_parts = ['Legend:']
+    # Build legend map
+    legend = {}
     for idx, name in enumerate(FACE_PARSING_LABELS):
         if idx == 0:
             continue
         r, g, b = FACE_PARSING_COLORS[idx]
-        legend_parts.append(f'  {idx:2d}. {name} — RGB({r}, {g}, {b})')
-    lines.append('\n' + '\n'.join(legend_parts))
+        legend[name] = f'rgb({r}, {g}, {b})'
 
-    return _bgr_to_rgb(result), '\n'.join(lines)
+    return _bgr_to_rgb(result), json.dumps({
+        'model': model_variant,
+        'num_faces': len(faces),
+        **faces_json,
+        'legend': legend,
+    }, indent=2)
 
 
 # ===================================================================
@@ -406,7 +438,7 @@ def gaze_fn(
     backbone: str,
 ) -> tuple[np.ndarray, str]:
     if image is None:
-        return None, 'Please upload an image.'
+        return None, ''
 
     bgr = _rgb_to_bgr(image)
     det = _get_model('det_retina_default', uniface.create_detector, 'retinaface')
@@ -417,7 +449,7 @@ def gaze_fn(
     faces = det.detect(bgr)
     result = bgr.copy()
 
-    lines = [f'Detected {len(faces)} face(s)\n']
+    faces_json = {}
     for i, face in enumerate(faces):
         x1, y1, x2, y2 = map(int, face.bbox[:4])
         crop = bgr[y1:y2, x1:x2]
@@ -427,11 +459,15 @@ def gaze_fn(
         gaze_result = gaze.estimate(crop)
         pitch_deg = float(np.degrees(gaze_result.pitch))
         yaw_deg = float(np.degrees(gaze_result.yaw))
-        lines.append(f'  Face {i + 1}: pitch={pitch_deg:.1f} deg, yaw={yaw_deg:.1f} deg')
+        faces_json[f'face_{i + 1}'] = {
+            'x1': x1, 'y1': y1, 'x2': x2, 'y2': y2,
+            'pitch_deg': round(pitch_deg, 2),
+            'yaw_deg': round(yaw_deg, 2),
+        }
 
         draw_gaze(result, face.bbox, gaze_result.pitch, gaze_result.yaw, draw_angles=True)
 
-    return _bgr_to_rgb(result), '\n'.join(lines)
+    return _bgr_to_rgb(result), json.dumps({'backbone': backbone, 'num_faces': len(faces), **faces_json}, indent=2)
 
 
 # ===================================================================
@@ -442,7 +478,7 @@ def spoofing_fn(
     model_variant: str,
 ) -> tuple[np.ndarray, str]:
     if image is None:
-        return None, 'Please upload an image.'
+        return None, ''
 
     bgr = _rgb_to_bgr(image)
     det = _get_model('det_retina_default', uniface.create_detector, 'retinaface')
@@ -458,12 +494,18 @@ def spoofing_fn(
     lmks = [f.landmarks for f in faces]
     draw_detections(image=result, bboxes=bboxes, scores=scores, landmarks=lmks, fancy_bbox=True)
 
-    lines = [f'Detected {len(faces)} face(s)\n']
+    faces_json = {}
     for i, face in enumerate(faces):
         spoof_result = spoofer.predict(bgr, face.bbox)
         label = 'REAL' if spoof_result.is_real else 'FAKE'
         color = (0, 255, 0) if spoof_result.is_real else (0, 0, 255)
-        lines.append(f'  Face {i + 1}: {label} (confidence={spoof_result.confidence:.4f})')
+        x1, y1, x2, y2 = map(int, face.bbox)
+        faces_json[f'face_{i + 1}'] = {
+            'x1': x1, 'y1': y1, 'x2': x2, 'y2': y2,
+            'verdict': label,
+            'is_real': bool(spoof_result.is_real),
+            'confidence': round(float(spoof_result.confidence), 4),
+        }
 
         x1, y1 = int(face.bbox[0]), int(face.bbox[1])
         text = f'{label} {spoof_result.confidence:.2f}'
@@ -471,7 +513,7 @@ def spoofing_fn(
         cv2.rectangle(result, (x1, y1 - th - 10), (x1 + tw + 10, y1), color, -1)
         cv2.putText(result, text, (x1 + 5, y1 - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
 
-    return _bgr_to_rgb(result), '\n'.join(lines)
+    return _bgr_to_rgb(result), json.dumps({'num_faces': len(faces), **faces_json}, indent=2)
 
 
 # ===================================================================
@@ -482,52 +524,65 @@ def anonymize_fn(
     blur_method: str,
 ) -> tuple[np.ndarray, str]:
     if image is None:
-        return None, 'Please upload an image.'
+        return None, ''
 
     bgr = _rgb_to_bgr(image)
     result = uniface.anonymize_faces(bgr, method=blur_method)
 
-    return _bgr_to_rgb(result), f'Anonymized with method: {blur_method}'
+    return _bgr_to_rgb(result), json.dumps({'method': blur_method, 'status': 'done'}, indent=2)
 
 
 # ===================================================================
 # Gradio UI
 # ===================================================================
 def build_app() -> gr.Blocks:
-    with gr.Blocks(
-        title='UniFace Demo',
-        theme=gr.themes.Soft(),
-    ) as app:
+    with gr.Blocks(title='UniFace Demo') as app:
         gr.Markdown(
-            '# UniFace Demo\n'
-            'A comprehensive face analysis toolkit built on ONNX Runtime.  \n'
-            f'**Version {uniface.__version__}** '
-            '| [GitHub](https://github.com/yakhyo/uniface) '
-            '| [PyPI](https://pypi.org/project/uniface/)'
+            '<div style="text-align: center;">'
+            '<h1 style="margin: 0;">UniFace</h1>'
+            '<h3 style="margin: 4px 0 0;">All-in-One Face Analysis Library</h3>'
+            f'<p style="margin: 4px 0 8px;">v{uniface.__version__} &nbsp;·&nbsp; '
+            'Built on ONNX Runtime &nbsp;·&nbsp; Fast, lightweight, production-ready</p>'
+            '<p style="margin: 0;">'
+            'Face Detection · Recognition · Landmarks · Parsing · '
+            'Gaze Estimation · Attribute Analysis · Anti-Spoofing · Anonymization'
+            '</p>'
+            '<p style="margin: 8px 0 0;">'
+            '<a href="https://github.com/yakhyo/uniface" target="_blank">⭐ Star on GitHub</a>'
+            ' &nbsp;·&nbsp; '
+            '<a href="https://pypi.org/project/uniface/" target="_blank">PyPI</a>'
+            ' &nbsp;·&nbsp; '
+            '<a href="https://yakhyo.github.io/uniface/" target="_blank">Docs</a>'
+            ' &nbsp;·&nbsp; '
+            '<a href="https://www.kaggle.com/yakhyokhuja/code" target="_blank">Kaggle Notebooks</a>'
+            '</p>'
+            '</div>',
         )
 
         # ------ Tab 1: Detection ------
         with gr.Tab('Face Detection'):
+            gr.Markdown('Detect faces using multiple detector architectures with adjustable thresholds.')
             with gr.Row():
                 with gr.Column():
                     det_image = gr.Image(label='Input Image', type='numpy')
-                    with gr.Row():
-                        det_family = gr.Dropdown(
-                            choices=list(DETECTOR_VARIANTS.keys()),
-                            value='RetinaFace',
-                            label='Detector',
-                        )
-                        det_variant = gr.Dropdown(
-                            choices=DETECTOR_VARIANTS['RetinaFace'],
-                            value=RetinaFaceWeights.MNET_V2.value,
-                            label='Model Variant',
-                        )
-                    det_conf = gr.Slider(0.1, 1.0, value=0.5, step=0.05, label='Confidence Threshold')
-                    det_nms = gr.Slider(0.1, 1.0, value=0.4, step=0.05, label='NMS Threshold')
+                    with gr.Accordion('Settings', open=False):
+                        with gr.Row():
+                            det_family = gr.Dropdown(
+                                choices=list(DETECTOR_VARIANTS.keys()),
+                                value='RetinaFace',
+                                label='Detector',
+                            )
+                            det_variant = gr.Dropdown(
+                                choices=DETECTOR_VARIANTS['RetinaFace'],
+                                value=RetinaFaceWeights.MNET_V2.value,
+                                label='Model Variant',
+                            )
+                        det_conf = gr.Slider(0.1, 1.0, value=0.5, step=0.05, label='Confidence Threshold')
+                        det_nms = gr.Slider(0.1, 1.0, value=0.4, step=0.05, label='NMS Threshold')
                     det_btn = gr.Button('Detect Faces', variant='primary')
                 with gr.Column():
                     det_output = gr.Image(label='Result')
-                    det_text = gr.Textbox(label='Details', lines=6)
+                    det_text = gr.Textbox(label='Results', lines=8, show_copy_button=True)
 
             det_family.change(_update_detector_variants, inputs=det_family, outputs=det_variant)
             det_btn.click(
@@ -537,34 +592,35 @@ def build_app() -> gr.Blocks:
             )
 
             gr.Examples(
-                examples=[[EXAMPLE_SCIENTISTS, 'RetinaFace', RetinaFaceWeights.MNET_V2.value, 0.5, 0.4]],
+                examples=[[EXAMPLE_DEFAULT, 'RetinaFace', RetinaFaceWeights.MNET_V2.value, 0.5, 0.4]],
                 inputs=[det_image, det_family, det_variant, det_conf, det_nms],
                 label='Try an example',
             )
 
         # ------ Tab 2: Verification ------
         with gr.Tab('Face Verification'):
+            gr.Markdown('Compare two faces to determine if they belong to the same person.')
             with gr.Row():
                 with gr.Column():
                     ver_image_a = gr.Image(label='Image A', type='numpy')
                     ver_image_b = gr.Image(label='Image B', type='numpy')
-                    with gr.Row():
-                        ver_family = gr.Dropdown(
-                            choices=list(RECOGNIZER_VARIANTS.keys()),
-                            value='ArcFace',
-                            label='Recognizer',
-                        )
-                        ver_variant = gr.Dropdown(
-                            choices=RECOGNIZER_VARIANTS['ArcFace'],
-                            value=ArcFaceWeights.RESNET.value,
-                            label='Model Variant',
-                        )
+                    with gr.Accordion('Settings', open=False), gr.Row():
+                            ver_family = gr.Dropdown(
+                                choices=list(RECOGNIZER_VARIANTS.keys()),
+                                value='ArcFace',
+                                label='Recognizer',
+                            )
+                            ver_variant = gr.Dropdown(
+                                choices=RECOGNIZER_VARIANTS['ArcFace'],
+                                value=ArcFaceWeights.RESNET.value,
+                                label='Model Variant',
+                            )
                     ver_btn = gr.Button('Verify', variant='primary')
                 with gr.Column():
                     with gr.Row():
                         ver_crop_a = gr.Image(label='Aligned Face A')
                         ver_crop_b = gr.Image(label='Aligned Face B')
-                    ver_text = gr.Textbox(label='Result', lines=3)
+                    ver_text = gr.Textbox(label='Results', lines=5, show_copy_button=True)
 
             ver_family.change(_update_recognizer_variants, inputs=ver_family, outputs=ver_variant)
             ver_btn.click(
@@ -573,20 +629,32 @@ def build_app() -> gr.Blocks:
                 outputs=[ver_crop_a, ver_crop_b, ver_text],
             )
 
+            gr.Examples(
+                examples=[
+                    [EXAMPLE_VER_IMG1, EXAMPLE_VER_IMG2, 'ArcFace', ArcFaceWeights.RESNET.value],
+                    [EXAMPLE_VER_IMG1, EXAMPLE_VER_IMG3, 'ArcFace', ArcFaceWeights.RESNET.value],
+                    [EXAMPLE_VER_IMG2, EXAMPLE_VER_IMG3, 'ArcFace', ArcFaceWeights.RESNET.value],
+                ],
+                inputs=[ver_image_a, ver_image_b, ver_family, ver_variant],
+                label='Try an example',
+            )
+
         # ------ Tab 3: Analysis ------
         with gr.Tab('Face Analysis'):
+            gr.Markdown('Predict age, gender, and race attributes for each detected face.')
             with gr.Row():
                 with gr.Column():
                     ana_image = gr.Image(label='Input Image', type='numpy')
-                    ana_model = gr.Radio(
-                        choices=['AgeGender', 'FairFace'],
-                        value='AgeGender',
-                        label='Attribute Model',
-                    )
+                    with gr.Accordion('Settings', open=False):
+                        ana_model = gr.Radio(
+                            choices=['AgeGender', 'FairFace'],
+                            value='AgeGender',
+                            label='Attribute Model',
+                        )
                     ana_btn = gr.Button('Analyze', variant='primary')
                 with gr.Column():
                     ana_output = gr.Image(label='Result')
-                    ana_text = gr.Textbox(label='Attributes', lines=6)
+                    ana_text = gr.Textbox(label='Attributes', lines=8, show_copy_button=True)
 
             ana_btn.click(
                 analyze_faces_fn,
@@ -595,20 +663,24 @@ def build_app() -> gr.Blocks:
             )
 
             gr.Examples(
-                examples=[[EXAMPLE_SCIENTISTS, 'AgeGender']],
+                examples=[
+                    [EXAMPLE_ATTR_1, 'AgeGender'],
+                    [EXAMPLE_ATTR_2, 'FairFace'],
+                ],
                 inputs=[ana_image, ana_model],
                 label='Try an example',
             )
 
         # ------ Tab 4: Landmarks ------
         with gr.Tab('Landmarks (106-pt)'):
+            gr.Markdown('Detect 106 facial keypoints for detailed face geometry analysis.')
             with gr.Row():
                 with gr.Column():
                     lmk_image = gr.Image(label='Input Image', type='numpy')
                     lmk_btn = gr.Button('Detect Landmarks', variant='primary')
                 with gr.Column():
                     lmk_output = gr.Image(label='Result')
-                    lmk_text = gr.Textbox(label='Details', lines=4)
+                    lmk_text = gr.Textbox(label='Landmarks', lines=8, show_copy_button=True)
 
             lmk_btn.click(
                 landmarks_fn,
@@ -617,25 +689,27 @@ def build_app() -> gr.Blocks:
             )
 
             gr.Examples(
-                examples=[[EXAMPLE_TEST]],
+                examples=[[EXAMPLE_DEFAULT]],
                 inputs=[lmk_image],
                 label='Try an example',
             )
 
         # ------ Tab 5: Parsing ------
         with gr.Tab('Face Parsing'):
+            gr.Markdown('Segment facial components (skin, eyes, nose, hair, etc.) into 19 semantic classes.')
             with gr.Row():
                 with gr.Column():
                     par_image = gr.Image(label='Input Image', type='numpy')
-                    par_variant = gr.Radio(
-                        choices=list(PARSING_VARIANT_MAP.keys()),
-                        value='ResNet18',
-                        label='Parsing Model',
-                    )
+                    with gr.Accordion('Settings', open=False):
+                        par_variant = gr.Radio(
+                            choices=list(PARSING_VARIANT_MAP.keys()),
+                            value='ResNet18',
+                            label='Parsing Model',
+                        )
                     par_btn = gr.Button('Parse Faces', variant='primary')
                 with gr.Column():
                     par_output = gr.Image(label='Segmentation Result')
-                    par_text = gr.Textbox(label='Details', lines=10)
+                    par_text = gr.Textbox(label='Parsing Results', lines=10, show_copy_button=True)
 
             par_btn.click(
                 parsing_fn,
@@ -644,25 +718,27 @@ def build_app() -> gr.Blocks:
             )
 
             gr.Examples(
-                examples=[[EXAMPLE_TEST, 'ResNet18']],
+                examples=[[EXAMPLE_DEFAULT, 'ResNet18']],
                 inputs=[par_image, par_variant],
                 label='Try an example',
             )
 
         # ------ Tab 6: Gaze ------
         with gr.Tab('Gaze Estimation'):
+            gr.Markdown('Estimate where each person is looking by predicting pitch and yaw gaze angles.')
             with gr.Row():
                 with gr.Column():
                     gaze_image = gr.Image(label='Input Image', type='numpy')
-                    gaze_backbone = gr.Dropdown(
-                        choices=list(GAZE_VARIANT_MAP.keys()),
-                        value='ResNet18',
-                        label='Backbone',
-                    )
+                    with gr.Accordion('Settings', open=False):
+                        gaze_backbone = gr.Dropdown(
+                            choices=list(GAZE_VARIANT_MAP.keys()),
+                            value='ResNet34',
+                            label='Backbone',
+                        )
                     gaze_btn = gr.Button('Estimate Gaze', variant='primary')
                 with gr.Column():
                     gaze_output = gr.Image(label='Result')
-                    gaze_text = gr.Textbox(label='Gaze Angles', lines=4)
+                    gaze_text = gr.Textbox(label='Gaze Angles', lines=6, show_copy_button=True)
 
             gaze_btn.click(
                 gaze_fn,
@@ -671,25 +747,30 @@ def build_app() -> gr.Blocks:
             )
 
             gr.Examples(
-                examples=[[EXAMPLE_TEST, 'ResNet18']],
+                examples=[
+                    [EXAMPLE_GAZE_1, 'ResNet34'],
+                    [EXAMPLE_GAZE_2, 'ResNet34'],
+                ],
                 inputs=[gaze_image, gaze_backbone],
                 label='Try an example',
             )
 
         # ------ Tab 7: Anti-Spoofing ------
         with gr.Tab('Anti-Spoofing'):
+            gr.Markdown('Determine whether a face is real (live) or a spoof (printed photo, screen replay).')
             with gr.Row():
                 with gr.Column():
                     spf_image = gr.Image(label='Input Image', type='numpy')
-                    spf_variant = gr.Radio(
-                        choices=list(SPOOFING_VARIANT_MAP.keys()),
-                        value='V2',
-                        label='Model Variant',
-                    )
+                    with gr.Accordion('Settings', open=False):
+                        spf_variant = gr.Radio(
+                            choices=list(SPOOFING_VARIANT_MAP.keys()),
+                            value='V2',
+                            label='Model Variant',
+                        )
                     spf_btn = gr.Button('Check Liveness', variant='primary')
                 with gr.Column():
                     spf_output = gr.Image(label='Result')
-                    spf_text = gr.Textbox(label='Verdict', lines=4)
+                    spf_text = gr.Textbox(label='Verdict', lines=6, show_copy_button=True)
 
             spf_btn.click(
                 spoofing_fn,
@@ -697,20 +778,32 @@ def build_app() -> gr.Blocks:
                 outputs=[spf_output, spf_text],
             )
 
+            gr.Examples(
+                examples=[
+                    [EXAMPLE_SPOOF_1, 'V2'],
+                    [EXAMPLE_SPOOF_2, 'V2'],
+                    [EXAMPLE_SPOOF_3, 'V2'],
+                ],
+                inputs=[spf_image, spf_variant],
+                label='Try an example',
+            )
+
         # ------ Tab 8: Anonymization ------
         with gr.Tab('Face Anonymization'):
+            gr.Markdown('Blur or mask detected faces to protect privacy in images.')
             with gr.Row():
                 with gr.Column():
                     anon_image = gr.Image(label='Input Image', type='numpy')
-                    anon_method = gr.Dropdown(
-                        choices=['gaussian', 'pixelate', 'median', 'blackout', 'elliptical'],
-                        value='pixelate',
-                        label='Blur Method',
-                    )
+                    with gr.Accordion('Settings', open=False):
+                        anon_method = gr.Dropdown(
+                            choices=['gaussian', 'pixelate', 'median', 'blackout', 'elliptical'],
+                            value='elliptical',
+                            label='Blur Method',
+                        )
                     anon_btn = gr.Button('Anonymize', variant='primary')
                 with gr.Column():
                     anon_output = gr.Image(label='Anonymized')
-                    anon_text = gr.Textbox(label='Details', lines=2)
+                    anon_text = gr.Textbox(label='Details', lines=4, show_copy_button=True)
 
             anon_btn.click(
                 anonymize_fn,
@@ -719,7 +812,7 @@ def build_app() -> gr.Blocks:
             )
 
             gr.Examples(
-                examples=[[EXAMPLE_SCIENTISTS, 'pixelate']],
+                examples=[[EXAMPLE_ANONYMIZE, 'elliptical']],
                 inputs=[anon_image, anon_method],
                 label='Try an example',
             )
@@ -729,4 +822,4 @@ def build_app() -> gr.Blocks:
 
 if __name__ == '__main__':
     app = build_app()
-    app.launch(allowed_paths=[str(_ASSETS_DIR)])
+    app.launch(allowed_paths=[str(_DEMO_ASSETS_DIR)])
