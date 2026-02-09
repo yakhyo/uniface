@@ -2,16 +2,15 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-"""Visualization utilities for UniFace.
-
-This module provides functions for drawing detection results, gaze directions,
-and face parsing segmentation maps on images.
-"""
-
 from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 import cv2
 import numpy as np
+
+if TYPE_CHECKING:
+    from uniface.types import Face
 
 __all__ = [
     'FACE_PARSING_COLORS',
@@ -19,6 +18,7 @@ __all__ = [
     'draw_detections',
     'draw_fancy_bbox',
     'draw_gaze',
+    'draw_tracks',
     'vis_parsing_maps',
 ]
 
@@ -339,3 +339,198 @@ def vis_parsing_maps(
         cv2.imwrite(save_path, blended_image, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
 
     return blended_image
+
+
+# Deterministic color palette for track IDs (100 distinct colors)
+_TRACK_COLORS = [
+    (230, 25, 75),
+    (60, 180, 75),
+    (255, 225, 25),
+    (0, 130, 200),
+    (245, 130, 48),
+    (145, 30, 180),
+    (70, 240, 240),
+    (240, 50, 230),
+    (210, 245, 60),
+    (250, 190, 212),
+    (0, 128, 128),
+    (220, 190, 255),
+    (170, 110, 40),
+    (255, 250, 200),
+    (128, 0, 0),
+    (170, 255, 195),
+    (128, 128, 0),
+    (255, 215, 180),
+    (0, 0, 128),
+    (128, 128, 128),
+    (255, 99, 71),
+    (50, 205, 50),
+    (30, 144, 255),
+    (255, 140, 0),
+    (186, 85, 211),
+    (0, 206, 209),
+    (255, 20, 147),
+    (154, 205, 50),
+    (72, 61, 139),
+    (255, 182, 193),
+    (107, 142, 35),
+    (100, 149, 237),
+    (244, 164, 96),
+    (32, 178, 170),
+    (219, 112, 147),
+    (46, 139, 87),
+    (205, 92, 92),
+    (95, 158, 160),
+    (218, 165, 32),
+    (123, 104, 238),
+    (176, 224, 230),
+    (188, 143, 143),
+    (139, 69, 19),
+    (65, 105, 225),
+    (178, 34, 34),
+    (85, 107, 47),
+    (138, 43, 226),
+    (127, 255, 0),
+    (199, 21, 133),
+    (0, 191, 255),
+    (233, 150, 122),
+    (75, 0, 130),
+    (255, 105, 180),
+    (0, 100, 0),
+    (135, 206, 235),
+    (160, 82, 45),
+    (148, 103, 189),
+    (0, 255, 127),
+    (220, 20, 60),
+    (173, 216, 230),
+    (210, 105, 30),
+    (106, 90, 205),
+    (144, 238, 144),
+    (255, 69, 0),
+    (147, 112, 219),
+    (34, 139, 34),
+    (255, 127, 80),
+    (70, 130, 180),
+    (240, 128, 128),
+    (60, 179, 113),
+    (255, 218, 185),
+    (25, 25, 112),
+    (189, 183, 107),
+    (0, 139, 139),
+    (255, 160, 122),
+    (47, 79, 79),
+    (216, 191, 216),
+    (119, 136, 153),
+    (255, 228, 181),
+    (112, 128, 144),
+    (152, 251, 152),
+    (165, 42, 42),
+    (175, 238, 238),
+    (184, 134, 11),
+    (143, 188, 143),
+    (255, 250, 205),
+    (72, 209, 204),
+    (250, 128, 114),
+    (102, 205, 170),
+    (238, 232, 170),
+    (0, 250, 154),
+    (222, 184, 135),
+    (64, 224, 208),
+    (255, 228, 225),
+    (0, 128, 0),
+    (255, 245, 238),
+    (105, 105, 105),
+    (253, 245, 230),
+    (139, 0, 139),
+    (245, 245, 220),
+]
+
+
+def draw_tracks(
+    *,
+    image: np.ndarray,
+    faces: list[Face],
+    draw_landmarks: bool = True,
+    draw_id: bool = True,
+    fancy_bbox: bool = True,
+) -> None:
+    """Draw tracked faces with color-coded track IDs on an image.
+
+    Each track ID is assigned a deterministic color for consistent visualization
+    across frames. Faces without a track_id are drawn in gray.
+
+    Modifies the image in-place.
+
+    Args:
+        image: Input image to draw on (modified in-place).
+        faces: List of Face objects (with track_id assigned by FaceTracker).
+        draw_landmarks: Whether to draw facial landmarks. Defaults to True.
+        draw_id: Whether to draw track ID labels. Defaults to True.
+        fancy_bbox: Use corner-style bounding boxes. Defaults to True.
+
+    Example:
+        >>> from uniface import FaceTracker, RetinaFace
+        >>> from uniface.visualization import draw_tracks
+        >>> tracker = FaceTracker(RetinaFace())
+        >>> faces = tracker.update(frame)
+        >>> draw_tracks(image=frame, faces=faces)
+    """
+    landmark_colors = [(0, 0, 255), (0, 255, 255), (255, 0, 255), (0, 255, 0), (255, 0, 0)]
+    untracked_color = (128, 128, 128)
+
+    # Calculate line thickness based on image size
+    line_thickness = max(round(sum(image.shape[:2]) / 2 * 0.003), 2)
+
+    for face in faces:
+        bbox = np.array(face.bbox, dtype=np.int32)
+        track_id = face.track_id
+
+        # Pick color based on track ID
+        if track_id is not None:
+            color = _TRACK_COLORS[track_id % len(_TRACK_COLORS)]
+        else:
+            color = untracked_color
+
+        # Calculate dynamic font scale based on bbox height
+        bbox_h = bbox[3] - bbox[1]
+        font_scale = max(0.4, min(0.7, bbox_h / 200))
+        font_thickness = 2
+
+        # Draw bounding box
+        if fancy_bbox:
+            draw_fancy_bbox(image, bbox, color=color, thickness=line_thickness, proportion=0.2)
+        else:
+            cv2.rectangle(image, tuple(bbox[:2]), tuple(bbox[2:]), color, line_thickness)
+
+        # Draw track ID label
+        if draw_id and track_id is not None:
+            text = f'ID:{track_id}'
+            (text_width, text_height), baseline = cv2.getTextSize(
+                text, cv2.FONT_HERSHEY_SIMPLEX, font_scale, font_thickness
+            )
+
+            # Draw background rectangle
+            cv2.rectangle(
+                image,
+                (bbox[0], bbox[1] - text_height - baseline - 10),
+                (bbox[0] + text_width + 10, bbox[1]),
+                color,
+                -1,
+            )
+
+            # Draw text
+            cv2.putText(
+                image,
+                text,
+                (bbox[0] + 5, bbox[1] - 5),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                font_scale,
+                (255, 255, 255),
+                font_thickness,
+            )
+
+        # Draw landmarks
+        if draw_landmarks and face.landmarks is not None:
+            landmark_set = np.array(face.landmarks, dtype=np.int32)
+            for j, point in enumerate(landmark_set):
+                cv2.circle(image, tuple(point), line_thickness + 1, landmark_colors[j % len(landmark_colors)], -1)

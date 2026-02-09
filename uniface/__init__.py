@@ -16,6 +16,7 @@
 This library provides unified APIs for:
 - Face detection (RetinaFace, SCRFD, YOLOv5Face, YOLOv8Face)
 - Face recognition (AdaFace, ArcFace, MobileFace, SphereFace)
+- Face tracking (ByteTrack with Kalman filtering)
 - Facial landmarks (106-point detection)
 - Face parsing (semantic segmentation)
 - Gaze estimation
@@ -33,7 +34,7 @@ __version__ = '2.3.0'
 from uniface.face_utils import compute_similarity, face_alignment
 from uniface.log import Logger, enable_logging
 from uniface.model_store import download_models, get_cache_dir, set_cache_dir, verify_model_weights
-from uniface.visualization import draw_detections, vis_parsing_maps
+from uniface.visualization import draw_detections, draw_tracks, vis_parsing_maps
 
 from .analyzer import FaceAnalyzer
 from .attribute import AgeGender, FairFace
@@ -52,6 +53,7 @@ from .parsing import BiSeNet, XSeg, create_face_parser
 from .privacy import BlurFace, anonymize_faces
 from .recognition import AdaFace, ArcFace, MobileFace, SphereFace, create_recognizer
 from .spoofing import MiniFASNet, create_spoofer
+from .tracking import BYTETracker, expand_bboxes
 from .types import AttributeResult, EmotionResult, Face, GazeResult, SpoofingResult
 
 # Optional: Emotion requires PyTorch
@@ -105,6 +107,9 @@ __all__ = [
     # Spoofing models
     'MiniFASNet',
     'SpoofingResult',
+    # Tracking
+    'BYTETracker',
+    'expand_bboxes',
     # Privacy
     'BlurFace',
     'anonymize_faces',
@@ -113,6 +118,7 @@ __all__ = [
     'compute_similarity',
     'download_models',
     'draw_detections',
+    'draw_tracks',
     'enable_logging',
     'face_alignment',
     'get_cache_dir',
