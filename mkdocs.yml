@@ -144,6 +144,7 @@ nav:
   - API Reference:
       - Detection: modules/detection.md
       - Recognition: modules/recognition.md
+      - Tracking: modules/tracking.md
       - Landmarks: modules/landmarks.md
       - Attributes: modules/attributes.md
       - Parsing: modules/parsing.md
