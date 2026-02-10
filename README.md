@@ -75,7 +75,7 @@ Default cache location: `~/.uniface/models`
 Override with the programmatic API or environment variable:
 
 ```python
-from uniface import set_cache_dir, get_cache_dir
+from uniface.model_store import get_cache_dir, set_cache_dir
 
 set_cache_dir('/data/models')
 print(get_cache_dir())  # /data/models
@@ -91,7 +91,7 @@ export UNIFACE_CACHE_DIR=/data/models
 
 ```python
 import cv2
-from uniface import RetinaFace
+from uniface.detection import RetinaFace
 
 detector = RetinaFace()
 
@@ -118,7 +118,9 @@ for face in faces:
 
 ```python
 import cv2
-from uniface import RetinaFace, ArcFace, FaceAnalyzer
+from uniface.analyzer import FaceAnalyzer
+from uniface.detection import RetinaFace
+from uniface.recognition import ArcFace
 
 detector = RetinaFace()
 recognizer = ArcFace()
@@ -140,7 +142,7 @@ for face in faces:
 ## Execution Providers (ONNX Runtime)
 
 ```python
-from uniface import RetinaFace
+from uniface.detection import RetinaFace
 
 # Force CPU-only inference
 detector = RetinaFace(providers=["CPUExecutionProvider"])
