@@ -48,6 +48,7 @@ theme:
     - content.action.edit
     - content.action.view
     - content.tabs.link
+    - announce.dismiss
     - toc.follow
 
   icon:
