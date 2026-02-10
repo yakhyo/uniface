@@ -34,7 +34,6 @@ __version__ = '2.3.0'
 from uniface.face_utils import compute_similarity, face_alignment
 from uniface.log import Logger, enable_logging
 from uniface.model_store import download_models, get_cache_dir, set_cache_dir, verify_model_weights
-from uniface.visualization import draw_detections, draw_tracks, vis_parsing_maps
 
 from .analyzer import FaceAnalyzer
 from .attribute import AgeGender, FairFace
@@ -117,12 +116,9 @@ __all__ = [
     'Logger',
     'compute_similarity',
     'download_models',
-    'draw_detections',
-    'draw_tracks',
     'enable_logging',
     'face_alignment',
     'get_cache_dir',
     'set_cache_dir',
     'verify_model_weights',
-    'vis_parsing_maps',
 ]
