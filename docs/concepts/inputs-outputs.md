@@ -177,7 +177,7 @@ print(f"Norm: {np.linalg.norm(embedding):.4f}")  # ~1.0
 ### Similarity Computation
 
 ```python
-from uniface import compute_similarity
+from uniface.face_utils import compute_similarity
 
 similarity = compute_similarity(embedding1, embedding2)
 # Returns: float between -1 and 1 (cosine similarity)

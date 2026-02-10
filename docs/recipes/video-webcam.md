@@ -11,8 +11,8 @@ Real-time face analysis for video streams.
 
 ```python
 import cv2
-from uniface import RetinaFace
-from uniface.visualization import draw_detections
+from uniface.detection import RetinaFace
+from uniface.draw import draw_detections
 
 detector = RetinaFace()
 cap = cv2.VideoCapture(0)
@@ -48,7 +48,7 @@ cv2.destroyAllWindows()
 
 ```python
 import cv2
-from uniface import RetinaFace
+from uniface.detection import RetinaFace
 
 def process_video(input_path, output_path):
     """Process a video file."""

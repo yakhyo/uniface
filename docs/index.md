@@ -20,7 +20,7 @@ template: home.html
 [![Kaggle Badge](https://img.shields.io/badge/Notebooks-Kaggle?label=Kaggle&color=blue)](https://www.kaggle.com/yakhyokhuja/code)
 [![Discord](https://img.shields.io/badge/Discord-Join%20Server-5865F2?logo=discord&logoColor=white)](https://discord.gg/wdzrjr7R5j)
 
-<img src="https://raw.githubusercontent.com/yakhyo/uniface/main/.github/logos/new/uniface_rounded_q80.webp" alt="UniFace - All-in-One Open-Source Face Analysis Library" style="max-width: 90%; margin: 1rem 0;">
+<img src="https://raw.githubusercontent.com/yakhyo/uniface/main/.github/logos/new/uniface_rounded_q80.webp" alt="UniFace - All-in-One Open-Source Face Analysis Library" style="max-width: 70%; margin: 1rem 0;">
 
 [Get Started](quickstart.md){ .md-button .md-button--primary }
 [View on GitHub](https://github.com/yakhyo/uniface){ .md-button }

@@ -17,7 +17,7 @@ Face anti-spoofing detects whether a face is real (live) or fake (photo, video r
 
 ```python
 import cv2
-from uniface import RetinaFace
+from uniface.detection import RetinaFace
 from uniface.spoofing import MiniFASNet
 
 detector = RetinaFace()
@@ -128,7 +128,7 @@ cv2.imwrite("spoofing_result.jpg", image)
 
 ```python
 import cv2
-from uniface import RetinaFace
+from uniface.detection import RetinaFace
 from uniface.spoofing import MiniFASNet
 
 detector = RetinaFace()
@@ -253,7 +253,7 @@ python tools/spoofing.py --source 0
 ## Factory Function
 
 ```python
-from uniface import create_spoofer
+from uniface.spoofing import create_spoofer
 
 spoofer = create_spoofer()  # Returns MiniFASNet
 ```

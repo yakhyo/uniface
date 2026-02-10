@@ -23,7 +23,8 @@ Gaze estimation predicts where a person is looking (pitch and yaw angles).
 ```python
 import cv2
 import numpy as np
-from uniface import RetinaFace, MobileGaze
+from uniface.detection import RetinaFace
+from uniface.gaze import MobileGaze
 
 detector = RetinaFace()
 gaze_estimator = MobileGaze()
@@ -52,7 +53,7 @@ for face in faces:
 ## Model Variants
 
 ```python
-from uniface import MobileGaze
+from uniface.gaze import MobileGaze
 from uniface.constants import GazeWeights
 
 # Default (ResNet34, recommended)
@@ -102,7 +103,7 @@ yaw = -90° ────┼──── yaw = +90°
 ## Visualization
 
 ```python
-from uniface.visualization import draw_gaze
+from uniface.draw import draw_gaze
 
 # Detect faces
 faces = detector.detect(image)
@@ -154,8 +155,9 @@ def draw_gaze_custom(image, bbox, pitch, yaw, length=100, color=(0, 255, 0)):
 ```python
 import cv2
 import numpy as np
-from uniface import RetinaFace, MobileGaze
-from uniface.visualization import draw_gaze
+from uniface.detection import RetinaFace
+from uniface.gaze import MobileGaze
+from uniface.draw import draw_gaze
 
 detector = RetinaFace()
 gaze_estimator = MobileGaze()
@@ -256,7 +258,7 @@ print(f"Looking: {direction}")
 ## Factory Function
 
 ```python
-from uniface import create_gaze_estimator
+from uniface.gaze import create_gaze_estimator
 
 gaze = create_gaze_estimator()  # Returns MobileGaze
 ```

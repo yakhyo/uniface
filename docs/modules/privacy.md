@@ -36,7 +36,7 @@ cv2.imwrite("anonymized.jpg", anonymized)
 For more control, use the `BlurFace` class:
 
 ```python
-from uniface import RetinaFace
+from uniface.detection import RetinaFace
 from uniface.privacy import BlurFace
 import cv2
 
@@ -137,7 +137,7 @@ result = blurrer.anonymize(image, faces, inplace=True)
 
 ```python
 import cv2
-from uniface import RetinaFace
+from uniface.detection import RetinaFace
 from uniface.privacy import BlurFace
 
 detector = RetinaFace()
@@ -166,7 +166,7 @@ cv2.destroyAllWindows()
 
 ```python
 import cv2
-from uniface import RetinaFace
+from uniface.detection import RetinaFace
 from uniface.privacy import BlurFace
 
 detector = RetinaFace()
@@ -238,7 +238,7 @@ def anonymize_low_confidence(image, faces, blurrer, confidence_threshold=0.8):
 
 ```python
 import cv2
-from uniface import RetinaFace
+from uniface.detection import RetinaFace
 from uniface.privacy import BlurFace
 
 detector = RetinaFace()

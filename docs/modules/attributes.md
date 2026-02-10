@@ -21,7 +21,8 @@ Predicts exact age and binary gender.
 ### Basic Usage
 
 ```python
-from uniface import RetinaFace, AgeGender
+from uniface.attribute import AgeGender
+from uniface.detection import RetinaFace
 
 detector = RetinaFace()
 age_gender = AgeGender()
@@ -54,7 +55,8 @@ Predicts gender, age group, and race with balanced demographics.
 ### Basic Usage
 
 ```python
-from uniface import RetinaFace, FairFace
+from uniface.attribute import FairFace
+from uniface.detection import RetinaFace
 
 detector = RetinaFace()
 fairface = FairFace()
@@ -120,7 +122,7 @@ Predicts facial emotions. Requires PyTorch.
 ### Basic Usage
 
 ```python
-from uniface import RetinaFace
+from uniface.detection import RetinaFace
 from uniface.attribute import Emotion
 from uniface.constants import DDAMFNWeights
 
@@ -182,7 +184,8 @@ emotion = Emotion(model_weights=DDAMFNWeights.AFFECNET8)
 ### Full Attribute Analysis
 
 ```python
-from uniface import RetinaFace, AgeGender, FairFace
+from uniface.attribute import AgeGender, FairFace
+from uniface.detection import RetinaFace
 
 detector = RetinaFace()
 age_gender = AgeGender()
@@ -206,7 +209,9 @@ for face in faces:
 ### Using FaceAnalyzer
 
 ```python
-from uniface import FaceAnalyzer, RetinaFace, AgeGender
+from uniface.analyzer import FaceAnalyzer
+from uniface.attribute import AgeGender
+from uniface.detection import RetinaFace
 
 analyzer = FaceAnalyzer(
     RetinaFace(),

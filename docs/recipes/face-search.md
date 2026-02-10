@@ -13,7 +13,8 @@ Build a face search system for finding people in images.
 import numpy as np
 import cv2
 from pathlib import Path
-from uniface import RetinaFace, ArcFace
+from uniface.detection import RetinaFace
+from uniface.recognition import ArcFace
 
 class FaceDatabase:
     def __init__(self):

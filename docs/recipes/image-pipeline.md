@@ -8,8 +8,10 @@ A complete pipeline for processing images with detection, recognition, and attri
 
 ```python
 import cv2
-from uniface import RetinaFace, ArcFace, AgeGender
-from uniface.visualization import draw_detections
+from uniface.attribute import AgeGender
+from uniface.detection import RetinaFace
+from uniface.recognition import ArcFace
+from uniface.draw import draw_detections
 
 # Initialize models
 detector = RetinaFace()
@@ -67,7 +69,10 @@ cv2.imwrite("result.jpg", result_image)
 For convenience, use the built-in `FaceAnalyzer`:
 
 ```python
-from uniface import FaceAnalyzer, RetinaFace, ArcFace, AgeGender
+from uniface.analyzer import FaceAnalyzer
+from uniface.attribute import AgeGender
+from uniface.detection import RetinaFace
+from uniface.recognition import ArcFace
 import cv2
 
 # Initialize with desired modules
@@ -101,13 +106,14 @@ Complete pipeline with all modules:
 ```python
 import cv2
 import numpy as np
-from uniface import (
-    RetinaFace, ArcFace, AgeGender, FairFace,
-    Landmark106, MobileGaze
-)
+from uniface.attribute import AgeGender, FairFace
+from uniface.detection import RetinaFace
+from uniface.gaze import MobileGaze
+from uniface.landmark import Landmark106
+from uniface.recognition import ArcFace
 from uniface.parsing import BiSeNet
 from uniface.spoofing import MiniFASNet
-from uniface.visualization import draw_detections, draw_gaze
+from uniface.draw import draw_detections, draw_gaze
 
 class FaceAnalysisPipeline:
     def __init__(self):
@@ -193,8 +199,10 @@ for i, r in enumerate(results):
 ```python
 import cv2
 import numpy as np
-from uniface import RetinaFace, AgeGender, MobileGaze
-from uniface.visualization import draw_detections, draw_gaze
+from uniface.attribute import AgeGender
+from uniface.detection import RetinaFace
+from uniface.gaze import MobileGaze
+from uniface.draw import draw_detections, draw_gaze
 
 def visualize_analysis(image_path, output_path):
     """Create annotated visualization of face analysis."""

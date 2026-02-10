@@ -128,7 +128,7 @@ import onnxruntime as ort
 print(f"Available providers: {ort.get_available_providers()}")
 
 # Quick test
-from uniface import RetinaFace
+from uniface.detection import RetinaFace
 detector = RetinaFace()
 print("Installation successful!")
 ```

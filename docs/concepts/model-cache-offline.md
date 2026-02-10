@@ -9,7 +9,7 @@ UniFace automatically downloads and caches models. This page explains how model 
 Models are downloaded on first use:
 
 ```python
-from uniface import RetinaFace
+from uniface.detection import RetinaFace
 
 # First run: downloads model to cache
 detector = RetinaFace()  # ~3.5 MB download
@@ -47,7 +47,7 @@ Default cache directory:
 Use the programmatic API to change the cache location at runtime:
 
 ```python
-from uniface import set_cache_dir, get_cache_dir
+from uniface.model_store import get_cache_dir, set_cache_dir
 
 # Set a custom cache directory
 set_cache_dir('/data/models')
@@ -56,7 +56,7 @@ set_cache_dir('/data/models')
 print(get_cache_dir())  # /data/models
 
 # All subsequent model loads use the new directory
-from uniface import RetinaFace
+from uniface.detection import RetinaFace
 detector = RetinaFace()  # Downloads to /data/models/
 ```
 
@@ -69,7 +69,7 @@ Or set the `UNIFACE_CACHE_DIR` environment variable (see [Environment Variables]
 Download models before deployment using the concurrent downloader:
 
 ```python
-from uniface import download_models
+from uniface.model_store import download_models
 from uniface.constants import (
     RetinaFaceWeights,
     ArcFaceWeights,
@@ -131,7 +131,7 @@ scp -r ~/.uniface/models/ user@offline-machine:~/.uniface/models/
 ### 3. Point to the cache (if non-default location)
 
 ```python
-from uniface import set_cache_dir
+from uniface.model_store import set_cache_dir
 
 # Only needed if the models are not at ~/.uniface/models/
 set_cache_dir('/path/to/copied/models')
@@ -141,7 +141,7 @@ set_cache_dir('/path/to/copied/models')
 
 ```python
 # Models load from local cache
-from uniface import RetinaFace
+from uniface.detection import RetinaFace
 detector = RetinaFace()  # No network required
 ```
 
@@ -207,7 +207,7 @@ If a model fails verification, it's re-downloaded automatically.
 Find and remove cached models:
 
 ```python
-from uniface import get_cache_dir
+from uniface.model_store import get_cache_dir
 print(get_cache_dir())  # shows the active cache path
 ```
 
@@ -230,7 +230,7 @@ There are three equivalent ways to configure the cache directory:
 **1. Programmatic API (recommended)**
 
 ```python
-from uniface import set_cache_dir, get_cache_dir
+from uniface.model_store import get_cache_dir, set_cache_dir
 
 set_cache_dir('/path/to/custom/cache')
 print(get_cache_dir())  # /path/to/custom/cache
@@ -242,7 +242,7 @@ print(get_cache_dir())  # /path/to/custom/cache
 import os
 os.environ['UNIFACE_CACHE_DIR'] = '/path/to/custom/cache'
 
-from uniface import RetinaFace
+from uniface.detection import RetinaFace
 detector = RetinaFace()  # Uses custom cache
 ```
 

@@ -74,12 +74,14 @@ tqdm          # Progress bars
 Factory functions and direct instantiation:
 
 ```python
-# Factory function
-detector = create_detector('retinaface')
+from uniface.detection import RetinaFace
 
-# Direct instantiation (recommended)
-from uniface import RetinaFace
 detector = RetinaFace()
+
+# Or via factory function
+from uniface.detection import create_detector
+
+detector = create_detector('retinaface')
 ```
 
 ### 4. Type Safety
@@ -109,7 +111,7 @@ uniface/
 ├── constants.py    # Model weights and URLs
 ├── model_store.py  # Model download and caching
 ├── onnx_utils.py   # ONNX Runtime utilities
-└── visualization.py # Drawing utilities
+└── draw.py         # Drawing utilities
 ```
 
 ---
@@ -120,7 +122,9 @@ A typical face analysis workflow:
 
 ```python
 import cv2
-from uniface import RetinaFace, ArcFace, AgeGender
+from uniface.attribute import AgeGender
+from uniface.detection import RetinaFace
+from uniface.recognition import ArcFace
 
 # 1. Initialize models
 detector = RetinaFace()
@@ -151,7 +155,10 @@ for face in faces:
 For convenience, `FaceAnalyzer` combines multiple modules:
 
 ```python
-from uniface import FaceAnalyzer, RetinaFace, ArcFace, AgeGender, FairFace
+from uniface.analyzer import FaceAnalyzer
+from uniface.attribute import AgeGender, FairFace
+from uniface.detection import RetinaFace
+from uniface.recognition import ArcFace
 
 detector = RetinaFace()
 recognizer = ArcFace()
@@ -186,7 +193,7 @@ for face in faces:
 detector = RetinaFace()  # Downloads if not cached
 
 # Optionally configure cache location
-from uniface import set_cache_dir, get_cache_dir
+from uniface.model_store import get_cache_dir, set_cache_dir
 set_cache_dir('/data/models')
 print(get_cache_dir())  # /data/models
 
