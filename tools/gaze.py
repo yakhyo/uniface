@@ -5,9 +5,9 @@
 """Gaze estimation on detected faces.
 
 Usage:
-    python tools/gaze_estimation.py --source path/to/image.jpg
-    python tools/gaze_estimation.py --source path/to/video.mp4
-    python tools/gaze_estimation.py --source 0  # webcam
+    python tools/gaze.py --source path/to/image.jpg
+    python tools/gaze.py --source path/to/video.mp4
+    python tools/gaze.py --source 0  # webcam
 """
 
 from __future__ import annotations
@@ -16,29 +16,13 @@ import argparse
 import os
 from pathlib import Path
 
+from _common import get_source_type
 import cv2
 import numpy as np
 
-from uniface import RetinaFace
+from uniface.detection import RetinaFace
+from uniface.draw import draw_gaze
 from uniface.gaze import MobileGaze
-from uniface.visualization import draw_gaze
-
-IMAGE_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.bmp', '.webp', '.tiff'}
-VIDEO_EXTENSIONS = {'.mp4', '.avi', '.mov', '.mkv', '.webm', '.flv'}
-
-
-def get_source_type(source: str) -> str:
-    """Determine if source is image, video, or camera."""
-    if source.isdigit():
-        return 'camera'
-    path = Path(source)
-    suffix = path.suffix.lower()
-    if suffix in IMAGE_EXTENSIONS:
-        return 'image'
-    elif suffix in VIDEO_EXTENSIONS:
-        return 'video'
-    else:
-        return 'unknown'
 
 
 def process_image(detector, gaze_estimator, image_path: str, save_dir: str = 'outputs'):

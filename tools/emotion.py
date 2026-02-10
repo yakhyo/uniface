@@ -5,9 +5,9 @@
 """Emotion detection on detected faces.
 
 Usage:
-    python tools/face_emotion.py --source path/to/image.jpg
-    python tools/face_emotion.py --source path/to/video.mp4
-    python tools/face_emotion.py --source 0  # webcam
+    python tools/emotion.py --source path/to/image.jpg
+    python tools/emotion.py --source path/to/video.mp4
+    python tools/emotion.py --source 0  # webcam
 """
 
 from __future__ import annotations
@@ -16,27 +16,12 @@ import argparse
 import os
 from pathlib import Path
 
+from _common import get_source_type
 import cv2
 
-from uniface import SCRFD, Emotion, RetinaFace
-from uniface.visualization import draw_detections
-
-IMAGE_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.bmp', '.webp', '.tiff'}
-VIDEO_EXTENSIONS = {'.mp4', '.avi', '.mov', '.mkv', '.webm', '.flv'}
-
-
-def get_source_type(source: str) -> str:
-    """Determine if source is image, video, or camera."""
-    if source.isdigit():
-        return 'camera'
-    path = Path(source)
-    suffix = path.suffix.lower()
-    if suffix in IMAGE_EXTENSIONS:
-        return 'image'
-    elif suffix in VIDEO_EXTENSIONS:
-        return 'video'
-    else:
-        return 'unknown'
+from uniface.attribute import Emotion
+from uniface.detection import SCRFD, RetinaFace
+from uniface.draw import draw_detections
 
 
 def draw_emotion_label(image, bbox, emotion: str, confidence: float):
@@ -71,7 +56,7 @@ def process_image(
     scores = [f.confidence for f in faces]
     landmarks = [f.landmarks for f in faces]
     draw_detections(
-        image=image, bboxes=bboxes, scores=scores, landmarks=landmarks, vis_threshold=threshold, fancy_bbox=True
+        image=image, bboxes=bboxes, scores=scores, landmarks=landmarks, vis_threshold=threshold, corner_bbox=True
     )
 
     for i, face in enumerate(faces):
@@ -123,7 +108,7 @@ def process_video(
         scores = [f.confidence for f in faces]
         landmarks = [f.landmarks for f in faces]
         draw_detections(
-            image=frame, bboxes=bboxes, scores=scores, landmarks=landmarks, vis_threshold=threshold, fancy_bbox=True
+            image=frame, bboxes=bboxes, scores=scores, landmarks=landmarks, vis_threshold=threshold, corner_bbox=True
         )
 
         for face in faces:
@@ -162,7 +147,7 @@ def run_camera(detector, emotion_predictor, camera_id: int = 0, threshold: float
         scores = [f.confidence for f in faces]
         landmarks = [f.landmarks for f in faces]
         draw_detections(
-            image=frame, bboxes=bboxes, scores=scores, landmarks=landmarks, vis_threshold=threshold, fancy_bbox=True
+            image=frame, bboxes=bboxes, scores=scores, landmarks=landmarks, vis_threshold=threshold, corner_bbox=True
         )
 
         for face in faces:

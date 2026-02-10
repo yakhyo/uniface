@@ -5,9 +5,9 @@
 """Face parsing on detected faces.
 
 Usage:
-    python tools/face_parsing.py --source path/to/image.jpg
-    python tools/face_parsing.py --source path/to/video.mp4
-    python tools/face_parsing.py --source 0  # webcam
+    python tools/parse.py --source path/to/image.jpg
+    python tools/parse.py --source path/to/video.mp4
+    python tools/parse.py --source 0  # webcam
 """
 
 from __future__ import annotations
@@ -16,30 +16,14 @@ import argparse
 import os
 from pathlib import Path
 
+from _common import get_source_type
 import cv2
 import numpy as np
 
-from uniface import RetinaFace
 from uniface.constants import ParsingWeights
+from uniface.detection import RetinaFace
+from uniface.draw import vis_parsing_maps
 from uniface.parsing import BiSeNet
-from uniface.visualization import vis_parsing_maps
-
-IMAGE_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.bmp', '.webp', '.tiff'}
-VIDEO_EXTENSIONS = {'.mp4', '.avi', '.mov', '.mkv', '.webm', '.flv'}
-
-
-def get_source_type(source: str) -> str:
-    """Determine if source is image, video, or camera."""
-    if source.isdigit():
-        return 'camera'
-    path = Path(source)
-    suffix = path.suffix.lower()
-    if suffix in IMAGE_EXTENSIONS:
-        return 'image'
-    elif suffix in VIDEO_EXTENSIONS:
-        return 'video'
-    else:
-        return 'unknown'
 
 
 def expand_bbox(

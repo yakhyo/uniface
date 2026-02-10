@@ -5,8 +5,8 @@
 """Face recognition: extract embeddings or compare two faces.
 
 Usage:
-    python tools/recognition.py --image path/to/image.jpg
-    python tools/recognition.py --image1 face1.jpg --image2 face2.jpg
+    python tools/recognize.py --image path/to/image.jpg
+    python tools/recognize.py --image1 face1.jpg --image2 face2.jpg
 """
 
 import argparse

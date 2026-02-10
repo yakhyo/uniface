@@ -5,9 +5,9 @@
 """Face anonymization/blurring for privacy.
 
 Usage:
-    python tools/face_anonymize.py --source path/to/image.jpg --method pixelate
-    python tools/face_anonymize.py --source path/to/video.mp4 --method gaussian
-    python tools/face_anonymize.py --source 0 --method pixelate  # webcam
+    python tools/anonymize.py --source path/to/image.jpg --method pixelate
+    python tools/anonymize.py --source path/to/video.mp4 --method gaussian
+    python tools/anonymize.py --source 0 --method pixelate  # webcam
 """
 
 from __future__ import annotations
@@ -16,27 +16,11 @@ import argparse
 import os
 from pathlib import Path
 
+from _common import get_source_type
 import cv2
 
-from uniface import RetinaFace
+from uniface.detection import RetinaFace
 from uniface.privacy import BlurFace
-
-IMAGE_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.bmp', '.webp', '.tiff'}
-VIDEO_EXTENSIONS = {'.mp4', '.avi', '.mov', '.mkv', '.webm', '.flv'}
-
-
-def get_source_type(source: str) -> str:
-    """Determine if source is image, video, or camera."""
-    if source.isdigit():
-        return 'camera'
-    path = Path(source)
-    suffix = path.suffix.lower()
-    if suffix in IMAGE_EXTENSIONS:
-        return 'image'
-    elif suffix in VIDEO_EXTENSIONS:
-        return 'video'
-    else:
-        return 'unknown'
 
 
 def process_image(
@@ -56,7 +40,7 @@ def process_image(
     print(f'Detected {len(faces)} face(s)')
 
     if show_detections and faces:
-        from uniface.visualization import draw_detections
+        from uniface.draw import draw_detections
 
         preview = image.copy()
         bboxes = [face.bbox for face in faces]

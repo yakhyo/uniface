@@ -5,8 +5,8 @@
 """Real-time face search: match faces against a reference image.
 
 Usage:
-    python tools/face_search.py --reference person.jpg --source 0  # webcam
-    python tools/face_search.py --reference person.jpg --source video.mp4
+    python tools/search.py --reference person.jpg --source 0  # webcam
+    python tools/search.py --reference person.jpg --source video.mp4
 """
 
 from __future__ import annotations
@@ -15,29 +15,13 @@ import argparse
 import os
 from pathlib import Path
 
+from _common import get_source_type
 import cv2
 import numpy as np
 
 from uniface.detection import SCRFD, RetinaFace
 from uniface.face_utils import compute_similarity
 from uniface.recognition import ArcFace, MobileFace, SphereFace
-
-IMAGE_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.bmp', '.webp', '.tiff'}
-VIDEO_EXTENSIONS = {'.mp4', '.avi', '.mov', '.mkv', '.webm', '.flv'}
-
-
-def get_source_type(source: str) -> str:
-    """Determine if source is image, video, or camera."""
-    if source.isdigit():
-        return 'camera'
-    path = Path(source)
-    suffix = path.suffix.lower()
-    if suffix in IMAGE_EXTENSIONS:
-        return 'image'
-    elif suffix in VIDEO_EXTENSIONS:
-        return 'video'
-    else:
-        return 'unknown'
 
 
 def get_recognizer(name: str):
