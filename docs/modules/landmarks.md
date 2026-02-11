@@ -20,7 +20,8 @@ Facial landmark detection provides precise localization of facial features.
 ### Basic Usage
 
 ```python
-from uniface import RetinaFace, Landmark106
+from uniface.detection import RetinaFace
+from uniface.landmark import Landmark106
 
 detector = RetinaFace()
 landmarker = Landmark106()
@@ -78,7 +79,7 @@ mouth = landmarks[87:106]
 All detection models provide 5-point landmarks:
 
 ```python
-from uniface import RetinaFace
+from uniface.detection import RetinaFace
 
 detector = RetinaFace()
 faces = detector.detect(image)
@@ -152,7 +153,7 @@ def draw_landmarks_with_connections(image, landmarks):
 ### Face Alignment
 
 ```python
-from uniface import face_alignment
+from uniface.face_utils import face_alignment
 
 # Align face using 5-point landmarks
 aligned = face_alignment(image, faces[0].landmarks)
@@ -236,7 +237,7 @@ def estimate_head_pose(landmarks, image_shape):
 ## Factory Function
 
 ```python
-from uniface import create_landmarker
+from uniface.landmark import create_landmarker
 
 landmarker = create_landmarker()  # Returns Landmark106
 ```

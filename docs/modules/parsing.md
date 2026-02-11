@@ -19,7 +19,7 @@ Face parsing segments faces into semantic components or face regions.
 ```python
 import cv2
 from uniface.parsing import BiSeNet
-from uniface.visualization import vis_parsing_maps
+from uniface.draw import vis_parsing_maps
 
 # Initialize parser
 parser = BiSeNet()
@@ -85,9 +85,9 @@ parser = BiSeNet(model_name=ParsingWeights.RESNET34)
 
 ```python
 import cv2
-from uniface import RetinaFace
+from uniface.detection import RetinaFace
 from uniface.parsing import BiSeNet
-from uniface.visualization import vis_parsing_maps
+from uniface.draw import vis_parsing_maps
 
 detector = RetinaFace()
 parser = BiSeNet()
@@ -234,7 +234,7 @@ def get_hair_mask(mask):
 ## Visualization Options
 
 ```python
-from uniface.visualization import vis_parsing_maps
+from uniface.draw import vis_parsing_maps
 
 # Default visualization
 vis_result = vis_parsing_maps(face_rgb, mask)
@@ -257,7 +257,7 @@ XSeg outputs a mask for face regions. Unlike BiSeNet which works on bbox crops, 
 
 ```python
 import cv2
-from uniface import RetinaFace
+from uniface.detection import RetinaFace
 from uniface.parsing import XSeg
 
 detector = RetinaFace()
@@ -318,7 +318,7 @@ mask, face_crop, inverse_matrix = parser.parse_with_inverse(image, landmarks)
 ## Factory Function
 
 ```python
-from uniface import create_face_parser
+from uniface.parsing import create_face_parser
 from uniface.constants import ParsingWeights, XSegWeights
 
 # BiSeNet (default)

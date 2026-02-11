@@ -16,26 +16,11 @@ import argparse
 import os
 from pathlib import Path
 
+from _common import get_source_type
 import cv2
 
-from uniface import SCRFD, Landmark106, RetinaFace
-
-IMAGE_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.bmp', '.webp', '.tiff'}
-VIDEO_EXTENSIONS = {'.mp4', '.avi', '.mov', '.mkv', '.webm', '.flv'}
-
-
-def get_source_type(source: str) -> str:
-    """Determine if source is image, video, or camera."""
-    if source.isdigit():
-        return 'camera'
-    path = Path(source)
-    suffix = path.suffix.lower()
-    if suffix in IMAGE_EXTENSIONS:
-        return 'image'
-    elif suffix in VIDEO_EXTENSIONS:
-        return 'video'
-    else:
-        return 'unknown'
+from uniface.detection import SCRFD, RetinaFace
+from uniface.landmark import Landmark106
 
 
 def process_image(detector, landmarker, image_path: str, save_dir: str = 'outputs'):

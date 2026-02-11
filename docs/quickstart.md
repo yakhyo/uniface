@@ -10,7 +10,7 @@ Detect faces in an image:
 
 ```python
 import cv2
-from uniface import RetinaFace
+from uniface.detection import RetinaFace
 
 # Load image
 image = cv2.imread("photo.jpg")
@@ -46,8 +46,8 @@ Draw bounding boxes and landmarks:
 
 ```python
 import cv2
-from uniface import RetinaFace
-from uniface.visualization import draw_detections
+from uniface.detection import RetinaFace
+from uniface.draw import draw_detections
 
 # Detect faces
 detector = RetinaFace()
@@ -81,7 +81,8 @@ Compare two faces:
 ```python
 import cv2
 import numpy as np
-from uniface import RetinaFace, ArcFace
+from uniface.detection import RetinaFace
+from uniface.recognition import ArcFace
 
 # Initialize models
 detector = RetinaFace()
@@ -121,7 +122,8 @@ if faces1 and faces2:
 
 ```python
 import cv2
-from uniface import RetinaFace, AgeGender
+from uniface.attribute import AgeGender
+from uniface.detection import RetinaFace
 
 # Initialize models
 detector = RetinaFace()
@@ -152,7 +154,8 @@ Detect race, gender, and age group:
 
 ```python
 import cv2
-from uniface import RetinaFace, FairFace
+from uniface.attribute import FairFace
+from uniface.detection import RetinaFace
 
 detector = RetinaFace()
 fairface = FairFace()
@@ -178,7 +181,8 @@ Face 2: Female, 20-29, White
 
 ```python
 import cv2
-from uniface import RetinaFace, Landmark106
+from uniface.detection import RetinaFace
+from uniface.landmark import Landmark106
 
 detector = RetinaFace()
 landmarker = Landmark106()
@@ -204,8 +208,9 @@ if faces:
 ```python
 import cv2
 import numpy as np
-from uniface import RetinaFace, MobileGaze
-from uniface.visualization import draw_gaze
+from uniface.detection import RetinaFace
+from uniface.gaze import MobileGaze
+from uniface.draw import draw_gaze
 
 detector = RetinaFace()
 gaze_estimator = MobileGaze()
@@ -237,7 +242,7 @@ Segment face into semantic components:
 import cv2
 import numpy as np
 from uniface.parsing import BiSeNet
-from uniface.visualization import vis_parsing_maps
+from uniface.draw import vis_parsing_maps
 
 parser = BiSeNet()
 
@@ -273,7 +278,7 @@ cv2.imwrite("anonymized.jpg", anonymized)
 **Manual control:**
 
 ```python
-from uniface import RetinaFace
+from uniface.detection import RetinaFace
 from uniface.privacy import BlurFace
 
 detector = RetinaFace()
@@ -301,7 +306,7 @@ Detect real vs. fake faces:
 
 ```python
 import cv2
-from uniface import RetinaFace
+from uniface.detection import RetinaFace
 from uniface.spoofing import MiniFASNet
 
 detector = RetinaFace()
@@ -324,8 +329,8 @@ Real-time face detection:
 
 ```python
 import cv2
-from uniface import RetinaFace
-from uniface.visualization import draw_detections
+from uniface.detection import RetinaFace
+from uniface.draw import draw_detections
 
 detector = RetinaFace()
 cap = cv2.VideoCapture(0)
@@ -355,6 +360,60 @@ cv2.destroyAllWindows()
 
 ---
 
+## Face Tracking
+
+Track faces across video frames with persistent IDs:
+
+```python
+import cv2
+import numpy as np
+from uniface.common import xyxy_to_cxcywh
+from uniface.detection import SCRFD
+from uniface.tracking import BYTETracker
+from uniface.draw import draw_tracks
+
+detector = SCRFD()
+tracker = BYTETracker(track_thresh=0.5, track_buffer=30)
+
+cap = cv2.VideoCapture("video.mp4")
+
+while cap.isOpened():
+    ret, frame = cap.read()
+    if not ret:
+        break
+
+    faces = detector.detect(frame)
+    dets = np.array([[*f.bbox, f.confidence] for f in faces])
+    dets = dets if len(dets) > 0 else np.empty((0, 5))
+
+    tracks = tracker.update(dets)
+
+    # Assign track IDs to faces
+    if len(tracks) > 0 and len(faces) > 0:
+        face_bboxes = np.array([f.bbox for f in faces], dtype=np.float32)
+        track_ids = tracks[:, 4].astype(int)
+
+        face_centers = xyxy_to_cxcywh(face_bboxes)[:, :2]
+        track_centers = xyxy_to_cxcywh(tracks[:, :4])[:, :2]
+
+        for ti in range(len(tracks)):
+            dists = (track_centers[ti, 0] - face_centers[:, 0]) ** 2 + (track_centers[ti, 1] - face_centers[:, 1]) ** 2
+            faces[int(np.argmin(dists))].track_id = track_ids[ti]
+
+    tracked_faces = [f for f in faces if f.track_id is not None]
+    draw_tracks(image=frame, faces=tracked_faces)
+    cv2.imshow("Tracking", frame)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
+```
+
+For more details, see the [Tracking module](modules/tracking.md).
+
+---
+
 ## Model Selection
 
 For detailed model comparisons and benchmarks, see the [Model Zoo](models.md).
@@ -365,6 +424,7 @@ For detailed model comparisons and benchmarks, see the [Model Zoo](models.md).
 |------|------------------|
 | Detection | `RetinaFace`, `SCRFD`, `YOLOv5Face`, `YOLOv8Face` |
 | Recognition | `ArcFace`, `AdaFace`, `MobileFace`, `SphereFace` |
+| Tracking | `BYTETracker` |
 | Gaze | `MobileGaze` (ResNet18/34/50, MobileNetV2, MobileOneS0) |
 | Parsing | `BiSeNet` (ResNet18/34) |
 | Attributes | `AgeGender`, `FairFace`, `Emotion` |
@@ -407,13 +467,17 @@ python -c "import platform; print(platform.machine())"
 ### Import Errors
 
 ```python
-# Correct imports
-from uniface.detection import RetinaFace
-from uniface.recognition import ArcFace
+from uniface.detection import RetinaFace, SCRFD
+from uniface.recognition import ArcFace, AdaFace
+from uniface.attribute import AgeGender, FairFace
 from uniface.landmark import Landmark106
-
-# Also works (re-exported at package level)
-from uniface import RetinaFace, ArcFace, Landmark106
+from uniface.gaze import MobileGaze
+from uniface.parsing import BiSeNet, XSeg
+from uniface.privacy import BlurFace
+from uniface.spoofing import MiniFASNet
+from uniface.tracking import BYTETracker
+from uniface.analyzer import FaceAnalyzer
+from uniface.draw import draw_detections, draw_tracks
 ```
 
 ---

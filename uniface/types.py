@@ -152,6 +152,7 @@ class Face:
         race: Predicted race/ethnicity (optional, from FairFace).
         emotion: Predicted emotion label (optional, from Emotion model).
         emotion_confidence: Confidence score for emotion prediction (optional).
+        track_id: Persistent track ID assigned by FaceTracker (optional).
 
     Properties:
         sex: Gender as a human-readable string ("Female" or "Male").
@@ -172,6 +173,7 @@ class Face:
     race: str | None = None
     emotion: str | None = None
     emotion_confidence: float | None = None
+    track_id: int | None = None
 
     def compute_similarity(self, other: Face) -> float:
         """Compute cosine similarity with another face."""
@@ -230,6 +232,8 @@ class Face:
 
     def __repr__(self) -> str:
         parts = [f'Face(confidence={self.confidence:.3f}']
+        if self.track_id is not None:
+            parts.append(f'track_id={self.track_id}')
         if self.age is not None:
             parts.append(f'age={self.age}')
         if self.age_group is not None:

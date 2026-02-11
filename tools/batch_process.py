@@ -14,8 +14,8 @@ from pathlib import Path
 import cv2
 from tqdm import tqdm
 
-from uniface import SCRFD, RetinaFace
-from uniface.visualization import draw_detections
+from uniface.detection import SCRFD, RetinaFace
+from uniface.draw import draw_detections
 
 
 def get_image_files(input_dir: Path, extensions: tuple) -> list:
@@ -39,7 +39,7 @@ def process_image(detector, image_path: Path, output_path: Path, threshold: floa
     scores = [f.confidence for f in faces]
     landmarks = [f.landmarks for f in faces]
     draw_detections(
-        image=image, bboxes=bboxes, scores=scores, landmarks=landmarks, vis_threshold=threshold, fancy_bbox=True
+        image=image, bboxes=bboxes, scores=scores, landmarks=landmarks, vis_threshold=threshold, corner_bbox=True
     )
 
     cv2.putText(

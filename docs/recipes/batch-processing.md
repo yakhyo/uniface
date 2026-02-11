@@ -12,7 +12,7 @@ Process multiple images efficiently.
 ```python
 import cv2
 from pathlib import Path
-from uniface import RetinaFace
+from uniface.detection import RetinaFace
 
 detector = RetinaFace()
 
@@ -54,7 +54,8 @@ for image_path in tqdm(image_files, desc="Processing"):
 ## Extract Embeddings
 
 ```python
-from uniface import RetinaFace, ArcFace
+from uniface.detection import RetinaFace
+from uniface.recognition import ArcFace
 import numpy as np
 
 detector = RetinaFace()

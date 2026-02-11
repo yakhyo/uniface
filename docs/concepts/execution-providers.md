@@ -9,7 +9,7 @@ UniFace uses ONNX Runtime for model inference, which supports multiple hardware 
 UniFace automatically selects the optimal execution provider based on available hardware:
 
 ```python
-from uniface import RetinaFace
+from uniface.detection import RetinaFace
 
 # Automatically uses best available provider
 detector = RetinaFace()
@@ -28,7 +28,8 @@ detector = RetinaFace()
 You can specify which execution provider to use by passing the `providers` parameter:
 
 ```python
-from uniface import RetinaFace, ArcFace
+from uniface.detection import RetinaFace
+from uniface.recognition import ArcFace
 
 # Force CPU execution (even if GPU is available)
 detector = RetinaFace(providers=['CPUExecutionProvider'])
@@ -174,7 +175,7 @@ pip install uniface[gpu]
 Smaller input sizes are faster but may reduce accuracy:
 
 ```python
-from uniface import RetinaFace
+from uniface.detection import RetinaFace
 
 # Faster, lower accuracy
 detector = RetinaFace(input_size=(320, 320))

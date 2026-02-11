@@ -48,6 +48,7 @@ theme:
     - content.action.edit
     - content.action.view
     - content.tabs.link
+    - announce.dismiss
     - toc.follow
 
   icon:
@@ -144,6 +145,7 @@ nav:
   - API Reference:
       - Detection: modules/detection.md
       - Recognition: modules/recognition.md
+      - Tracking: modules/tracking.md
       - Landmarks: modules/landmarks.md
       - Attributes: modules/attributes.md
       - Parsing: modules/parsing.md

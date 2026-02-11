@@ -27,6 +27,7 @@
 
 - **Face Detection** — RetinaFace, SCRFD, YOLOv5-Face, and YOLOv8-Face with 5-point landmarks
 - **Face Recognition** — ArcFace, MobileFace, and SphereFace embeddings
+- **Face Tracking** — Multi-object tracking with [BYTETracker](https://github.com/yakhyo/bytetrack-tracker) for persistent IDs across video frames
 - **Facial Landmarks** — 106-point landmark localization module (separate from 5-point detector landmarks)
 - **Face Parsing** — BiSeNet semantic segmentation (19 classes), XSeg face masking
 - **Gaze Estimation** — Real-time gaze direction with MobileGaze
@@ -75,7 +76,7 @@ Default cache location: `~/.uniface/models`
 Override with the programmatic API or environment variable:
 
 ```python
-from uniface import set_cache_dir, get_cache_dir
+from uniface.model_store import get_cache_dir, set_cache_dir
 
 set_cache_dir('/data/models')
 print(get_cache_dir())  # /data/models
@@ -91,7 +92,7 @@ export UNIFACE_CACHE_DIR=/data/models
 
 ```python
 import cv2
-from uniface import RetinaFace
+from uniface.detection import RetinaFace
 
 detector = RetinaFace()
 
@@ -118,7 +119,9 @@ for face in faces:
 
 ```python
 import cv2
-from uniface import RetinaFace, ArcFace, FaceAnalyzer
+from uniface.analyzer import FaceAnalyzer
+from uniface.detection import RetinaFace
+from uniface.recognition import ArcFace
 
 detector = RetinaFace()
 recognizer = ArcFace()
@@ -140,7 +143,7 @@ for face in faces:
 ## Execution Providers (ONNX Runtime)
 
 ```python
-from uniface import RetinaFace
+from uniface.detection import RetinaFace
 
 # Force CPU-only inference
 detector = RetinaFace(providers=["CPUExecutionProvider"])
@@ -201,6 +204,7 @@ If you plan commercial use, verify model license compatibility.
 | Detection | [retinaface-pytorch](https://github.com/yakhyo/retinaface-pytorch) | ✓ | RetinaFace PyTorch Training & Export |
 | Detection | [yolov5-face-onnx-inference](https://github.com/yakhyo/yolov5-face-onnx-inference) | - | YOLOv5-Face ONNX Inference |
 | Detection | [yolov8-face-onnx-inference](https://github.com/yakhyo/yolov8-face-onnx-inference) | - | YOLOv8-Face ONNX Inference |
+| Tracking | [bytetrack-tracker](https://github.com/yakhyo/bytetrack-tracker) | - | BYTETracker Multi-Object Tracking |
 | Recognition | [face-recognition](https://github.com/yakhyo/face-recognition) | ✓ | MobileFace, SphereFace Training |
 | Parsing | [face-parsing](https://github.com/yakhyo/face-parsing) | ✓ | BiSeNet Face Parsing |
 | Parsing | [face-segmentation](https://github.com/yakhyo/face-segmentation) | - | XSeg Face Segmentation |

@@ -93,7 +93,7 @@ landmarks = face.landmarks  # Shape: (5, 2)
 Returned by `Landmark106`:
 
 ```python
-from uniface import Landmark106
+from uniface.landmark import Landmark106
 
 landmarker = Landmark106()
 landmarks = landmarker.get_landmarks(image, face.bbox)
@@ -174,7 +174,7 @@ yaw = -90° ────┼──── yaw = +90°
 Face alignment uses 5-point landmarks to normalize face orientation:
 
 ```python
-from uniface import face_alignment
+from uniface.face_utils import face_alignment
 
 # Align face to standard template
 aligned_face = face_alignment(image, face.landmarks)

@@ -53,6 +53,7 @@ class Face:
     race: str | None = None             # "East Asian", etc.
     emotion: str | None = None          # "Happy", etc.
     emotion_confidence: float | None = None
+    track_id: int | None = None         # Persistent ID from tracker
 ```
 
 ### Properties
@@ -177,7 +178,7 @@ print(f"Norm: {np.linalg.norm(embedding):.4f}")  # ~1.0
 ### Similarity Computation
 
 ```python
-from uniface import compute_similarity
+from uniface.face_utils import compute_similarity
 
 similarity = compute_similarity(embedding1, embedding2)
 # Returns: float between -1 and 1 (cosine similarity)

@@ -11,7 +11,7 @@ This page explains how to tune detection and recognition thresholds for your use
 Controls minimum confidence for face detection:
 
 ```python
-from uniface import RetinaFace
+from uniface.detection import RetinaFace
 
 # Default (balanced)
 detector = RetinaFace(confidence_threshold=0.5)
@@ -81,7 +81,7 @@ For identity verification (same person check):
 
 ```python
 import numpy as np
-from uniface import compute_similarity
+from uniface.face_utils import compute_similarity
 
 similarity = compute_similarity(embedding1, embedding2)
 
@@ -199,7 +199,7 @@ else:
 For drawing detections, filter by confidence:
 
 ```python
-from uniface.visualization import draw_detections
+from uniface.draw import draw_detections
 
 # Only draw high-confidence detections
 bboxes = [f.bbox for f in faces if f.confidence > 0.7]

@@ -24,7 +24,7 @@ Single-shot face detector with multi-scale feature pyramid.
 ### Basic Usage
 
 ```python
-from uniface import RetinaFace
+from uniface.detection import RetinaFace
 
 detector = RetinaFace()
 faces = detector.detect(image)
@@ -38,7 +38,7 @@ for face in faces:
 ### Model Variants
 
 ```python
-from uniface import RetinaFace
+from uniface.detection import RetinaFace
 from uniface.constants import RetinaFaceWeights
 
 # Lightweight (mobile/edge)
@@ -82,7 +82,7 @@ State-of-the-art detection with excellent accuracy-speed tradeoff.
 ### Basic Usage
 
 ```python
-from uniface import SCRFD
+from uniface.detection import SCRFD
 
 detector = SCRFD()
 faces = detector.detect(image)
@@ -91,7 +91,7 @@ faces = detector.detect(image)
 ### Model Variants
 
 ```python
-from uniface import SCRFD
+from uniface.detection import SCRFD
 from uniface.constants import SCRFDWeights
 
 # Real-time (lightweight)
@@ -127,7 +127,7 @@ YOLO-based detection optimized for faces.
 ### Basic Usage
 
 ```python
-from uniface import YOLOv5Face
+from uniface.detection import YOLOv5Face
 
 detector = YOLOv5Face()
 faces = detector.detect(image)
@@ -136,7 +136,7 @@ faces = detector.detect(image)
 ### Model Variants
 
 ```python
-from uniface import YOLOv5Face
+from uniface.detection import YOLOv5Face
 from uniface.constants import YOLOv5FaceWeights
 
 # Lightweight
@@ -179,7 +179,7 @@ Anchor-free detection with DFL (Distribution Focal Loss) for accurate bbox regre
 ### Basic Usage
 
 ```python
-from uniface import YOLOv8Face
+from uniface.detection import YOLOv8Face
 
 detector = YOLOv8Face()
 faces = detector.detect(image)
@@ -188,7 +188,7 @@ faces = detector.detect(image)
 ### Model Variants
 
 ```python
-from uniface import YOLOv8Face
+from uniface.detection import YOLOv8Face
 from uniface.constants import YOLOv8FaceWeights
 
 # Lightweight
@@ -225,7 +225,7 @@ detector = YOLOv8Face(
 Create detectors dynamically:
 
 ```python
-from uniface import create_detector
+from uniface.detection import create_detector
 
 detector = create_detector('retinaface')
 # or
@@ -243,7 +243,7 @@ detector = create_detector('yolov8face')
 One-line detection:
 
 ```python
-from uniface import detect_faces
+from uniface.detection import detect_faces
 
 # Using RetinaFace (default)
 faces = detect_faces(image, method='retinaface', confidence_threshold=0.5)
@@ -276,7 +276,7 @@ for face in faces:
 ## Visualization
 
 ```python
-from uniface.visualization import draw_detections
+from uniface.draw import draw_detections
 
 draw_detections(
     image=image,

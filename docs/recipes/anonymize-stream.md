@@ -11,7 +11,7 @@ Blur faces in real-time video streams for privacy protection.
 
 ```python
 import cv2
-from uniface import RetinaFace
+from uniface.detection import RetinaFace
 from uniface.privacy import BlurFace
 
 detector = RetinaFace()
@@ -40,7 +40,7 @@ cv2.destroyAllWindows()
 
 ```python
 import cv2
-from uniface import RetinaFace
+from uniface.detection import RetinaFace
 from uniface.privacy import BlurFace
 
 detector = RetinaFace()

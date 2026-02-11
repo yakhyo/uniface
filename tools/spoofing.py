@@ -16,29 +16,13 @@ import argparse
 import os
 from pathlib import Path
 
+from _common import get_source_type
 import cv2
 import numpy as np
 
-from uniface import RetinaFace
 from uniface.constants import MiniFASNetWeights
+from uniface.detection import RetinaFace
 from uniface.spoofing import create_spoofer
-
-IMAGE_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.bmp', '.webp', '.tiff'}
-VIDEO_EXTENSIONS = {'.mp4', '.avi', '.mov', '.mkv', '.webm', '.flv'}
-
-
-def get_source_type(source: str) -> str:
-    """Determine if source is image, video, or camera."""
-    if source.isdigit():
-        return 'camera'
-    path = Path(source)
-    suffix = path.suffix.lower()
-    if suffix in IMAGE_EXTENSIONS:
-        return 'image'
-    elif suffix in VIDEO_EXTENSIONS:
-        return 'video'
-    else:
-        return 'unknown'
 
 
 def draw_spoofing_result(

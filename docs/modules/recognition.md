@@ -22,7 +22,8 @@ Face recognition using adaptive margin based on image quality.
 ### Basic Usage
 
 ```python
-from uniface import RetinaFace, AdaFace
+from uniface.detection import RetinaFace
+from uniface.recognition import AdaFace
 
 detector = RetinaFace()
 recognizer = AdaFace()
@@ -39,7 +40,7 @@ if faces:
 ### Model Variants
 
 ```python
-from uniface import AdaFace
+from uniface.recognition import AdaFace
 from uniface.constants import AdaFaceWeights
 
 # Lightweight (default)
@@ -69,7 +70,8 @@ Face recognition using additive angular margin loss.
 ### Basic Usage
 
 ```python
-from uniface import RetinaFace, ArcFace
+from uniface.detection import RetinaFace
+from uniface.recognition import ArcFace
 
 detector = RetinaFace()
 recognizer = ArcFace()
@@ -86,7 +88,7 @@ if faces:
 ### Model Variants
 
 ```python
-from uniface import ArcFace
+from uniface.recognition import ArcFace
 from uniface.constants import ArcFaceWeights
 
 # Lightweight (default)
@@ -118,7 +120,7 @@ Lightweight face recognition models with MobileNet backbones.
 ### Basic Usage
 
 ```python
-from uniface import MobileFace
+from uniface.recognition import MobileFace
 
 recognizer = MobileFace()
 embedding = recognizer.get_normalized_embedding(image, landmarks)
@@ -127,7 +129,7 @@ embedding = recognizer.get_normalized_embedding(image, landmarks)
 ### Model Variants
 
 ```python
-from uniface import MobileFace
+from uniface.recognition import MobileFace
 from uniface.constants import MobileFaceWeights
 
 # Ultra-lightweight
@@ -156,7 +158,7 @@ Face recognition using angular softmax loss (A-Softmax).
 ### Basic Usage
 
 ```python
-from uniface import SphereFace
+from uniface.recognition import SphereFace
 from uniface.constants import SphereFaceWeights
 
 recognizer = SphereFace(model_name=SphereFaceWeights.SPHERE20)
@@ -175,7 +177,7 @@ embedding = recognizer.get_normalized_embedding(image, landmarks)
 ### Compute Similarity
 
 ```python
-from uniface import compute_similarity
+from uniface.face_utils import compute_similarity
 import numpy as np
 
 # Extract embeddings
@@ -211,7 +213,7 @@ Recognition models require aligned faces. UniFace handles this internally:
 embedding = recognizer.get_normalized_embedding(image, landmarks)
 
 # Or manually align
-from uniface import face_alignment
+from uniface.face_utils import face_alignment
 
 aligned_face = face_alignment(image, landmarks)
 # Returns: 112x112 aligned face image
@@ -223,7 +225,8 @@ aligned_face = face_alignment(image, landmarks)
 
 ```python
 import numpy as np
-from uniface import RetinaFace, ArcFace
+from uniface.detection import RetinaFace
+from uniface.recognition import ArcFace
 
 detector = RetinaFace()
 recognizer = ArcFace()
@@ -282,7 +285,7 @@ else:
 ## Factory Function
 
 ```python
-from uniface import create_recognizer
+from uniface.recognition import create_recognizer
 
 # Available methods: 'arcface', 'adaface', 'mobileface', 'sphereface'
 recognizer = create_recognizer('arcface')
