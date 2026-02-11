@@ -53,6 +53,7 @@ class Face:
     race: str | None = None             # "East Asian", etc.
     emotion: str | None = None          # "Happy", etc.
     emotion_confidence: float | None = None
+    track_id: int | None = None         # Persistent ID from tracker
 ```
 
 ### Properties

@@ -28,6 +28,10 @@ graph TB
         PRIV[Privacy]
     end
 
+    subgraph Tracking
+        TRK[BYTETracker]
+    end
+
     subgraph Output
         FACE[Face Objects]
     end
@@ -40,9 +44,11 @@ graph TB
     DET --> PARSE
     DET --> SPOOF
     DET --> PRIV
+    DET --> TRK
     REC --> FACE
     LMK --> FACE
     ATTR --> FACE
+    TRK --> FACE
 ```
 
 ---
@@ -101,6 +107,7 @@ def detect(self, image: np.ndarray) -> list[Face]:
 uniface/
 ├── detection/      # Face detection (RetinaFace, SCRFD, YOLOv5Face, YOLOv8Face)
 ├── recognition/    # Face recognition (AdaFace, ArcFace, MobileFace, SphereFace)
+├── tracking/       # Multi-object tracking (BYTETracker)
 ├── landmark/       # 106-point landmarks
 ├── attribute/      # Age, gender, emotion, race
 ├── parsing/        # Face semantic segmentation

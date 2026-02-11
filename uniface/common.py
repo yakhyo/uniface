@@ -18,6 +18,7 @@ __all__ = [
     'generate_anchors',
     'non_max_suppression',
     'resize_image',
+    'xyxy_to_cxcywh',
 ]
 
 
@@ -59,6 +60,23 @@ def resize_image(
     image[:new_height, :new_width, :] = resized_frame
 
     return image, resize_factor
+
+
+def xyxy_to_cxcywh(bboxes: np.ndarray) -> np.ndarray:
+    """Convert bounding boxes from ``[x1, y1, x2, y2]`` to ``[cx, cy, w, h]``.
+
+    Args:
+        bboxes: Array of shape (N, 4) or (4,) with ``[x1, y1, x2, y2]`` coordinates.
+
+    Returns:
+        Array of the same shape with ``[cx, cy, w, h]`` coordinates.
+    """
+    out = np.empty_like(bboxes)
+    out[..., 0] = (bboxes[..., 0] + bboxes[..., 2]) / 2  # cx
+    out[..., 1] = (bboxes[..., 1] + bboxes[..., 3]) / 2  # cy
+    out[..., 2] = bboxes[..., 2] - bboxes[..., 0]  # w
+    out[..., 3] = bboxes[..., 3] - bboxes[..., 1]  # h
+    return out
 
 
 def generate_anchors(image_size: tuple[int, int] = (640, 640)) -> np.ndarray:

@@ -5,9 +5,8 @@
 """Face tracking on video files using ByteTrack.
 
 Usage:
-    python tools/track.py --source bytetrack-tracker/assets/in_video.mp4
-    python tools/track.py --source bytetrack-tracker/assets/in_video.mp4 --output outputs/tracked.mp4
-    python tools/track.py --source bytetrack-tracker/assets/in_video.mp4 --bbox-scale 1.5
+    python tools/track.py --source video.mp4
+    python tools/track.py --source video.mp4 --output outputs/tracked.mp4
     python tools/track.py --source 0  # webcam
 """
 
@@ -22,9 +21,28 @@ import cv2
 import numpy as np
 from tqdm import tqdm
 
+from uniface.common import xyxy_to_cxcywh
 from uniface.detection import SCRFD, RetinaFace
 from uniface.draw import draw_tracks
-from uniface.tracking import BYTETracker, expand_bboxes
+from uniface.tracking import BYTETracker
+
+
+def _assign_track_ids(faces, tracks) -> list:
+    """Match tracker outputs back to Face objects by center distance."""
+    if len(tracks) == 0 or len(faces) == 0:
+        return []
+
+    face_bboxes = np.array([f.bbox for f in faces], dtype=np.float32)
+    track_ids = tracks[:, 4].astype(int)
+
+    face_centers = xyxy_to_cxcywh(face_bboxes)[:, :2]  # (N, 2) -> [cx, cy]
+    track_centers = xyxy_to_cxcywh(tracks[:, :4])[:, :2]  # (M, 2) -> [cx, cy]
+
+    for ti in range(len(tracks)):
+        dists = (track_centers[ti, 0] - face_centers[:, 0]) ** 2 + (track_centers[ti, 1] - face_centers[:, 1]) ** 2
+        faces[int(np.argmin(dists))].track_id = track_ids[ti]
+
+    return [f for f in faces if f.track_id is not None]
 
 
 def process_video(
@@ -33,7 +51,6 @@ def process_video(
     input_path: str,
     output_path: str,
     threshold: float = 0.5,
-    bbox_scale: float = 1.0,
     show_preview: bool = False,
 ):
     """Process a video file with face tracking."""
@@ -49,7 +66,6 @@ def process_video(
 
     print(f'Input: {input_path} ({width}x{height}, {fps:.1f} fps, {total_frames} frames)')
     print(f'Output: {output_path}')
-    print(f'BBox scale: {bbox_scale}')
 
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
@@ -72,41 +88,18 @@ def process_video(
 
         # Detect faces
         faces = detector.detect(frame)
-        dets = np.array([[*face.bbox, face.confidence] for face in faces if face.confidence >= threshold])
+        dets = np.array([[*f.bbox, f.confidence] for f in faces if f.confidence >= threshold])
         dets = dets if len(dets) > 0 else np.empty((0, 5))
 
-        # Expand bboxes for tracking stability
-        if bbox_scale != 1.0 and len(dets) > 0:
-            track_dets = expand_bboxes(dets, scale=bbox_scale, image_shape=frame.shape[:2])
-        else:
-            track_dets = dets
-
         # Update tracker
-        tracks = tracker.update(track_dets)
-        total_tracks += len(tracks)
-
-        # Assign track IDs back to Face objects
-        if len(tracks) > 0 and len(faces) > 0:
-            face_bboxes = np.array([face.bbox for face in faces], dtype=np.float32)
-            track_bboxes = tracks[:, :4]
-            track_ids = tracks[:, 4].astype(int)
-
-            # Match faces to tracks by center distance
-            face_cx = (face_bboxes[:, 0] + face_bboxes[:, 2]) / 2
-            face_cy = (face_bboxes[:, 1] + face_bboxes[:, 3]) / 2
-            track_cx = (track_bboxes[:, 0] + track_bboxes[:, 2]) / 2
-            track_cy = (track_bboxes[:, 1] + track_bboxes[:, 3]) / 2
-
-            for fi in range(len(faces)):
-                dists = (face_cx[fi] - track_cx) ** 2 + (face_cy[fi] - track_cy) ** 2
-                best = int(np.argmin(dists))
-                faces[fi].track_id = track_ids[best]
+        tracks = tracker.update(dets)
+        tracked_faces = _assign_track_ids(faces, tracks)
+        total_tracks += len(tracked_faces)
 
         # Draw tracked faces
-        tracked_faces = [f for f in faces if f.track_id is not None]
         draw_tracks(image=frame, faces=tracked_faces)
 
-        cv2.putText(frame, f'Tracks: {len(tracks)}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        cv2.putText(frame, f'Tracks: {len(tracked_faces)}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         out.write(frame)
 
         if show_preview:
@@ -130,7 +123,6 @@ def run_camera(
     tracker: BYTETracker,
     camera_id: int = 0,
     threshold: float = 0.5,
-    bbox_scale: float = 1.0,
 ):
     """Run real-time face tracking on webcam."""
     cap = cv2.VideoCapture(camera_id)
@@ -148,38 +140,17 @@ def run_camera(
 
         # Detect faces
         faces = detector.detect(frame)
-        dets = np.array([[*face.bbox, face.confidence] for face in faces if face.confidence >= threshold])
+        dets = np.array([[*f.bbox, f.confidence] for f in faces if f.confidence >= threshold])
         dets = dets if len(dets) > 0 else np.empty((0, 5))
 
-        # Expand bboxes for tracking stability
-        if bbox_scale != 1.0 and len(dets) > 0:
-            track_dets = expand_bboxes(dets, scale=bbox_scale, image_shape=frame.shape[:2])
-        else:
-            track_dets = dets
-
         # Update tracker
-        tracks = tracker.update(track_dets)
+        tracks = tracker.update(dets)
+        tracked_faces = _assign_track_ids(faces, tracks)
 
-        # Assign track IDs back to Face objects
-        if len(tracks) > 0 and len(faces) > 0:
-            face_bboxes = np.array([face.bbox for face in faces], dtype=np.float32)
-            track_bboxes = tracks[:, :4]
-            track_ids = tracks[:, 4].astype(int)
-
-            face_cx = (face_bboxes[:, 0] + face_bboxes[:, 2]) / 2
-            face_cy = (face_bboxes[:, 1] + face_bboxes[:, 3]) / 2
-            track_cx = (track_bboxes[:, 0] + track_bboxes[:, 2]) / 2
-            track_cy = (track_bboxes[:, 1] + track_bboxes[:, 3]) / 2
-
-            for fi in range(len(faces)):
-                dists = (face_cx[fi] - track_cx) ** 2 + (face_cy[fi] - track_cy) ** 2
-                best = int(np.argmin(dists))
-                faces[fi].track_id = track_ids[best]
-
-        tracked_faces = [f for f in faces if f.track_id is not None]
+        # Draw tracked faces
         draw_tracks(image=frame, faces=tracked_faces)
 
-        cv2.putText(frame, f'Tracks: {len(tracks)}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        cv2.putText(frame, f'Tracks: {len(tracked_faces)}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         cv2.imshow('Face Tracking', frame)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -195,9 +166,6 @@ def main():
     parser.add_argument('--output', type=str, default=None, help='Output video path')
     parser.add_argument('--detector', type=str, default='scrfd', choices=['retinaface', 'scrfd'])
     parser.add_argument('--threshold', type=float, default=0.5, help='Detection confidence threshold')
-    parser.add_argument(
-        '--bbox-scale', type=float, default=1.0, help='BBox expansion for tracking (1.0=none, 1.5=50%%)'
-    )
     parser.add_argument('--track-buffer', type=int, default=30, help='Max frames to keep lost tracks')
     parser.add_argument('--preview', action='store_true', help='Show live preview')
     parser.add_argument('--save-dir', type=str, default='outputs', help='Output directory')
@@ -207,7 +175,7 @@ def main():
     tracker = BYTETracker(track_thresh=args.threshold, track_buffer=args.track_buffer)
 
     if args.source.isdigit():
-        run_camera(detector, tracker, int(args.source), args.threshold, args.bbox_scale)
+        run_camera(detector, tracker, int(args.source), args.threshold)
     else:
         if not os.path.exists(args.source):
             print(f'Error: Video not found: {args.source}')
@@ -224,7 +192,7 @@ def main():
             os.makedirs(args.save_dir, exist_ok=True)
             output_path = os.path.join(args.save_dir, f'{Path(args.source).stem}_tracked.mp4')
 
-        process_video(detector, tracker, args.source, output_path, args.threshold, args.bbox_scale, args.preview)
+        process_video(detector, tracker, args.source, output_path, args.threshold, args.preview)
 
 
 if __name__ == '__main__':

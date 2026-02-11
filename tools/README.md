@@ -40,7 +40,7 @@ python tools/detect.py --source video.mp4                  # video
 python tools/detect.py --source 0                          # webcam
 
 # Face tracking
-python tools/track.py --source video.mp4 --bbox-scale 1.5
+python tools/track.py --source video.mp4
 python tools/track.py --source video.mp4 --output tracked.mp4
 python tools/track.py --source 0                           # webcam
 

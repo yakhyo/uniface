@@ -52,7 +52,7 @@ from .parsing import BiSeNet, XSeg, create_face_parser
 from .privacy import BlurFace, anonymize_faces
 from .recognition import AdaFace, ArcFace, MobileFace, SphereFace, create_recognizer
 from .spoofing import MiniFASNet, create_spoofer
-from .tracking import BYTETracker, expand_bboxes
+from .tracking import BYTETracker
 from .types import AttributeResult, EmotionResult, Face, GazeResult, SpoofingResult
 
 # Optional: Emotion requires PyTorch
@@ -108,7 +108,6 @@ __all__ = [
     'SpoofingResult',
     # Tracking
     'BYTETracker',
-    'expand_bboxes',
     # Privacy
     'BlurFace',
     'anonymize_faces',
