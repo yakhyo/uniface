@@ -149,7 +149,7 @@ for face in faces:
     | Surprise |
     | Fear |
     | Disgust |
-    | Anger |
+    | Angry |
 
 === "8-Class (AFFECNET8)"
 
@@ -161,7 +161,7 @@ for face in faces:
     | Surprise |
     | Fear |
     | Disgust |
-    | Anger |
+    | Angry |
     | Contempt |
 
 ### Model Variants

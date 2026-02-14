@@ -326,8 +326,8 @@ def draw_gaze(
 
     # Calculate the direction of the gaze
     length = x_max - x_min
-    dx = int(-length * np.sin(pitch) * np.cos(yaw))
-    dy = int(-length * np.sin(yaw))
+    dx = int(-length * np.sin(yaw) * np.cos(pitch))
+    dy = int(-length * np.sin(pitch))
 
     # Draw gaze arrow
     center_radius = max(line_thickness + 1, 4)
@@ -373,16 +373,16 @@ def draw_tracks(
 
     Args:
         image: Input image to draw on (modified in-place).
-        faces: List of Face objects (with ``track_id`` assigned by FaceTracker).
+        faces: List of Face objects (with ``track_id`` assigned by BYTETracker).
         draw_landmarks: Whether to draw facial landmarks. Defaults to True.
         draw_id: Whether to draw track ID labels. Defaults to True.
         corner_bbox: Use corner-style bounding boxes. Defaults to True.
 
     Example:
-        >>> from uniface import FaceTracker, RetinaFace
+        >>> from uniface import BYTETracker, RetinaFace
         >>> from uniface.draw import draw_tracks
-        >>> tracker = FaceTracker(RetinaFace())
-        >>> faces = tracker.update(frame)
+        >>> detector = RetinaFace()
+        >>> tracker = BYTETracker()
         >>> draw_tracks(image=frame, faces=faces)
     """
     untracked_color = (128, 128, 128)

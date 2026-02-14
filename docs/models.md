@@ -219,7 +219,7 @@ Facial landmark localization model.
 | `AFFECNET7` | 7       | 0.5M   | 2MB  |
 | `AFFECNET8` | 8       | 0.5M   | 2MB  |
 
-**Classes (7)**: Neutral, Happy, Sad, Surprise, Fear, Disgust, Anger
+**Classes (7)**: Neutral, Happy, Sad, Surprise, Fear, Disgust, Angry
 
 **Classes (8)**: Above + Contempt
 
@@ -279,13 +279,13 @@ BiSeNet (Bilateral Segmentation Network) models for semantic face parsing. Segme
 
 | # | Class | # | Class | # | Class |
 |---|-------|---|-------|---|-------|
-| 1 | Background | 8 | Left Ear | 15 | Neck |
-| 2 | Skin | 9 | Right Ear | 16 | Neck Lace |
-| 3 | Left Eyebrow | 10 | Ear Ring | 17 | Cloth |
-| 4 | Right Eyebrow | 11 | Nose | 18 | Hair |
-| 5 | Left Eye | 12 | Mouth | 19 | Hat |
-| 6 | Right Eye | 13 | Upper Lip | | |
-| 7 | Eye Glasses | 14 | Lower Lip | | |
+| 0 | Background | 7 | Left Ear | 14 | Neck |
+| 1 | Skin | 8 | Right Ear | 15 | Neck Lace |
+| 2 | Left Eyebrow | 9 | Ear Ring | 16 | Cloth |
+| 3 | Right Eyebrow | 10 | Nose | 17 | Hair |
+| 4 | Left Eye | 11 | Mouth | 18 | Hat |
+| 5 | Right Eye | 12 | Upper Lip | | |
+| 6 | Eye Glasses | 13 | Lower Lip | | |
 
 **Applications:**
 

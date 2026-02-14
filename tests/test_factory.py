@@ -15,6 +15,7 @@ from uniface import (
     list_available_detectors,
 )
 from uniface.constants import RetinaFaceWeights, SCRFDWeights
+from uniface.spoofing import MiniFASNet, create_spoofer
 
 
 # create_detector tests
@@ -222,3 +223,16 @@ def test_factory_returns_correct_types():
     assert isinstance(detector, RetinaFace), 'Should return RetinaFace instance'
     assert isinstance(recognizer, ArcFace), 'Should return ArcFace instance'
     assert isinstance(landmarker, Landmark106), 'Should return Landmark106 instance'
+
+
+# create_spoofer tests
+def test_create_spoofer_default():
+    """Test creating a spoofer with default parameters."""
+    spoofer = create_spoofer()
+    assert isinstance(spoofer, MiniFASNet), 'Should return MiniFASNet instance'
+
+
+def test_create_spoofer_with_providers():
+    """Test that create_spoofer forwards providers kwarg without TypeError."""
+    spoofer = create_spoofer(providers=['CPUExecutionProvider'])
+    assert isinstance(spoofer, MiniFASNet), 'Should return MiniFASNet instance'

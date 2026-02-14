@@ -177,23 +177,19 @@ def apply_lip_color(image, mask, color=(180, 50, 50)):
     """Apply lip color using parsing mask."""
     result = image.copy()
 
-    # Get lip mask (upper + lower lip)
-    lip_mask = ((mask == 13) | (mask == 14)).astype(np.uint8)
+    # Get lip mask (upper lip=12, lower lip=13)
+    lip_mask = ((mask == 12) | (mask == 13)).astype(np.uint8)
 
     # Create color overlay
     overlay = np.zeros_like(image)
     overlay[:] = color
 
-    # Blend with original
-    lip_region = cv2.bitwise_and(overlay, overlay, mask=lip_mask)
-    non_lip = cv2.bitwise_and(result, result, mask=1 - lip_mask)
-
-    # Combine with alpha blending
+    # Alpha blend lip region
     alpha = 0.4
-    result = cv2.addWeighted(result, 1 - alpha * lip_mask[:,:,np.newaxis] / 255,
-                             lip_region, alpha, 0)
+    mask_3ch = lip_mask[:, :, np.newaxis]
+    result = np.where(mask_3ch, (image * (1 - alpha) + overlay * alpha).astype(np.uint8), result)
 
-    return result.astype(np.uint8)
+    return result
 ```
 
 ### Background Replacement
