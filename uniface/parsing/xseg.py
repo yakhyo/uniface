@@ -54,7 +54,7 @@ class XSeg(BaseFaceParser):
         >>> faces = detector.detect(image)
         >>> for face in faces:
         ...     if face.landmarks is not None:
-        ...         mask = parser.parse(image, face.landmarks)
+        ...         mask = parser.parse(image, landmarks=face.landmarks)
         ...         print(f'Mask shape: {mask.shape}')
     """
 
@@ -151,20 +151,28 @@ class XSeg(BaseFaceParser):
 
         return mask
 
-    def parse(self, image: np.ndarray, landmarks: np.ndarray) -> np.ndarray:
+    def parse(self, image: np.ndarray, *, landmarks: np.ndarray | None = None) -> np.ndarray:
         """
         Perform face segmentation using 5-point landmarks.
 
+        XSeg requires landmarks for face alignment. Unlike BiSeNet, calling
+        this method without landmarks will raise a :class:`ValueError`.
+
         Args:
             image (np.ndarray): Input image in BGR format.
-            landmarks (np.ndarray): 5-point facial landmarks with shape (5, 2).
+            landmarks (np.ndarray | None): 5-point facial landmarks with shape (5, 2).
+                Required for XSeg face alignment.
 
         Returns:
             np.ndarray: Segmentation mask in original image space, values in [0, 1].
 
         Raises:
-            ValueError: If landmarks shape is not (5, 2).
+            ValueError: If landmarks is None or has incorrect shape.
         """
+        if landmarks is None:
+            raise ValueError(
+                'XSeg requires 5-point facial landmarks for face alignment. Pass landmarks=... with shape (5, 2).'
+            )
         if landmarks.shape != (5, 2):
             raise ValueError(f'Landmarks must have shape (5, 2), got {landmarks.shape}')
 

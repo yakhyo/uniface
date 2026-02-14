@@ -2,7 +2,6 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-"""Tests for face parsing models (BiSeNet and XSeg)."""
 
 from __future__ import annotations
 
@@ -209,7 +208,7 @@ def test_xseg_parse_with_landmarks():
     )
 
     # Parse
-    mask = parser.parse(image, landmarks)
+    mask = parser.parse(image, landmarks=landmarks)
 
     assert mask.shape == (480, 640)
     assert mask.dtype == np.float32
@@ -226,7 +225,7 @@ def test_xseg_parse_invalid_landmarks():
     invalid_landmarks = np.array([[0, 0], [1, 1], [2, 2]])
 
     with pytest.raises(ValueError, match='Landmarks must have shape'):
-        parser.parse(image, invalid_landmarks)
+        parser.parse(image, landmarks=invalid_landmarks)
 
 
 def test_xseg_parse_with_inverse():

@@ -152,7 +152,7 @@ class Face:
         race: Predicted race/ethnicity (optional, from FairFace).
         emotion: Predicted emotion label (optional, from Emotion model).
         emotion_confidence: Confidence score for emotion prediction (optional).
-        track_id: Persistent track ID assigned by FaceTracker (optional).
+        track_id: Persistent track ID assigned by BYTETracker (optional).
 
     Properties:
         sex: Gender as a human-readable string ("Female" or "Male").

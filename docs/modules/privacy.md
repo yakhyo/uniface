@@ -18,23 +18,6 @@ Face anonymization protects privacy by blurring or obscuring faces in images and
 
 ## Quick Start
 
-### One-Line Anonymization
-
-```python
-from uniface.privacy import anonymize_faces
-import cv2
-
-image = cv2.imread("group_photo.jpg")
-anonymized = anonymize_faces(image, method='pixelate')
-cv2.imwrite("anonymized.jpg", anonymized)
-```
-
----
-
-## BlurFace Class
-
-For more control, use the `BlurFace` class:
-
 ```python
 from uniface.detection import RetinaFace
 from uniface.privacy import BlurFace
@@ -59,7 +42,7 @@ cv2.imwrite("anonymized.jpg", anonymized)
 Blocky pixelation effect (common in news media):
 
 ```python
-blurrer = BlurFace(method='pixelate', pixel_blocks=10)
+blurrer = BlurFace(method='pixelate', pixel_blocks=15)
 ```
 
 | Parameter | Default | Description |
@@ -259,13 +242,13 @@ for method in methods:
 
 ```bash
 # Anonymize image with pixelation
-python tools/face_anonymize.py --source photo.jpg
+python tools/anonymize.py --source photo.jpg
 
 # Real-time webcam
-python tools/face_anonymize.py --source 0 --method gaussian
+python tools/anonymize.py --source 0 --method gaussian
 
 # Custom blur strength
-python tools/face_anonymize.py --source photo.jpg --method gaussian --blur-strength 5.0
+python tools/anonymize.py --source photo.jpg --method gaussian --blur-strength 5.0
 ```
 
 ---

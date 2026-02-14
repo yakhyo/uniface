@@ -2,7 +2,6 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-"""Tests for face recognition models (ArcFace, MobileFace, SphereFace)."""
 
 from __future__ import annotations
 

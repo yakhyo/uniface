@@ -22,7 +22,7 @@ RetinaFace models are trained on the WIDER FACE dataset.
 !!! info "Accuracy & Benchmarks"
     **Accuracy**: WIDER FACE validation set (Easy/Medium/Hard subsets) - from [RetinaFace paper](https://arxiv.org/abs/1905.00641)
 
-    **Speed**: Benchmark on your own hardware using `python tools/detection.py --source <image>`
+    **Speed**: Benchmark on your own hardware using `python tools/detect.py --source <image>`
 
 ---
 
@@ -38,7 +38,7 @@ SCRFD (Sample and Computation Redistribution for Efficient Face Detection) model
 !!! info "Accuracy & Benchmarks"
     **Accuracy**: WIDER FACE validation set - from [SCRFD paper](https://arxiv.org/abs/2105.04714)
 
-    **Speed**: Benchmark on your own hardware using `python tools/detection.py --source <image>`
+    **Speed**: Benchmark on your own hardware using `python tools/detect.py --source <image>`
 
 ---
 
@@ -55,7 +55,7 @@ YOLOv5-Face models provide detection with 5-point facial landmarks, trained on W
 !!! info "Accuracy & Benchmarks"
     **Accuracy**: WIDER FACE validation set - from [YOLOv5-Face paper](https://arxiv.org/abs/2105.12931)
 
-    **Speed**: Benchmark on your own hardware using `python tools/detection.py --source <image>`
+    **Speed**: Benchmark on your own hardware using `python tools/detect.py --source <image>`
 
 !!! note "Fixed Input Size"
     All YOLOv5-Face models use a fixed input size of 640×640.
@@ -74,7 +74,7 @@ YOLOv8-Face models use anchor-free design with DFL (Distribution Focal Loss) for
 !!! info "Accuracy & Benchmarks"
     **Accuracy**: WIDER FACE validation set (Easy/Medium/Hard subsets)
 
-    **Speed**: Benchmark on your own hardware using `python tools/detection.py --source <image> --method yolov8face`
+    **Speed**: Benchmark on your own hardware using `python tools/detect.py --source <image> --method yolov8face`
 
 !!! note "Fixed Input Size"
     All YOLOv8-Face models use a fixed input size of 640×640.
@@ -219,7 +219,7 @@ Facial landmark localization model.
 | `AFFECNET7` | 7       | 0.5M   | 2MB  |
 | `AFFECNET8` | 8       | 0.5M   | 2MB  |
 
-**Classes (7)**: Neutral, Happy, Sad, Surprise, Fear, Disgust, Anger
+**Classes (7)**: Neutral, Happy, Sad, Surprise, Fear, Disgust, Angry
 
 **Classes (8)**: Above + Contempt
 
@@ -279,13 +279,13 @@ BiSeNet (Bilateral Segmentation Network) models for semantic face parsing. Segme
 
 | # | Class | # | Class | # | Class |
 |---|-------|---|-------|---|-------|
-| 1 | Background | 8 | Left Ear | 15 | Neck |
-| 2 | Skin | 9 | Right Ear | 16 | Neck Lace |
-| 3 | Left Eyebrow | 10 | Ear Ring | 17 | Cloth |
-| 4 | Right Eyebrow | 11 | Nose | 18 | Hair |
-| 5 | Left Eye | 12 | Mouth | 19 | Hat |
-| 6 | Right Eye | 13 | Upper Lip | | |
-| 7 | Eye Glasses | 14 | Lower Lip | | |
+| 0 | Background | 7 | Left Ear | 14 | Neck |
+| 1 | Skin | 8 | Right Ear | 15 | Neck Lace |
+| 2 | Left Eyebrow | 9 | Ear Ring | 16 | Cloth |
+| 3 | Right Eyebrow | 10 | Nose | 17 | Hair |
+| 4 | Left Eye | 11 | Mouth | 18 | Hat |
+| 5 | Right Eye | 12 | Upper Lip | | |
+| 6 | Eye Glasses | 13 | Lower Lip | | |
 
 **Applications:**
 

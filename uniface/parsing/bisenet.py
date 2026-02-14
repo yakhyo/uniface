@@ -2,6 +2,7 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
+from __future__ import annotations
 
 import cv2
 import numpy as np
@@ -149,21 +150,26 @@ class BiSeNet(BaseFaceParser):
 
         return restored_mask
 
-    def parse(self, face_image: np.ndarray) -> np.ndarray:
+    def parse(self, image: np.ndarray, *, landmarks: np.ndarray | None = None) -> np.ndarray:
         """
         Perform end-to-end face parsing on a face image.
 
         This method orchestrates the full pipeline: preprocessing the input,
         running inference, and postprocessing to return the segmentation mask.
 
+        BiSeNet operates on face crops and does not require landmarks.
+        The ``landmarks`` parameter is accepted for API compatibility but ignored.
+
         Args:
-            face_image (np.ndarray): A face image in BGR format.
+            image (np.ndarray): A face image in BGR format.
+            landmarks (np.ndarray | None): Ignored. Accepted for interface
+                compatibility with :class:`BaseFaceParser`.
 
         Returns:
             np.ndarray: Segmentation mask with the same size as input image.
         """
-        original_size = (face_image.shape[1], face_image.shape[0])  # (width, height)
-        input_tensor = self.preprocess(face_image)
+        original_size = (image.shape[1], image.shape[0])  # (width, height)
+        input_tensor = self.preprocess(image)
         outputs = self.session.run(self.output_names, {self.input_name: input_tensor})
 
         return self.postprocess(outputs[0], original_size)

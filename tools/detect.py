@@ -163,7 +163,11 @@ def main():
     parser = argparse.ArgumentParser(description='Run face detection')
     parser.add_argument('--source', type=str, required=True, help='Image/video path or camera ID (0, 1, ...)')
     parser.add_argument(
-        '--method', type=str, default='retinaface', choices=['retinaface', 'scrfd', 'yolov5face', 'yolov8face']
+        '--detector',
+        '--method',
+        type=str,
+        default='retinaface',
+        choices=['retinaface', 'scrfd', 'yolov5face', 'yolov8face'],
     )
     parser.add_argument('--threshold', type=float, default=0.25, help='Visualization threshold')
     parser.add_argument('--preview', action='store_true', help='Show live preview during video processing')
@@ -172,11 +176,11 @@ def main():
     args = parser.parse_args()
 
     # Initialize detector
-    if args.method == 'retinaface':
+    if args.detector == 'retinaface':
         detector = RetinaFace()
-    elif args.method == 'scrfd':
+    elif args.detector == 'scrfd':
         detector = SCRFD()
-    elif args.method == 'yolov5face':
+    elif args.detector == 'yolov5face':
         from uniface.constants import YOLOv5FaceWeights
 
         detector = YOLOv5Face(model_name=YOLOv5FaceWeights.YOLOV5M)

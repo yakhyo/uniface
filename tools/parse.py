@@ -209,7 +209,7 @@ def main():
     args = parser_arg.parse_args()
 
     detector = RetinaFace()
-    parser = BiSeNet(model_name=ParsingWeights.RESNET34)
+    parser = BiSeNet(model_name=args.model)
 
     source_type = get_source_type(args.source)
 

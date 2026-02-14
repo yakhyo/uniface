@@ -41,7 +41,7 @@ def run_inference(detector, recognizer, image_path: str):
 
     print(f'Detected {len(faces)} face(s). Extracting embedding for the first face...')
 
-    landmarks = faces[0]['landmarks']  # 5-point landmarks for alignment (already np.ndarray)
+    landmarks = faces[0].landmarks  # 5-point landmarks for alignment (already np.ndarray)
     embedding = recognizer.get_embedding(image, landmarks)
     norm_embedding = recognizer.get_normalized_embedding(image, landmarks)  # L2 normalized
 
@@ -65,8 +65,8 @@ def compare_faces(detector, recognizer, image1_path: str, image2_path: str, thre
         print('Error: No faces detected in one or both images')
         return
 
-    landmarks1 = faces1[0]['landmarks']
-    landmarks2 = faces2[0]['landmarks']
+    landmarks1 = faces1[0].landmarks
+    landmarks2 = faces2[0].landmarks
 
     embedding1 = recognizer.get_normalized_embedding(img1, landmarks1)
     embedding2 = recognizer.get_normalized_embedding(img2, landmarks2)

@@ -272,11 +272,11 @@ MODEL_SHA256: dict[Enum, str] = {
     # Landmark
     LandmarkWeights.DEFAULT:         'f001b856447c413801ef5c42091ed0cd516fcd21f2d6b79635b1e733a7109dbf',
     # MobileGaze (trained on Gaze360)
-    GazeWeights.RESNET18:            '23d5d7e4f6f40dce8c35274ce9d08b45b9e22cbaaf5af73182f473229d713d31',
-    GazeWeights.RESNET34:            '4457ee5f7acd1a5ab02da4b61f02fc3a0b17adbf3844dd0ba3cd4288f2b5e1de',
-    GazeWeights.RESNET50:            'e1eaf98f5ec7c89c6abe7cfe39f7be83e747163f98d1ff945c0603b3c521be22',
-    GazeWeights.MOBILENET_V2:        'fdcdb84e3e6421b5a79e8f95139f249fc258d7f387eed5ddac2b80a9a15ce076',
-    GazeWeights.MOBILEONE_S0:        'c0b5a4f4a0ffd24f76ab3c1452354bb2f60110899fd9a88b464c75bafec0fde8',
+    GazeWeights.RESNET18:            '404fec1efd07ff49f981e47f461c20c2627119e465ec441bbd1c067d3f16e657',
+    GazeWeights.RESNET34:            'c8e6b14f6095d2425241b9302aa663d9a23b7dfb9d43941352b718c91dc7f2cf',
+    GazeWeights.RESNET50:            'bb28d421565adc4dfb665742f8fc80bdef36dd8caa0c87e040e0937f9fdca9a6',
+    GazeWeights.MOBILENET_V2:        'b81312df85c7ac1c1b5f78c573620d22c2719cb839650e15f12dc7eecb7744a4',
+    GazeWeights.MOBILEONE_S0:        '8b4fdc4e3da44733c9a82e7776b411e4a39f94e8e285aee0fc85a548a55f7d9f',
     # Face Parsing
     ParsingWeights.RESNET18:         '0d9bd318e46987c3bdbfacae9e2c0f461cae1c6ac6ea6d43bbe541a91727e33f',
     ParsingWeights.RESNET34:         '5b805bba7b5660ab7070b5a381dcf75e5b3e04199f1e9387232a77a00095102e',

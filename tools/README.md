@@ -26,7 +26,7 @@ CLI utilities for testing and running UniFace features.
 
 ## Unified `--source` Pattern
 
-All tools use a unified `--source` argument that accepts:
+Most tools use a unified `--source` argument that accepts:
 - **Image path**: `--source photo.jpg`
 - **Video path**: `--source video.mp4`
 - **Camera ID**: `--source 0` (default webcam), `--source 1` (external camera)

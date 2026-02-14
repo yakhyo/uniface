@@ -106,7 +106,7 @@ class MobileGaze(BaseGazeEstimator):
             self.output_names = [output.name for output in outputs]
 
             if len(self.output_names) != 2:
-                raise ValueError(f'Expected 2 output nodes (pitch, yaw), got {len(self.output_names)}')
+                raise ValueError(f'Expected 2 output nodes (yaw, pitch), got {len(self.output_names)}')
 
             Logger.info(f'MobileGaze initialized with input size {self.input_size}')
 
@@ -161,19 +161,19 @@ class MobileGaze(BaseGazeEstimator):
         Returns:
             GazeResult: Result containing pitch and yaw angles in radians.
         """
-        pitch_logits, yaw_logits = outputs
+        yaw_logits, pitch_logits = outputs
 
         # Convert logits to probabilities
-        pitch_probs = self._softmax(pitch_logits)
         yaw_probs = self._softmax(yaw_logits)
+        pitch_probs = self._softmax(pitch_logits)
 
         # Compute expected bin index (soft-argmax)
-        pitch_deg = np.sum(pitch_probs * self._idx_tensor, axis=1) * self._binwidth - self._angle_offset
         yaw_deg = np.sum(yaw_probs * self._idx_tensor, axis=1) * self._binwidth - self._angle_offset
+        pitch_deg = np.sum(pitch_probs * self._idx_tensor, axis=1) * self._binwidth - self._angle_offset
 
         # Convert degrees to radians
-        pitch = float(np.radians(pitch_deg[0]))
         yaw = float(np.radians(yaw_deg[0]))
+        pitch = float(np.radians(pitch_deg[0]))
 
         return GazeResult(pitch=pitch, yaw=yaw)
 

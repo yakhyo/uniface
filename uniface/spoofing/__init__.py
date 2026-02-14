@@ -4,6 +4,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from uniface.constants import MiniFASNetWeights
 from uniface.types import SpoofingResult
 
@@ -22,6 +24,7 @@ __all__ = [
 def create_spoofer(
     model_name: MiniFASNetWeights = MiniFASNetWeights.V2,
     scale: float | None = None,
+    **kwargs: Any,
 ) -> MiniFASNet:
     """Factory function to create a face anti-spoofing model.
 
@@ -34,6 +37,8 @@ def create_spoofer(
             - MiniFASNetWeights.V1SE: Squeeze-and-excitation version, uses scale=4.0
         scale: Custom crop scale factor for face region. If None, uses the
             default scale for the selected model variant.
+        **kwargs: Additional keyword arguments forwarded to MiniFASNet
+            (e.g. ``providers=['CUDAExecutionProvider']``).
 
     Returns:
         An initialized face anti-spoofing model.
@@ -44,4 +49,4 @@ def create_spoofer(
         >>> result = spoofer.predict(image, face.bbox)
         >>> print(f'Is real: {result.is_real}, Confidence: {result.confidence:.2%}')
     """
-    return MiniFASNet(model_name=model_name, scale=scale)
+    return MiniFASNet(model_name=model_name, scale=scale, **kwargs)

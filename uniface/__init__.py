@@ -29,38 +29,30 @@ from __future__ import annotations
 
 __license__ = 'MIT'
 __author__ = 'Yakhyokhuja Valikhujaev'
-__version__ = '2.3.0'
+__version__ = '3.0.0'
 
 from uniface.face_utils import compute_similarity, face_alignment
 from uniface.log import Logger, enable_logging
 from uniface.model_store import download_models, get_cache_dir, set_cache_dir, verify_model_weights
 
 from .analyzer import FaceAnalyzer
-from .attribute import AgeGender, FairFace
+from .attribute import AgeGender, Emotion, FairFace
 from .detection import (
     SCRFD,
     RetinaFace,
     YOLOv5Face,
     YOLOv8Face,
     create_detector,
-    detect_faces,
     list_available_detectors,
 )
 from .gaze import MobileGaze, create_gaze_estimator
 from .landmark import Landmark106, create_landmarker
 from .parsing import BiSeNet, XSeg, create_face_parser
-from .privacy import BlurFace, anonymize_faces
+from .privacy import BlurFace
 from .recognition import AdaFace, ArcFace, MobileFace, SphereFace, create_recognizer
 from .spoofing import MiniFASNet, create_spoofer
 from .tracking import BYTETracker
 from .types import AttributeResult, EmotionResult, Face, GazeResult, SpoofingResult
-
-# Optional: Emotion requires PyTorch
-Emotion: type | None
-try:
-    from .attribute import Emotion
-except ImportError:
-    Emotion = None
 
 __all__ = [
     # Metadata
@@ -77,7 +69,6 @@ __all__ = [
     'create_landmarker',
     'create_recognizer',
     'create_spoofer',
-    'detect_faces',
     'list_available_detectors',
     # Detection models
     'RetinaFace',
@@ -110,7 +101,6 @@ __all__ = [
     'BYTETracker',
     # Privacy
     'BlurFace',
-    'anonymize_faces',
     # Utilities
     'Logger',
     'compute_similarity',

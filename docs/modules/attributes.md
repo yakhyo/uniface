@@ -127,7 +127,7 @@ from uniface.attribute import Emotion
 from uniface.constants import DDAMFNWeights
 
 detector = RetinaFace()
-emotion = Emotion(model_weights=DDAMFNWeights.AFFECNET7)
+emotion = Emotion(model_name=DDAMFNWeights.AFFECNET7)
 
 faces = detector.detect(image)
 
@@ -149,7 +149,7 @@ for face in faces:
     | Surprise |
     | Fear |
     | Disgust |
-    | Anger |
+    | Angry |
 
 === "8-Class (AFFECNET8)"
 
@@ -161,7 +161,7 @@ for face in faces:
     | Surprise |
     | Fear |
     | Disgust |
-    | Anger |
+    | Angry |
     | Contempt |
 
 ### Model Variants
@@ -171,10 +171,10 @@ from uniface.attribute import Emotion
 from uniface.constants import DDAMFNWeights
 
 # 7-class emotion
-emotion = Emotion(model_weights=DDAMFNWeights.AFFECNET7)
+emotion = Emotion(model_name=DDAMFNWeights.AFFECNET7)
 
 # 8-class emotion
-emotion = Emotion(model_weights=DDAMFNWeights.AFFECNET8)
+emotion = Emotion(model_name=DDAMFNWeights.AFFECNET8)
 ```
 
 ---

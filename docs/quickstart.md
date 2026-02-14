@@ -266,25 +266,23 @@ print(f"Detected {len(np.unique(mask))} facial components")
 Blur faces for privacy protection:
 
 ```python
-from uniface.privacy import anonymize_faces
 import cv2
-
-# One-liner: automatic detection and blurring
-image = cv2.imread("group_photo.jpg")
-anonymized = anonymize_faces(image, method='pixelate')
-cv2.imwrite("anonymized.jpg", anonymized)
-```
-
-**Manual control:**
-
-```python
 from uniface.detection import RetinaFace
 from uniface.privacy import BlurFace
 
 detector = RetinaFace()
-blurrer = BlurFace(method='gaussian', blur_strength=5.0)
+blurrer = BlurFace(method='pixelate')
 
+image = cv2.imread("group_photo.jpg")
 faces = detector.detect(image)
+anonymized = blurrer.anonymize(image, faces)
+cv2.imwrite("anonymized.jpg", anonymized)
+```
+
+**Custom blur settings:**
+
+```python
+blurrer = BlurFace(method='gaussian', blur_strength=5.0)
 anonymized = blurrer.anonymize(image, faces)
 ```
 
