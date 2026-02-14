@@ -31,7 +31,7 @@ def create_gaze_estimator(method: str = 'mobilegaze', **kwargs) -> BaseGazeEstim
         ValueError: If the specified `method` is not supported.
 
     Examples:
-        >>> # Create the default MobileGaze estimator (ResNet18 backbone)
+        >>> # Create the default MobileGaze estimator (ResNet34 backbone)
         >>> estimator = create_gaze_estimator()
 
         >>> # Create with MobileNetV2 backbone

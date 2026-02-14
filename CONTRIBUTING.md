@@ -82,23 +82,23 @@ def process(items: List[str], config: Optional[Dict[str, int]] = None) -> Tuple[
 Use [Google-style docstrings](https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings) for all public APIs:
 
 ```python
-def detect_faces(image: np.ndarray, threshold: float = 0.5) -> list[Face]:
-    """Detect faces in an image.
+def create_detector(method: str = 'retinaface', **kwargs: Any) -> BaseDetector:
+    """Factory function to create face detectors.
 
     Args:
-        image: Input image as a numpy array with shape (H, W, C) in BGR format.
-        threshold: Confidence threshold for filtering detections. Defaults to 0.5.
+        method: Detection method. Options: 'retinaface', 'scrfd', 'yolov5face', 'yolov8face'.
+        **kwargs: Detector-specific parameters.
 
     Returns:
-        List of Face objects containing bounding boxes, confidence scores,
-        and facial landmarks.
+        Initialized detector instance.
 
     Raises:
-        ValueError: If the input image has invalid dimensions.
+        ValueError: If method is not supported.
 
     Example:
-        >>> from uniface import detect_faces
-        >>> faces = detect_faces(image, threshold=0.8)
+        >>> from uniface import create_detector
+        >>> detector = create_detector('retinaface', confidence_threshold=0.8)
+        >>> faces = detector.detect(image)
         >>> print(f"Found {len(faces)} faces")
     """
 ```
@@ -174,16 +174,16 @@ When adding a new model or feature:
 
 Example notebooks demonstrating library usage:
 
-| Example | Notebook |
-|---------|----------|
-| Face Detection | [01_face_detection.ipynb](examples/01_face_detection.ipynb) |
-| Face Alignment | [02_face_alignment.ipynb](examples/02_face_alignment.ipynb) |
-| Face Verification | [03_face_verification.ipynb](examples/03_face_verification.ipynb) |
-| Face Search | [04_face_search.ipynb](examples/04_face_search.ipynb) |
-| Face Analyzer | [05_face_analyzer.ipynb](examples/05_face_analyzer.ipynb) |
-| Face Parsing | [06_face_parsing.ipynb](examples/06_face_parsing.ipynb) |
+| Example            | Notebook                                                            |
+| ------------------ | ------------------------------------------------------------------- |
+| Face Detection     | [01_face_detection.ipynb](examples/01_face_detection.ipynb)         |
+| Face Alignment     | [02_face_alignment.ipynb](examples/02_face_alignment.ipynb)         |
+| Face Verification  | [03_face_verification.ipynb](examples/03_face_verification.ipynb)   |
+| Face Search        | [04_face_search.ipynb](examples/04_face_search.ipynb)               |
+| Face Analyzer      | [05_face_analyzer.ipynb](examples/05_face_analyzer.ipynb)           |
+| Face Parsing       | [06_face_parsing.ipynb](examples/06_face_parsing.ipynb)             |
 | Face Anonymization | [07_face_anonymization.ipynb](examples/07_face_anonymization.ipynb) |
-| Gaze Estimation | [08_gaze_estimation.ipynb](examples/08_gaze_estimation.ipynb) |
+| Gaze Estimation    | [08_gaze_estimation.ipynb](examples/08_gaze_estimation.ipynb)       |
 
 ## Questions?
 

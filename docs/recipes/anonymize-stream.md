@@ -67,14 +67,19 @@ out.release()
 
 ---
 
-## One-Liner for Images
+## Single Image
 
 ```python
-from uniface.privacy import anonymize_faces
 import cv2
+from uniface.detection import RetinaFace
+from uniface.privacy import BlurFace
+
+detector = RetinaFace()
+blurrer = BlurFace(method='pixelate')
 
 image = cv2.imread("photo.jpg")
-result = anonymize_faces(image, method='pixelate')
+faces = detector.detect(image)
+result = blurrer.anonymize(image, faces)
 cv2.imwrite("anonymized.jpg", result)
 ```
 
@@ -84,7 +89,7 @@ cv2.imwrite("anonymized.jpg", result)
 
 | Method | Usage |
 |--------|-------|
-| Pixelate | `BlurFace(method='pixelate', pixel_blocks=10)` |
+| Pixelate | `BlurFace(method='pixelate', pixel_blocks=15)` |
 | Gaussian | `BlurFace(method='gaussian', blur_strength=3.0)` |
 | Blackout | `BlurFace(method='blackout', color=(0,0,0))` |
 | Elliptical | `BlurFace(method='elliptical', margin=20)` |

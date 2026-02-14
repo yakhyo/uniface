@@ -64,7 +64,7 @@ def set_cache_dir(path: str) -> None:
     Logger.info(f'Cache directory set to: {path}')
 
 
-def verify_model_weights(model_name: Enum, root: str = '~/.uniface/models') -> str:
+def verify_model_weights(model_name: Enum, root: str | None = None) -> str:
     """Ensure model weights are present, downloading and verifying them if necessary.
 
     Given a model identifier from an Enum class (e.g., `RetinaFaceWeights.MNET_V2`),
@@ -75,7 +75,7 @@ def verify_model_weights(model_name: Enum, root: str = '~/.uniface/models') -> s
     Args:
         model_name: Model weight identifier enum (e.g., `RetinaFaceWeights.MNET_V2`).
         root: Directory to store or locate the model weights.
-            Defaults to '~/.uniface/models'.
+            If None, uses the cache directory from :func:`get_cache_dir`.
 
     Returns:
         Absolute path to the verified model weights file.
@@ -92,7 +92,7 @@ def verify_model_weights(model_name: Enum, root: str = '~/.uniface/models') -> s
         '/home/user/.uniface/models/retinaface_mnet_v2.onnx'
     """
 
-    root = get_cache_dir()
+    root = os.path.expanduser(root) if root is not None else get_cache_dir()
     os.makedirs(root, exist_ok=True)
 
     # Keep model_name as enum for dictionary lookup

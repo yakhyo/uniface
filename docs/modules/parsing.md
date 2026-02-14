@@ -268,7 +268,7 @@ faces = detector.detect(image)
 
 for face in faces:
     if face.landmarks is not None:
-        mask = parser.parse(image, face.landmarks)
+        mask = parser.parse(image, landmarks=face.landmarks)
         print(f"Mask shape: {mask.shape}")  # (H, W), values in [0, 1]
 ```
 
@@ -296,7 +296,7 @@ parser = XSeg(
 
 ```python
 # Full pipeline: align -> segment -> warp back to original space
-mask = parser.parse(image, landmarks)
+mask = parser.parse(image, landmarks=landmarks)
 
 # For pre-aligned face crops
 mask = parser.parse_aligned(face_crop)

@@ -2,6 +2,8 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 
 import numpy as np
@@ -69,7 +71,7 @@ class BaseFaceParser(ABC):
         raise NotImplementedError('Subclasses must implement the postprocess method.')
 
     @abstractmethod
-    def parse(self, face_image: np.ndarray) -> np.ndarray:
+    def parse(self, image: np.ndarray, *, landmarks: np.ndarray | None = None) -> np.ndarray:
         """
         Perform end-to-end face parsing on a face image.
 
@@ -77,9 +79,11 @@ class BaseFaceParser(ABC):
         running inference, and postprocessing to return the segmentation mask.
 
         Args:
-            face_image (np.ndarray): A face image in BGR format.
-                                     The face should be roughly centered and
-                                     well-framed within the image.
+            image (np.ndarray): A face image in BGR format.
+                The face should be roughly centered and well-framed within the image.
+            landmarks (np.ndarray | None): Optional 5-point facial landmarks with
+                shape (5, 2). Required by some parsers (e.g., XSeg) for face alignment.
+                Ignored by parsers that do not need landmarks (e.g., BiSeNet).
 
         Returns:
             np.ndarray: Segmentation mask with the same size as input image,
@@ -92,14 +96,15 @@ class BaseFaceParser(ABC):
         """
         raise NotImplementedError('Subclasses must implement the parse method.')
 
-    def __call__(self, face_image: np.ndarray) -> np.ndarray:
+    def __call__(self, image: np.ndarray, *, landmarks: np.ndarray | None = None) -> np.ndarray:
         """
         Provides a convenient, callable shortcut for the `parse` method.
 
         Args:
-            face_image (np.ndarray): A face image in BGR format.
+            image (np.ndarray): A face image in BGR format.
+            landmarks (np.ndarray | None): Optional 5-point facial landmarks.
 
         Returns:
             np.ndarray: Segmentation mask with the same size as input image.
         """
-        return self.parse(face_image)
+        return self.parse(image, landmarks=landmarks)

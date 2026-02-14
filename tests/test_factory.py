@@ -13,7 +13,6 @@ from uniface import (
     create_detector,
     create_landmarker,
     create_recognizer,
-    detect_faces,
     list_available_detectors,
 )
 from uniface.constants import RetinaFaceWeights, SCRFDWeights
@@ -121,62 +120,6 @@ def test_create_landmarker_invalid_method():
     """
     with pytest.raises((ValueError, KeyError)):
         create_landmarker('invalid_method')
-
-
-# detect_faces tests
-def test_detect_faces_retinaface():
-    """
-    Test high-level detect_faces function with RetinaFace.
-    """
-    mock_image = np.random.randint(0, 255, (640, 640, 3), dtype=np.uint8)
-    faces = detect_faces(mock_image, method='retinaface')
-
-    assert isinstance(faces, list), 'detect_faces should return a list'
-
-
-def test_detect_faces_scrfd():
-    """
-    Test high-level detect_faces function with SCRFD.
-    """
-    mock_image = np.random.randint(0, 255, (640, 640, 3), dtype=np.uint8)
-    faces = detect_faces(mock_image, method='scrfd')
-
-    assert isinstance(faces, list), 'detect_faces should return a list'
-
-
-def test_detect_faces_with_threshold():
-    """
-    Test detect_faces with custom confidence threshold.
-    """
-    mock_image = np.random.randint(0, 255, (640, 640, 3), dtype=np.uint8)
-    faces = detect_faces(mock_image, method='retinaface', confidence_threshold=0.8)
-
-    assert isinstance(faces, list), 'detect_faces should return a list'
-
-    # All detections should respect threshold
-    for face in faces:
-        assert face.confidence >= 0.8, 'All detections should meet confidence threshold'
-
-
-def test_detect_faces_default_method():
-    """
-    Test detect_faces with default method (should use retinaface).
-    """
-    mock_image = np.random.randint(0, 255, (640, 640, 3), dtype=np.uint8)
-    faces = detect_faces(mock_image)  # No method specified
-
-    assert isinstance(faces, list), 'detect_faces should return a list with default method'
-
-
-def test_detect_faces_empty_image():
-    """
-    Test detect_faces on a blank image.
-    """
-    empty_image = np.zeros((640, 640, 3), dtype=np.uint8)
-    faces = detect_faces(empty_image, method='retinaface')
-
-    assert isinstance(faces, list), 'Should return a list even for empty image'
-    assert len(faces) == 0, 'Should detect no faces in blank image'
 
 
 # list_available_detectors tests

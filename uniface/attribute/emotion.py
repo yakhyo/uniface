@@ -28,17 +28,17 @@ class Emotion(Attribute):
 
     def __init__(
         self,
-        model_weights: DDAMFNWeights = DDAMFNWeights.AFFECNET7,
+        model_name: DDAMFNWeights = DDAMFNWeights.AFFECNET7,
         input_size: tuple[int, int] = (112, 112),
     ) -> None:
         """
         Initializes the emotion recognition model.
 
         Args:
-            model_weights (DDAMFNWeights): The enum for the model weights to load.
+            model_name (DDAMFNWeights): The enum for the model weights to load.
             input_size (Tuple[int, int]): The expected input size for the model.
         """
-        Logger.info(f'Initializing Emotion with model={model_weights.name}')
+        Logger.info(f'Initializing Emotion with model={model_name.name}')
 
         if torch.backends.mps.is_available():
             self.device = torch.device('mps')
@@ -48,7 +48,7 @@ class Emotion(Attribute):
             self.device = torch.device('cpu')
 
         self.input_size = input_size
-        self.model_path = verify_model_weights(model_weights)
+        self.model_path = verify_model_weights(model_name)
 
         # Define emotion labels based on the selected model
         self.emotion_labels = [
@@ -60,7 +60,7 @@ class Emotion(Attribute):
             'Disgust',
             'Angry',
         ]
-        if model_weights == DDAMFNWeights.AFFECNET8:
+        if model_name == DDAMFNWeights.AFFECNET8:
             self.emotion_labels.append('Contempt')
 
         self._initialize_model()

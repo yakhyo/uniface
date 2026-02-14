@@ -238,22 +238,6 @@ detector = create_detector('yolov8face')
 
 ---
 
-## High-Level API
-
-One-line detection:
-
-```python
-from uniface.detection import detect_faces
-
-# Using RetinaFace (default)
-faces = detect_faces(image, method='retinaface', confidence_threshold=0.5)
-
-# Using YOLOv8-Face
-faces = detect_faces(image, method='yolov8face', confidence_threshold=0.5)
-```
-
----
-
 ## Output Format
 
 All detectors return `list[Face]`:
