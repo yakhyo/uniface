@@ -2,7 +2,6 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-"""Tests for factory functions (create_detector, create_recognizer, etc.)."""
 
 from __future__ import annotations
 

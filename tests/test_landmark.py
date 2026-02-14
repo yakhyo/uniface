@@ -2,7 +2,6 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-"""Tests for 106-point facial landmark detector."""
 
 from __future__ import annotations
 

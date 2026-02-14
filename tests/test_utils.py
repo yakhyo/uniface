@@ -2,7 +2,6 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-"""Tests for utility functions (compute_similarity, face_alignment, etc.)."""
 
 from __future__ import annotations
 

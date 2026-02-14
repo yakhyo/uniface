@@ -2,7 +2,6 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-"""Tests for UniFace type definitions (dataclasses)."""
 
 from __future__ import annotations
 

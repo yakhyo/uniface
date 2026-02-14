@@ -2,7 +2,6 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-"""Tests for face parsing models (BiSeNet and XSeg)."""
 
 from __future__ import annotations
 
