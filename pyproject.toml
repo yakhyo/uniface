@@ -1,6 +1,6 @@
 [project]
 name = "uniface"
-version = "2.3.0"
+version = "3.0.0"
 description = "UniFace: A Comprehensive Library for Face Detection, Recognition, Tracking, Landmark Analysis, Face Parsing, Gaze Estimation, Age, and Gender Detection"
 readme = "README.md"
 license = "MIT"
