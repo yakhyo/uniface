@@ -2442,7 +2442,7 @@
 </span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">DDAMFNWeights</span>
 </span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
 </span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="n">detector</span> <span class="o">=</span> <span class="n">RetinaFace</span><span class="p">()</span>
-</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="n">emotion</span> <span class="o">=</span> <span class="n">Emotion</span><span class="p">(</span><span class="n">model_weights</span><span class="o">=</span><span class="n">DDAMFNWeights</span><span class="o">.</span><span class="n">AFFECNET7</span><span class="p">)</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="n">emotion</span> <span class="o">=</span> <span class="n">Emotion</span><span class="p">(</span><span class="n">model_name</span><span class="o">=</span><span class="n">DDAMFNWeights</span><span class="o">.</span><span class="n">AFFECNET7</span><span class="p">)</span>
 </span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>
 </span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="n">faces</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">detect</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
 </span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>
@@ -2481,7 +2481,7 @@
 <td>Disgust</td>
 </tr>
 <tr>
-<td>Anger</td>
+<td>Angry</td>
 </tr>
 </tbody>
 </table>
@@ -2513,7 +2513,7 @@
 <td>Disgust</td>
 </tr>
 <tr>
-<td>Anger</td>
+<td>Angry</td>
 </tr>
 <tr>
 <td>Contempt</td>
@@ -2528,10 +2528,10 @@
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">DDAMFNWeights</span>
 </span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
 </span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="c1"># 7-class emotion</span>
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="n">emotion</span> <span class="o">=</span> <span class="n">Emotion</span><span class="p">(</span><span class="n">model_weights</span><span class="o">=</span><span class="n">DDAMFNWeights</span><span class="o">.</span><span class="n">AFFECNET7</span><span class="p">)</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="n">emotion</span> <span class="o">=</span> <span class="n">Emotion</span><span class="p">(</span><span class="n">model_name</span><span class="o">=</span><span class="n">DDAMFNWeights</span><span class="o">.</span><span class="n">AFFECNET7</span><span class="p">)</span>
 </span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>
 </span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="c1"># 8-class emotion</span>
-</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="n">emotion</span> <span class="o">=</span> <span class="n">Emotion</span><span class="p">(</span><span class="n">model_weights</span><span class="o">=</span><span class="n">DDAMFNWeights</span><span class="o">.</span><span class="n">AFFECNET8</span><span class="p">)</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="n">emotion</span> <span class="o">=</span> <span class="n">Emotion</span><span class="p">(</span><span class="n">model_name</span><span class="o">=</span><span class="n">DDAMFNWeights</span><span class="o">.</span><span class="n">AFFECNET8</span><span class="p">)</span>
 </span></code></pre></div>
 <hr />
 <h2 id="combining-models">Combining Models</h2>
@@ -2647,7 +2647,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="February 11, 2026 15:20:23 UTC"><span class="timeago" datetime="2026-02-11T15:20:23+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="February 11, 2026 15:20:23 UTC">2026-02-11</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="February 14, 2026 14:54:51 UTC"><span class="timeago" datetime="2026-02-14T14:54:51+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="February 14, 2026 14:54:51 UTC">2026-02-14</span>
   </span>
 
     
