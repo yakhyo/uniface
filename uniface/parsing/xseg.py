@@ -54,7 +54,7 @@ class XSeg(BaseFaceParser):
         >>> faces = detector.detect(image)
         >>> for face in faces:
         ...     if face.landmarks is not None:
-        ...         mask = parser.parse(image, face.landmarks)
+        ...         mask = parser.parse(image, landmarks=face.landmarks)
         ...         print(f'Mask shape: {mask.shape}')
     """
 

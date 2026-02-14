@@ -59,7 +59,7 @@ def process_image(
             print(f'  Face {i + 1}: skipped (no landmarks)')
             continue
 
-        mask = parser.parse(image, face.landmarks)
+        mask = parser.parse(image, landmarks=face.landmarks)
         full_mask = np.maximum(full_mask, mask)
         print(f'  Face {i + 1}: done')
 
@@ -121,7 +121,7 @@ def process_video(
         for face in faces:
             if face.landmarks is None:
                 continue
-            mask = parser.parse(frame, face.landmarks)
+            mask = parser.parse(frame, landmarks=face.landmarks)
             full_mask = np.maximum(full_mask, mask)
 
         # Apply visualization
@@ -169,7 +169,7 @@ def run_camera(
         for face in faces:
             if face.landmarks is None:
                 continue
-            mask = parser.parse(frame, face.landmarks)
+            mask = parser.parse(frame, landmarks=face.landmarks)
             full_mask = np.maximum(full_mask, mask)
 
         # Apply visualization

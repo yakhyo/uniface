@@ -22,7 +22,7 @@ RetinaFace models are trained on the WIDER FACE dataset.
 !!! info "Accuracy & Benchmarks"
     **Accuracy**: WIDER FACE validation set (Easy/Medium/Hard subsets) - from [RetinaFace paper](https://arxiv.org/abs/1905.00641)
 
-    **Speed**: Benchmark on your own hardware using `python tools/detection.py --source <image>`
+    **Speed**: Benchmark on your own hardware using `python tools/detect.py --source <image>`
 
 ---
 
@@ -38,7 +38,7 @@ SCRFD (Sample and Computation Redistribution for Efficient Face Detection) model
 !!! info "Accuracy & Benchmarks"
     **Accuracy**: WIDER FACE validation set - from [SCRFD paper](https://arxiv.org/abs/2105.04714)
 
-    **Speed**: Benchmark on your own hardware using `python tools/detection.py --source <image>`
+    **Speed**: Benchmark on your own hardware using `python tools/detect.py --source <image>`
 
 ---
 
@@ -55,7 +55,7 @@ YOLOv5-Face models provide detection with 5-point facial landmarks, trained on W
 !!! info "Accuracy & Benchmarks"
     **Accuracy**: WIDER FACE validation set - from [YOLOv5-Face paper](https://arxiv.org/abs/2105.12931)
 
-    **Speed**: Benchmark on your own hardware using `python tools/detection.py --source <image>`
+    **Speed**: Benchmark on your own hardware using `python tools/detect.py --source <image>`
 
 !!! note "Fixed Input Size"
     All YOLOv5-Face models use a fixed input size of 640×640.
@@ -74,7 +74,7 @@ YOLOv8-Face models use anchor-free design with DFL (Distribution Focal Loss) for
 !!! info "Accuracy & Benchmarks"
     **Accuracy**: WIDER FACE validation set (Easy/Medium/Hard subsets)
 
-    **Speed**: Benchmark on your own hardware using `python tools/detection.py --source <image> --method yolov8face`
+    **Speed**: Benchmark on your own hardware using `python tools/detect.py --source <image> --method yolov8face`
 
 !!! note "Fixed Input Size"
     All YOLOv8-Face models use a fixed input size of 640×640.

@@ -155,19 +155,19 @@ def main():
         epilog="""
 Examples:
   # Anonymize image with pixelation (default)
-  python run_anonymization.py --source photo.jpg
+  python tools/anonymize.py --source photo.jpg
 
   # Use Gaussian blur with custom strength
-  python run_anonymization.py --source photo.jpg --method gaussian --blur-strength 5.0
+  python tools/anonymize.py --source photo.jpg --method gaussian --blur-strength 5.0
 
   # Real-time webcam anonymization
-  python run_anonymization.py --source 0 --method pixelate
+  python tools/anonymize.py --source 0 --method pixelate
 
   # Black boxes for maximum privacy
-  python run_anonymization.py --source photo.jpg --method blackout
+  python tools/anonymize.py --source photo.jpg --method blackout
 
   # Custom pixelation intensity
-  python run_anonymization.py --source photo.jpg --method pixelate --pixel-blocks 5
+  python tools/anonymize.py --source photo.jpg --method pixelate --pixel-blocks 5
         """,
     )
 

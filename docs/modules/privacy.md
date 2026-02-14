@@ -242,13 +242,13 @@ for method in methods:
 
 ```bash
 # Anonymize image with pixelation
-python tools/face_anonymize.py --source photo.jpg
+python tools/anonymize.py --source photo.jpg
 
 # Real-time webcam
-python tools/face_anonymize.py --source 0 --method gaussian
+python tools/anonymize.py --source 0 --method gaussian
 
 # Custom blur strength
-python tools/face_anonymize.py --source photo.jpg --method gaussian --blur-strength 5.0
+python tools/anonymize.py --source photo.jpg --method gaussian --blur-strength 5.0
 ```
 
 ---
