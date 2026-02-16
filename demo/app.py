@@ -25,7 +25,7 @@ from uniface.constants import (
     YOLOv5FaceWeights,
     YOLOv8FaceWeights,
 )
-from uniface.visualization import (
+from uniface.draw import (
     FACE_PARSING_COLORS,
     FACE_PARSING_LABELS,
     draw_detections,
@@ -192,7 +192,7 @@ def detect_faces_fn(
     bboxes = [f.bbox for f in faces]
     scores = [f.confidence for f in faces]
     landmarks = [f.landmarks for f in faces]
-    draw_detections(image=result, bboxes=bboxes, scores=scores, landmarks=landmarks, draw_score=True, fancy_bbox=True)
+    draw_detections(image=result, bboxes=bboxes, scores=scores, landmarks=landmarks, draw_score=True, corner_bbox=True)
 
     faces_json = {}
     for i, f in enumerate(faces, 1):
@@ -304,7 +304,7 @@ def analyze_faces_fn(
     bboxes = [f.bbox for f in faces]
     scores = [f.confidence for f in faces]
     landmarks = [f.landmarks for f in faces]
-    draw_detections(image=result, bboxes=bboxes, scores=scores, landmarks=landmarks, fancy_bbox=True)
+    draw_detections(image=result, bboxes=bboxes, scores=scores, landmarks=landmarks, corner_bbox=True)
 
     # Draw attribute labels
     for face in faces:
@@ -514,7 +514,7 @@ def spoofing_fn(
     bboxes = [f.bbox for f in faces]
     scores = [f.confidence for f in faces]
     lmks = [f.landmarks for f in faces]
-    draw_detections(image=result, bboxes=bboxes, scores=scores, landmarks=lmks, fancy_bbox=True)
+    draw_detections(image=result, bboxes=bboxes, scores=scores, landmarks=lmks, corner_bbox=True)
 
     faces_json = {}
     for i, face in enumerate(faces):
@@ -552,9 +552,12 @@ def anonymize_fn(
         return None, ''
 
     bgr = _rgb_to_bgr(image)
-    result = uniface.anonymize_faces(bgr, method=blur_method)
+    det = _get_model('det_retina_default', uniface.create_detector, 'retinaface')
+    blurrer = _get_model(f'blur_{blur_method}', uniface.BlurFace, method=blur_method)
+    faces = det.detect(bgr)
+    result = blurrer.anonymize(bgr, faces)
 
-    return _bgr_to_rgb(result), json.dumps({'method': blur_method, 'status': 'done'}, indent=2)
+    return _bgr_to_rgb(result), json.dumps({'method': blur_method, 'num_faces': len(faces), 'status': 'done'}, indent=2)
 
 
 # ===================================================================
