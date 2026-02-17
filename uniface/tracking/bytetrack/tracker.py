@@ -9,6 +9,8 @@ import numpy as np
 from . import matching
 from .basetrack import BaseTrack, TrackState
 from .kalman import KalmanFilter
+from uniface.types import Face
+from uniface.common import xyxy_to_cxcywh
 
 
 class STrack(BaseTrack):
@@ -189,6 +191,35 @@ class BYTETracker:
         self.lost_stracks = []
         self.removed_stracks = []
         BaseTrack.reset_id()
+
+    def update_with_faces(self, faces: list[Face]) -> list[Face]:
+        """
+        Update tracker with new faces
+        Args:
+            faces: Faces to update.
+        Returns:
+            List of tracked faces
+        """
+        dets = np.array([[*f.bbox, f.confidence] for f in faces])
+        dets = dets if len(dets) > 0 else np.empty((0, 5))
+
+        # 3. Update tracker
+        tracks = self.update(dets)
+
+        # 4. Map track IDs back to face objects
+        if len(tracks) > 0 and len(faces) > 0:
+            face_bboxes = np.array([f.bbox for f in faces], dtype=np.float32)
+            track_ids = tracks[:, 4].astype(int)
+
+            face_centers = xyxy_to_cxcywh(face_bboxes)[:, :2]
+            track_centers = xyxy_to_cxcywh(tracks[:, :4])[:, :2]
+
+            for ti in range(len(tracks)):
+                dists = (track_centers[ti, 0] - face_centers[:, 0]) ** 2 + (
+                            track_centers[ti, 1] - face_centers[:, 1]) ** 2
+                faces[int(np.argmin(dists))].track_id = track_ids[ti]
+
+        return faces
 
     def update(self, detections: np.ndarray) -> np.ndarray:
         """Update tracker with new detections.

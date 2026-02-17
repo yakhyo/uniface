@@ -42,28 +42,12 @@ while cap.isOpened():
 
     # 1. Detect faces
     faces = detector.detect(frame)
+    
+    # 2. Track the faces
+    tracked_faces = tracker.update_with_faces(faces)   
 
-    # 2. Build detections array: [x1, y1, x2, y2, score]
-    dets = np.array([[*f.bbox, f.confidence] for f in faces])
-    dets = dets if len(dets) > 0 else np.empty((0, 5))
-
-    # 3. Update tracker
-    tracks = tracker.update(dets)
-
-    # 4. Map track IDs back to face objects
-    if len(tracks) > 0 and len(faces) > 0:
-        face_bboxes = np.array([f.bbox for f in faces], dtype=np.float32)
-        track_ids = tracks[:, 4].astype(int)
-
-        face_centers = xyxy_to_cxcywh(face_bboxes)[:, :2]
-        track_centers = xyxy_to_cxcywh(tracks[:, :4])[:, :2]
-
-        for ti in range(len(tracks)):
-            dists = (track_centers[ti, 0] - face_centers[:, 0]) ** 2 + (track_centers[ti, 1] - face_centers[:, 1]) ** 2
-            faces[int(np.argmin(dists))].track_id = track_ids[ti]
-
-    # 5. Draw
-    tracked_faces = [f for f in faces if f.track_id is not None]
+    # 3. Draw
+    tracked_faces = [f for f in tracked_faces if f.track_id is not None]
     draw_tracks(image=frame, faces=tracked_faces)
     cv2.imshow("Tracking", frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -97,23 +81,9 @@ while True:
         break
 
     faces = detector.detect(frame)
-    dets = np.array([[*f.bbox, f.confidence] for f in faces])
-    dets = dets if len(dets) > 0 else np.empty((0, 5))
+    tracked_faces = tracker.update_with_faces(faces)   
 
-    tracks = tracker.update(dets)
-
-    if len(tracks) > 0 and len(faces) > 0:
-        face_bboxes = np.array([f.bbox for f in faces], dtype=np.float32)
-        track_ids = tracks[:, 4].astype(int)
-
-        face_centers = xyxy_to_cxcywh(face_bboxes)[:, :2]
-        track_centers = xyxy_to_cxcywh(tracks[:, :4])[:, :2]
-
-        for ti in range(len(tracks)):
-            dists = (track_centers[ti, 0] - face_centers[:, 0]) ** 2 + (track_centers[ti, 1] - face_centers[:, 1]) ** 2
-            faces[int(np.argmin(dists))].track_id = track_ids[ti]
-
-    draw_tracks(image=frame, faces=[f for f in faces if f.track_id is not None])
+    tracked_faces = [f for f in tracked_faces if f.track_id is not None]
     cv2.imshow("Face Tracking - Press 'q' to quit", frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
@@ -148,24 +118,11 @@ tracker = BYTETracker(
 
 ## Input / Output
 
-**Input** — `(N, 5)` numpy array with `[x1, y1, x2, y2, confidence]` per detection:
+**Input** — list of detected faces.
 
-```python
-detections = np.array([
-    [100, 50, 200, 160, 0.95],
-    [300, 80, 380, 200, 0.87],
-])
-```
+**Output** — list of tracked faces.
 
-**Output** — `(M, 5)` numpy array with `[x1, y1, x2, y2, track_id]` per active track:
-
-```python
-tracks = tracker.update(detections)
-# array([[101.2, 51.3, 199.8, 159.8, 1.],
-#        [300.5, 80.2, 379.7, 200.1, 2.]])
-```
-
-The output bounding boxes come from the Kalman filter prediction, so they may differ slightly from the input. Track IDs are integers that persist across frames for the same object.
+The output bounding box for each face come from the Kalman filter prediction, so they may differ slightly from the input. Track IDs are integers that persist across frames for the same object.
 
 ---
 
