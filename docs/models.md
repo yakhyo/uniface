@@ -8,7 +8,7 @@ Complete guide to all available models and their performance characteristics.
 
 ### RetinaFace Family
 
-RetinaFace models are trained on the WIDER FACE dataset.
+RetinaFace models are trained on the [WIDER FACE](datasets.md#wider-face) dataset.
 
 | Model Name     | Params | Size  | Easy   | Medium | Hard   |
 | -------------- | ------ | ----- | ------ | ------ | ------ |
@@ -28,7 +28,7 @@ RetinaFace models are trained on the WIDER FACE dataset.
 
 ### SCRFD Family
 
-SCRFD (Sample and Computation Redistribution for Efficient Face Detection) models trained on WIDER FACE dataset.
+SCRFD (Sample and Computation Redistribution for Efficient Face Detection) models trained on [WIDER FACE](datasets.md#wider-face) dataset.
 
 | Model Name       | Params | Size  | Easy   | Medium | Hard   |
 | ---------------- | ------ | ----- | ------ | ------ | ------ |
@@ -44,7 +44,7 @@ SCRFD (Sample and Computation Redistribution for Efficient Face Detection) model
 
 ### YOLOv5-Face Family
 
-YOLOv5-Face models provide detection with 5-point facial landmarks, trained on WIDER FACE dataset.
+YOLOv5-Face models provide detection with 5-point facial landmarks, trained on [WIDER FACE](datasets.md#wider-face) dataset.
 
 | Model Name     | Size | Easy   | Medium | Hard   |
 | -------------- | ---- | ------ | ------ | ------ |
@@ -93,7 +93,7 @@ Face recognition using adaptive margin based on image quality.
 | `IR_101`  | IR-101   | WebFace12M  | 249 MB | -         | 97.66%    |
 
 !!! info "Training Data & Accuracy"
-    **Dataset**: WebFace4M (4M images) / WebFace12M (12M images)
+    **Dataset**: [WebFace4M / WebFace12M](datasets.md#webface4m--webface12m) (4M / 12M images)
 
     **Accuracy**: IJB-B and IJB-C benchmarks, TAR@FAR=0.01%
 
@@ -113,7 +113,7 @@ Face recognition using additive angular margin loss.
 | `RESNET`  | ResNet50  | 43.6M  | 166MB | 99.83% | 99.33% | 98.23%   | 97.25% |
 
 !!! info "Training Data"
-    **Dataset**: Trained on WebFace600K (600K images)
+    **Dataset**: Trained on [WebFace600K](datasets.md#webface600k) (600K images)
 
     **Accuracy**: IJB-C accuracy reported as TAR@FAR=1e-4
 
@@ -131,7 +131,7 @@ Lightweight face recognition models with MobileNet backbones.
 | `MNET_V3_LARGE` | MobileNetV3-L    | 3.52M  | 10MB | 99.53% | 94.56% | 86.79% | 95.13%   |
 
 !!! info "Training Data"
-    **Dataset**: Trained on MS1M-V2 (5.8M images, 85K identities)
+    **Dataset**: Trained on [MS1MV2](datasets.md#ms1mv2) (5.8M images, 85K identities)
 
     **Accuracy**: Evaluated on LFW, CALFW, CPLFW, and AgeDB-30 benchmarks
 
@@ -147,7 +147,7 @@ Face recognition using angular softmax loss.
 | `SPHERE36` | Sphere36 | 34.6M  | 92MB | 99.72% | 95.64% | 89.92% | 96.83%   |
 
 !!! info "Training Data"
-    **Dataset**: Trained on MS1M-V2 (5.8M images, 85K identities)
+    **Dataset**: Trained on [MS1MV2](datasets.md#ms1mv2) (5.8M images, 85K identities)
 
     **Accuracy**: Evaluated on LFW, CALFW, CPLFW, and AgeDB-30 benchmarks
 
@@ -187,7 +187,7 @@ Facial landmark localization model.
 | `AgeGender` | Age, Gender | 2.1M   | 8MB  |
 
 !!! info "Training Data"
-    **Dataset**: Trained on CelebA
+    **Dataset**: Trained on [CelebA](datasets.md#celeba)
 
 !!! warning "Accuracy Note"
     Accuracy varies by demographic and image quality. Test on your specific use case.
@@ -201,7 +201,7 @@ Facial landmark localization model.
 | `FairFace` | Race, Gender, Age Group | -      | 44MB  |
 
 !!! info "Training Data"
-    **Dataset**: Trained on FairFace dataset with balanced demographics
+    **Dataset**: Trained on [FairFace](datasets.md#fairface) dataset with balanced demographics
 
 !!! tip "Equitable Predictions"
     FairFace provides more equitable predictions across different racial and gender groups.
@@ -224,7 +224,7 @@ Facial landmark localization model.
 **Classes (8)**: Above + Contempt
 
 !!! info "Training Data"
-    **Dataset**: Trained on AffectNet
+    **Dataset**: Trained on [AffectNet](datasets.md#affectnet)
 
 !!! note "Accuracy Note"
     Emotion detection accuracy depends heavily on facial expression clarity and cultural context.
@@ -235,7 +235,7 @@ Facial landmark localization model.
 
 ### MobileGaze Family
 
-Gaze direction prediction models trained on Gaze360 dataset. Returns pitch (vertical) and yaw (horizontal) angles in radians.
+Gaze direction prediction models trained on [Gaze360](datasets.md#gaze360) dataset. Returns pitch (vertical) and yaw (horizontal) angles in radians.
 
 | Model Name     | Params | Size    | MAE*  |
 | -------------- | ------ | ------- | ----- |
@@ -248,7 +248,7 @@ Gaze direction prediction models trained on Gaze360 dataset. Returns pitch (vert
 *MAE (Mean Absolute Error) in degrees on Gaze360 test set - lower is better
 
 !!! info "Training Data"
-    **Dataset**: Trained on Gaze360 (indoor/outdoor scenes with diverse head poses)
+    **Dataset**: Trained on [Gaze360](datasets.md#gaze360) (indoor/outdoor scenes with diverse head poses)
 
     **Training**: 200 epochs with classification-based approach (binned angles)
 
@@ -269,7 +269,7 @@ BiSeNet (Bilateral Segmentation Network) models for semantic face parsing. Segme
 | `RESNET34`   | 24.1M  | 89.2 MB | 19      |
 
 !!! info "Training Data"
-    **Dataset**: Trained on CelebAMask-HQ
+    **Dataset**: Trained on [CelebAMask-HQ](datasets.md#celebamask-hq)
 
     **Architecture**: BiSeNet with ResNet backbone
 

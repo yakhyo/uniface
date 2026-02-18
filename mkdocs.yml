@@ -135,6 +135,7 @@ nav:
       - Quickstart: quickstart.md
       - Notebooks: notebooks.md
       - Model Zoo: models.md
+      - Datasets: datasets.md
   - Tutorials:
       - Image Pipeline: recipes/image-pipeline.md
       - Video & Webcam: recipes/video-webcam.md
