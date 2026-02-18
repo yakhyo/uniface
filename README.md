@@ -32,6 +32,7 @@
 - **Face Parsing** — BiSeNet semantic segmentation (19 classes), XSeg face masking
 - **Gaze Estimation** — Real-time gaze direction with MobileGaze
 - **Attribute Analysis** — Age, gender, race (FairFace), and emotion
+- **Vector Indexing** — FAISS-backed embedding store for fast multi-identity search
 - **Anti-Spoofing** — Face liveness detection with MiniFASNet
 - **Face Anonymization** — 5 blur methods for privacy protection
 - **Hardware Acceleration** — ARM64 (Apple Silicon), CUDA (NVIDIA), CPU
@@ -57,6 +58,12 @@ pip install uniface[gpu]
 ```bash
 git clone https://github.com/yakhyo/uniface.git
 cd uniface && pip install -e .
+```
+
+**FAISS vector indexing**
+
+```bash
+pip install faiss-cpu   # or faiss-gpu for CUDA
 ```
 
 **Optional dependencies**

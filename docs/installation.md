@@ -71,6 +71,19 @@ print("Available providers:", ort.get_available_providers())
 
 ---
 
+### FAISS Vector Indexing
+
+For fast multi-identity face search using a FAISS index:
+
+```bash
+pip install faiss-cpu   # CPU
+pip install faiss-gpu   # NVIDIA GPU (CUDA)
+```
+
+See the [Indexing module](modules/indexing.md) for usage.
+
+---
+
 ### CPU-Only (All Platforms)
 
 ```bash
@@ -107,11 +120,17 @@ UniFace has minimal dependencies:
 |---------|---------|
 | `numpy` | Array operations |
 | `opencv-python` | Image processing |
-| `onnx` | ONNX model format support |
 | `onnxruntime` | Model inference |
 | `scikit-image` | Geometric transforms |
 | `requests` | Model download |
 | `tqdm` | Progress bars |
+
+**Optional:**
+
+| Package | Install extra | Purpose |
+|---------|---------------|---------|
+| `faiss-cpu` / `faiss-gpu` | `pip install faiss-cpu` | FAISS vector indexing |
+| `onnxruntime-gpu` | `uniface[gpu]` | CUDA acceleration |
 
 ---
 

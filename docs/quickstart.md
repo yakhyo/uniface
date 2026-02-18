@@ -475,6 +475,7 @@ from uniface.privacy import BlurFace
 from uniface.spoofing import MiniFASNet
 from uniface.tracking import BYTETracker
 from uniface.analyzer import FaceAnalyzer
+from uniface.indexing import FAISS  # pip install faiss-cpu
 from uniface.draw import draw_detections, draw_tracks
 ```
 

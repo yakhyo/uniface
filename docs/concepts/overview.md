@@ -32,6 +32,10 @@ graph TB
         TRK[BYTETracker]
     end
 
+    subgraph Indexing
+        IDX[FAISS Vector Store]
+    end
+
     subgraph Output
         FACE[Face Objects]
     end
@@ -45,6 +49,7 @@ graph TB
     DET --> SPOOF
     DET --> PRIV
     DET --> TRK
+    REC --> IDX
     REC --> FACE
     LMK --> FACE
     ATTR --> FACE
@@ -114,6 +119,7 @@ uniface/
 ├── gaze/           # Gaze estimation
 ├── spoofing/       # Anti-spoofing
 ├── privacy/        # Face anonymization
+├── indexing/       # Vector indexing (FAISS)
 ├── types.py        # Dataclasses (Face, GazeResult, etc.)
 ├── constants.py    # Model weights and URLs
 ├── model_store.py  # Model download and caching

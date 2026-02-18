@@ -74,6 +74,11 @@ Face liveness detection with MiniFASNet to prevent fraud.
 Face anonymization with 5 blur methods for privacy protection.
 </div>
 
+<div class="feature-card" markdown>
+### :material-database-search: Vector Indexing
+FAISS-backed embedding store for fast multi-identity face search.
+</div>
+
 </div>
 
 ---

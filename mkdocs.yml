@@ -153,6 +153,7 @@ nav:
       - Gaze: modules/gaze.md
       - Anti-Spoofing: modules/spoofing.md
       - Privacy: modules/privacy.md
+      - Indexing: modules/indexing.md
   - Guides:
       - Overview: concepts/overview.md
       - Inputs & Outputs: concepts/inputs-outputs.md
