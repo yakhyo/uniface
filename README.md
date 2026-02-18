@@ -165,6 +165,23 @@ Full documentation: https://yakhyo.github.io/uniface/
 | [API Reference](https://yakhyo.github.io/uniface/modules/detection/) | Detailed module documentation |
 | [Tutorials](https://yakhyo.github.io/uniface/recipes/image-pipeline/) | Step-by-step workflow examples |
 | [Guides](https://yakhyo.github.io/uniface/concepts/overview/) | Architecture and design principles |
+| [Datasets](https://yakhyo.github.io/uniface/datasets/) | Training data and evaluation benchmarks |
+
+---
+
+## Datasets
+
+| Task | Training Dataset | Models |
+|------|-----------------|--------|
+| Detection | WIDER FACE | RetinaFace, SCRFD, YOLOv5-Face, YOLOv8-Face |
+| Recognition | MS1MV2 | MobileFace, SphereFace |
+| Recognition | WebFace600K | ArcFace |
+| Recognition | WebFace4M / 12M | AdaFace |
+| Gaze | Gaze360 | MobileGaze |
+| Parsing | CelebAMask-HQ | BiSeNet |
+| Attributes | CelebA, FairFace, AffectNet | AgeGender, FairFace, Emotion |
+
+> See [Datasets documentation](https://yakhyo.github.io/uniface/datasets/) for download links, benchmarks, and details.
 
 ---
 
