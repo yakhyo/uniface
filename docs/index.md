@@ -85,25 +85,24 @@ FAISS-backed embedding store for fast multi-identity face search.
 
 ## Installation
 
-=== "Standard"
+UniFace runs inference primarily via **ONNX Runtime**; some optional components (e.g., emotion TorchScript, torchvision NMS) require **PyTorch**.
 
-    ```bash
-    pip install uniface
-    ```
+**Standard**
+```bash
+pip install uniface
+```
 
-=== "GPU (CUDA)"
+**GPU (CUDA)**
+```bash
+pip install uniface[gpu]
+```
 
-    ```bash
-    pip install uniface[gpu]
-    ```
-
-=== "From Source"
-
-    ```bash
-    git clone https://github.com/yakhyo/uniface.git
-    cd uniface
-    pip install -e .
-    ```
+**From Source**
+```bash
+git clone https://github.com/yakhyo/uniface.git
+cd uniface
+pip install -e .
+```
 
 ---
 

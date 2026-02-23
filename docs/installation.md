@@ -55,11 +55,10 @@ pip install uniface[gpu]
 
 **Requirements:**
 
-- CUDA 11.x or 12.x
-- cuDNN 8.x
+- `uniface[gpu]` automatically installs `onnxruntime-gpu`. Requirements depend on the ORT version and execution provider.
 
 !!! info "CUDA Compatibility"
-    See [ONNX Runtime GPU requirements](https://onnxruntime.ai/docs/execution-providers/CUDA-ExecutionProvider.html) for detailed compatibility matrix.
+    See the [ONNX Runtime GPU compatibility matrix](https://onnxruntime.ai/docs/execution-providers/CUDA-ExecutionProvider.html) for matching CUDA and cuDNN versions.
 
 Verify GPU installation:
 
@@ -131,6 +130,8 @@ UniFace has minimal dependencies:
 |---------|---------------|---------|
 | `faiss-cpu` / `faiss-gpu` | `pip install faiss-cpu` | FAISS vector indexing |
 | `onnxruntime-gpu` | `uniface[gpu]` | CUDA acceleration |
+| `torch` | `pip install torch` | Emotion model uses TorchScript |
+| `torchvision` | `pip install torchvision` | Faster NMS for YOLO detectors |
 
 ---
 
