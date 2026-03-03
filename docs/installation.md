@@ -55,11 +55,10 @@ pip install uniface[gpu]
 
 **Requirements:**
 
-- CUDA 11.x or 12.x
-- cuDNN 8.x
+- `uniface[gpu]` automatically installs `onnxruntime-gpu`. Requirements depend on the ORT version and execution provider.
 
 !!! info "CUDA Compatibility"
-    See [ONNX Runtime GPU requirements](https://onnxruntime.ai/docs/execution-providers/CUDA-ExecutionProvider.html) for detailed compatibility matrix.
+    See the [ONNX Runtime GPU compatibility matrix](https://onnxruntime.ai/docs/execution-providers/CUDA-ExecutionProvider.html) for matching CUDA and cuDNN versions.
 
 Verify GPU installation:
 
@@ -68,6 +67,19 @@ import onnxruntime as ort
 print("Available providers:", ort.get_available_providers())
 # Should include: 'CUDAExecutionProvider'
 ```
+
+---
+
+### FAISS Vector Indexing
+
+For fast multi-identity face search using a FAISS index:
+
+```bash
+pip install faiss-cpu   # CPU
+pip install faiss-gpu   # NVIDIA GPU (CUDA)
+```
+
+See the [Indexing module](modules/indexing.md) for usage.
 
 ---
 
@@ -107,11 +119,19 @@ UniFace has minimal dependencies:
 |---------|---------|
 | `numpy` | Array operations |
 | `opencv-python` | Image processing |
-| `onnx` | ONNX model format support |
 | `onnxruntime` | Model inference |
 | `scikit-image` | Geometric transforms |
 | `requests` | Model download |
 | `tqdm` | Progress bars |
+
+**Optional:**
+
+| Package | Install extra | Purpose |
+|---------|---------------|---------|
+| `faiss-cpu` / `faiss-gpu` | `pip install faiss-cpu` | FAISS vector indexing |
+| `onnxruntime-gpu` | `uniface[gpu]` | CUDA acceleration |
+| `torch` | `pip install torch` | Emotion model uses TorchScript |
+| `torchvision` | `pip install torchvision` | Faster NMS for YOLO detectors |
 
 ---
 

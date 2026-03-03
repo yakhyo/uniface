@@ -4,13 +4,10 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar
+from typing import ClassVar
 
 import cv2
 import numpy as np
-
-if TYPE_CHECKING:
-    pass
 
 __all__ = ['BlurFace', 'EllipticalBlur']
 

@@ -31,6 +31,8 @@ __license__ = 'MIT'
 __author__ = 'Yakhyokhuja Valikhujaev'
 __version__ = '3.0.0'
 
+import contextlib
+
 from uniface.face_utils import compute_similarity, face_alignment
 from uniface.log import Logger, enable_logging
 from uniface.model_store import download_models, get_cache_dir, set_cache_dir, verify_model_weights
@@ -53,6 +55,10 @@ from .recognition import AdaFace, ArcFace, MobileFace, SphereFace, create_recogn
 from .spoofing import MiniFASNet, create_spoofer
 from .tracking import BYTETracker
 from .types import AttributeResult, EmotionResult, Face, GazeResult, SpoofingResult
+
+# Optional: FAISS vector store (requires `pip install faiss-cpu`)
+with contextlib.suppress(ImportError):
+    from .indexing import FAISS
 
 __all__ = [
     # Metadata
@@ -101,6 +107,8 @@ __all__ = [
     'BYTETracker',
     # Privacy
     'BlurFace',
+    # Indexing (optional)
+    'FAISS',
     # Utilities
     'Logger',
     'compute_similarity',

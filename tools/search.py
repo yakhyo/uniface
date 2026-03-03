@@ -2,11 +2,14 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-"""Real-time face search: match faces against a reference image.
+"""Single-reference face search on video or webcam.
+
+Given a reference face image, detects faces in the source and shows
+whether each face matches the reference.
 
 Usage:
-    python tools/search.py --reference person.jpg --source 0  # webcam
-    python tools/search.py --reference person.jpg --source video.mp4
+    python tools/search.py --reference ref.jpg --source video.mp4
+    python tools/search.py --reference ref.jpg --source 0  # webcam
 """
 
 from __future__ import annotations
@@ -19,23 +22,12 @@ from _common import get_source_type
 import cv2
 import numpy as np
 
-from uniface.detection import SCRFD, RetinaFace
+from uniface import create_detector, create_recognizer
+from uniface.draw import draw_corner_bbox, draw_text_label
 from uniface.face_utils import compute_similarity
-from uniface.recognition import ArcFace, MobileFace, SphereFace
-
-
-def get_recognizer(name: str):
-    """Get recognizer by name."""
-    if name == 'arcface':
-        return ArcFace()
-    elif name == 'mobileface':
-        return MobileFace()
-    else:
-        return SphereFace()
 
 
 def extract_reference_embedding(detector, recognizer, image_path: str) -> np.ndarray:
-    """Extract embedding from reference image."""
     image = cv2.imread(image_path)
     if image is None:
         raise RuntimeError(f'Failed to load image: {image_path}')
@@ -44,33 +36,34 @@ def extract_reference_embedding(detector, recognizer, image_path: str) -> np.nda
     if not faces:
         raise RuntimeError('No faces found in reference image.')
 
-    landmarks = faces[0].landmarks
-    return recognizer.get_normalized_embedding(image, landmarks)
+    return recognizer.get_normalized_embedding(image, faces[0].landmarks)
+
+
+def _draw_face(image, bbox, text: str, color: tuple[int, int, int]) -> None:
+    x1, y1, x2, y2 = map(int, bbox[:4])
+    thickness = max(round(sum(image.shape[:2]) / 2 * 0.003), 2)
+    font_scale = max(0.4, min(0.7, (y2 - y1) / 200))
+    draw_corner_bbox(image, (x1, y1, x2, y2), color=color, thickness=thickness)
+    draw_text_label(image, text, x1, y1, bg_color=color, font_scale=font_scale)
 
 
 def process_frame(frame, detector, recognizer, ref_embedding: np.ndarray, threshold: float = 0.4):
-    """Process a single frame and return annotated frame."""
     faces = detector.detect(frame)
 
     for face in faces:
-        bbox = face.bbox
-        landmarks = face.landmarks
-        x1, y1, x2, y2 = map(int, bbox)
-
-        embedding = recognizer.get_normalized_embedding(frame, landmarks)
+        embedding = recognizer.get_normalized_embedding(frame, face.landmarks)
         sim = compute_similarity(ref_embedding, embedding)
 
-        label = f'Match ({sim:.2f})' if sim > threshold else f'Unknown ({sim:.2f})'
+        text = f'Match ({sim:.2f})' if sim > threshold else f'Unknown ({sim:.2f})'
         color = (0, 255, 0) if sim > threshold else (0, 0, 255)
-
-        cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
-        cv2.putText(frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
+        _draw_face(frame, face.bbox, text, color)
 
     return frame
 
 
-def process_video(detector, recognizer, ref_embedding: np.ndarray, video_path: str, save_dir: str, threshold: float):
-    """Process a video file."""
+def process_video(
+    detector, recognizer, video_path: str, save_dir: str, ref_embedding: np.ndarray, threshold: float = 0.4
+):
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
         print(f"Error: Cannot open video file '{video_path}'")
@@ -107,7 +100,6 @@ def process_video(detector, recognizer, ref_embedding: np.ndarray, video_path: s
 
 
 def run_camera(detector, recognizer, ref_embedding: np.ndarray, camera_id: int = 0, threshold: float = 0.4):
-    """Run real-time face search on webcam."""
     cap = cv2.VideoCapture(camera_id)
     if not cap.isOpened():
         print(f'Cannot open camera {camera_id}')
@@ -123,7 +115,7 @@ def run_camera(detector, recognizer, ref_embedding: np.ndarray, camera_id: int =
 
         frame = process_frame(frame, detector, recognizer, ref_embedding, threshold)
 
-        cv2.imshow('Face Recognition', frame)
+        cv2.imshow('Face Search', frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
@@ -132,17 +124,10 @@ def run_camera(detector, recognizer, ref_embedding: np.ndarray, camera_id: int =
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Face search using a reference image')
+    parser = argparse.ArgumentParser(description='Single-reference face search')
     parser.add_argument('--reference', type=str, required=True, help='Reference face image')
-    parser.add_argument('--source', type=str, required=True, help='Video path or camera ID (0, 1, ...)')
-    parser.add_argument('--threshold', type=float, default=0.4, help='Match threshold')
-    parser.add_argument('--detector', type=str, default='scrfd', choices=['retinaface', 'scrfd'])
-    parser.add_argument(
-        '--recognizer',
-        type=str,
-        default='arcface',
-        choices=['arcface', 'mobileface', 'sphereface'],
-    )
+    parser.add_argument('--source', type=str, required=True, help='Video path or camera ID')
+    parser.add_argument('--threshold', type=float, default=0.4, help='Similarity threshold')
     parser.add_argument('--save-dir', type=str, default='outputs', help='Output directory')
     args = parser.parse_args()
 
@@ -150,8 +135,8 @@ def main():
         print(f'Error: Reference image not found: {args.reference}')
         return
 
-    detector = RetinaFace() if args.detector == 'retinaface' else SCRFD()
-    recognizer = get_recognizer(args.recognizer)
+    detector = create_detector()
+    recognizer = create_recognizer()
 
     print(f'Loading reference: {args.reference}')
     ref_embedding = extract_reference_embedding(detector, recognizer, args.reference)
@@ -164,10 +149,9 @@ def main():
         if not os.path.exists(args.source):
             print(f'Error: Video not found: {args.source}')
             return
-        process_video(detector, recognizer, ref_embedding, args.source, args.save_dir, args.threshold)
+        process_video(detector, recognizer, args.source, args.save_dir, ref_embedding, args.threshold)
     else:
         print(f"Error: Source must be a video file or camera ID, not '{args.source}'")
-        print('Supported formats: videos (.mp4, .avi, ...) or camera ID (0, 1, ...)')
 
 
 if __name__ == '__main__':
