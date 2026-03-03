@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.3">
     
     
       
@@ -722,6 +722,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#faiss-vector-indexing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FAISS Vector Indexing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#cpu-only-all-platforms" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1225,6 +1236,8 @@
       
         
       
+        
+      
     
     
     
@@ -1507,6 +1520,34 @@
     
   
     Privacy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/indexing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Indexing
   
 
     
@@ -2028,6 +2069,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#faiss-vector-indexing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FAISS Vector Indexing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#cpu-only-all-platforms" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2205,12 +2257,11 @@
 </span></code></pre></div>
 <p><strong>Requirements:</strong></p>
 <ul>
-<li>CUDA 11.x or 12.x</li>
-<li>cuDNN 8.x</li>
+<li><code>uniface[gpu]</code> automatically installs <code>onnxruntime-gpu</code>. Requirements depend on the ORT version and execution provider.</li>
 </ul>
 <div class="admonition info">
 <p class="admonition-title">CUDA Compatibility</p>
-<p>See <a href="https://onnxruntime.ai/docs/execution-providers/CUDA-ExecutionProvider.html">ONNX Runtime GPU requirements</a> for detailed compatibility matrix.</p>
+<p>See the <a href="https://onnxruntime.ai/docs/execution-providers/CUDA-ExecutionProvider.html">ONNX Runtime GPU compatibility matrix</a> for matching CUDA and cuDNN versions.</p>
 </div>
 <p>Verify GPU installation:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">onnxruntime</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ort</span>
@@ -2218,19 +2269,26 @@
 </span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="c1"># Should include: &#39;CUDAExecutionProvider&#39;</span>
 </span></code></pre></div>
 <hr />
+<h3 id="faiss-vector-indexing">FAISS Vector Indexing</h3>
+<p>For fast multi-identity face search using a FAISS index:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>pip<span class="w"> </span>install<span class="w"> </span>faiss-cpu<span class="w">   </span><span class="c1"># CPU</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>pip<span class="w"> </span>install<span class="w"> </span>faiss-gpu<span class="w">   </span><span class="c1"># NVIDIA GPU (CUDA)</span>
+</span></code></pre></div>
+<p>See the <a href="../modules/indexing/">Indexing module</a> for usage.</p>
+<hr />
 <h3 id="cpu-only-all-platforms">CPU-Only (All Platforms)</h3>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>pip<span class="w"> </span>install<span class="w"> </span>uniface
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>pip<span class="w"> </span>install<span class="w"> </span>uniface
 </span></code></pre></div>
 <p>Works on all platforms with automatic CPU fallback.</p>
 <hr />
 <h2 id="install-from-source">Install from Source</h2>
 <p>For development or the latest features:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/yakhyo/uniface.git
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nb">cd</span><span class="w"> </span>uniface
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/yakhyo/uniface.git
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nb">cd</span><span class="w"> </span>uniface
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
 </span></code></pre></div>
 <p>With development dependencies:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev]&quot;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev]&quot;</span>
 </span></code></pre></div>
 <hr />
 <h2 id="dependencies">Dependencies</h2>
@@ -2252,10 +2310,6 @@
 <td>Image processing</td>
 </tr>
 <tr>
-<td><code>onnx</code></td>
-<td>ONNX model format support</td>
-</tr>
-<tr>
 <td><code>onnxruntime</code></td>
 <td>Model inference</td>
 </tr>
@@ -2273,41 +2327,73 @@
 </tr>
 </tbody>
 </table>
+<p><strong>Optional:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Package</th>
+<th>Install extra</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>faiss-cpu</code> / <code>faiss-gpu</code></td>
+<td><code>pip install faiss-cpu</code></td>
+<td>FAISS vector indexing</td>
+</tr>
+<tr>
+<td><code>onnxruntime-gpu</code></td>
+<td><code>uniface[gpu]</code></td>
+<td>CUDA acceleration</td>
+</tr>
+<tr>
+<td><code>torch</code></td>
+<td><code>pip install torch</code></td>
+<td>Emotion model uses TorchScript</td>
+</tr>
+<tr>
+<td><code>torchvision</code></td>
+<td><code>pip install torchvision</code></td>
+<td>Faster NMS for YOLO detectors</td>
+</tr>
+</tbody>
+</table>
 <hr />
 <h2 id="verify-installation">Verify Installation</h2>
 <p>Test your installation:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">uniface</span>
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;UniFace version: </span><span class="si">{</span><span class="n">uniface</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
-</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="c1"># Check available ONNX providers</span>
-</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="kn">import</span><span class="w"> </span><span class="nn">onnxruntime</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ort</span>
-</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Available providers: </span><span class="si">{</span><span class="n">ort</span><span class="o">.</span><span class="n">get_available_providers</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>
-</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="c1"># Quick test</span>
-</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.detection</span><span class="w"> </span><span class="kn">import</span> <span class="n">RetinaFace</span>
-</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="n">detector</span> <span class="o">=</span> <span class="n">RetinaFace</span><span class="p">()</span>
-</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Installation successful!&quot;</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">uniface</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;UniFace version: </span><span class="si">{</span><span class="n">uniface</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="c1"># Check available ONNX providers</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="kn">import</span><span class="w"> </span><span class="nn">onnxruntime</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ort</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Available providers: </span><span class="si">{</span><span class="n">ort</span><span class="o">.</span><span class="n">get_available_providers</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="c1"># Quick test</span>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.detection</span><span class="w"> </span><span class="kn">import</span> <span class="n">RetinaFace</span>
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="n">detector</span> <span class="o">=</span> <span class="n">RetinaFace</span><span class="p">()</span>
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Installation successful!&quot;</span><span class="p">)</span>
 </span></code></pre></div>
 <hr />
 <h2 id="troubleshooting">Troubleshooting</h2>
 <h3 id="import-errors">Import Errors</h3>
 <p>If you encounter import errors, ensure you're using Python 3.10+:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>python<span class="w"> </span>--version
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="c1"># Should show: Python 3.10.x or higher</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>python<span class="w"> </span>--version
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="c1"># Should show: Python 3.10.x or higher</span>
 </span></code></pre></div>
 <h3 id="model-download-issues">Model Download Issues</h3>
 <p>Models are automatically downloaded on first use. If downloads fail:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.model_store</span><span class="w"> </span><span class="kn">import</span> <span class="n">verify_model_weights</span>
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">RetinaFaceWeights</span>
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
-</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="c1"># Manually download a model</span>
-</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="n">model_path</span> <span class="o">=</span> <span class="n">verify_model_weights</span><span class="p">(</span><span class="n">RetinaFaceWeights</span><span class="o">.</span><span class="n">MNET_V2</span><span class="p">)</span>
-</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Model downloaded to: </span><span class="si">{</span><span class="n">model_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.model_store</span><span class="w"> </span><span class="kn">import</span> <span class="n">verify_model_weights</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">RetinaFaceWeights</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="c1"># Manually download a model</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="n">model_path</span> <span class="o">=</span> <span class="n">verify_model_weights</span><span class="p">(</span><span class="n">RetinaFaceWeights</span><span class="o">.</span><span class="n">MNET_V2</span><span class="p">)</span>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Model downloaded to: </span><span class="si">{</span><span class="n">model_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </span></code></pre></div>
 <h3 id="performance-issues-on-mac">Performance Issues on Mac</h3>
 <p>Verify you're using the ARM64 build (not x86_64 via Rosetta):</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import platform; print(platform.machine())&quot;</span>
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="c1"># Should show: arm64 (not x86_64)</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import platform; print(platform.machine())&quot;</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="c1"># Should show: arm64 (not x86_64)</span>
 </span></code></pre></div>
 <hr />
 <h2 id="next-steps">Next Steps</h2>
@@ -2337,7 +2423,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="February 11, 2026 15:20:23 UTC"><span class="timeago" datetime="2026-02-11T15:20:23+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="February 11, 2026 15:20:23 UTC">2026-02-11</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="March 3, 2026 03:12:05 UTC"><span class="timeago" datetime="2026-03-03T03:12:05+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="March 3, 2026 03:12:05 UTC">2026-03-03</span>
   </span>
 
     

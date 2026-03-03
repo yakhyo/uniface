@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.3">
     
     
       
@@ -933,10 +933,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#basic-face-database" class="md-nav__link">
+  <a href="#reference-search-single-image" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Basic Face Database
+        Reference Search (single image)
       
     </span>
   </a>
@@ -944,24 +944,52 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#visualization" class="md-nav__link">
+  <a href="#vector-search-faiss-index" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Visualization
+        Vector Search (FAISS index)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Vector Search (FAISS index)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#build-an-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Build an index
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#real-time-search" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#search-against-the-index" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Real-Time Search
+        Search against the index
       
     </span>
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manage-the-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Manage the index
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1084,6 +1112,8 @@
   
     
     
+      
+        
       
         
       
@@ -1385,6 +1415,34 @@
     
   
     Privacy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../modules/indexing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Indexing
   
 
     
@@ -1850,10 +1908,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#basic-face-database" class="md-nav__link">
+  <a href="#reference-search-single-image" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Basic Face Database
+        Reference Search (single image)
       
     </span>
   </a>
@@ -1861,24 +1919,52 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#visualization" class="md-nav__link">
+  <a href="#vector-search-faiss-index" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Visualization
+        Vector Search (FAISS index)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Vector Search (FAISS index)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#build-an-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Build an index
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#real-time-search" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#search-against-the-index" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Real-Time Search
+        Search against the index
       
     </span>
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manage-the-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Manage the index
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1927,168 +2013,152 @@
 
 
 <h1 id="face-search">Face Search</h1>
-<p>Build a face search system for finding people in images.</p>
-<div class="admonition note">
-<p class="admonition-title">Work in Progress</p>
-<p>This page contains example code patterns. Test thoroughly before using in production.</p>
-</div>
+<p>Find and identify people in images and video streams.</p>
+<p>UniFace supports two search approaches:</p>
+<table>
+<thead>
+<tr>
+<th>Approach</th>
+<th>Use case</th>
+<th>Tool</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Reference search</strong></td>
+<td>"Is this specific person in the video?"</td>
+<td><code>tools/search.py</code></td>
+</tr>
+<tr>
+<td><strong>Vector search</strong></td>
+<td>"Who is this?" against a database of known faces</td>
+<td><code>tools/faiss_search.py</code></td>
+</tr>
+</tbody>
+</table>
 <hr />
-<h2 id="basic-face-database">Basic Face Database</h2>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">cv2</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.detection</span><span class="w"> </span><span class="kn">import</span> <span class="n">RetinaFace</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.recognition</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArcFace</span>
+<h2 id="reference-search-single-image">Reference Search (single image)</h2>
+<p>Compare every detected face against a single reference photo:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">cv2</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.detection</span><span class="w"> </span><span class="kn">import</span> <span class="n">RetinaFace</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.recognition</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArcFace</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.face_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_similarity</span>
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="k">class</span><span class="w"> </span><span class="nc">FaceDatabase</span><span class="p">:</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">detector</span> <span class="o">=</span> <span class="n">RetinaFace</span><span class="p">()</span>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">recognizer</span> <span class="o">=</span> <span class="n">ArcFace</span><span class="p">()</span>
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">embeddings</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">add_face</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">person_id</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a face to the database.&quot;&quot;&quot;</span>
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>        <span class="n">faces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">detector</span><span class="o">.</span><span class="n">detect</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="n">faces</span><span class="p">:</span>
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No face found for </span><span class="si">{</span><span class="n">person_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>
-</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>        <span class="n">face</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">faces</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">confidence</span><span class="p">)</span>
-</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>        <span class="n">embedding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recognizer</span><span class="o">.</span><span class="n">get_normalized_embedding</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">face</span><span class="o">.</span><span class="n">landmarks</span><span class="p">)</span>
-</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">embeddings</span><span class="p">[</span><span class="n">person_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">embedding</span>
-</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>        <span class="k">return</span> <span class="kc">True</span>
-</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>
-</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.6</span><span class="p">):</span>
-</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Search for faces in an image.&quot;&quot;&quot;</span>
-</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>        <span class="n">faces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">detector</span><span class="o">.</span><span class="n">detect</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
-</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>
-</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>        <span class="k">for</span> <span class="n">face</span> <span class="ow">in</span> <span class="n">faces</span><span class="p">:</span>
-</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>            <span class="n">embedding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recognizer</span><span class="o">.</span><span class="n">get_normalized_embedding</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">face</span><span class="o">.</span><span class="n">landmarks</span><span class="p">)</span>
-</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>
-</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>            <span class="n">best_match</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>            <span class="n">best_similarity</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a>
-</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a>            <span class="k">for</span> <span class="n">person_id</span><span class="p">,</span> <span class="n">db_embedding</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">embeddings</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-</span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a>                <span class="n">similarity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="n">db_embedding</span><span class="o">.</span><span class="n">T</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-</span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37" href="#__codelineno-0-37"></a>                <span class="k">if</span> <span class="n">similarity</span> <span class="o">&gt;</span> <span class="n">best_similarity</span><span class="p">:</span>
-</span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38" href="#__codelineno-0-38"></a>                    <span class="n">best_similarity</span> <span class="o">=</span> <span class="n">similarity</span>
-</span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a>                    <span class="n">best_match</span> <span class="o">=</span> <span class="n">person_id</span>
-</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40" href="#__codelineno-0-40"></a>
-</span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41" href="#__codelineno-0-41"></a>            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
-</span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42" href="#__codelineno-0-42"></a>                <span class="s1">&#39;bbox&#39;</span><span class="p">:</span> <span class="n">face</span><span class="o">.</span><span class="n">bbox</span><span class="p">,</span>
-</span><span id="__span-0-43"><a id="__codelineno-0-43" name="__codelineno-0-43" href="#__codelineno-0-43"></a>                <span class="s1">&#39;match&#39;</span><span class="p">:</span> <span class="n">best_match</span> <span class="k">if</span> <span class="n">best_similarity</span> <span class="o">&gt;=</span> <span class="n">threshold</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-44"><a id="__codelineno-0-44" name="__codelineno-0-44" href="#__codelineno-0-44"></a>                <span class="s1">&#39;similarity&#39;</span><span class="p">:</span> <span class="n">best_similarity</span>
-</span><span id="__span-0-45"><a id="__codelineno-0-45" name="__codelineno-0-45" href="#__codelineno-0-45"></a>            <span class="p">})</span>
-</span><span id="__span-0-46"><a id="__codelineno-0-46" name="__codelineno-0-46" href="#__codelineno-0-46"></a>
-</span><span id="__span-0-47"><a id="__codelineno-0-47" name="__codelineno-0-47" href="#__codelineno-0-47"></a>        <span class="k">return</span> <span class="n">results</span>
-</span><span id="__span-0-48"><a id="__codelineno-0-48" name="__codelineno-0-48" href="#__codelineno-0-48"></a>
-</span><span id="__span-0-49"><a id="__codelineno-0-49" name="__codelineno-0-49" href="#__codelineno-0-49"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
-</span><span id="__span-0-50"><a id="__codelineno-0-50" name="__codelineno-0-50" href="#__codelineno-0-50"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Save database to file.&quot;&quot;&quot;</span>
-</span><span id="__span-0-51"><a id="__codelineno-0-51" name="__codelineno-0-51" href="#__codelineno-0-51"></a>        <span class="n">np</span><span class="o">.</span><span class="n">savez</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">embeddings</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embeddings</span><span class="p">))</span>
-</span><span id="__span-0-52"><a id="__codelineno-0-52" name="__codelineno-0-52" href="#__codelineno-0-52"></a>
-</span><span id="__span-0-53"><a id="__codelineno-0-53" name="__codelineno-0-53" href="#__codelineno-0-53"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
-</span><span id="__span-0-54"><a id="__codelineno-0-54" name="__codelineno-0-54" href="#__codelineno-0-54"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Load database from file.&quot;&quot;&quot;</span>
-</span><span id="__span-0-55"><a id="__codelineno-0-55" name="__codelineno-0-55" href="#__codelineno-0-55"></a>        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span id="__span-0-56"><a id="__codelineno-0-56" name="__codelineno-0-56" href="#__codelineno-0-56"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">embeddings</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;embeddings&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
-</span><span id="__span-0-57"><a id="__codelineno-0-57" name="__codelineno-0-57" href="#__codelineno-0-57"></a>
-</span><span id="__span-0-58"><a id="__codelineno-0-58" name="__codelineno-0-58" href="#__codelineno-0-58"></a><span class="c1"># Usage</span>
-</span><span id="__span-0-59"><a id="__codelineno-0-59" name="__codelineno-0-59" href="#__codelineno-0-59"></a><span class="n">db</span> <span class="o">=</span> <span class="n">FaceDatabase</span><span class="p">()</span>
-</span><span id="__span-0-60"><a id="__codelineno-0-60" name="__codelineno-0-60" href="#__codelineno-0-60"></a>
-</span><span id="__span-0-61"><a id="__codelineno-0-61" name="__codelineno-0-61" href="#__codelineno-0-61"></a><span class="c1"># Add faces</span>
-</span><span id="__span-0-62"><a id="__codelineno-0-62" name="__codelineno-0-62" href="#__codelineno-0-62"></a><span class="k">for</span> <span class="n">image_path</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;known_faces/&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.jpg&quot;</span><span class="p">):</span>
-</span><span id="__span-0-63"><a id="__codelineno-0-63" name="__codelineno-0-63" href="#__codelineno-0-63"></a>    <span class="n">person_id</span> <span class="o">=</span> <span class="n">image_path</span><span class="o">.</span><span class="n">stem</span>
-</span><span id="__span-0-64"><a id="__codelineno-0-64" name="__codelineno-0-64" href="#__codelineno-0-64"></a>    <span class="n">image</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">image_path</span><span class="p">))</span>
-</span><span id="__span-0-65"><a id="__codelineno-0-65" name="__codelineno-0-65" href="#__codelineno-0-65"></a>    <span class="k">try</span><span class="p">:</span>
-</span><span id="__span-0-66"><a id="__codelineno-0-66" name="__codelineno-0-66" href="#__codelineno-0-66"></a>        <span class="n">db</span><span class="o">.</span><span class="n">add_face</span><span class="p">(</span><span class="n">person_id</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
-</span><span id="__span-0-67"><a id="__codelineno-0-67" name="__codelineno-0-67" href="#__codelineno-0-67"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Added: </span><span class="si">{</span><span class="n">person_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span id="__span-0-68"><a id="__codelineno-0-68" name="__codelineno-0-68" href="#__codelineno-0-68"></a>    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-</span><span id="__span-0-69"><a id="__codelineno-0-69" name="__codelineno-0-69" href="#__codelineno-0-69"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Skipped: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span id="__span-0-70"><a id="__codelineno-0-70" name="__codelineno-0-70" href="#__codelineno-0-70"></a>
-</span><span id="__span-0-71"><a id="__codelineno-0-71" name="__codelineno-0-71" href="#__codelineno-0-71"></a><span class="c1"># Save database</span>
-</span><span id="__span-0-72"><a id="__codelineno-0-72" name="__codelineno-0-72" href="#__codelineno-0-72"></a><span class="n">db</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;face_database.npz&quot;</span><span class="p">)</span>
-</span><span id="__span-0-73"><a id="__codelineno-0-73" name="__codelineno-0-73" href="#__codelineno-0-73"></a>
-</span><span id="__span-0-74"><a id="__codelineno-0-74" name="__codelineno-0-74" href="#__codelineno-0-74"></a><span class="c1"># Search</span>
-</span><span id="__span-0-75"><a id="__codelineno-0-75" name="__codelineno-0-75" href="#__codelineno-0-75"></a><span class="n">query_image</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&quot;group_photo.jpg&quot;</span><span class="p">)</span>
-</span><span id="__span-0-76"><a id="__codelineno-0-76" name="__codelineno-0-76" href="#__codelineno-0-76"></a><span class="n">results</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query_image</span><span class="p">)</span>
-</span><span id="__span-0-77"><a id="__codelineno-0-77" name="__codelineno-0-77" href="#__codelineno-0-77"></a>
-</span><span id="__span-0-78"><a id="__codelineno-0-78" name="__codelineno-0-78" href="#__codelineno-0-78"></a><span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
-</span><span id="__span-0-79"><a id="__codelineno-0-79" name="__codelineno-0-79" href="#__codelineno-0-79"></a>    <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;match&#39;</span><span class="p">]:</span>
-</span><span id="__span-0-80"><a id="__codelineno-0-80" name="__codelineno-0-80" href="#__codelineno-0-80"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found: </span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;match&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> (similarity: </span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;similarity&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="n">detector</span> <span class="o">=</span> <span class="n">RetinaFace</span><span class="p">()</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">recognizer</span> <span class="o">=</span> <span class="n">ArcFace</span><span class="p">()</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="n">ref_image</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&quot;reference.jpg&quot;</span><span class="p">)</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="n">ref_faces</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">detect</span><span class="p">(</span><span class="n">ref_image</span><span class="p">)</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="n">ref_embedding</span> <span class="o">=</span> <span class="n">recognizer</span><span class="o">.</span><span class="n">get_normalized_embedding</span><span class="p">(</span><span class="n">ref_image</span><span class="p">,</span> <span class="n">ref_faces</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">landmarks</span><span class="p">)</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="n">query_image</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&quot;group_photo.jpg&quot;</span><span class="p">)</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="n">faces</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">detect</span><span class="p">(</span><span class="n">query_image</span><span class="p">)</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="k">for</span> <span class="n">face</span> <span class="ow">in</span> <span class="n">faces</span><span class="p">:</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>    <span class="n">embedding</span> <span class="o">=</span> <span class="n">recognizer</span><span class="o">.</span><span class="n">get_normalized_embedding</span><span class="p">(</span><span class="n">query_image</span><span class="p">,</span> <span class="n">face</span><span class="o">.</span><span class="n">landmarks</span><span class="p">)</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>    <span class="n">sim</span> <span class="o">=</span> <span class="n">compute_similarity</span><span class="p">(</span><span class="n">ref_embedding</span><span class="p">,</span> <span class="n">embedding</span><span class="p">)</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>    <span class="n">label</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Match (</span><span class="si">{</span><span class="n">sim</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">if</span> <span class="n">sim</span> <span class="o">&gt;</span> <span class="mf">0.4</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;Unknown (</span><span class="si">{</span><span class="n">sim</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">)&quot;</span>
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>    <span class="nb">print</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+</span></code></pre></div>
+<p><strong>CLI tool:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>python<span class="w"> </span>tools/search.py<span class="w"> </span>--reference<span class="w"> </span>ref.jpg<span class="w"> </span>--source<span class="w"> </span>video.mp4
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>python<span class="w"> </span>tools/search.py<span class="w"> </span>--reference<span class="w"> </span>ref.jpg<span class="w"> </span>--source<span class="w"> </span><span class="m">0</span><span class="w">  </span><span class="c1"># webcam</span>
 </span></code></pre></div>
 <hr />
-<h2 id="visualization">Visualization</h2>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">cv2</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="k">def</span><span class="w"> </span><span class="nf">visualize_search_results</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">results</span><span class="p">):</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Draw search results on image.&quot;&quot;&quot;</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>        <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;bbox&#39;</span><span class="p">])</span>
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>        <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;match&#39;</span><span class="p">]:</span>
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>            <span class="n">color</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># Green for match</span>
-</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>            <span class="n">label</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;match&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;similarity&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">)&quot;</span>
-</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>        <span class="k">else</span><span class="p">:</span>
-</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>            <span class="n">color</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>  <span class="c1"># Red for unknown</span>
-</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>            <span class="n">label</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Unknown (</span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;similarity&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">)&quot;</span>
-</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>
-</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>        <span class="n">cv2</span><span class="o">.</span><span class="n">rectangle</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">),</span> <span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">),</span> <span class="n">color</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>        <span class="n">cv2</span><span class="o">.</span><span class="n">putText</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">-</span> <span class="mi">10</span><span class="p">),</span>
-</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>                    <span class="n">cv2</span><span class="o">.</span><span class="n">FONT_HERSHEY_SIMPLEX</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>
-</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>    <span class="k">return</span> <span class="n">image</span>
-</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>
-</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="c1"># Usage</span>
-</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="n">results</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
-</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="n">annotated</span> <span class="o">=</span> <span class="n">visualize_search_results</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">results</span><span class="p">)</span>
-</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a><span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s2">&quot;search_result.jpg&quot;</span><span class="p">,</span> <span class="n">annotated</span><span class="p">)</span>
+<h2 id="vector-search-faiss-index">Vector Search (FAISS index)</h2>
+<p>For identifying faces against a database of many known people, use the
+<a href="../../modules/indexing/"><code>FAISS</code></a> vector store.</p>
+<div class="admonition info">
+<p class="admonition-title">Install extra</p>
+</div>
+<p><code>bash
+    pip install faiss-cpu</code></p>
+<h3 id="build-an-index">Build an index</h3>
+<p>Organise face images in person sub-folders:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>dataset/
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>├── alice/
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>│   ├── 001.jpg
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>│   └── 002.jpg
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>├── bob/
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>│   └── 001.jpg
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>└── charlie/
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    ├── 001.jpg
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    └── 002.jpg
 </span></code></pre></div>
-<hr />
-<h2 id="real-time-search">Real-Time Search</h2>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">cv2</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="k">def</span><span class="w"> </span><span class="nf">realtime_search</span><span class="p">(</span><span class="n">db</span><span class="p">):</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Real-time face search from webcam.&quot;&quot;&quot;</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="n">cap</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">VideoCapture</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>        <span class="n">ret</span><span class="p">,</span> <span class="n">frame</span> <span class="o">=</span> <span class="n">cap</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="n">ret</span><span class="p">:</span>
-</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>            <span class="k">break</span>
-</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>
-</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>        <span class="n">results</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
-</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>
-</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
-</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>            <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;bbox&#39;</span><span class="p">])</span>
-</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>
-</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>            <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;match&#39;</span><span class="p">]:</span>
-</span><span id="__span-2-18"><a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>                <span class="n">color</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-</span><span id="__span-2-19"><a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>                <span class="n">label</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;match&#39;</span><span class="p">]</span>
-</span><span id="__span-2-20"><a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>            <span class="k">else</span><span class="p">:</span>
-</span><span id="__span-2-21"><a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>                <span class="n">color</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
-</span><span id="__span-2-22"><a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>                <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;Unknown&quot;</span>
-</span><span id="__span-2-23"><a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a>
-</span><span id="__span-2-24"><a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a>            <span class="n">cv2</span><span class="o">.</span><span class="n">rectangle</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">),</span> <span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">),</span> <span class="n">color</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-</span><span id="__span-2-25"><a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a>            <span class="n">cv2</span><span class="o">.</span><span class="n">putText</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">-</span> <span class="mi">10</span><span class="p">),</span>
-</span><span id="__span-2-26"><a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a>                        <span class="n">cv2</span><span class="o">.</span><span class="n">FONT_HERSHEY_SIMPLEX</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-</span><span id="__span-2-27"><a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a>
-</span><span id="__span-2-28"><a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a>        <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s2">&quot;Face Search&quot;</span><span class="p">,</span> <span class="n">frame</span><span class="p">)</span>
-</span><span id="__span-2-29"><a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a>
-</span><span id="__span-2-30"><a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a>        <span class="k">if</span> <span class="n">cv2</span><span class="o">.</span><span class="n">waitKey</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xFF</span> <span class="o">==</span> <span class="nb">ord</span><span class="p">(</span><span class="s1">&#39;q&#39;</span><span class="p">):</span>
-</span><span id="__span-2-31"><a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a>            <span class="k">break</span>
-</span><span id="__span-2-32"><a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a>
-</span><span id="__span-2-33"><a id="__codelineno-2-33" name="__codelineno-2-33" href="#__codelineno-2-33"></a>    <span class="n">cap</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
-</span><span id="__span-2-34"><a id="__codelineno-2-34" name="__codelineno-2-34" href="#__codelineno-2-34"></a>    <span class="n">cv2</span><span class="o">.</span><span class="n">destroyAllWindows</span><span class="p">()</span>
-</span><span id="__span-2-35"><a id="__codelineno-2-35" name="__codelineno-2-35" href="#__codelineno-2-35"></a>
-</span><span id="__span-2-36"><a id="__codelineno-2-36" name="__codelineno-2-36" href="#__codelineno-2-36"></a><span class="c1"># Usage</span>
-</span><span id="__span-2-37"><a id="__codelineno-2-37" name="__codelineno-2-37" href="#__codelineno-2-37"></a><span class="n">db</span> <span class="o">=</span> <span class="n">FaceDatabase</span><span class="p">()</span>
-</span><span id="__span-2-38"><a id="__codelineno-2-38" name="__codelineno-2-38" href="#__codelineno-2-38"></a><span class="n">db</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;face_database.npz&quot;</span><span class="p">)</span>
-</span><span id="__span-2-39"><a id="__codelineno-2-39" name="__codelineno-2-39" href="#__codelineno-2-39"></a><span class="n">realtime_search</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">cv2</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.detection</span><span class="w"> </span><span class="kn">import</span> <span class="n">RetinaFace</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.recognition</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArcFace</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.indexing</span><span class="w"> </span><span class="kn">import</span> <span class="n">FAISS</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="n">detector</span> <span class="o">=</span> <span class="n">RetinaFace</span><span class="p">()</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="n">recognizer</span> <span class="o">=</span> <span class="n">ArcFace</span><span class="p">()</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="n">store</span> <span class="o">=</span> <span class="n">FAISS</span><span class="p">(</span><span class="n">db_path</span><span class="o">=</span><span class="s2">&quot;./my_index&quot;</span><span class="p">)</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="k">for</span> <span class="n">person_dir</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;dataset&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">iterdir</span><span class="p">()):</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">person_dir</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>        <span class="k">continue</span>
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>    <span class="k">for</span> <span class="n">img_path</span> <span class="ow">in</span> <span class="n">person_dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.jpg&quot;</span><span class="p">):</span>
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>        <span class="n">image</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">img_path</span><span class="p">))</span>
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>        <span class="n">faces</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">detect</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>        <span class="k">if</span> <span class="n">faces</span><span class="p">:</span>
+</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>            <span class="n">emb</span> <span class="o">=</span> <span class="n">recognizer</span><span class="o">.</span><span class="n">get_normalized_embedding</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">faces</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">landmarks</span><span class="p">)</span>
+</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>            <span class="n">store</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">emb</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;person_id&quot;</span><span class="p">:</span> <span class="n">person_dir</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">img_path</span><span class="p">)})</span>
+</span><span id="__span-3-20"><a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>
+</span><span id="__span-3-21"><a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a><span class="n">store</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</span><span id="__span-3-22"><a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Index saved: </span><span class="si">{</span><span class="n">store</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<p><strong>CLI tool:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>python<span class="w"> </span>tools/faiss_search.py<span class="w"> </span>build<span class="w"> </span>--faces-dir<span class="w"> </span>dataset/<span class="w"> </span>--db-path<span class="w"> </span>./my_index
+</span></code></pre></div>
+<h3 id="search-against-the-index">Search against the index</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">cv2</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.detection</span><span class="w"> </span><span class="kn">import</span> <span class="n">RetinaFace</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.recognition</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArcFace</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.indexing</span><span class="w"> </span><span class="kn">import</span> <span class="n">FAISS</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="n">detector</span> <span class="o">=</span> <span class="n">RetinaFace</span><span class="p">()</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="n">recognizer</span> <span class="o">=</span> <span class="n">ArcFace</span><span class="p">()</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="n">store</span> <span class="o">=</span> <span class="n">FAISS</span><span class="p">(</span><span class="n">db_path</span><span class="o">=</span><span class="s2">&quot;./my_index&quot;</span><span class="p">)</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="n">store</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="n">image</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&quot;query.jpg&quot;</span><span class="p">)</span>
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="n">faces</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">detect</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>
+</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="k">for</span> <span class="n">face</span> <span class="ow">in</span> <span class="n">faces</span><span class="p">:</span>
+</span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>    <span class="n">embedding</span> <span class="o">=</span> <span class="n">recognizer</span><span class="o">.</span><span class="n">get_normalized_embedding</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">face</span><span class="o">.</span><span class="n">landmarks</span><span class="p">)</span>
+</span><span id="__span-5-17"><a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>    <span class="n">result</span><span class="p">,</span> <span class="n">similarity</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
+</span><span id="__span-5-18"><a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a>
+</span><span id="__span-5-19"><a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a>    <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+</span><span id="__span-5-20"><a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Matched: </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;person_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">similarity</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+</span><span id="__span-5-21"><a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a>    <span class="k">else</span><span class="p">:</span>
+</span><span id="__span-5-22"><a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown (</span><span class="si">{</span><span class="n">similarity</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<p><strong>CLI tool:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>python<span class="w"> </span>tools/faiss_search.py<span class="w"> </span>run<span class="w"> </span>--db-path<span class="w"> </span>./my_index<span class="w"> </span>--source<span class="w"> </span>video.mp4
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>python<span class="w"> </span>tools/faiss_search.py<span class="w"> </span>run<span class="w"> </span>--db-path<span class="w"> </span>./my_index<span class="w"> </span>--source<span class="w"> </span><span class="m">0</span><span class="w">  </span><span class="c1"># webcam</span>
+</span></code></pre></div>
+<h3 id="manage-the-index">Manage the index</h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.indexing</span><span class="w"> </span><span class="kn">import</span> <span class="n">FAISS</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="n">store</span> <span class="o">=</span> <span class="n">FAISS</span><span class="p">(</span><span class="n">db_path</span><span class="o">=</span><span class="s2">&quot;./my_index&quot;</span><span class="p">)</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="n">store</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total vectors: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">store</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="n">removed</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;person_id&quot;</span><span class="p">,</span> <span class="s2">&quot;bob&quot;</span><span class="p">)</span>
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Removed </span><span class="si">{</span><span class="n">removed</span><span class="si">}</span><span class="s2"> entries&quot;</span><span class="p">)</span>
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>
+</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="n">store</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 </span></code></pre></div>
 <hr />
 <h2 id="see-also">See Also</h2>
 <ul>
+<li><a href="../../modules/indexing/">Indexing Module</a> - Full <code>FAISS</code> API reference</li>
 <li><a href="../../modules/recognition/">Recognition Module</a> - Face recognition details</li>
-<li><a href="../batch-processing/">Batch Processing</a> - Process multiple files</li>
 <li><a href="../video-webcam/">Video &amp; Webcam</a> - Real-time processing</li>
 <li><a href="../../concepts/thresholds-calibration/">Concepts: Thresholds</a> - Tuning similarity thresholds</li>
 </ul>
@@ -2114,7 +2184,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="February 11, 2026 15:20:23 UTC"><span class="timeago" datetime="2026-02-11T15:20:23+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="February 11, 2026 15:20:23 UTC">2026-02-11</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="March 3, 2026 03:12:05 UTC"><span class="timeago" datetime="2026-03-03T03:12:05+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="March 3, 2026 03:12:05 UTC">2026-03-03</span>
   </span>
 
     
