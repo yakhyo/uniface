@@ -196,7 +196,21 @@ def non_max_suppression(
 
         return indices.flatten().tolist()
 
-    # Fallback to original NumPy implementation
+    return _non_max_suppression_deprecated(dets, threshold)
+
+
+def _non_max_suppression_deprecated(dets: np.ndarray, threshold: float) -> list[int]:
+    """Original NumPy-based Non-Maximum Suppression (NMS).
+
+    Deprecated: Use :func:`non_max_suppression` for faster OpenCV-based implementation.
+
+    Args:
+        dets: Array of detections with each row as [x1, y1, x2, y2, score].
+        threshold: IoU threshold for suppression.
+
+    Returns:
+        Indices of bounding boxes retained after suppression.
+    """
     x1 = dets[:, 0]
     y1 = dets[:, 1]
     x2 = dets[:, 2]
