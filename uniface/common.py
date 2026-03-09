@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import itertools
 import math
 from typing import Literal
 
@@ -120,6 +121,40 @@ def generate_anchors(image_size: tuple[int, int] = (640, 640)) -> np.ndarray:
         anchors_list.append(level_anchors.reshape(-1, 4))
 
     return np.vstack(anchors_list).astype(np.float32)
+
+
+def _generate_anchors_deprecated(image_size: tuple[int, int] = (640, 640)) -> np.ndarray:
+    """Original loop-based anchor generation (RetinaFace specific).
+
+    Deprecated: Use :func:`generate_anchors` for much faster vectorized implementation.
+
+    Args:
+        image_size: Input image size as (width, height). Defaults to (640, 640).
+
+    Returns:
+        Anchor box coordinates as a numpy array with shape (num_anchors, 4).
+    """
+    # RetinaFace FPN strides and corresponding anchor sizes per level
+    steps = [8, 16, 32]
+    min_sizes = [[16, 32], [64, 128], [256, 512]]
+
+    anchors = []
+    feature_maps = [[math.ceil(image_size[0] / step), math.ceil(image_size[1] / step)] for step in steps]
+
+    for k, (map_height, map_width) in enumerate(feature_maps):
+        step = steps[k]
+        for i, j in itertools.product(range(map_height), range(map_width)):
+            for min_size in min_sizes[k]:
+                s_kx = min_size / image_size[1]
+                s_ky = min_size / image_size[0]
+
+                dense_cx = [x * step / image_size[1] for x in [j + 0.5]]
+                dense_cy = [y * step / image_size[0] for y in [i + 0.5]]
+                for cy, cx in itertools.product(dense_cy, dense_cx):
+                    anchors += [cx, cy, s_kx, s_ky]
+
+    output = np.array(anchors, dtype=np.float32).reshape(-1, 4)
+    return output
 
 
 def non_max_suppression(
