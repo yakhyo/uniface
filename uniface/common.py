@@ -4,8 +4,8 @@
 
 from __future__ import annotations
 
-import itertools
 import math
+from typing import Literal
 
 import cv2
 import numpy as np
@@ -92,35 +92,76 @@ def generate_anchors(image_size: tuple[int, int] = (640, 640)) -> np.ndarray:
     steps = [8, 16, 32]
     min_sizes = [[16, 32], [64, 128], [256, 512]]
 
-    anchors = []
-    feature_maps = [[math.ceil(image_size[0] / step), math.ceil(image_size[1] / step)] for step in steps]
+    anchors_list = []
 
-    for k, (map_height, map_width) in enumerate(feature_maps):
-        step = steps[k]
-        for i, j in itertools.product(range(map_height), range(map_width)):
-            for min_size in min_sizes[k]:
-                s_kx = min_size / image_size[1]
-                s_ky = min_size / image_size[0]
+    for k, step in enumerate(steps):
+        map_height = math.ceil(image_size[0] / step)
+        map_width = math.ceil(image_size[1] / step)
 
-                dense_cx = [x * step / image_size[1] for x in [j + 0.5]]
-                dense_cy = [y * step / image_size[0] for y in [i + 0.5]]
-                for cy, cx in itertools.product(dense_cy, dense_cx):
-                    anchors += [cx, cy, s_kx, s_ky]
+        # Grid of (cy, cx)
+        shifts_x = (np.arange(map_width) + 0.5) * step / image_size[1]
+        shifts_y = (np.arange(map_height) + 0.5) * step / image_size[0]
 
-    output = np.array(anchors, dtype=np.float32).reshape(-1, 4)
-    return output
+        # Original iterates i (height) then j (width)
+        grid_y, grid_x = np.meshgrid(shifts_y, shifts_x, indexing='ij')
+
+        num_cells = map_height * map_width
+        num_scales = len(min_sizes[k])
+        level_anchors = np.zeros((num_cells, num_scales, 4), dtype=np.float32)
+
+        for m, min_size in enumerate(min_sizes[k]):
+            s_kx = min_size / image_size[1]
+            s_ky = min_size / image_size[0]
+            level_anchors[:, m, 0] = grid_x.ravel()
+            level_anchors[:, m, 1] = grid_y.ravel()
+            level_anchors[:, m, 2] = s_kx
+            level_anchors[:, m, 3] = s_ky
+
+        anchors_list.append(level_anchors.reshape(-1, 4))
+
+    return np.vstack(anchors_list).astype(np.float32)
 
 
-def non_max_suppression(dets: np.ndarray, threshold: float) -> list[int]:
+def non_max_suppression(
+    dets: np.ndarray,
+    threshold: float,
+    mode: Literal['opencv', 'numpy'] = 'opencv',
+) -> list[int]:
     """Apply Non-Maximum Suppression (NMS) to reduce overlapping bounding boxes.
 
     Args:
         dets: Array of detections with each row as [x1, y1, x2, y2, score].
         threshold: IoU threshold for suppression.
+        mode: NMS implementation to use. Options: 'opencv' (fast), 'numpy' (portable).
+            Defaults to 'opencv'.
 
     Returns:
         Indices of bounding boxes retained after suppression.
     """
+    if dets.shape[0] == 0:
+        return []
+
+    if mode == 'opencv':
+        # cv2.dnn.NMSBoxes expects [x, y, w, h], scores, score_threshold, nms_threshold
+        boxes = dets[:, :4].copy()
+        boxes[:, 2] = boxes[:, 2] - boxes[:, 0]  # width
+        boxes[:, 3] = boxes[:, 3] - boxes[:, 1]  # height
+        scores = dets[:, 4]
+
+        # score_threshold=0.0 because filtering is typically done before NMS in this library
+        indices = cv2.dnn.NMSBoxes(
+            bboxes=boxes.tolist(),
+            scores=scores.tolist(),
+            score_threshold=0.0,
+            nms_threshold=threshold,
+        )
+
+        if len(indices) == 0:
+            return []
+
+        return indices.flatten().tolist()
+
+    # Fallback to original NumPy implementation
     x1 = dets[:, 0]
     y1 = dets[:, 1]
     x2 = dets[:, 2]
