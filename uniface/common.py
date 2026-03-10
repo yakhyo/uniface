@@ -6,7 +6,6 @@ from __future__ import annotations
 
 import itertools
 import math
-from typing import Literal
 
 import cv2
 import numpy as np
@@ -93,51 +92,6 @@ def generate_anchors(image_size: tuple[int, int] = (640, 640)) -> np.ndarray:
     steps = [8, 16, 32]
     min_sizes = [[16, 32], [64, 128], [256, 512]]
 
-    anchors_list = []
-
-    for k, step in enumerate(steps):
-        map_height = math.ceil(image_size[0] / step)
-        map_width = math.ceil(image_size[1] / step)
-
-        # Grid of (cy, cx)
-        shifts_x = (np.arange(map_width) + 0.5) * step / image_size[1]
-        shifts_y = (np.arange(map_height) + 0.5) * step / image_size[0]
-
-        # Original iterates i (height) then j (width)
-        grid_y, grid_x = np.meshgrid(shifts_y, shifts_x, indexing='ij')
-
-        num_cells = map_height * map_width
-        num_scales = len(min_sizes[k])
-        level_anchors = np.zeros((num_cells, num_scales, 4), dtype=np.float32)
-
-        for m, min_size in enumerate(min_sizes[k]):
-            s_kx = min_size / image_size[1]
-            s_ky = min_size / image_size[0]
-            level_anchors[:, m, 0] = grid_x.ravel()
-            level_anchors[:, m, 1] = grid_y.ravel()
-            level_anchors[:, m, 2] = s_kx
-            level_anchors[:, m, 3] = s_ky
-
-        anchors_list.append(level_anchors.reshape(-1, 4))
-
-    return np.vstack(anchors_list).astype(np.float32)
-
-
-def _generate_anchors_deprecated(image_size: tuple[int, int] = (640, 640)) -> np.ndarray:
-    """Original loop-based anchor generation (RetinaFace specific).
-
-    Deprecated: Use :func:`generate_anchors` for much faster vectorized implementation.
-
-    Args:
-        image_size: Input image size as (width, height). Defaults to (640, 640).
-
-    Returns:
-        Anchor box coordinates as a numpy array with shape (num_anchors, 4).
-    """
-    # RetinaFace FPN strides and corresponding anchor sizes per level
-    steps = [8, 16, 32]
-    min_sizes = [[16, 32], [64, 128], [256, 512]]
-
     anchors = []
     feature_maps = [[math.ceil(image_size[0] / step), math.ceil(image_size[1] / step)] for step in steps]
 
@@ -157,52 +111,8 @@ def _generate_anchors_deprecated(image_size: tuple[int, int] = (640, 640)) -> np
     return output
 
 
-def non_max_suppression(
-    dets: np.ndarray,
-    threshold: float,
-    mode: Literal['opencv', 'numpy'] = 'opencv',
-) -> list[int]:
+def non_max_suppression(dets: np.ndarray, threshold: float) -> list[int]:
     """Apply Non-Maximum Suppression (NMS) to reduce overlapping bounding boxes.
-
-    Args:
-        dets: Array of detections with each row as [x1, y1, x2, y2, score].
-        threshold: IoU threshold for suppression.
-        mode: NMS implementation to use. Options: 'opencv' (fast), 'numpy' (portable).
-            Defaults to 'opencv'.
-
-    Returns:
-        Indices of bounding boxes retained after suppression.
-    """
-    if dets.shape[0] == 0:
-        return []
-
-    if mode == 'opencv':
-        # cv2.dnn.NMSBoxes expects [x, y, w, h], scores, score_threshold, nms_threshold
-        boxes = dets[:, :4].copy()
-        boxes[:, 2] = boxes[:, 2] - boxes[:, 0]  # width
-        boxes[:, 3] = boxes[:, 3] - boxes[:, 1]  # height
-        scores = dets[:, 4]
-
-        # score_threshold=0.0 because filtering is typically done before NMS in this library
-        indices = cv2.dnn.NMSBoxes(
-            bboxes=boxes.tolist(),
-            scores=scores.tolist(),
-            score_threshold=0.0,
-            nms_threshold=threshold,
-        )
-
-        if len(indices) == 0:
-            return []
-
-        return indices.flatten().tolist()
-
-    return _non_max_suppression_deprecated(dets, threshold)
-
-
-def _non_max_suppression_deprecated(dets: np.ndarray, threshold: float) -> list[int]:
-    """Original NumPy-based Non-Maximum Suppression (NMS).
-
-    Deprecated: Use :func:`non_max_suppression` for faster OpenCV-based implementation.
 
     Args:
         dets: Array of detections with each row as [x1, y1, x2, y2, score].
