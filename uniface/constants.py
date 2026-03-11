@@ -84,6 +84,11 @@ class YOLOv5FaceWeights(str, Enum):
     Trained on WIDER FACE dataset.
     Original implementation: https://github.com/deepcam-cn/yolov5-face
     Exported to ONNX from: https://github.com/yakhyo/yolov5-face-onnx-inference
+
+    Model Performance (WIDER FACE):
+    - YOLOV5N: 11MB, 93.61% Easy / 91.52% Medium / 80.53% Hard
+    - YOLOV5S: 28MB, 94.33% Easy / 92.61% Medium / 83.15% Hard
+    - YOLOV5M: 82MB, 95.30% Easy / 93.76% Medium / 85.28% Hard
     """
     YOLOV5N = "yolov5n"
     YOLOV5S = "yolov5s"
@@ -95,6 +100,10 @@ class YOLOv8FaceWeights(str, Enum):
     YOLOv8-Face models trained on WIDER FACE dataset.
     Uses anchor-free design with DFL (Distribution Focal Loss) for bbox regression.
     Exported to ONNX from: https://github.com/yakhyo/yolov8-face-onnx-inference
+
+    Model Performance (WIDER FACE):
+    - YOLOV8_LITE_S: 7.4MB, 93.4% Easy / 91.2% Medium / 78.6% Hard (lightweight)
+    - YOLOV8N: 12MB, 94.6% Easy / 92.3% Medium / 79.6% Hard (recommended)
     """
     YOLOV8_LITE_S = "yolov8_lite_s"
     YOLOV8N       = "yolov8n_face"
@@ -171,6 +180,10 @@ class MiniFASNetWeights(str, Enum):
     MiniFASNet: Lightweight Face Anti-Spoofing models.
     Trained on face anti-spoofing datasets.
     https://github.com/yakhyo/face-anti-spoofing
+
+    Model Variants:
+    - V1SE: Uses scale=4.0 for face crop (squeeze-and-excitation version)
+    - V2: Uses scale=2.7 for face crop (improved version)
     """
     V1SE = "minifasnet_v1se"
     V2   = "minifasnet_v2"

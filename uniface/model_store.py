@@ -37,6 +37,11 @@ def get_cache_dir() -> str:
 
     Returns:
         Absolute, expanded path to the cache directory.
+
+    Example:
+        >>> from uniface import get_cache_dir
+        >>> print(get_cache_dir())
+        '/home/user/.uniface/models'
     """
     return os.path.expanduser(os.environ.get(_ENV_KEY, _DEFAULT_CACHE_DIR))
 
@@ -49,6 +54,12 @@ def set_cache_dir(path: str) -> None:
 
     Args:
         path: Directory path for storing model weights.
+
+    Example:
+        >>> from uniface import set_cache_dir, get_cache_dir
+        >>> set_cache_dir('/data/models')
+        >>> print(get_cache_dir())
+        '/data/models'
     """
     os.environ[_ENV_KEY] = path
     Logger.info(f'Cache directory set to: {path}')
@@ -80,6 +91,13 @@ def verify_model_weights(
     Raises:
         ValueError: If the model is unknown or SHA-256 verification fails.
         ConnectionError: If downloading the file fails.
+
+    Example:
+        >>> from uniface.constants import RetinaFaceWeights
+        >>> from uniface.model_store import verify_model_weights
+        >>> path = verify_model_weights(RetinaFaceWeights.MNET_V2)
+        >>> print(path)
+        '/home/user/.uniface/models/retinaface_mnet_v2.onnx'
     """
 
     root = os.path.expanduser(root) if root is not None else get_cache_dir()
@@ -173,7 +191,8 @@ def download_models(
 ) -> dict[Enum, str]:
     """Download and verify multiple models concurrently.
 
-    Uses a thread pool to download models in parallel.
+    Uses a thread pool to download models in parallel, which is significantly
+    faster when initializing several models at once.
 
     Args:
         model_names: List of model weight enum identifiers to download.
@@ -186,6 +205,11 @@ def download_models(
 
     Raises:
         RuntimeError: If any model download or verification fails.
+
+    Example:
+        >>> from uniface import download_models
+        >>> from uniface.constants import RetinaFaceWeights, ArcFaceWeights
+        >>> paths = download_models([RetinaFaceWeights.MNET_V2, ArcFaceWeights.RESNET])
     """
     results: dict[Enum, str] = {}
     errors: list[str] = []
