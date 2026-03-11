@@ -10,6 +10,8 @@ inference sessions with automatic hardware acceleration detection.
 
 from __future__ import annotations
 
+import functools
+
 import onnxruntime as ort
 
 from uniface.log import Logger
@@ -17,6 +19,7 @@ from uniface.log import Logger
 __all__ = ['create_onnx_session', 'get_available_providers']
 
 
+@functools.lru_cache(maxsize=1)
 def get_available_providers() -> list[str]:
     """Get list of available ONNX Runtime execution providers.
 
@@ -30,7 +33,7 @@ def get_available_providers() -> list[str]:
 
     Example:
         >>> providers = get_available_providers()
-        >>> # On M4 Mac: ['CoreMLExecutionProvider', 'CPUExecutionProvider']
+        >>> # On macOS: ['CoreMLExecutionProvider', 'CPUExecutionProvider']
         >>> # On Linux with CUDA: ['CUDAExecutionProvider', 'CPUExecutionProvider']
     """
     available = ort.get_available_providers()
@@ -98,7 +101,7 @@ def create_onnx_session(
             'CPUExecutionProvider': 'CPU',
         }
         provider_display = provider_names.get(active_provider, active_provider)
-        Logger.info(f'✓ Model loaded ({provider_display})')
+        Logger.debug(f'Model loaded from {model_path} ({provider_display})')
 
         return session
     except Exception as e:

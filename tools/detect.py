@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import os
 from pathlib import Path
+import time
 
 from _common import get_source_type
 import cv2
@@ -83,6 +84,7 @@ def process_video(
         if not ret:
             break
 
+        t0 = time.perf_counter()
         frame_count += 1
         faces = detector.detect(frame)
         total_faces += len(faces)
@@ -100,7 +102,9 @@ def process_video(
             corner_bbox=True,
         )
 
-        cv2.putText(frame, f'Faces: {len(faces)}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        inference_fps = 1.0 / max(time.perf_counter() - t0, 1e-9)
+        cv2.putText(frame, f'FPS: {inference_fps:.1f}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        cv2.putText(frame, f'Faces: {len(faces)}', (10, 65), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         out.write(frame)
 
         if show_preview:
@@ -128,6 +132,7 @@ def run_camera(detector, camera_id: int = 0, threshold: float = 0.6):
 
     print("Press 'q' to quit")
 
+    prev_time = time.perf_counter()
     while True:
         ret, frame = cap.read()
         frame = cv2.flip(frame, 1)
@@ -149,7 +154,11 @@ def run_camera(detector, camera_id: int = 0, threshold: float = 0.6):
             corner_bbox=True,
         )
 
-        cv2.putText(frame, f'Faces: {len(faces)}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        curr_time = time.perf_counter()
+        fps = 1.0 / max(curr_time - prev_time, 1e-9)
+        prev_time = curr_time
+        cv2.putText(frame, f'FPS: {fps:.1f}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        cv2.putText(frame, f'Faces: {len(faces)}', (10, 65), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         cv2.imshow('Face Detection', frame)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):

@@ -2,7 +2,23 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
+from __future__ import annotations
+
+from dataclasses import dataclass
 from enum import Enum
+
+
+@dataclass(frozen=True, slots=True)
+class ModelInfo:
+    """Model metadata including download URL and SHA-256 hash.
+
+    Attributes:
+        url: Direct download link to the model weights.
+        sha256: SHA-256 checksum for integrity verification.
+    """
+
+    url: str
+    sha256: str
 
 
 # fmt: off
@@ -166,125 +182,202 @@ class MiniFASNetWeights(str, Enum):
     https://github.com/yakhyo/face-anti-spoofing
 
     Model Variants:
-    - V1SE: Uses scale=4.0 for face crop (squeese-and-excitation version)
+    - V1SE: Uses scale=4.0 for face crop (squeeze-and-excitation version)
     - V2: Uses scale=2.7 for face crop (improved version)
     """
     V1SE = "minifasnet_v1se"
     V2   = "minifasnet_v2"
 
-
-MODEL_URLS: dict[Enum, str] = {
+# Centralized Model Registry
+MODEL_REGISTRY: dict[Enum, ModelInfo] = {
     # RetinaFace
-    RetinaFaceWeights.MNET_025:      'https://github.com/yakhyo/uniface/releases/download/weights/retinaface_mv1_0.25.onnx',
-    RetinaFaceWeights.MNET_050:      'https://github.com/yakhyo/uniface/releases/download/weights/retinaface_mv1_0.50.onnx',
-    RetinaFaceWeights.MNET_V1:       'https://github.com/yakhyo/uniface/releases/download/weights/retinaface_mv1.onnx',
-    RetinaFaceWeights.MNET_V2:       'https://github.com/yakhyo/uniface/releases/download/weights/retinaface_mv2.onnx',
-    RetinaFaceWeights.RESNET18:      'https://github.com/yakhyo/uniface/releases/download/weights/retinaface_r18.onnx',
-    RetinaFaceWeights.RESNET34:      'https://github.com/yakhyo/uniface/releases/download/weights/retinaface_r34.onnx',
+    RetinaFaceWeights.MNET_025: ModelInfo(
+        url='https://github.com/yakhyo/uniface/releases/download/weights/retinaface_mv1_0.25.onnx',
+        sha256='b7a7acab55e104dce6f32cdfff929bd83946da5cd869b9e2e9bdffafd1b7e4a5'
+    ),
+    RetinaFaceWeights.MNET_050: ModelInfo(
+        url='https://github.com/yakhyo/uniface/releases/download/weights/retinaface_mv1_0.50.onnx',
+        sha256='d8977186f6037999af5b4113d42ba77a84a6ab0c996b17c713cc3d53b88bfc37'
+    ),
+    RetinaFaceWeights.MNET_V1: ModelInfo(
+        url='https://github.com/yakhyo/uniface/releases/download/weights/retinaface_mv1.onnx',
+        sha256='75c961aaf0aff03d13c074e9ec656e5510e174454dd4964a161aab4fe5f04153'
+    ),
+    RetinaFaceWeights.MNET_V2: ModelInfo(
+        url='https://github.com/yakhyo/uniface/releases/download/weights/retinaface_mv2.onnx',
+        sha256='3ca44c045651cabeed1193a1fae8946ad1f3a55da8fa74b341feab5a8319f757'
+    ),
+    RetinaFaceWeights.RESNET18: ModelInfo(
+        url='https://github.com/yakhyo/uniface/releases/download/weights/retinaface_r18.onnx',
+        sha256='e8b5ddd7d2c3c8f7c942f9f10cec09d8e319f78f09725d3f709631de34fb649d'
+    ),
+    RetinaFaceWeights.RESNET34: ModelInfo(
+        url='https://github.com/yakhyo/uniface/releases/download/weights/retinaface_r34.onnx',
+        sha256='bd0263dc2a465d32859555cb1741f2d98991eb0053696e8ee33fec583d30e630'
+    ),
+
     # MobileFace
-    MobileFaceWeights.MNET_025:      'https://github.com/yakhyo/uniface/releases/download/weights/mobilenetv1_0.25.onnx',
-    MobileFaceWeights.MNET_V2:       'https://github.com/yakhyo/uniface/releases/download/weights/mobilenetv2.onnx',
-    MobileFaceWeights.MNET_V3_SMALL: 'https://github.com/yakhyo/uniface/releases/download/weights/mobilenetv3_small.onnx',
-    MobileFaceWeights.MNET_V3_LARGE: 'https://github.com/yakhyo/uniface/releases/download/weights/mobilenetv3_large.onnx',
+    MobileFaceWeights.MNET_025: ModelInfo(
+        url='https://github.com/yakhyo/uniface/releases/download/weights/mobilenetv1_0.25.onnx',
+        sha256='eeda7d23d9c2b40cf77fa8da8e895b5697465192648852216074679657f8ee8b'
+    ),
+    MobileFaceWeights.MNET_V2: ModelInfo(
+        url='https://github.com/yakhyo/uniface/releases/download/weights/mobilenetv2.onnx',
+        sha256='38b148284dd48cc898d5d4453104252fbdcbacc105fe3f0b80e78954d9d20d89'
+    ),
+    MobileFaceWeights.MNET_V3_SMALL: ModelInfo(
+        url='https://github.com/yakhyo/uniface/releases/download/weights/mobilenetv3_small.onnx',
+        sha256='d4acafa1039a82957aa8a9a1dac278a401c353a749c39df43de0e29cc1c127c3'
+    ),
+    MobileFaceWeights.MNET_V3_LARGE: ModelInfo(
+        url='https://github.com/yakhyo/uniface/releases/download/weights/mobilenetv3_large.onnx',
+        sha256='0e48f8e11f070211716d03e5c65a3db35a5e917cfb5bc30552358629775a142a'
+    ),
+
     # SphereFace
-    SphereFaceWeights.SPHERE20:      'https://github.com/yakhyo/uniface/releases/download/weights/sphere20.onnx',
-    SphereFaceWeights.SPHERE36:      'https://github.com/yakhyo/uniface/releases/download/weights/sphere36.onnx',
+    SphereFaceWeights.SPHERE20: ModelInfo(
+        url='https://github.com/yakhyo/uniface/releases/download/weights/sphere20.onnx',
+        sha256='c02878cf658eb1861f580b7e7144b0d27cc29c440bcaa6a99d466d2854f14c9d'
+    ),
+    SphereFaceWeights.SPHERE36: ModelInfo(
+        url='https://github.com/yakhyo/uniface/releases/download/weights/sphere36.onnx',
+        sha256='13b3890cd5d7dec2b63f7c36fd7ce07403e5a0bbb701d9647c0289e6cbe7bb20'
+    ),
+
     # ArcFace
-    ArcFaceWeights.MNET:             'https://github.com/yakhyo/uniface/releases/download/weights/w600k_mbf.onnx',
-    ArcFaceWeights.RESNET:           'https://github.com/yakhyo/uniface/releases/download/weights/w600k_r50.onnx',
+    ArcFaceWeights.MNET: ModelInfo(
+        url='https://github.com/yakhyo/uniface/releases/download/weights/w600k_mbf.onnx',
+        sha256='9cc6e4a75f0e2bf0b1aed94578f144d15175f357bdc05e815e5c4a02b319eb4f'
+    ),
+    ArcFaceWeights.RESNET: ModelInfo(
+        url='https://github.com/yakhyo/uniface/releases/download/weights/w600k_r50.onnx',
+        sha256='4c06341c33c2ca1f86781dab0e829f88ad5b64be9fba56e56bc9ebdefc619e43'
+    ),
+
     # AdaFace
-    AdaFaceWeights.IR_18:            'https://github.com/yakhyo/adaface-onnx/releases/download/weights/adaface_ir_18.onnx',
-    AdaFaceWeights.IR_101:           'https://github.com/yakhyo/adaface-onnx/releases/download/weights/adaface_ir_101.onnx',
+    AdaFaceWeights.IR_18: ModelInfo(
+        url='https://github.com/yakhyo/adaface-onnx/releases/download/weights/adaface_ir_18.onnx',
+        sha256='6b6a35772fb636cdd4fa86520c1a259d0c41472a76f70f802b351837a00d9870'
+    ),
+    AdaFaceWeights.IR_101: ModelInfo(
+        url='https://github.com/yakhyo/adaface-onnx/releases/download/weights/adaface_ir_101.onnx',
+        sha256='f2eb07d03de0af560a82e1214df799fec5e09375d43521e2868f9dc387e5a43e'
+    ),
+
     # SCRFD
-    SCRFDWeights.SCRFD_10G_KPS:      'https://github.com/yakhyo/uniface/releases/download/weights/scrfd_10g_kps.onnx',
-    SCRFDWeights.SCRFD_500M_KPS:     'https://github.com/yakhyo/uniface/releases/download/weights/scrfd_500m_kps.onnx',
+    SCRFDWeights.SCRFD_10G_KPS: ModelInfo(
+        url='https://github.com/yakhyo/uniface/releases/download/weights/scrfd_10g_kps.onnx',
+        sha256='5838f7fe053675b1c7a08b633df49e7af5495cee0493c7dcf6697200b85b5b91'
+    ),
+    SCRFDWeights.SCRFD_500M_KPS: ModelInfo(
+        url='https://github.com/yakhyo/uniface/releases/download/weights/scrfd_500m_kps.onnx',
+        sha256='5e4447f50245bbd7966bd6c0fa52938c61474a04ec7def48753668a9d8b4ea3a'
+    ),
+
     # YOLOv5-Face
-    YOLOv5FaceWeights.YOLOV5N:       'https://github.com/yakhyo/yolov5-face-onnx-inference/releases/download/weights/yolov5n_face.onnx',
-    YOLOv5FaceWeights.YOLOV5S:       'https://github.com/yakhyo/yolov5-face-onnx-inference/releases/download/weights/yolov5s_face.onnx',
-    YOLOv5FaceWeights.YOLOV5M:       'https://github.com/yakhyo/yolov5-face-onnx-inference/releases/download/weights/yolov5m_face.onnx',
+    YOLOv5FaceWeights.YOLOV5N: ModelInfo(
+        url='https://github.com/yakhyo/yolov5-face-onnx-inference/releases/download/weights/yolov5n_face.onnx',
+        sha256='eb244a06e36999db732b317c2b30fa113cd6cfc1a397eaf738f2d6f33c01f640'
+    ),
+    YOLOv5FaceWeights.YOLOV5S: ModelInfo(
+        url='https://github.com/yakhyo/yolov5-face-onnx-inference/releases/download/weights/yolov5s_face.onnx',
+        sha256='fc682801cd5880e1e296184a14aea0035486b5146ec1a1389d2e7149cb134bb2'
+    ),
+    YOLOv5FaceWeights.YOLOV5M: ModelInfo(
+        url='https://github.com/yakhyo/yolov5-face-onnx-inference/releases/download/weights/yolov5m_face.onnx',
+        sha256='04302ce27a15bde3e20945691b688e2dd018a10e92dd8932146bede6a49207b2'
+    ),
+
     # YOLOv8-Face
-    YOLOv8FaceWeights.YOLOV8_LITE_S: 'https://github.com/yakhyo/yolov8-face-onnx-inference/releases/download/weights/yolov8-lite-s.onnx',
-    YOLOv8FaceWeights.YOLOV8N:       'https://github.com/yakhyo/yolov8-face-onnx-inference/releases/download/weights/yolov8n-face.onnx',
+    YOLOv8FaceWeights.YOLOV8_LITE_S: ModelInfo(
+        url='https://github.com/yakhyo/yolov8-face-onnx-inference/releases/download/weights/yolov8-lite-s.onnx',
+        sha256='11bc496be01356d2d960085bfd8abb8f103199900a034f239a8a1705a1b31dba'
+    ),
+    YOLOv8FaceWeights.YOLOV8N: ModelInfo(
+        url='https://github.com/yakhyo/yolov8-face-onnx-inference/releases/download/weights/yolov8n-face.onnx',
+        sha256='33f3951af7fc0c4d9b321b29cdcd8c9a59d0a29a8d4bdc01fcb5507d5c714809'
+    ),
+
     # DDAFM
-    DDAMFNWeights.AFFECNET7:         'https://github.com/yakhyo/uniface/releases/download/weights/affecnet7.script',
-    DDAMFNWeights.AFFECNET8:         'https://github.com/yakhyo/uniface/releases/download/weights/affecnet8.script',
+    DDAMFNWeights.AFFECNET7: ModelInfo(
+        url='https://github.com/yakhyo/uniface/releases/download/weights/affecnet7.script',
+        sha256='10535bf8b6afe8e9d6ae26cea6c3add9a93036e9addb6adebfd4a972171d015d'
+    ),
+    DDAMFNWeights.AFFECNET8: ModelInfo(
+        url='https://github.com/yakhyo/uniface/releases/download/weights/affecnet8.script',
+        sha256='8c66963bc71db42796a14dfcbfcd181b268b65a3fc16e87147d6a3a3d7e0f487'
+    ),
+
     # AgeGender
-    AgeGenderWeights.DEFAULT:        'https://github.com/yakhyo/uniface/releases/download/weights/genderage.onnx',
+    AgeGenderWeights.DEFAULT: ModelInfo(
+        url='https://github.com/yakhyo/uniface/releases/download/weights/genderage.onnx',
+        sha256='4fde69b1c810857b88c64a335084f1c3fe8f01246c9a191b48c7bb756d6652fb'
+    ),
+
     # FairFace
-    FairFaceWeights.DEFAULT:         'https://github.com/yakhyo/fairface-onnx/releases/download/weights/fairface.onnx',
+    FairFaceWeights.DEFAULT: ModelInfo(
+        url='https://github.com/yakhyo/fairface-onnx/releases/download/weights/fairface.onnx',
+        sha256='9c8c47d437cd310538d233f2465f9ed0524cb7fb51882a37f74e8bc22437fdbf'
+    ),
+
     # Landmarks
-    LandmarkWeights.DEFAULT:         'https://github.com/yakhyo/uniface/releases/download/weights/2d106det.onnx',
+    LandmarkWeights.DEFAULT: ModelInfo(
+        url='https://github.com/yakhyo/uniface/releases/download/weights/2d106det.onnx',
+        sha256='f001b856447c413801ef5c42091ed0cd516fcd21f2d6b79635b1e733a7109dbf'
+    ),
+
     # Gaze (MobileGaze)
-    GazeWeights.RESNET18:            'https://github.com/yakhyo/gaze-estimation/releases/download/weights/resnet18_gaze.onnx',
-    GazeWeights.RESNET34:            'https://github.com/yakhyo/gaze-estimation/releases/download/weights/resnet34_gaze.onnx',
-    GazeWeights.RESNET50:            'https://github.com/yakhyo/gaze-estimation/releases/download/weights/resnet50_gaze.onnx',
-    GazeWeights.MOBILENET_V2:        'https://github.com/yakhyo/gaze-estimation/releases/download/weights/mobilenetv2_gaze.onnx',
-    GazeWeights.MOBILEONE_S0:        'https://github.com/yakhyo/gaze-estimation/releases/download/weights/mobileone_s0_gaze.onnx',
+    GazeWeights.RESNET18: ModelInfo(
+        url='https://github.com/yakhyo/gaze-estimation/releases/download/weights/resnet18_gaze.onnx',
+        sha256='404fec1efd07ff49f981e47f461c20c2627119e465ec441bbd1c067d3f16e657'
+    ),
+    GazeWeights.RESNET34: ModelInfo(
+        url='https://github.com/yakhyo/gaze-estimation/releases/download/weights/resnet34_gaze.onnx',
+        sha256='c8e6b14f6095d2425241b9302aa663d9a23b7dfb9d43941352b718c91dc7f2cf'
+    ),
+    GazeWeights.RESNET50: ModelInfo(
+        url='https://github.com/yakhyo/gaze-estimation/releases/download/weights/resnet50_gaze.onnx',
+        sha256='bb28d421565adc4dfb665742f8fc80bdef36dd8caa0c87e040e0937f9fdca9a6'
+    ),
+    GazeWeights.MOBILENET_V2: ModelInfo(
+        url='https://github.com/yakhyo/gaze-estimation/releases/download/weights/mobilenetv2_gaze.onnx',
+        sha256='b81312df85c7ac1c1b5f78c573620d22c2719cb839650e15f12dc7eecb7744a4'
+    ),
+    GazeWeights.MOBILEONE_S0: ModelInfo(
+        url='https://github.com/yakhyo/gaze-estimation/releases/download/weights/mobileone_s0_gaze.onnx',
+        sha256='8b4fdc4e3da44733c9a82e7776b411e4a39f94e8e285aee0fc85a548a55f7d9f'
+    ),
+
     # Parsing
-    ParsingWeights.RESNET18:         'https://github.com/yakhyo/face-parsing/releases/download/weights/resnet18.onnx',
-    ParsingWeights.RESNET34:         'https://github.com/yakhyo/face-parsing/releases/download/weights/resnet34.onnx',
+    ParsingWeights.RESNET18: ModelInfo(
+        url='https://github.com/yakhyo/face-parsing/releases/download/weights/resnet18.onnx',
+        sha256='0d9bd318e46987c3bdbfacae9e2c0f461cae1c6ac6ea6d43bbe541a91727e33f'
+    ),
+    ParsingWeights.RESNET34: ModelInfo(
+        url='https://github.com/yakhyo/face-parsing/releases/download/weights/resnet34.onnx',
+        sha256='5b805bba7b5660ab7070b5a381dcf75e5b3e04199f1e9387232a77a00095102e'
+    ),
+
     # Anti-Spoofing (MiniFASNet)
-    MiniFASNetWeights.V1SE:          'https://github.com/yakhyo/face-anti-spoofing/releases/download/weights/MiniFASNetV1SE.onnx',
-    MiniFASNetWeights.V2:            'https://github.com/yakhyo/face-anti-spoofing/releases/download/weights/MiniFASNetV2.onnx',
+    MiniFASNetWeights.V1SE: ModelInfo(
+        url='https://github.com/yakhyo/face-anti-spoofing/releases/download/weights/MiniFASNetV1SE.onnx',
+        sha256='ebab7f90c7833fbccd46d3a555410e78d969db5438e169b6524be444862b3676'
+    ),
+    MiniFASNetWeights.V2: ModelInfo(
+        url='https://github.com/yakhyo/face-anti-spoofing/releases/download/weights/MiniFASNetV2.onnx',
+        sha256='b32929adc2d9c34b9486f8c4c7bc97c1b69bc0ea9befefc380e4faae4e463907'
+    ),
+
     # XSeg
-    XSegWeights.DEFAULT:             'https://github.com/yakhyo/face-segmentation/releases/download/weights/xseg.onnx',
+    XSegWeights.DEFAULT: ModelInfo(
+        url='https://github.com/yakhyo/face-segmentation/releases/download/weights/xseg.onnx',
+        sha256='0b57328efcb839d85973164b617ceee9dfe6cfcb2c82e8a033bba9f4f09b27e5'
+    ),
 }
 
-MODEL_SHA256: dict[Enum, str] = {
-    # RetinaFace
-    RetinaFaceWeights.MNET_025:      'b7a7acab55e104dce6f32cdfff929bd83946da5cd869b9e2e9bdffafd1b7e4a5',
-    RetinaFaceWeights.MNET_050:      'd8977186f6037999af5b4113d42ba77a84a6ab0c996b17c713cc3d53b88bfc37',
-    RetinaFaceWeights.MNET_V1:       '75c961aaf0aff03d13c074e9ec656e5510e174454dd4964a161aab4fe5f04153',
-    RetinaFaceWeights.MNET_V2:       '3ca44c045651cabeed1193a1fae8946ad1f3a55da8fa74b341feab5a8319f757',
-    RetinaFaceWeights.RESNET18:      'e8b5ddd7d2c3c8f7c942f9f10cec09d8e319f78f09725d3f709631de34fb649d',
-    RetinaFaceWeights.RESNET34:      'bd0263dc2a465d32859555cb1741f2d98991eb0053696e8ee33fec583d30e630',
-    # MobileFace
-    MobileFaceWeights.MNET_025:      'eeda7d23d9c2b40cf77fa8da8e895b5697465192648852216074679657f8ee8b',
-    MobileFaceWeights.MNET_V2:       '38b148284dd48cc898d5d4453104252fbdcbacc105fe3f0b80e78954d9d20d89',
-    MobileFaceWeights.MNET_V3_SMALL: 'd4acafa1039a82957aa8a9a1dac278a401c353a749c39df43de0e29cc1c127c3',
-    MobileFaceWeights.MNET_V3_LARGE: '0e48f8e11f070211716d03e5c65a3db35a5e917cfb5bc30552358629775a142a',
-    # SphereFace
-    SphereFaceWeights.SPHERE20:      'c02878cf658eb1861f580b7e7144b0d27cc29c440bcaa6a99d466d2854f14c9d',
-    SphereFaceWeights.SPHERE36:      '13b3890cd5d7dec2b63f7c36fd7ce07403e5a0bbb701d9647c0289e6cbe7bb20',
-    # ArcFace
-    ArcFaceWeights.MNET:             '9cc6e4a75f0e2bf0b1aed94578f144d15175f357bdc05e815e5c4a02b319eb4f',
-    ArcFaceWeights.RESNET:           '4c06341c33c2ca1f86781dab0e829f88ad5b64be9fba56e56bc9ebdefc619e43',
-    # AdaFace
-    AdaFaceWeights.IR_18:            '6b6a35772fb636cdd4fa86520c1a259d0c41472a76f70f802b351837a00d9870',
-    AdaFaceWeights.IR_101:           'f2eb07d03de0af560a82e1214df799fec5e09375d43521e2868f9dc387e5a43e',
-    # SCRFD
-    SCRFDWeights.SCRFD_10G_KPS:      '5838f7fe053675b1c7a08b633df49e7af5495cee0493c7dcf6697200b85b5b91',
-    SCRFDWeights.SCRFD_500M_KPS:     '5e4447f50245bbd7966bd6c0fa52938c61474a04ec7def48753668a9d8b4ea3a',
-    # YOLOv5-Face
-    YOLOv5FaceWeights.YOLOV5N:       'eb244a06e36999db732b317c2b30fa113cd6cfc1a397eaf738f2d6f33c01f640',
-    YOLOv5FaceWeights.YOLOV5S:       'fc682801cd5880e1e296184a14aea0035486b5146ec1a1389d2e7149cb134bb2',
-    YOLOv5FaceWeights.YOLOV5M:       '04302ce27a15bde3e20945691b688e2dd018a10e92dd8932146bede6a49207b2',
-    # YOLOv8-Face
-    YOLOv8FaceWeights.YOLOV8_LITE_S: '11bc496be01356d2d960085bfd8abb8f103199900a034f239a8a1705a1b31dba',
-    YOLOv8FaceWeights.YOLOV8N:       '33f3951af7fc0c4d9b321b29cdcd8c9a59d0a29a8d4bdc01fcb5507d5c714809',
-    # DDAFM
-    DDAMFNWeights.AFFECNET7:         '10535bf8b6afe8e9d6ae26cea6c3add9a93036e9addb6adebfd4a972171d015d',
-    DDAMFNWeights.AFFECNET8:         '8c66963bc71db42796a14dfcbfcd181b268b65a3fc16e87147d6a3a3d7e0f487',
-    # AgeGender
-    AgeGenderWeights.DEFAULT:        '4fde69b1c810857b88c64a335084f1c3fe8f01246c9a191b48c7bb756d6652fb',
-    # FairFace
-    FairFaceWeights.DEFAULT:         '9c8c47d437cd310538d233f2465f9ed0524cb7fb51882a37f74e8bc22437fdbf',
-    # Landmark
-    LandmarkWeights.DEFAULT:         'f001b856447c413801ef5c42091ed0cd516fcd21f2d6b79635b1e733a7109dbf',
-    # MobileGaze (trained on Gaze360)
-    GazeWeights.RESNET18:            '404fec1efd07ff49f981e47f461c20c2627119e465ec441bbd1c067d3f16e657',
-    GazeWeights.RESNET34:            'c8e6b14f6095d2425241b9302aa663d9a23b7dfb9d43941352b718c91dc7f2cf',
-    GazeWeights.RESNET50:            'bb28d421565adc4dfb665742f8fc80bdef36dd8caa0c87e040e0937f9fdca9a6',
-    GazeWeights.MOBILENET_V2:        'b81312df85c7ac1c1b5f78c573620d22c2719cb839650e15f12dc7eecb7744a4',
-    GazeWeights.MOBILEONE_S0:        '8b4fdc4e3da44733c9a82e7776b411e4a39f94e8e285aee0fc85a548a55f7d9f',
-    # Face Parsing
-    ParsingWeights.RESNET18:         '0d9bd318e46987c3bdbfacae9e2c0f461cae1c6ac6ea6d43bbe541a91727e33f',
-    ParsingWeights.RESNET34:         '5b805bba7b5660ab7070b5a381dcf75e5b3e04199f1e9387232a77a00095102e',
-    # Anti-Spoofing (MiniFASNet)
-    MiniFASNetWeights.V1SE:          'ebab7f90c7833fbccd46d3a555410e78d969db5438e169b6524be444862b3676',
-    MiniFASNetWeights.V2:            'b32929adc2d9c34b9486f8c4c7bc97c1b69bc0ea9befefc380e4faae4e463907',
-    # XSeg
-    XSegWeights.DEFAULT:             '0b57328efcb839d85973164b617ceee9dfe6cfcb2c82e8a033bba9f4f09b27e5',
-}
+
+# Backward compatibility (optional, can be removed if all code uses MODEL_REGISTRY)
+MODEL_URLS: dict[Enum, str] = {k: v.url for k, v in MODEL_REGISTRY.items()}
+MODEL_SHA256: dict[Enum, str] = {k: v.sha256 for k, v in MODEL_REGISTRY.items()}
 
 CHUNK_SIZE = 8192

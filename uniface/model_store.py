@@ -14,6 +14,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from enum import Enum
 import hashlib
 import os
+import time
 
 import requests
 from tqdm import tqdm
@@ -64,7 +65,12 @@ def set_cache_dir(path: str) -> None:
     Logger.info(f'Cache directory set to: {path}')
 
 
-def verify_model_weights(model_name: Enum, root: str | None = None) -> str:
+def verify_model_weights(
+    model_name: Enum,
+    root: str | None = None,
+    timeout: int = 60,
+    max_retries: int = 3,
+) -> str:
     """Ensure model weights are present, downloading and verifying them if necessary.
 
     Given a model identifier from an Enum class (e.g., `RetinaFaceWeights.MNET_V2`),
@@ -76,6 +82,8 @@ def verify_model_weights(model_name: Enum, root: str | None = None) -> str:
         model_name: Model weight identifier enum (e.g., `RetinaFaceWeights.MNET_V2`).
         root: Directory to store or locate the model weights.
             If None, uses the cache directory from :func:`get_cache_dir`.
+        timeout: Connection timeout in seconds. Defaults to 60.
+        max_retries: Maximum number of download attempts. Defaults to 3.
 
     Returns:
         Absolute path to the verified model weights file.
@@ -95,59 +103,75 @@ def verify_model_weights(model_name: Enum, root: str | None = None) -> str:
     root = os.path.expanduser(root) if root is not None else get_cache_dir()
     os.makedirs(root, exist_ok=True)
 
-    # Keep model_name as enum for dictionary lookup
-    url = const.MODEL_URLS.get(model_name)
-    if not url:
-        Logger.error(f"No URL found for model '{model_name}'")
-        raise ValueError(f"No URL found for model '{model_name}'")
+    # Lookup model info from registry
+    model_info = const.MODEL_REGISTRY.get(model_name)
+    if not model_info:
+        Logger.error(f"No entry found in MODEL_REGISTRY for model '{model_name}'")
+        raise ValueError(f"Unknown model identifier: '{model_name}'")
+
+    url = model_info.url
+    expected_hash = model_info.sha256
 
     file_ext = os.path.splitext(url)[1]
     model_path = os.path.normpath(os.path.join(root, f'{model_name.value}{file_ext}'))
 
     if not os.path.exists(model_path):
-        Logger.info(f"Downloading model '{model_name}' from {url}")
+        Logger.info(f"Downloading model '{model_name.value}' from {url}")
         try:
-            download_file(url, model_path)
-            Logger.info(f"Successfully downloaded '{model_name}' to {model_path}")
+            download_file(url, model_path, timeout=timeout, max_retries=max_retries)
+            Logger.info(f"Successfully downloaded '{model_name.value}' to {model_path}")
         except Exception as e:
-            Logger.error(f"Failed to download model '{model_name}': {e}")
-            raise ConnectionError(f"Download failed for '{model_name}'") from e
+            Logger.error(f"Failed to download model '{model_name.value}': {e}")
+            raise ConnectionError(f"Download failed for '{model_name.value}' after {max_retries} attempts") from e
 
-    expected_hash = const.MODEL_SHA256.get(model_name)
     if expected_hash and not verify_file_hash(model_path, expected_hash):
         os.remove(model_path)  # Remove corrupted file
-        Logger.warning('Corrupted weight detected. Removing...')
-        raise ValueError(f"Hash mismatch for '{model_name}'. The file may be corrupted; please try downloading again.")
+        Logger.warning(f"Corrupted weights detected for '{model_name.value}'. Removing...")
+        raise ValueError(f"Hash mismatch for '{model_name.value}'. The file may be corrupted; please try again.")
 
     return model_path
 
 
-def download_file(url: str, dest_path: str, timeout: int = 30) -> None:
-    """Download a file from a URL in chunks and save it to the destination path.
+def download_file(url: str, dest_path: str, timeout: int = 60, max_retries: int = 3) -> None:
+    """Download a file from a URL with retry logic.
 
     Args:
         url: URL to download from.
         dest_path: Local file path to save to.
-        timeout: Connection timeout in seconds. Defaults to 30.
+        timeout: Connection timeout in seconds. Defaults to 60.
+        max_retries: Maximum number of attempts. Defaults to 3.
     """
-    try:
-        response = requests.get(url, stream=True, timeout=timeout)
-        response.raise_for_status()
-        with (
-            open(dest_path, 'wb') as file,
-            tqdm(
-                desc=f'Downloading {dest_path}',
-                unit='B',
-                unit_scale=True,
-                unit_divisor=1024,
-            ) as progress,
-        ):
-            for chunk in response.iter_content(chunk_size=const.CHUNK_SIZE):
-                if chunk:
-                    file.write(chunk)
-                    progress.update(len(chunk))
-    except requests.RequestException as e:
-        raise ConnectionError(f'Failed to download file from {url}. Error: {e}') from e
+    last_error = None
+    for attempt in range(max_retries):
+        try:
+            response = requests.get(url, stream=True, timeout=timeout)
+            response.raise_for_status()
+
+            total_size = int(response.headers.get('content-length', 0))
+
+            with (
+                open(dest_path, 'wb') as file,
+                tqdm(
+                    total=total_size,
+                    desc=f'Attempt {attempt + 1}/{max_retries}',
+                    unit='B',
+                    unit_scale=True,
+                    unit_divisor=1024,
+                ) as progress,
+            ):
+                for chunk in response.iter_content(chunk_size=const.CHUNK_SIZE):
+                    if chunk:
+                        file.write(chunk)
+                        progress.update(len(chunk))
+            return  # Success
+        except (OSError, requests.RequestException) as e:
+            last_error = e
+            Logger.warning(f'Download attempt {attempt + 1} failed: {e}. Retrying...')
+            if os.path.exists(dest_path):
+                os.remove(dest_path)
+            time.sleep(2**attempt)  # Exponential backoff
+
+    raise ConnectionError(f'Failed to download file from {url}. Error: {last_error}')
 
 
 def verify_file_hash(file_path: str, expected_hash: str) -> bool:
@@ -162,7 +186,9 @@ def verify_file_hash(file_path: str, expected_hash: str) -> bool:
     return actual_hash == expected_hash
 
 
-def download_models(model_names: list[Enum], max_workers: int = 4) -> dict[Enum, str]:
+def download_models(
+    model_names: list[Enum], max_workers: int = 4, timeout: int = 60, max_retries: int = 3
+) -> dict[Enum, str]:
     """Download and verify multiple models concurrently.
 
     Uses a thread pool to download models in parallel, which is significantly
@@ -171,6 +197,8 @@ def download_models(model_names: list[Enum], max_workers: int = 4) -> dict[Enum,
     Args:
         model_names: List of model weight enum identifiers to download.
         max_workers: Maximum number of concurrent download threads. Defaults to 4.
+        timeout: Connection timeout in seconds. Defaults to 60.
+        max_retries: Maximum number of attempts per model. Defaults to 3.
 
     Returns:
         Mapping of each model enum to its local file path.
@@ -187,7 +215,10 @@ def download_models(model_names: list[Enum], max_workers: int = 4) -> dict[Enum,
     errors: list[str] = []
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        future_to_model = {executor.submit(verify_model_weights, name): name for name in model_names}
+        future_to_model = {
+            executor.submit(verify_model_weights, name, timeout=timeout, max_retries=max_retries): name
+            for name in model_names
+        }
 
         for future in as_completed(future_to_model):
             model = future_to_model[future]
@@ -204,8 +235,3 @@ def download_models(model_names: list[Enum], max_workers: int = 4) -> dict[Enum,
 
     Logger.info(f'All {len(results)} model(s) downloaded and verified')
     return results
-
-
-if __name__ == '__main__':
-    for model in const.RetinaFaceWeights:
-        model_path = verify_model_weights(model)
