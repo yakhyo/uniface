@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.1.1] - 2026-03-19
+
+- Drop Python 3.10 support; minimum is now Python 3.11 ([#95](https://github.com/yakhyo/uniface/pull/95))
+- Bump `scikit-image` to `>=0.26.0` and use `SimilarityTransform.from_estimate()` ([#95](https://github.com/yakhyo/uniface/pull/95))
+- Add Python 3.14 support ([#95](https://github.com/yakhyo/uniface/pull/95))
+
 ## [3.1.0] - 2026-03-11
 
 - Add FAISS vector database for fast face search ([#86](https://github.com/yakhyo/uniface/pull/86))
@@ -48,6 +54,7 @@ All notable changes to this project will be documented in this file.
 - SHA-256 weight verification
 - Pure ONNX Runtime inference
 
+[3.1.1]: https://github.com/yakhyo/uniface/compare/v3.1.0...v3.1.1
 [3.1.0]: https://github.com/yakhyo/uniface/compare/v3.0.0...v3.1.0
 [3.0.0]: https://github.com/yakhyo/uniface/compare/v2.3.0...v3.0.0
 [2.3.0]: https://github.com/yakhyo/uniface/compare/v2.2.1...v2.3.0
