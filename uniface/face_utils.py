@@ -71,8 +71,7 @@ def estimate_norm(
     alignment[:, 0] += diff_x
 
     # Compute the transformation matrix
-    transform = SimilarityTransform()
-    transform.estimate(landmark, alignment)
+    transform = SimilarityTransform.from_estimate(landmark, alignment)
 
     matrix = transform.params[0:2, :]
     inverse_matrix = np.linalg.inv(transform.params)[0:2, :]
