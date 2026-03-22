@@ -144,11 +144,11 @@ class AttributeResult:
 
 ```python
 # AgeGender model
-result = age_gender.predict(image, face.bbox)
+result = age_gender.predict(image, face)
 print(f"{result.sex}, {result.age} years old")
 
 # FairFace model
-result = fairface.predict(image, face.bbox)
+result = fairface.predict(image, face)
 print(f"{result.sex}, {result.age_group}, {result.race}")
 ```
 

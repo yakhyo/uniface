@@ -15,6 +15,7 @@ CLI utilities for testing and running UniFace features.
 | `landmarks.py` | 106-point facial landmark detection |
 | `recognize.py` | Face embedding extraction and comparison |
 | `search.py` | Real-time face matching against reference |
+| `faiss_search.py` | FAISS index build and multi-identity face search |
 | `fairface.py` | FairFace attribute prediction (race, gender, age) |
 | `attribute.py` | Age and gender prediction |
 | `spoofing.py` | Face anti-spoofing detection |

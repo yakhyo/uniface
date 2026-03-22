@@ -60,7 +60,7 @@ def process_image(
     )
 
     for i, face in enumerate(faces):
-        result = fairface.predict(image, face.bbox)
+        result = fairface.predict(image, face)
         print(f'  Face {i + 1}: {result.sex}, {result.age_group}, {result.race}')
         draw_fairface_label(image, face.bbox, result.sex, result.age_group, result.race)
 
@@ -112,7 +112,7 @@ def process_video(
         )
 
         for face in faces:
-            result = fairface.predict(frame, face.bbox)
+            result = fairface.predict(frame, face)
             draw_fairface_label(frame, face.bbox, result.sex, result.age_group, result.race)
 
         cv2.putText(frame, f'Faces: {len(faces)}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
@@ -151,7 +151,7 @@ def run_camera(detector, fairface, camera_id: int = 0, threshold: float = 0.6):
         )
 
         for face in faces:
-            result = fairface.predict(frame, face.bbox)
+            result = fairface.predict(frame, face)
             draw_fairface_label(frame, face.bbox, result.sex, result.age_group, result.race)
 
         cv2.putText(frame, f'Faces: {len(faces)}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)

@@ -74,7 +74,7 @@ def test_arcface_embedding_shape(arcface_model, mock_aligned_face):
     """
     embedding = arcface_model.get_embedding(mock_aligned_face)
 
-    # ArcFace typically produces 512-dimensional embeddings
+    # ArcFace get_embedding returns raw ONNX output with batch dimension
     assert embedding.shape[1] == 512, f'Expected 512-dim embedding, got {embedding.shape[1]}'
     assert embedding.shape[0] == 1, 'Embedding should have batch dimension of 1'
 
@@ -88,7 +88,8 @@ def test_arcface_normalized_embedding(arcface_model, mock_landmarks):
 
     embedding = arcface_model.get_normalized_embedding(mock_image, mock_landmarks)
 
-    # Check that embedding is normalized (L2 norm ≈ 1.0)
+    # Check shape and normalization
+    assert embedding.shape == (512,), f'Expected shape (512,), got {embedding.shape}'
     norm = np.linalg.norm(embedding)
     assert np.isclose(norm, 1.0, atol=1e-5), f'Normalized embedding should have norm 1.0, got {norm}'
 
@@ -125,7 +126,7 @@ def test_mobileface_embedding_shape(mobileface_model, mock_aligned_face):
     """
     embedding = mobileface_model.get_embedding(mock_aligned_face)
 
-    # MobileFace typically produces 512-dimensional embeddings
+    # MobileFace get_embedding returns raw ONNX output with batch dimension
     assert embedding.shape[1] == 512, f'Expected 512-dim embedding, got {embedding.shape[1]}'
     assert embedding.shape[0] == 1, 'Embedding should have batch dimension of 1'
 
@@ -138,6 +139,7 @@ def test_mobileface_normalized_embedding(mobileface_model, mock_landmarks):
 
     embedding = mobileface_model.get_normalized_embedding(mock_image, mock_landmarks)
 
+    assert embedding.shape == (512,), f'Expected shape (512,), got {embedding.shape}'
     norm = np.linalg.norm(embedding)
     assert np.isclose(norm, 1.0, atol=1e-5), f'Normalized embedding should have norm 1.0, got {norm}'
 
@@ -156,7 +158,7 @@ def test_sphereface_embedding_shape(sphereface_model, mock_aligned_face):
     """
     embedding = sphereface_model.get_embedding(mock_aligned_face)
 
-    # SphereFace typically produces 512-dimensional embeddings
+    # SphereFace get_embedding returns raw ONNX output with batch dimension
     assert embedding.shape[1] == 512, f'Expected 512-dim embedding, got {embedding.shape[1]}'
     assert embedding.shape[0] == 1, 'Embedding should have batch dimension of 1'
 
@@ -169,6 +171,7 @@ def test_sphereface_normalized_embedding(sphereface_model, mock_landmarks):
 
     embedding = sphereface_model.get_normalized_embedding(mock_image, mock_landmarks)
 
+    assert embedding.shape == (512,), f'Expected shape (512,), got {embedding.shape}'
     norm = np.linalg.norm(embedding)
     assert np.isclose(norm, 1.0, atol=1e-5), f'Normalized embedding should have norm 1.0, got {norm}'
 

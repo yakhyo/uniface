@@ -141,7 +141,7 @@ class BaseRecognizer(ABC):
                 image is already aligned.
 
         Returns:
-            Face embedding vector (typically 512-dimensional).
+            Face embedding with shape (1, 512) — raw ONNX output with batch dimension.
         """
         # If landmarks are provided, align the face first
         if landmarks is not None:
@@ -164,9 +164,9 @@ class BaseRecognizer(ABC):
             landmarks: Facial landmarks (5 points for alignment).
 
         Returns:
-            L2-normalized face embedding vector (typically 512-dimensional).
+            L2-normalized face embedding as a 1D vector with shape (512,).
         """
-        embedding = self.get_embedding(image, landmarks)
+        embedding = self.get_embedding(image, landmarks).ravel()
         norm = np.linalg.norm(embedding)
         return embedding / norm if norm > 0 else embedding
 
@@ -178,6 +178,6 @@ class BaseRecognizer(ABC):
             landmarks: Facial landmarks (5 points for alignment).
 
         Returns:
-            L2-normalized face embedding vector (typically 512-dimensional).
+            L2-normalized face embedding as a 1D vector with shape (512,).
         """
         return self.get_normalized_embedding(image, landmarks)

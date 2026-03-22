@@ -30,9 +30,10 @@ age_gender = AgeGender()
 faces = detector.detect(image)
 
 for face in faces:
-    result = age_gender.predict(image, face.bbox)
+    result = age_gender.predict(image, face)
     print(f"Gender: {result.sex}")  # "Female" or "Male"
     print(f"Age: {result.age} years")
+    # face.gender and face.age are also set automatically
 ```
 
 ### Output
@@ -64,10 +65,11 @@ fairface = FairFace()
 faces = detector.detect(image)
 
 for face in faces:
-    result = fairface.predict(image, face.bbox)
+    result = fairface.predict(image, face)
     print(f"Gender: {result.sex}")
     print(f"Age Group: {result.age_group}")
     print(f"Race: {result.race}")
+    # face.gender, face.age_group, face.race are also set automatically
 ```
 
 ### Output
@@ -132,7 +134,7 @@ emotion = Emotion(model_name=DDAMFNWeights.AFFECNET7)
 faces = detector.detect(image)
 
 for face in faces:
-    result = emotion.predict(image, face.landmarks)
+    result = emotion.predict(image, face)
     print(f"Emotion: {result.emotion}")
     print(f"Confidence: {result.confidence:.2%}")
 ```
@@ -179,6 +181,22 @@ emotion = Emotion(model_name=DDAMFNWeights.AFFECNET8)
 
 ---
 
+## Factory Function
+
+Use `create_attribute_predictor()` for dynamic model selection:
+
+```python
+from uniface import create_attribute_predictor
+
+age_gender = create_attribute_predictor('age_gender')
+fairface = create_attribute_predictor('fairface')
+emotion = create_attribute_predictor('emotion')
+```
+
+Available model names: `'age_gender'`, `'fairface'`, `'emotion'`.
+
+---
+
 ## Combining Models
 
 ### Full Attribute Analysis
@@ -195,10 +213,10 @@ faces = detector.detect(image)
 
 for face in faces:
     # Get exact age from AgeGender
-    ag_result = age_gender.predict(image, face.bbox)
+    ag_result = age_gender.predict(image, face)
 
     # Get race from FairFace
-    ff_result = fairface.predict(image, face.bbox)
+    ff_result = fairface.predict(image, face)
 
     print(f"Gender: {ag_result.sex}")
     print(f"Exact Age: {ag_result.age}")
@@ -215,7 +233,7 @@ from uniface.detection import RetinaFace
 
 analyzer = FaceAnalyzer(
     RetinaFace(),
-    age_gender=AgeGender(),
+    attributes=[AgeGender()],
 )
 
 faces = analyzer.analyze(image)
@@ -257,7 +275,7 @@ def draw_attributes(image, face, result):
 
 # Usage
 for face in faces:
-    result = age_gender.predict(image, face.bbox)
+    result = age_gender.predict(image, face)
     image = draw_attributes(image, face, result)
 
 cv2.imwrite("attributes.jpg", image)

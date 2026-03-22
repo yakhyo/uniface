@@ -29,7 +29,7 @@ from __future__ import annotations
 
 __license__ = 'MIT'
 __author__ = 'Yakhyokhuja Valikhujaev'
-__version__ = '3.1.1'
+__version__ = '4.0.0'
 
 import contextlib
 
@@ -38,7 +38,7 @@ from uniface.log import Logger, enable_logging
 from uniface.model_store import download_models, get_cache_dir, set_cache_dir, verify_model_weights
 
 from .analyzer import FaceAnalyzer
-from .attribute import AgeGender, Emotion, FairFace
+from .attribute import AgeGender, Emotion, FairFace, create_attribute_predictor
 from .detection import (
     SCRFD,
     RetinaFace,
@@ -97,6 +97,7 @@ __all__ = [
     # Attribute models
     'AgeGender',
     'AttributeResult',
+    'create_attribute_predictor',
     'Emotion',
     'EmotionResult',
     'FairFace',

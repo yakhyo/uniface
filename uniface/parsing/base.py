@@ -10,16 +10,22 @@ import numpy as np
 
 
 class BaseFaceParser(ABC):
-    """
-    Abstract base class for all face parsing models.
+    """Abstract base class for all face parsing models.
 
     This class defines the common interface that all face parsing models must implement,
     ensuring consistency across different parsing methods. Face parsing segments a face
     image into semantic regions such as skin, eyes, nose, mouth, hair, etc.
 
-    The output is a segmentation mask where each pixel is assigned a class label
-    representing a facial component.
+    Subclasses must define a ``mask_type`` class attribute to indicate output format:
+
+    - ``"class_ids"``: uint8 mask with discrete class labels (e.g. BiSeNet: 0-18)
+    - ``"probability"``: float32 mask with continuous values in [0, 1] (e.g. XSeg)
+
+    Attributes:
+        mask_type (str): Output format identifier. Must be set by subclasses.
     """
+
+    mask_type: str
 
     @abstractmethod
     def _initialize_model(self) -> None:
@@ -86,13 +92,17 @@ class BaseFaceParser(ABC):
                 Ignored by parsers that do not need landmarks (e.g., BiSeNet).
 
         Returns:
-            np.ndarray: Segmentation mask with the same size as input image,
-                       where each pixel value represents a facial component class.
+            np.ndarray: Segmentation mask with the same size as input image.
+                Format depends on ``mask_type``:
+
+                - ``"class_ids"``: uint8 with discrete class labels
+                - ``"probability"``: float32 with values in [0, 1]
 
         Example:
             >>> parser = create_face_parser()
             >>> mask = parser.parse(face_crop)
-            >>> print(f'Mask shape: {mask.shape}, unique classes: {np.unique(mask)}')
+            >>> print(f'Mask type: {parser.mask_type}')
+            >>> print(f'Mask shape: {mask.shape}, dtype: {mask.dtype}')
         """
         raise NotImplementedError('Subclasses must implement the parse method.')
 

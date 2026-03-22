@@ -135,7 +135,7 @@ faces = detector.detect(image)
 
 # Predict attributes
 for i, face in enumerate(faces):
-    result = age_gender.predict(image, face.bbox)
+    result = age_gender.predict(image, face)
     print(f"Face {i+1}: {result.sex}, {result.age} years old")
 ```
 
@@ -164,7 +164,7 @@ image = cv2.imread("photo.jpg")
 faces = detector.detect(image)
 
 for i, face in enumerate(faces):
-    result = fairface.predict(image, face.bbox)
+    result = fairface.predict(image, face)
     print(f"Face {i+1}: {result.sex}, {result.age_group}, {result.race}")
 ```
 

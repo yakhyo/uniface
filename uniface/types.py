@@ -245,5 +245,5 @@ class Face:
         if self.emotion is not None:
             parts.append(f'emotion={self.emotion}')
         if self.embedding is not None:
-            parts.append(f'embedding_dim={self.embedding.shape[0]}')
+            parts.append(f'embedding_dim={self.embedding.shape[-1]}')
         return ', '.join(parts) + ')'

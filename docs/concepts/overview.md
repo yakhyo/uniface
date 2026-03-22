@@ -158,7 +158,7 @@ for face in faces:
     embedding = recognizer.get_normalized_embedding(image, face.landmarks)
 
     # Attributes
-    attrs = age_gender.predict(image, face.bbox)
+    attrs = age_gender.predict(image, face)
 
     print(f"Face: {attrs.sex}, {attrs.age} years")
 ```
@@ -183,8 +183,7 @@ fairface = FairFace()
 analyzer = FaceAnalyzer(
     detector,
     recognizer=recognizer,
-    age_gender=age_gender,
-    fairface=fairface,
+    attributes=[age_gender, fairface],
 )
 
 faces = analyzer.analyze(image)

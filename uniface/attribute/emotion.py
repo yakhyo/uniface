@@ -12,7 +12,7 @@ from uniface.constants import DDAMFNWeights
 from uniface.face_utils import face_alignment
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
-from uniface.types import EmotionResult
+from uniface.types import EmotionResult, Face
 
 __all__ = ['Emotion']
 
@@ -116,14 +116,23 @@ class Emotion(Attribute):
         confidence = float(probabilities[pred_index])
         return EmotionResult(emotion=emotion_label, confidence=confidence)
 
-    def predict(self, image: np.ndarray, landmark: list | np.ndarray) -> EmotionResult:
+    def predict(self, image: np.ndarray, face: Face) -> EmotionResult:
+        """Predict emotion and enrich the Face in-place.
+
+        Args:
+            image: The full input image in BGR format.
+            face: Detected face; ``face.landmarks`` is used for alignment.
+
+        Returns:
+            ``EmotionResult`` with emotion label and confidence score.
         """
-        Predicts the emotion from a single face specified by its landmarks.
-        """
-        input_tensor = self.preprocess(image, landmark)
+        input_tensor = self.preprocess(image, face.landmarks)
         with torch.no_grad():
             output = self.model(input_tensor)
             if isinstance(output, tuple):
                 output = output[0]
 
-        return self.postprocess(output)
+        result = self.postprocess(output)
+        face.emotion = result.emotion
+        face.emotion_confidence = result.confidence
+        return result

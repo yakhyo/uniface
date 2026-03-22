@@ -18,8 +18,7 @@ __all__ = ['BiSeNet']
 
 
 class BiSeNet(BaseFaceParser):
-    """
-    BiSeNet: Bilateral Segmentation Network for Face Parsing with ONNX Runtime.
+    """BiSeNet: Bilateral Segmentation Network for Face Parsing with ONNX Runtime.
 
     BiSeNet is a semantic segmentation model that segments a face image into
     different facial components such as skin, eyes, nose, mouth, hair, etc. The model
@@ -45,6 +44,7 @@ class BiSeNet(BaseFaceParser):
         input_size (Tuple[int, int]): Model input dimensions.
         input_mean (np.ndarray): Per-channel mean values for normalization (ImageNet).
         input_std (np.ndarray): Per-channel std values for normalization (ImageNet).
+        mask_type (str): Output type identifier - "class_ids" for BiSeNet.
 
     Example:
         >>> from uniface.parsing import BiSeNet
@@ -61,7 +61,10 @@ class BiSeNet(BaseFaceParser):
         ...     face_crop = image[y1:y2, x1:x2]
         ...     mask = parser.parse(face_crop)
         ...     print(f'Mask shape: {mask.shape}, unique classes: {np.unique(mask)}')
+        ...     print(f'Output type: {parser.mask_type}')  # "class_ids"
     """
+
+    mask_type = 'class_ids'
 
     def __init__(
         self,

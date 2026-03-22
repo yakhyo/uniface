@@ -16,6 +16,7 @@ __all__ = [
     'distance2bbox',
     'distance2kps',
     'generate_anchors',
+    'letterbox_resize',
     'non_max_suppression',
     'resize_image',
     'xyxy_to_cxcywh',
@@ -277,3 +278,70 @@ def distance2kps(
         preds.append(px)
         preds.append(py)
     return np.stack(preds, axis=-1)
+
+
+def letterbox_resize(
+    image: np.ndarray,
+    target_size: int,
+    fill_value: int = 114,
+) -> tuple[np.ndarray, float, tuple[int, int]]:
+    """Letterbox resize with center padding for YOLO-style detectors.
+
+    Maintains aspect ratio by scaling the image to fit within target_size,
+    then center-pads with a constant fill value. Converts BGR to RGB,
+    normalizes to [0, 1], and transposes to NCHW format.
+
+    This preprocessing strategy is standard for YOLO models and ensures
+    no distortion while maintaining a square input size.
+
+    Args:
+        image: Input image in BGR format with shape (H, W, C).
+        target_size: Target square size (e.g., 640 for 640x640 input).
+        fill_value: Padding fill value (default: 114 for gray background).
+
+    Returns:
+        Tuple of (preprocessed_tensor, scale_ratio, padding):
+            - preprocessed_tensor: Shape (1, 3, target_size, target_size),
+              RGB, normalized [0, 1], NCHW format, float32, contiguous.
+            - scale_ratio: Resize scale factor for coordinate transformation.
+            - padding: Padding offsets as (pad_w, pad_h) for coordinate transformation.
+
+    Example:
+        >>> image = cv2.imread('face.jpg')  # (480, 640, 3)
+        >>> tensor, scale, (pad_w, pad_h) = letterbox_resize(image, 640)
+        >>> tensor.shape
+        (1, 3, 640, 640)
+        >>> # To transform coordinates back to original:
+        >>> x_orig = (x_detected - pad_w) / scale
+        >>> y_orig = (y_detected - pad_h) / scale
+    """
+    # Get original image shape
+    img_h, img_w = image.shape[:2]
+
+    # Calculate scale ratio to fit within target_size
+    scale = min(target_size / img_h, target_size / img_w)
+    new_h, new_w = int(img_h * scale), int(img_w * scale)
+
+    # Resize image maintaining aspect ratio
+    img_resized = cv2.resize(image, (new_w, new_h), interpolation=cv2.INTER_LINEAR)
+
+    # Create padded canvas with fill_value
+    img_padded = np.full((target_size, target_size, 3), fill_value, dtype=np.uint8)
+
+    # Calculate padding to center the image
+    pad_h = (target_size - new_h) // 2
+    pad_w = (target_size - new_w) // 2
+
+    # Place resized image in center of canvas
+    img_padded[pad_h : pad_h + new_h, pad_w : pad_w + new_w] = img_resized
+
+    # Convert BGR to RGB and normalize to [0, 1]
+    img_rgb = cv2.cvtColor(img_padded, cv2.COLOR_BGR2RGB)
+    img_normalized = img_rgb.astype(np.float32) / 255.0
+
+    # Transpose to CHW format and add batch dimension (NCHW)
+    img_transposed = np.transpose(img_normalized, (2, 0, 1))
+    img_batch = np.expand_dims(img_transposed, axis=0)
+    img_batch = np.ascontiguousarray(img_batch)
+
+    return img_batch, scale, (pad_w, pad_h)
