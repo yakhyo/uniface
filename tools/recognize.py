@@ -41,12 +41,13 @@ def run_inference(detector, recognizer, image_path: str):
 
     print(f'Detected {len(faces)} face(s). Extracting embedding for the first face...')
 
-    landmarks = faces[0].landmarks  # 5-point landmarks for alignment (already np.ndarray)
+    landmarks = faces[0].landmarks
     embedding = recognizer.get_embedding(image, landmarks)
-    norm_embedding = recognizer.get_normalized_embedding(image, landmarks)  # L2 normalized
+    raw_norm = np.linalg.norm(embedding)
+    norm_embedding = embedding.ravel() / raw_norm if raw_norm > 0 else embedding.ravel()
 
     print(f'  Embedding shape: {embedding.shape}')
-    print(f'  L2 norm (raw): {np.linalg.norm(embedding):.4f}')
+    print(f'  L2 norm (raw): {raw_norm:.4f}')
     print(f'  L2 norm (normalized): {np.linalg.norm(norm_embedding):.4f}')
 
 

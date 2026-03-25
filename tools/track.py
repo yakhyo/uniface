@@ -134,9 +134,9 @@ def run_camera(
 
     while True:
         ret, frame = cap.read()
-        frame = cv2.flip(frame, 1)
         if not ret:
             break
+        frame = cv2.flip(frame, 1)
 
         # Detect faces
         faces = detector.detect(frame)

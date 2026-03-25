@@ -167,9 +167,9 @@ def run_camera(analyzer, camera_id: int = 0):
 
     while True:
         ret, frame = cap.read()
-        frame = cv2.flip(frame, 1)
         if not ret:
             break
+        frame = cv2.flip(frame, 1)
 
         faces = analyzer.analyze(frame)
 

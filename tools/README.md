@@ -109,7 +109,7 @@ python tools/download_model.py  # downloads all
 | Option | Description |
 |--------|-------------|
 | `--source` | Input source: image/video path or camera ID (0, 1, ...) |
-| `--detector` | Choose detector: `retinaface`, `scrfd`, `yolov5face` |
+| `--detector` | Choose detector: `retinaface`, `scrfd`, `yolov5face`, `yolov8face` |
 | `--threshold` | Visualization confidence threshold (default: varies) |
 | `--save-dir` | Output directory (default: `outputs`) |
 

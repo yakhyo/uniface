@@ -137,9 +137,9 @@ def run_camera(detector, emotion_predictor, camera_id: int = 0, threshold: float
 
     while True:
         ret, frame = cap.read()
-        frame = cv2.flip(frame, 1)
         if not ret:
             break
+        frame = cv2.flip(frame, 1)
 
         faces = detector.detect(frame)
 
