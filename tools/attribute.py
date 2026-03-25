@@ -60,7 +60,7 @@ def process_image(
     )
 
     for i, face in enumerate(faces):
-        result = age_gender.predict(image, face.bbox)
+        result = age_gender.predict(image, face)
         print(f'  Face {i + 1}: {result.sex}, {result.age} years old')
         draw_age_gender_label(image, face.bbox, result.sex, result.age)
 
@@ -112,7 +112,7 @@ def process_video(
         )
 
         for face in faces:
-            result = age_gender.predict(frame, face.bbox)
+            result = age_gender.predict(frame, face)
             draw_age_gender_label(frame, face.bbox, result.sex, result.age)
 
         cv2.putText(frame, f'Faces: {len(faces)}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
@@ -137,9 +137,9 @@ def run_camera(detector, age_gender, camera_id: int = 0, threshold: float = 0.6)
 
     while True:
         ret, frame = cap.read()
-        frame = cv2.flip(frame, 1)
         if not ret:
             break
+        frame = cv2.flip(frame, 1)
 
         faces = detector.detect(frame)
 
@@ -151,7 +151,7 @@ def run_camera(detector, age_gender, camera_id: int = 0, threshold: float = 0.6)
         )
 
         for face in faces:
-            result = age_gender.predict(frame, face.bbox)
+            result = age_gender.predict(frame, face)
             draw_age_gender_label(frame, face.bbox, result.sex, result.age)
 
         cv2.putText(frame, f'Faces: {len(faces)}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)

@@ -97,9 +97,9 @@ def run_camera(detector, recognizer, store: FAISS, camera_id: int = 0, threshold
 
     while True:
         ret, frame = cap.read()
-        frame = cv2.flip(frame, 1)
         if not ret:
             break
+        frame = cv2.flip(frame, 1)
 
         frame = process_frame(frame, detector, recognizer, store, threshold)
 

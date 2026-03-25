@@ -19,10 +19,9 @@ __all__ = ['XSeg']
 
 
 class XSeg(BaseFaceParser):
-    """
-    XSeg: Face Segmentation Model from DeepFaceLab with ONNX Runtime.
+    """XSeg: Face Segmentation Model from DeepFaceLab with ONNX Runtime.
 
-    XSeg outputs a mask for face regions. Unlike BiSeNet which works
+    XSeg outputs a soft probability mask for face regions. Unlike BiSeNet which works
     on bbox crops, XSeg requires 5-point landmarks for face alignment. The model
     uses NHWC input format and outputs values in [0, 1] range.
 
@@ -43,6 +42,7 @@ class XSeg(BaseFaceParser):
         align_size (int): Face alignment output size.
         blur_sigma (float): Blur sigma for post-processing.
         input_size (tuple[int, int]): Model input dimensions (width, height).
+        mask_type (str): Output type identifier - "probability" for XSeg.
 
     Example:
         >>> from uniface.parsing import XSeg
@@ -56,7 +56,10 @@ class XSeg(BaseFaceParser):
         ...     if face.landmarks is not None:
         ...         mask = parser.parse(image, landmarks=face.landmarks)
         ...         print(f'Mask shape: {mask.shape}')
+        ...         print(f'Output type: {parser.mask_type}')  # "probability"
     """
+
+    mask_type = 'probability'
 
     def __init__(
         self,

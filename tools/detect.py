@@ -135,9 +135,9 @@ def run_camera(detector, camera_id: int = 0, threshold: float = 0.6):
     prev_time = time.perf_counter()
     while True:
         ret, frame = cap.read()
-        frame = cv2.flip(frame, 1)
         if not ret:
             break
+        frame = cv2.flip(frame, 1)
 
         faces = detector.detect(frame)
 

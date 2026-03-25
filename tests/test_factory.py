@@ -9,12 +9,14 @@ import numpy as np
 import pytest
 
 from uniface import (
+    create_attribute_predictor,
     create_detector,
     create_landmarker,
     create_recognizer,
     list_available_detectors,
 )
-from uniface.constants import RetinaFaceWeights, SCRFDWeights
+from uniface.attribute import AgeGender, FairFace
+from uniface.constants import AgeGenderWeights, FairFaceWeights, RetinaFaceWeights, SCRFDWeights
 from uniface.spoofing import MiniFASNet, create_spoofer
 
 
@@ -165,7 +167,7 @@ def test_recognizer_inference_from_factory():
 
     embedding = recognizer.get_embedding(mock_image)
     assert embedding is not None, 'Recognizer should return embedding'
-    assert embedding.shape[1] == 512, 'Should return 512-dimensional embedding'
+    assert embedding.shape == (1, 512), 'get_embedding should return (1, 512) with batch dimension'
 
 
 def test_landmarker_inference_from_factory():
@@ -236,3 +238,19 @@ def test_create_spoofer_with_providers():
     """Test that create_spoofer forwards providers kwarg without TypeError."""
     spoofer = create_spoofer(providers=['CPUExecutionProvider'])
     assert isinstance(spoofer, MiniFASNet), 'Should return MiniFASNet instance'
+
+
+# create_attribute_predictor tests
+def test_create_attribute_predictor_age_gender():
+    predictor = create_attribute_predictor(AgeGenderWeights.DEFAULT)
+    assert isinstance(predictor, AgeGender), 'Should return AgeGender instance'
+
+
+def test_create_attribute_predictor_fairface():
+    predictor = create_attribute_predictor(FairFaceWeights.DEFAULT)
+    assert isinstance(predictor, FairFace), 'Should return FairFace instance'
+
+
+def test_create_attribute_predictor_invalid():
+    with pytest.raises(ValueError, match='Unsupported attribute model'):
+        create_attribute_predictor('invalid_model')

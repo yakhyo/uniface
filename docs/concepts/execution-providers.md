@@ -39,15 +39,19 @@ recognizer = ArcFace(providers=['CPUExecutionProvider'])
 detector = RetinaFace(providers=['CUDAExecutionProvider', 'CPUExecutionProvider'])
 ```
 
-All model classes accept the `providers` parameter:
+All **ONNX-based** model classes accept the `providers` parameter:
 
 - Detection: `RetinaFace`, `SCRFD`, `YOLOv5Face`, `YOLOv8Face`
 - Recognition: `ArcFace`, `AdaFace`, `MobileFace`, `SphereFace`
 - Landmarks: `Landmark106`
 - Gaze: `MobileGaze`
-- Parsing: `BiSeNet`
+- Parsing: `BiSeNet`, `XSeg`
 - Attributes: `AgeGender`, `FairFace`
 - Anti-Spoofing: `MiniFASNet`
+
+!!! note "Non-ONNX components"
+    - **Emotion** uses TorchScript and selects its device automatically (`mps` / `cuda` / `cpu`). It does **not** accept the `providers` parameter.
+    - **BlurFace** is a pure OpenCV utility and does not load any model.
 
 ---
 

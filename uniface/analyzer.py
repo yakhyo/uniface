@@ -6,8 +6,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from uniface.attribute.age_gender import AgeGender
-from uniface.attribute.fairface import FairFace
+from uniface.attribute.base import Attribute
 from uniface.detection.base import BaseDetector
 from uniface.log import Logger
 from uniface.recognition.base import BaseRecognizer
@@ -21,19 +20,24 @@ class FaceAnalyzer:
 
     This class provides a high-level interface for face analysis by combining
     multiple components: face detection, recognition (embedding extraction),
-    and attribute prediction (age, gender, race).
+    and an extensible list of attribute predictors (age, gender, race,
+    emotion, etc.).
+
+    Any :class:`~uniface.attribute.base.Attribute` subclass can be passed
+    via the ``attributes`` list.  Each predictor's ``predict(image, face)``
+    is called once per detected face, enriching the :class:`Face` in-place.
 
     Args:
         detector: Face detector instance for detecting faces in images.
         recognizer: Optional face recognizer for extracting embeddings.
-        age_gender: Optional age/gender predictor.
-        fairface: Optional FairFace predictor for demographics.
+        attributes: Optional list of ``Attribute`` predictors to run on
+            each detected face (e.g. ``[AgeGender(), FairFace(), Emotion()]``).
 
     Example:
-        >>> from uniface import RetinaFace, ArcFace, FaceAnalyzer
+        >>> from uniface import RetinaFace, ArcFace, AgeGender, FaceAnalyzer
         >>> detector = RetinaFace()
         >>> recognizer = ArcFace()
-        >>> analyzer = FaceAnalyzer(detector, recognizer=recognizer)
+        >>> analyzer = FaceAnalyzer(detector, recognizer=recognizer, attributes=[AgeGender()])
         >>> faces = analyzer.analyze(image)
     """
 
@@ -41,27 +45,23 @@ class FaceAnalyzer:
         self,
         detector: BaseDetector,
         recognizer: BaseRecognizer | None = None,
-        age_gender: AgeGender | None = None,
-        fairface: FairFace | None = None,
+        attributes: list[Attribute] | None = None,
     ) -> None:
         self.detector = detector
         self.recognizer = recognizer
-        self.age_gender = age_gender
-        self.fairface = fairface
+        self.attributes: list[Attribute] = attributes or []
 
         Logger.info(f'Initialized FaceAnalyzer with detector={detector.__class__.__name__}')
         if recognizer:
             Logger.info(f'  - Recognition enabled: {recognizer.__class__.__name__}')
-        if age_gender:
-            Logger.info(f'  - Age/Gender enabled: {age_gender.__class__.__name__}')
-        if fairface:
-            Logger.info(f'  - FairFace enabled: {fairface.__class__.__name__}')
+        for attr in self.attributes:
+            Logger.info(f'  - Attribute enabled: {attr.__class__.__name__}')
 
     def analyze(self, image: np.ndarray) -> list[Face]:
         """Analyze faces in an image.
 
-        Performs face detection and optionally extracts embeddings and
-        predicts attributes for each detected face.
+        Performs face detection, optionally extracts embeddings, and runs
+        every registered attribute predictor on each detected face.
 
         Args:
             image: Input image as numpy array with shape (H, W, C) in BGR format.
@@ -80,24 +80,13 @@ class FaceAnalyzer:
                 except Exception as e:
                     Logger.warning(f'  Face {idx + 1}: Failed to extract embedding: {e}')
 
-            if self.age_gender is not None:
+            for attr in self.attributes:
+                attr_name = attr.__class__.__name__
                 try:
-                    result = self.age_gender.predict(image, face.bbox)
-                    face.gender = result.gender
-                    face.age = result.age
-                    Logger.debug(f'  Face {idx + 1}: Age={face.age}, Gender={face.sex}')
+                    attr.predict(image, face)
+                    Logger.debug(f'  Face {idx + 1}: {attr_name} prediction succeeded')
                 except Exception as e:
-                    Logger.warning(f'  Face {idx + 1}: Failed to predict age/gender: {e}')
-
-            if self.fairface is not None:
-                try:
-                    result = self.fairface.predict(image, face.bbox)
-                    face.gender = result.gender
-                    face.age_group = result.age_group
-                    face.race = result.race
-                    Logger.debug(f'  Face {idx + 1}: AgeGroup={face.age_group}, Gender={face.sex}, Race={face.race}')
-                except Exception as e:
-                    Logger.warning(f'  Face {idx + 1}: Failed to predict FairFace attributes: {e}')
+                    Logger.warning(f'  Face {idx + 1}: {attr_name} prediction failed: {e}')
 
         Logger.info(f'Analysis complete: {len(faces)} face(s) processed')
         return faces
@@ -106,8 +95,6 @@ class FaceAnalyzer:
         parts = [f'FaceAnalyzer(detector={self.detector.__class__.__name__}']
         if self.recognizer:
             parts.append(f'recognizer={self.recognizer.__class__.__name__}')
-        if self.age_gender:
-            parts.append(f'age_gender={self.age_gender.__class__.__name__}')
-        if self.fairface:
-            parts.append(f'fairface={self.fairface.__class__.__name__}')
+        for attr in self.attributes:
+            parts.append(f'{attr.__class__.__name__}')
         return ', '.join(parts) + ')'

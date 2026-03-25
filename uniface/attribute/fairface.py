@@ -11,7 +11,7 @@ from uniface.constants import FairFaceWeights
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
 from uniface.onnx_utils import create_onnx_session
-from uniface.types import AttributeResult
+from uniface.types import AttributeResult, Face
 
 __all__ = ['AGE_LABELS', 'RACE_LABELS', 'FairFace']
 
@@ -168,29 +168,24 @@ class FairFace(Attribute):
             race=RACE_LABELS[race_idx],
         )
 
-    def predict(self, image: np.ndarray, bbox: list | np.ndarray | None = None) -> AttributeResult:
-        """
-        Predicts race, gender, and age for a face.
+    def predict(self, image: np.ndarray, face: Face) -> AttributeResult:
+        """Predict race, gender, and age and enrich the Face in-place.
 
         Args:
-            image (np.ndarray): The input image in BGR format.
-            bbox (Optional[Union[List, np.ndarray]]): Face bounding box [x1, y1, x2, y2].
-                If None, uses the entire image.
+            image: The full input image in BGR format.
+            face: Detected face; ``face.bbox`` is used for cropping.
 
         Returns:
-            AttributeResult: Result containing:
-                - gender: 0=Female, 1=Male
-                - age_group: Age range string like "20-29"
-                - race: Race/ethnicity label
+            ``AttributeResult`` with gender, age_group, and race.
         """
-        # Preprocess
-        input_blob = self.preprocess(image, bbox)
-
-        # Inference
+        input_blob = self.preprocess(image, face.bbox)
         outputs = self.session.run(self.output_names, {self.input_name: input_blob})
+        result = self.postprocess(outputs)
 
-        # Postprocess
-        return self.postprocess(outputs)
+        face.gender = result.gender
+        face.age_group = result.age_group
+        face.race = result.race
+        return result
 
     @staticmethod
     def _softmax(x: np.ndarray) -> np.ndarray:

@@ -167,9 +167,9 @@ def run_camera(analyzer, camera_id: int = 0):
 
     while True:
         ret, frame = cap.read()
-        frame = cv2.flip(frame, 1)
         if not ret:
             break
+        frame = cv2.flip(frame, 1)
 
         faces = analyzer.analyze(frame)
 
@@ -201,7 +201,7 @@ def main():
     detector = RetinaFace()
     recognizer = ArcFace()
     age_gender = AgeGender()
-    analyzer = FaceAnalyzer(detector, recognizer, age_gender)
+    analyzer = FaceAnalyzer(detector, recognizer=recognizer, attributes=[age_gender])
 
     source_type = get_source_type(args.source)
 

@@ -272,38 +272,9 @@ class SCRFD(BaseDetector):
         landmarks = landmarks[order, :, :]
         landmarks = landmarks[keep, :, :].astype(np.float32)
 
-        if 0 < max_num < detections.shape[0]:
-            # Calculate area of detections
-            area = (detections[:, 2] - detections[:, 0]) * (detections[:, 3] - detections[:, 1])
+        # Filter to top max_num faces if requested
+        detections, landmarks = self._select_top_detections(
+            detections, landmarks, max_num, (original_height, original_width), metric, center_weight
+        )
 
-            # Calculate offsets from image center
-            center = (original_height // 2, original_width // 2)
-            offsets = np.vstack(
-                [
-                    (detections[:, 0] + detections[:, 2]) / 2 - center[1],
-                    (detections[:, 1] + detections[:, 3]) / 2 - center[0],
-                ]
-            )
-
-            # Calculate scores based on the chosen metric
-            offset_dist_squared = np.sum(np.power(offsets, 2.0), axis=0)
-            if metric == 'max':
-                values = area
-            else:
-                values = area - offset_dist_squared * center_weight
-
-            # Sort by scores and select top `max_num`
-            sorted_indices = np.argsort(values)[::-1][:max_num]
-            detections = detections[sorted_indices]
-            landmarks = landmarks[sorted_indices]
-
-        faces = []
-        for i in range(detections.shape[0]):
-            face = Face(
-                bbox=detections[i, :4],
-                confidence=float(detections[i, 4]),
-                landmarks=landmarks[i],
-            )
-            faces.append(face)
-
-        return faces
+        return self._detections_to_faces(detections, landmarks)

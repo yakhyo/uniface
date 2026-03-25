@@ -12,7 +12,7 @@ from uniface.face_utils import bbox_center_alignment
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
 from uniface.onnx_utils import create_onnx_session
-from uniface.types import AttributeResult
+from uniface.types import AttributeResult, Face
 
 __all__ = ['AgeGender']
 
@@ -133,17 +133,20 @@ class AgeGender(Attribute):
         age = int(np.round(prediction[2] * 100))
         return AttributeResult(gender=gender, age=age)
 
-    def predict(self, image: np.ndarray, bbox: list | np.ndarray) -> AttributeResult:
-        """
-        Predicts age and gender for a single face specified by a bounding box.
+    def predict(self, image: np.ndarray, face: Face) -> AttributeResult:
+        """Predict age and gender and enrich the Face in-place.
 
         Args:
-            image (np.ndarray): The full input image in BGR format.
-            bbox (Union[List, np.ndarray]): The face bounding box coordinates [x1, y1, x2, y2].
+            image: The full input image in BGR format.
+            face: Detected face; ``face.bbox`` is used for alignment.
 
         Returns:
-            AttributeResult: Result containing gender (0=Female, 1=Male) and age (in years).
+            ``AttributeResult`` with gender (0=Female, 1=Male) and age (years).
         """
-        face_blob = self.preprocess(image, bbox)
+        face_blob = self.preprocess(image, face.bbox)
         prediction = self.session.run(self.output_names, {self.input_name: face_blob})[0][0]
-        return self.postprocess(prediction)
+        result = self.postprocess(prediction)
+
+        face.gender = result.gender
+        face.age = result.age
+        return result

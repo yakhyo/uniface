@@ -109,9 +109,9 @@ def run_camera(detector, recognizer, ref_embedding: np.ndarray, camera_id: int =
 
     while True:
         ret, frame = cap.read()
-        frame = cv2.flip(frame, 1)
         if not ret:
             break
+        frame = cv2.flip(frame, 1)
 
         frame = process_frame(frame, detector, recognizer, ref_embedding, threshold)
 

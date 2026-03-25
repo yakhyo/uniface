@@ -34,7 +34,7 @@ def process_image(image_path):
         embedding = recognizer.get_normalized_embedding(image, face.landmarks)
 
         # Step 3: Predict attributes
-        attrs = age_gender.predict(image, face.bbox)
+        attrs = age_gender.predict(image, face)
 
         results.append({
             'face_id': i,
@@ -83,7 +83,7 @@ age_gender = AgeGender()
 analyzer = FaceAnalyzer(
     detector,
     recognizer=recognizer,
-    age_gender=age_gender,
+    attributes=[age_gender],
 )
 
 # Process image
@@ -145,12 +145,12 @@ class FaceAnalysisPipeline:
             )
 
             # Attributes
-            ag_result = self.age_gender.predict(image, face.bbox)
+            ag_result = self.age_gender.predict(image, face)
             result['age'] = ag_result.age
             result['gender'] = ag_result.sex
 
             # FairFace attributes
-            ff_result = self.fairface.predict(image, face.bbox)
+            ff_result = self.fairface.predict(image, face)
             result['age_group'] = ff_result.age_group
             result['race'] = ff_result.race
 
@@ -220,7 +220,7 @@ def visualize_analysis(image_path, output_path):
         cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 2)
 
         # Age and gender
-        attrs = age_gender.predict(image, face.bbox)
+        attrs = age_gender.predict(image, face)
         label = f"{attrs.sex}, {attrs.age}y"
         cv2.putText(image, label, (x1, y1 - 10),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)

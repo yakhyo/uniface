@@ -80,7 +80,6 @@ Compare two faces:
 
 ```python
 import cv2
-import numpy as np
 from uniface.detection import RetinaFace
 from uniface.recognition import ArcFace
 
@@ -97,12 +96,13 @@ faces1 = detector.detect(image1)
 faces2 = detector.detect(image2)
 
 if faces1 and faces2:
-    # Extract embeddings
+    # Extract embeddings (normalized 1-D vectors)
     emb1 = recognizer.get_normalized_embedding(image1, faces1[0].landmarks)
     emb2 = recognizer.get_normalized_embedding(image2, faces2[0].landmarks)
 
-    # Compute similarity (cosine similarity)
-    similarity = np.dot(emb1, emb2.T)[0][0]
+    # Compute cosine similarity
+    from uniface import compute_similarity
+    similarity = compute_similarity(emb1, emb2, normalized=True)
 
     # Interpret result
     if similarity > 0.6:
@@ -135,7 +135,7 @@ faces = detector.detect(image)
 
 # Predict attributes
 for i, face in enumerate(faces):
-    result = age_gender.predict(image, face.bbox)
+    result = age_gender.predict(image, face)
     print(f"Face {i+1}: {result.sex}, {result.age} years old")
 ```
 
@@ -164,7 +164,7 @@ image = cv2.imread("photo.jpg")
 faces = detector.detect(image)
 
 for i, face in enumerate(faces):
-    result = fairface.predict(image, face.bbox)
+    result = fairface.predict(image, face)
     print(f"Face {i+1}: {result.sex}, {result.age_group}, {result.race}")
 ```
 

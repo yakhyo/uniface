@@ -184,6 +184,8 @@ Example notebooks demonstrating library usage:
 | Face Parsing       | [06_face_parsing.ipynb](examples/06_face_parsing.ipynb)             |
 | Face Anonymization | [07_face_anonymization.ipynb](examples/07_face_anonymization.ipynb) |
 | Gaze Estimation    | [08_gaze_estimation.ipynb](examples/08_gaze_estimation.ipynb)       |
+| Face Segmentation  | [09_face_segmentation.ipynb](examples/09_face_segmentation.ipynb)   |
+| Face Vector Store  | [10_face_vector_store.ipynb](examples/10_face_vector_store.ipynb)   |
 
 ## Questions?
 

@@ -60,7 +60,7 @@ def process_image(
     )
 
     for i, face in enumerate(faces):
-        result = emotion_predictor.predict(image, face.landmarks)
+        result = emotion_predictor.predict(image, face)
         print(f'  Face {i + 1}: {result.emotion} (confidence: {result.confidence:.3f})')
         draw_emotion_label(image, face.bbox, result.emotion, result.confidence)
 
@@ -112,7 +112,7 @@ def process_video(
         )
 
         for face in faces:
-            result = emotion_predictor.predict(frame, face.landmarks)
+            result = emotion_predictor.predict(frame, face)
             draw_emotion_label(frame, face.bbox, result.emotion, result.confidence)
 
         cv2.putText(frame, f'Faces: {len(faces)}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
@@ -137,9 +137,9 @@ def run_camera(detector, emotion_predictor, camera_id: int = 0, threshold: float
 
     while True:
         ret, frame = cap.read()
-        frame = cv2.flip(frame, 1)
         if not ret:
             break
+        frame = cv2.flip(frame, 1)
 
         faces = detector.detect(frame)
 
@@ -151,7 +151,7 @@ def run_camera(detector, emotion_predictor, camera_id: int = 0, threshold: float
         )
 
         for face in faces:
-            result = emotion_predictor.predict(frame, face.landmarks)
+            result = emotion_predictor.predict(frame, face)
             draw_emotion_label(frame, face.bbox, result.emotion, result.confidence)
 
         cv2.putText(frame, f'Faces: {len(faces)}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)

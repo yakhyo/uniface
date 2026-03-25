@@ -11,10 +11,9 @@ Reference: https://github.com/yakhyo/yolov8-face-onnx-inference
 
 from typing import Any, Literal
 
-import cv2
 import numpy as np
 
-from uniface.common import non_max_suppression
+from uniface.common import letterbox_resize, non_max_suppression
 from uniface.constants import YOLOv8FaceWeights
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
@@ -151,45 +150,15 @@ class YOLOv8Face(BaseDetector):
             raise RuntimeError(f"Failed to initialize model session for '{model_path}'") from e
 
     def preprocess(self, image: np.ndarray) -> tuple[np.ndarray, float, tuple[int, int]]:
-        """
-        Preprocess image for inference (letterbox resize with center padding).
+        """Preprocess image using letterbox resize.
 
         Args:
-            image (np.ndarray): Input image (BGR format)
+            image: Input image in BGR format.
 
         Returns:
-            Tuple[np.ndarray, float, Tuple[int, int]]: Preprocessed image, scale ratio, and padding (pad_w, pad_h)
+            Tuple of (preprocessed_tensor, scale_ratio, padding).
         """
-        # Get original image shape
-        img_h, img_w = image.shape[:2]
-
-        # Calculate scale ratio
-        scale = min(self.input_size / img_h, self.input_size / img_w)
-        new_h, new_w = int(img_h * scale), int(img_w * scale)
-
-        # Resize image
-        img_resized = cv2.resize(image, (new_w, new_h), interpolation=cv2.INTER_LINEAR)
-
-        # Create padded image with gray background (114, 114, 114)
-        img_padded = np.full((self.input_size, self.input_size, 3), 114, dtype=np.uint8)
-
-        # Calculate padding (center the image)
-        pad_h = (self.input_size - new_h) // 2
-        pad_w = (self.input_size - new_w) // 2
-
-        # Place resized image in center
-        img_padded[pad_h : pad_h + new_h, pad_w : pad_w + new_w] = img_resized
-
-        # Convert BGR to RGB and normalize
-        img_rgb = cv2.cvtColor(img_padded, cv2.COLOR_BGR2RGB)
-        img_normalized = img_rgb.astype(np.float32) / 255.0
-
-        # Transpose to CHW format (HWC -> CHW) and add batch dimension
-        img_transposed = np.transpose(img_normalized, (2, 0, 1))
-        img_batch = np.expand_dims(img_transposed, axis=0)
-        img_batch = np.ascontiguousarray(img_batch)
-
-        return img_batch, scale, (pad_w, pad_h)
+        return letterbox_resize(image, self.input_size)
 
     def inference(self, input_tensor: np.ndarray) -> list[np.ndarray]:
         """Perform model inference on the preprocessed image tensor.
@@ -387,38 +356,9 @@ class YOLOv8Face(BaseDetector):
         if len(detections) == 0:
             return []
 
-        if 0 < max_num < detections.shape[0]:
-            # Calculate area of detections
-            area = (detections[:, 2] - detections[:, 0]) * (detections[:, 3] - detections[:, 1])
+        # Filter to top max_num faces if requested
+        detections, landmarks = self._select_top_detections(
+            detections, landmarks, max_num, (original_height, original_width), metric, center_weight
+        )
 
-            # Calculate offsets from image center
-            center = (original_height // 2, original_width // 2)
-            offsets = np.vstack(
-                [
-                    (detections[:, 0] + detections[:, 2]) / 2 - center[1],
-                    (detections[:, 1] + detections[:, 3]) / 2 - center[0],
-                ]
-            )
-
-            # Calculate scores based on the chosen metric
-            offset_dist_squared = np.sum(np.power(offsets, 2.0), axis=0)
-            if metric == 'max':
-                values = area
-            else:
-                values = area - offset_dist_squared * center_weight
-
-            # Sort by scores and select top `max_num`
-            sorted_indices = np.argsort(values)[::-1][:max_num]
-            detections = detections[sorted_indices]
-            landmarks = landmarks[sorted_indices]
-
-        faces = []
-        for i in range(detections.shape[0]):
-            face = Face(
-                bbox=detections[i, :4],
-                confidence=float(detections[i, 4]),
-                landmarks=landmarks[i],
-            )
-            faces.append(face)
-
-        return faces
+        return self._detections_to_faces(detections, landmarks)

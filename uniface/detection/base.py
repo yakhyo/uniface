@@ -5,7 +5,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Literal
 
 import numpy as np
 
@@ -119,3 +119,77 @@ class BaseDetector(ABC):
             List of detected Face objects.
         """
         return self.detect(image, **kwargs)
+
+    def _select_top_detections(
+        self,
+        detections: np.ndarray,
+        landmarks: np.ndarray,
+        max_num: int,
+        original_shape: tuple[int, int],
+        metric: Literal['default', 'max'] = 'max',
+        center_weight: float = 2.0,
+    ) -> tuple[np.ndarray, np.ndarray]:
+        """Filter detections to keep only top max_num faces.
+
+        Ranks faces by area and/or distance from image center, then selects
+        the top max_num detections.
+
+        Args:
+            detections: Array of shape (N, 5) as [x1, y1, x2, y2, confidence].
+            landmarks: Array of shape (N, 5, 2) for 5-point landmarks.
+            max_num: Maximum number of faces to keep. If 0 or >= N, returns all.
+            original_shape: Original image shape as (height, width).
+            metric: Ranking metric:
+                - 'max': Rank by bounding box area only.
+                - 'default': Rank by area minus center distance penalty.
+            center_weight: Weight for center distance penalty (only used with 'default' metric).
+
+        Returns:
+            Filtered (detections, landmarks) tuple with at most max_num faces.
+        """
+        if max_num <= 0 or detections.shape[0] <= max_num:
+            return detections, landmarks
+
+        # Calculate bounding box areas
+        area = (detections[:, 2] - detections[:, 0]) * (detections[:, 3] - detections[:, 1])
+
+        # Calculate offsets from image center
+        center_y, center_x = original_shape[0] // 2, original_shape[1] // 2
+        offsets = np.vstack(
+            [
+                (detections[:, 0] + detections[:, 2]) / 2 - center_x,
+                (detections[:, 1] + detections[:, 3]) / 2 - center_y,
+            ]
+        )
+        offset_dist_squared = np.sum(np.power(offsets, 2.0), axis=0)
+
+        # Calculate ranking scores based on metric
+        if metric == 'max':
+            scores = area
+        else:
+            scores = area - offset_dist_squared * center_weight
+
+        # Select top max_num by score
+        top_indices = np.argsort(scores)[::-1][:max_num]
+        return detections[top_indices], landmarks[top_indices]
+
+    @staticmethod
+    def _detections_to_faces(detections: np.ndarray, landmarks: np.ndarray) -> list[Face]:
+        """Convert detection arrays to Face objects.
+
+        Args:
+            detections: Array of shape (N, 5) as [x1, y1, x2, y2, confidence].
+            landmarks: Array of shape (N, 5, 2) for 5-point landmarks.
+
+        Returns:
+            List of Face objects.
+        """
+        faces = []
+        for i in range(detections.shape[0]):
+            face = Face(
+                bbox=detections[i, :4],
+                confidence=float(detections[i, 4]),
+                landmarks=landmarks[i],
+            )
+            faces.append(face)
+        return faces
