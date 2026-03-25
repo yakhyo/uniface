@@ -28,6 +28,7 @@ __all__ = [
     'EmotionResult',
     'Face',
     'GazeResult',
+    'HeadPoseResult',
     'SpoofingResult',
 ]
 
@@ -46,6 +47,24 @@ class GazeResult:
 
     def __repr__(self) -> str:
         return f'GazeResult(pitch={self.pitch:.4f}, yaw={self.yaw:.4f})'
+
+
+@dataclass(slots=True, frozen=True)
+class HeadPoseResult:
+    """Result of head pose estimation.
+
+    Attributes:
+        pitch: Rotation around X-axis in degrees (positive = looking down).
+        yaw: Rotation around Y-axis in degrees (positive = looking right).
+        roll: Rotation around Z-axis in degrees (positive = tilting clockwise).
+    """
+
+    pitch: float
+    yaw: float
+    roll: float
+
+    def __repr__(self) -> str:
+        return f'HeadPoseResult(pitch={self.pitch:.1f}, yaw={self.yaw:.1f}, roll={self.roll:.1f})'
 
 
 @dataclass(slots=True, frozen=True)

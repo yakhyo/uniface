@@ -31,6 +31,7 @@
 - **Facial Landmarks** — 106-point landmark localization module (separate from 5-point detector landmarks)
 - **Face Parsing** — BiSeNet semantic segmentation (19 classes), XSeg face masking
 - **Gaze Estimation** — Real-time gaze direction with MobileGaze
+- **Head Pose Estimation** — 3D head orientation (pitch, yaw, roll) with 6D rotation representation
 - **Attribute Analysis** — Age, gender, race (FairFace), and emotion
 - **Vector Indexing** — FAISS-backed embedding store for fast multi-identity search
 - **Anti-Spoofing** — Face liveness detection with MiniFASNet
@@ -185,6 +186,7 @@ Full documentation: https://yakhyo.github.io/uniface/
 | Recognition | WebFace600K | ArcFace |
 | Recognition | WebFace4M / 12M | AdaFace |
 | Gaze | Gaze360 | MobileGaze |
+| Head Pose | 300W-LP | HeadPose (ResNet, MobileNet) |
 | Parsing | CelebAMask-HQ | BiSeNet |
 | Attributes | CelebA, FairFace, AffectNet | AgeGender, FairFace, Emotion |
 
@@ -206,6 +208,7 @@ Full documentation: https://yakhyo.github.io/uniface/
 | [08_gaze_estimation.ipynb](examples/08_gaze_estimation.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/08_gaze_estimation.ipynb) | Gaze direction estimation |
 | [09_face_segmentation.ipynb](examples/09_face_segmentation.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/09_face_segmentation.ipynb) | Face segmentation with XSeg |
 | [10_face_vector_store.ipynb](examples/10_face_vector_store.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/10_face_vector_store.ipynb) | FAISS-backed face database |
+| [11_head_pose_estimation.ipynb](examples/11_head_pose_estimation.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/11_head_pose_estimation.ipynb) | Head pose estimation (pitch, yaw, roll) |
 
 ---
 
@@ -234,6 +237,7 @@ If you plan commercial use, verify model license compatibility.
 | Parsing | [face-parsing](https://github.com/yakhyo/face-parsing) | ✓ | BiSeNet Face Parsing |
 | Parsing | [face-segmentation](https://github.com/yakhyo/face-segmentation) | - | XSeg Face Segmentation |
 | Gaze | [gaze-estimation](https://github.com/yakhyo/gaze-estimation) | ✓ | MobileGaze Training |
+| Head Pose | [head-pose-estimation](https://github.com/yakhyo/head-pose-estimation) | ✓ | Head Pose Training (6DRepNet-style) |
 | Anti-Spoofing | [face-anti-spoofing](https://github.com/yakhyo/face-anti-spoofing) | - | MiniFASNet Inference |
 | Attributes | [fairface-onnx](https://github.com/yakhyo/fairface-onnx) | - | FairFace ONNX Inference |
 

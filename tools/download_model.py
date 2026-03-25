@@ -4,6 +4,7 @@ from uniface.constants import (
     AgeGenderWeights,
     ArcFaceWeights,
     DDAMFNWeights,
+    HeadPoseWeights,
     LandmarkWeights,
     MobileFaceWeights,
     RetinaFaceWeights,
@@ -21,6 +22,7 @@ MODEL_TYPES = {
     'ddamfn': DDAMFNWeights,
     'agegender': AgeGenderWeights,
     'landmark': LandmarkWeights,
+    'headpose': HeadPoseWeights,
 }
 
 
