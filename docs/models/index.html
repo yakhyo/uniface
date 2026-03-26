@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.5">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -978,6 +978,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#head-pose-estimation-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Head Pose Estimation Models
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Head Pose Estimation Models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#headpose-family" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HeadPose Family
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#face-parsing-models" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1406,6 +1434,8 @@
       
         
       
+        
+      
     
     
     
@@ -1632,6 +1662,34 @@
     
   
     Gaze
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/headpose/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Head Pose
   
 
     
@@ -2409,6 +2467,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#head-pose-estimation-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Head Pose Estimation Models
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Head Pose Estimation Models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#headpose-family" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HeadPose Family
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#face-parsing-models" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3164,6 +3250,68 @@
 <p>Requires face crop as input. Use face detection first to obtain bounding boxes.</p>
 </div>
 <hr />
+<h2 id="head-pose-estimation-models">Head Pose Estimation Models</h2>
+<h3 id="headpose-family">HeadPose Family</h3>
+<p>Head pose estimation models using 6D rotation representation. Trained on <a href="../datasets/#300w-lp">300W-LP</a> dataset, evaluated on AFLW2000. Returns pitch, yaw, and roll angles in degrees.</p>
+<table>
+<thead>
+<tr>
+<th>Model Name</th>
+<th>Backbone</th>
+<th>Size</th>
+<th>MAE*</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>RESNET18</code> <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2m-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8z"/></svg></span></td>
+<td>ResNet18</td>
+<td>43 MB</td>
+<td>5.22°</td>
+</tr>
+<tr>
+<td><code>RESNET34</code></td>
+<td>ResNet34</td>
+<td>82 MB</td>
+<td>5.07°</td>
+</tr>
+<tr>
+<td><code>RESNET50</code></td>
+<td>ResNet50</td>
+<td>91 MB</td>
+<td>4.83°</td>
+</tr>
+<tr>
+<td><code>MOBILENET_V2</code></td>
+<td>MobileNetV2</td>
+<td>9.6 MB</td>
+<td>5.72°</td>
+</tr>
+<tr>
+<td><code>MOBILENET_V3_SMALL</code></td>
+<td>MobileNetV3-Small</td>
+<td>4.8 MB</td>
+<td>6.31°</td>
+</tr>
+<tr>
+<td><code>MOBILENET_V3_LARGE</code></td>
+<td>MobileNetV3-Large</td>
+<td>16 MB</td>
+<td>5.58°</td>
+</tr>
+</tbody>
+</table>
+<p>*MAE (Mean Absolute Error) in degrees on AFLW2000 test set — lower is better</p>
+<div class="admonition info">
+<p class="admonition-title">Training Data</p>
+<p><strong>Dataset</strong>: Trained on <a href="../datasets/#300w-lp">300W-LP</a> (synthesized large-pose faces from 300W)</p>
+<p><strong>Method</strong>: 6D rotation representation (rotation matrix → Euler angles)</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Input Requirements</p>
+<p>Requires face crop as input. Use face detection first to obtain bounding boxes.</p>
+</div>
+<hr />
 <h2 id="face-parsing-models">Face Parsing Models</h2>
 <h3 id="bisenet-family">BiSeNet Family</h3>
 <p>BiSeNet (Bilateral Segmentation Network) models for semantic face parsing. Segments face images into 19 facial component classes.</p>
@@ -3372,6 +3520,7 @@
 <li><strong>AdaFace ONNX</strong>: <a href="https://github.com/yakhyo/adaface-onnx">yakhyo/adaface-onnx</a> - ONNX export and inference</li>
 <li><strong>Face Recognition Training</strong>: <a href="https://github.com/yakhyo/face-recognition">yakhyo/face-recognition</a> - ArcFace, MobileFace, SphereFace training code</li>
 <li><strong>Gaze Estimation Training</strong>: <a href="https://github.com/yakhyo/gaze-estimation">yakhyo/gaze-estimation</a> - MobileGaze training code and pretrained weights</li>
+<li><strong>Head Pose Estimation</strong>: <a href="https://github.com/yakhyo/head-pose-estimation">yakhyo/head-pose-estimation</a> - 6D rotation head pose estimation training and ONNX models</li>
 <li><strong>Face Parsing Training</strong>: <a href="https://github.com/yakhyo/face-parsing">yakhyo/face-parsing</a> - BiSeNet training code and pretrained weights</li>
 <li><strong>Face Segmentation</strong>: <a href="https://github.com/yakhyo/face-segmentation">yakhyo/face-segmentation</a> - XSeg ONNX Inference</li>
 <li><strong>Face Anti-Spoofing</strong>: <a href="https://github.com/yakhyo/face-anti-spoofing">yakhyo/face-anti-spoofing</a> - MiniFASNet ONNX inference (weights from <a href="https://github.com/minivision-ai/Silent-Face-Anti-Spoofing">minivision-ai/Silent-Face-Anti-Spoofing</a>)</li>
@@ -3410,7 +3559,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="February 18, 2026 07:02:37 UTC"><span class="timeago" datetime="2026-02-18T07:02:37+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="February 18, 2026 07:02:37 UTC">2026-02-18</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="March 26, 2026 13:57:05 UTC"><span class="timeago" datetime="2026-03-26T13:57:05+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="March 26, 2026 13:57:05 UTC">2026-03-26</span>
   </span>
 
     
