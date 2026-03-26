@@ -60,6 +60,11 @@ Real-time gaze direction prediction with MobileGaze models.
 </div>
 
 <div class="feature-card" markdown>
+### :material-axis-arrow: Head Pose
+3D head orientation (pitch, yaw, roll) estimation with 6D rotation models.
+</div>
+
+<div class="feature-card" markdown>
 ### :material-motion-play: Tracking
 Multi-object tracking with BYTETracker for persistent face IDs across video frames.
 </div>

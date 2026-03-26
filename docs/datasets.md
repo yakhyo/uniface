@@ -183,6 +183,30 @@ data/
 
 ---
 
+### Head Pose Estimation
+
+#### 300W-LP
+
+Large-scale synthesized face dataset with large pose variations, generated from 300W by face profiling. Used for training head pose estimation models.
+
+| Property    | Value                         |
+| ----------- | ----------------------------- |
+| Images      | ~122,000 (synthesized)        |
+| Source      | 300W (profiled)               |
+| Pose range  | ±90° yaw                     |
+| Evaluation  | AFLW2000                      |
+| Used by     | All HeadPose models           |
+
+!!! info "Download & Reference"
+    **Paper**: [Face Alignment Across Large Poses: A 3D Solution](https://arxiv.org/abs/1511.07212)
+
+    **Training code**: [yakhyo/head-pose-estimation](https://github.com/yakhyo/head-pose-estimation)
+
+!!! note "UniFace Models"
+    All HeadPose models shipped with UniFace are trained on 300W-LP and evaluated on AFLW2000.
+
+---
+
 ### Face Parsing
 
 #### CelebAMask-HQ

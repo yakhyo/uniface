@@ -12,6 +12,7 @@ CLI utilities for testing and running UniFace features.
 | `anonymize.py` | Face anonymization/blurring for privacy |
 | `emotion.py` | Emotion detection (7 or 8 emotions) |
 | `gaze.py` | Gaze direction estimation |
+| `headpose.py` | Head pose estimation (pitch, yaw, roll) |
 | `landmarks.py` | 106-point facial landmark detection |
 | `recognize.py` | Face embedding extraction and comparison |
 | `search.py` | Real-time face matching against reference |
@@ -61,6 +62,11 @@ python tools/emotion.py --source 0
 # Gaze estimation
 python tools/gaze.py --source assets/test.jpg
 python tools/gaze.py --source 0
+
+# Head pose estimation
+python tools/headpose.py --source assets/test.jpg
+python tools/headpose.py --source 0
+python tools/headpose.py --source 0 --draw-type axis
 
 # Landmarks
 python tools/landmarks.py --source assets/test.jpg

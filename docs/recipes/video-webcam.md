@@ -175,3 +175,4 @@ while True:
 - [Batch Processing](batch-processing.md) - Process multiple files
 - [Detection Module](../modules/detection.md) - Detection options
 - [Gaze Module](../modules/gaze.md) - Gaze estimation
+- [Head Pose Module](../modules/headpose.md) - Head orientation estimation

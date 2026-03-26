@@ -257,6 +257,33 @@ Gaze direction prediction models trained on [Gaze360](datasets.md#gaze360) datas
 
 ---
 
+## Head Pose Estimation Models
+
+### HeadPose Family
+
+Head pose estimation models using 6D rotation representation. Trained on [300W-LP](datasets.md#300w-lp) dataset, evaluated on AFLW2000. Returns pitch, yaw, and roll angles in degrees.
+
+| Model Name     | Backbone | Size    | MAE*  |
+| -------------- | -------- | ------- | ----- |
+| `RESNET18` :material-check-circle: | ResNet18 | 43 MB   | 5.22° |
+| `RESNET34`   | ResNet34 | 82 MB   | 5.07° |
+| `RESNET50`   | ResNet50 | 91 MB   | 4.83° |
+| `MOBILENET_V2` | MobileNetV2 | 9.6 MB  | 5.72° |
+| `MOBILENET_V3_SMALL` | MobileNetV3-Small | 4.8 MB  | 6.31° |
+| `MOBILENET_V3_LARGE` | MobileNetV3-Large | 16 MB   | 5.58° |
+
+*MAE (Mean Absolute Error) in degrees on AFLW2000 test set — lower is better
+
+!!! info "Training Data"
+    **Dataset**: Trained on [300W-LP](datasets.md#300w-lp) (synthesized large-pose faces from 300W)
+
+    **Method**: 6D rotation representation (rotation matrix → Euler angles)
+
+!!! note "Input Requirements"
+    Requires face crop as input. Use face detection first to obtain bounding boxes.
+
+---
+
 ## Face Parsing Models
 
 ### BiSeNet Family
@@ -372,6 +399,7 @@ See [Model Cache & Offline Use](concepts/model-cache-offline.md) for full detail
 - **AdaFace ONNX**: [yakhyo/adaface-onnx](https://github.com/yakhyo/adaface-onnx) - ONNX export and inference
 - **Face Recognition Training**: [yakhyo/face-recognition](https://github.com/yakhyo/face-recognition) - ArcFace, MobileFace, SphereFace training code
 - **Gaze Estimation Training**: [yakhyo/gaze-estimation](https://github.com/yakhyo/gaze-estimation) - MobileGaze training code and pretrained weights
+- **Head Pose Estimation**: [yakhyo/head-pose-estimation](https://github.com/yakhyo/head-pose-estimation) - 6D rotation head pose estimation training and ONNX models
 - **Face Parsing Training**: [yakhyo/face-parsing](https://github.com/yakhyo/face-parsing) - BiSeNet training code and pretrained weights
 - **Face Segmentation**: [yakhyo/face-segmentation](https://github.com/yakhyo/face-segmentation) - XSeg ONNX Inference
 - **Face Anti-Spoofing**: [yakhyo/face-anti-spoofing](https://github.com/yakhyo/face-anti-spoofing) - MiniFASNet ONNX inference (weights from [minivision-ai/Silent-Face-Anti-Spoofing](https://github.com/minivision-ai/Silent-Face-Anti-Spoofing))

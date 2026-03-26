@@ -267,6 +267,7 @@ gaze = create_gaze_estimator()  # Returns MobileGaze
 
 ## Next Steps
 
+- [Head Pose Estimation](headpose.md) - 3D head orientation
 - [Anti-Spoofing](spoofing.md) - Face liveness detection
 - [Privacy](privacy.md) - Face anonymization
 - [Video Recipe](../recipes/video-webcam.md) - Real-time processing
