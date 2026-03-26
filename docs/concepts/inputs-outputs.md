@@ -106,6 +106,27 @@ print(f"Yaw: {np.degrees(result.yaw):.1f}°")
 
 ---
 
+### HeadPoseResult
+
+```python
+@dataclass(frozen=True)
+class HeadPoseResult:
+    pitch: float  # Rotation around X-axis (degrees), + = looking down
+    yaw: float    # Rotation around Y-axis (degrees), + = looking right
+    roll: float   # Rotation around Z-axis (degrees), + = tilting clockwise
+```
+
+**Usage:**
+
+```python
+result = head_pose.estimate(face_crop)
+print(f"Pitch: {result.pitch:.1f}°")
+print(f"Yaw: {result.yaw:.1f}°")
+print(f"Roll: {result.roll:.1f}°")
+```
+
+---
+
 ### SpoofingResult
 
 ```python
@@ -171,7 +192,7 @@ Face recognition models return normalized 512-dimensional embeddings:
 
 ```python
 embedding = recognizer.get_normalized_embedding(image, landmarks)
-print(f"Shape: {embedding.shape}")  # (1, 512)
+print(f"Shape: {embedding.shape}")  # (512,)
 print(f"Norm: {np.linalg.norm(embedding):.4f}")  # ~1.0
 ```
 

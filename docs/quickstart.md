@@ -234,6 +234,36 @@ cv2.imwrite("gaze_output.jpg", image)
 
 ---
 
+## Head Pose Estimation
+
+```python
+import cv2
+from uniface.detection import RetinaFace
+from uniface.headpose import HeadPose
+from uniface.draw import draw_head_pose
+
+detector = RetinaFace()
+head_pose = HeadPose()
+
+image = cv2.imread("photo.jpg")
+faces = detector.detect(image)
+
+for i, face in enumerate(faces):
+    x1, y1, x2, y2 = map(int, face.bbox[:4])
+    face_crop = image[y1:y2, x1:x2]
+
+    if face_crop.size > 0:
+        result = head_pose.estimate(face_crop)
+        print(f"Face {i+1}: pitch={result.pitch:.1f}°, yaw={result.yaw:.1f}°, roll={result.roll:.1f}°")
+
+        # Draw 3D cube visualization
+        draw_head_pose(image, face.bbox, result.pitch, result.yaw, result.roll)
+
+cv2.imwrite("headpose_output.jpg", image)
+```
+
+---
+
 ## Face Parsing
 
 Segment face into semantic components:
@@ -424,6 +454,7 @@ For detailed model comparisons and benchmarks, see the [Model Zoo](models.md).
 | Recognition | `ArcFace`, `AdaFace`, `MobileFace`, `SphereFace` |
 | Tracking | `BYTETracker` |
 | Gaze | `MobileGaze` (ResNet18/34/50, MobileNetV2, MobileOneS0) |
+| Head Pose | `HeadPose` (ResNet18/34/50, MobileNetV2/V3) |
 | Parsing | `BiSeNet` (ResNet18/34) |
 | Attributes | `AgeGender`, `FairFace`, `Emotion` |
 | Anti-Spoofing | `MiniFASNet` (V1SE, V2) |
@@ -470,6 +501,7 @@ from uniface.recognition import ArcFace, AdaFace
 from uniface.attribute import AgeGender, FairFace
 from uniface.landmark import Landmark106
 from uniface.gaze import MobileGaze
+from uniface.headpose import HeadPose
 from uniface.parsing import BiSeNet, XSeg
 from uniface.privacy import BlurFace
 from uniface.spoofing import MiniFASNet

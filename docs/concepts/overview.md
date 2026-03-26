@@ -23,6 +23,7 @@ graph TB
         LMK[Landmarks]
         ATTR[Attributes]
         GAZE[Gaze]
+        HPOSE[Head Pose]
         PARSE[Parsing]
         SPOOF[Anti-Spoofing]
         PRIV[Privacy]
@@ -45,6 +46,7 @@ graph TB
     DET --> LMK
     DET --> ATTR
     DET --> GAZE
+    DET --> HPOSE
     DET --> PARSE
     DET --> SPOOF
     DET --> PRIV
@@ -119,10 +121,11 @@ uniface/
 ├── attribute/      # Age, gender, emotion, race
 ├── parsing/        # Face semantic segmentation
 ├── gaze/           # Gaze estimation
+├── headpose/       # Head pose estimation
 ├── spoofing/       # Anti-spoofing
 ├── privacy/        # Face anonymization
 ├── indexing/       # Vector indexing (FAISS)
-├── types.py        # Dataclasses (Face, GazeResult, etc.)
+├── types.py        # Dataclasses (Face, GazeResult, HeadPoseResult, etc.)
 ├── constants.py    # Model weights and URLs
 ├── model_store.py  # Model download and caching
 ├── onnx_utils.py   # ONNX Runtime utilities

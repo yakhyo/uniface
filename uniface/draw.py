@@ -21,6 +21,9 @@ __all__ = [
     'draw_corner_bbox',
     'draw_detections',
     'draw_gaze',
+    'draw_head_pose',
+    'draw_head_pose_axis',
+    'draw_head_pose_cube',
     'draw_text_label',
     'draw_tracks',
     'vis_parsing_maps',
@@ -348,6 +351,212 @@ def draw_gaze(
         draw_text_label(
             image,
             f'P:{np.degrees(pitch):.0f}deg Y:{np.degrees(yaw):.0f}deg',
+            x_min,
+            y_min,
+            bg_color=(0, 0, 255),
+            text_color=(255, 255, 255),
+            font_scale=font_scale,
+        )
+
+
+def draw_head_pose_cube(
+    image: np.ndarray,
+    yaw: float,
+    pitch: float,
+    roll: float,
+    bbox: list[int] | np.ndarray,
+    size: int | None = None,
+) -> None:
+    """Draw a 3D wireframe cube representing head orientation on an image.
+
+    Projects a 3D cube onto the image plane based on yaw, pitch, and roll
+    angles, centered on the face bounding box.
+
+    Modifies the image in-place.
+
+    Args:
+        image: Input image to draw on (modified in-place).
+        yaw: Yaw angle in degrees.
+        pitch: Pitch angle in degrees.
+        roll: Roll angle in degrees.
+        bbox: Bounding box as ``[x_min, y_min, x_max, y_max]``.
+        size: Cube size in pixels. If None, uses the bounding box width.
+
+    Example:
+        >>> from uniface.draw import draw_head_pose_cube
+        >>> draw_head_pose_cube(image, yaw=10.0, pitch=-5.0, roll=2.0, bbox=[100, 100, 250, 280])
+    """
+    x_min, y_min, x_max, y_max = map(int, bbox[:4])
+    if size is None:
+        size = x_max - x_min
+
+    h = size * 0.5
+    yaw_r, pitch_r, roll_r = np.radians([-yaw, pitch, roll])
+
+    cx = (x_min + x_max) * 0.5
+    cy = (y_min + y_max) * 0.5
+
+    cos_y, sin_y = np.cos(yaw_r), np.sin(yaw_r)
+    cos_p, sin_p = np.cos(pitch_r), np.sin(pitch_r)
+    cos_r, sin_r = np.cos(roll_r), np.sin(roll_r)
+
+    ex = np.array([cos_y * cos_r, cos_p * sin_r + cos_r * sin_p * sin_y])
+    ey = np.array([-cos_y * sin_r, cos_p * cos_r - sin_p * sin_y * sin_r])
+    ez = np.array([sin_y, -cos_y * sin_p])
+
+    center = np.array([cx, cy])
+
+    def _pt(v: np.ndarray) -> tuple[int, int]:
+        return (int(v[0]), int(v[1]))
+
+    f0 = center + h * (-ex - ey - ez)
+    f1 = center + h * (+ex - ey - ez)
+    f2 = center + h * (+ex + ey - ez)
+    f3 = center + h * (-ex + ey - ez)
+    b0 = center + h * (-ex - ey + ez)
+    b1 = center + h * (+ex - ey + ez)
+    b2 = center + h * (+ex + ey + ez)
+    b3 = center + h * (-ex + ey + ez)
+
+    red = (0, 0, 255)
+    green = (0, 255, 0)
+    blue = (255, 0, 0)
+
+    # Front face at head (red)
+    cv2.line(image, _pt(f0), _pt(f1), red, 2)
+    cv2.line(image, _pt(f1), _pt(f2), red, 2)
+    cv2.line(image, _pt(f2), _pt(f3), red, 2)
+    cv2.line(image, _pt(f3), _pt(f0), red, 2)
+
+    # Back face in looking direction (green)
+    cv2.line(image, _pt(b0), _pt(b1), green, 2)
+    cv2.line(image, _pt(b1), _pt(b2), green, 2)
+    cv2.line(image, _pt(b2), _pt(b3), green, 2)
+    cv2.line(image, _pt(b3), _pt(b0), green, 2)
+
+    # Side edges (blue)
+    cv2.line(image, _pt(f0), _pt(b0), blue, 2)
+    cv2.line(image, _pt(f1), _pt(b1), blue, 2)
+    cv2.line(image, _pt(f2), _pt(b2), blue, 2)
+    cv2.line(image, _pt(f3), _pt(b3), blue, 2)
+
+
+def draw_head_pose_axis(
+    image: np.ndarray,
+    yaw: float,
+    pitch: float,
+    roll: float,
+    bbox: list[int] | np.ndarray,
+    size_ratio: float = 0.5,
+) -> None:
+    """Draw 3D coordinate axes representing head orientation on an image.
+
+    Draws X (red), Y (green), and Z (blue) axes from the center of the
+    bounding box, rotated according to yaw, pitch, and roll.
+
+    Modifies the image in-place.
+
+    Args:
+        image: Input image to draw on (modified in-place).
+        yaw: Yaw angle in degrees.
+        pitch: Pitch angle in degrees.
+        roll: Roll angle in degrees.
+        bbox: Bounding box as ``[x_min, y_min, x_max, y_max]``.
+        size_ratio: Axis length as a fraction of bbox size. Defaults to 0.5.
+
+    Example:
+        >>> from uniface.draw import draw_head_pose_axis
+        >>> draw_head_pose_axis(image, yaw=10.0, pitch=-5.0, roll=2.0, bbox=[100, 100, 250, 280])
+    """
+    x_min, y_min, x_max, y_max = map(int, bbox[:4])
+    yaw_r, pitch_r, roll_r = np.radians([-yaw, pitch, roll])
+
+    tdx = int(x_min + (x_max - x_min) * 0.5)
+    tdy = int(y_min + (y_max - y_min) * 0.5)
+
+    bbox_size = min(x_max - x_min, y_max - y_min)
+    size = bbox_size * size_ratio
+
+    cos_yaw, sin_yaw = np.cos(yaw_r), np.sin(yaw_r)
+    cos_pitch, sin_pitch = np.cos(pitch_r), np.sin(pitch_r)
+    cos_roll, sin_roll = np.cos(roll_r), np.sin(roll_r)
+
+    # X-Axis (red)
+    x1 = int(size * (cos_yaw * cos_roll) + tdx)
+    y1 = int(size * (cos_pitch * sin_roll + cos_roll * sin_pitch * sin_yaw) + tdy)
+
+    # Y-Axis (green)
+    x2 = int(size * (-cos_yaw * sin_roll) + tdx)
+    y2 = int(size * (cos_pitch * cos_roll - sin_pitch * sin_yaw * sin_roll) + tdy)
+
+    # Z-Axis (blue)
+    x3 = int(size * sin_yaw + tdx)
+    y3 = int(size * (-cos_yaw * sin_pitch) + tdy)
+
+    cv2.line(image, (tdx, tdy), (x1, y1), (0, 0, 255), 2)
+    cv2.line(image, (tdx, tdy), (x2, y2), (0, 255, 0), 2)
+    cv2.line(image, (tdx, tdy), (x3, y3), (255, 0, 0), 2)
+
+
+def draw_head_pose(
+    image: np.ndarray,
+    bbox: np.ndarray | list[int],
+    pitch: float,
+    yaw: float,
+    roll: float,
+    *,
+    draw_type: str = 'cube',
+    draw_bbox: bool = False,
+    corner_bbox: bool = True,
+    draw_angles: bool = True,
+) -> None:
+    """Draw head pose visualization with optional bounding box on an image.
+
+    High-level convenience function that combines bounding box drawing with
+    a 3D shape visualization of head orientation.
+
+    Modifies the image in-place.
+
+    Args:
+        image: Input image to draw on (modified in-place).
+        bbox: Face bounding box in xyxy format ``[x1, y1, x2, y2]``.
+        pitch: Pitch angle in degrees (rotation around X-axis).
+        yaw: Yaw angle in degrees (rotation around Y-axis).
+        roll: Roll angle in degrees (rotation around Z-axis).
+        draw_type: Visualization type, ``'cube'`` or ``'axis'``.
+            Defaults to ``'cube'``.
+        draw_bbox: Whether to draw the bounding box. Defaults to False.
+        corner_bbox: Use corner-style bounding box. Defaults to True.
+        draw_angles: Whether to display angle values as text. Defaults to True.
+
+    Example:
+        >>> from uniface.headpose import HeadPose
+        >>> from uniface.draw import draw_head_pose
+        >>> estimator = HeadPose()
+        >>> result = estimator.estimate(face_crop)
+        >>> draw_head_pose(image, bbox, result.pitch, result.yaw, result.roll)
+    """
+    x_min, y_min, x_max, y_max = map(int, bbox[:4])
+
+    line_thickness = max(round(sum(image.shape[:2]) / 2 * 0.003), 2)
+
+    if draw_bbox:
+        if corner_bbox:
+            draw_corner_bbox(image, np.array(bbox), color=(0, 255, 0), thickness=line_thickness)
+        else:
+            cv2.rectangle(image, (x_min, y_min), (x_max, y_max), (0, 255, 0), line_thickness)
+
+    bbox_list = [x_min, y_min, x_max, y_max]
+    if draw_type == 'axis':
+        draw_head_pose_axis(image, yaw, pitch, roll, bbox_list)
+    else:
+        draw_head_pose_cube(image, yaw, pitch, roll, bbox_list)
+
+    if draw_angles:
+        font_scale = max(0.4, min(0.7, (y_max - y_min) / 200))
+        draw_text_label(
+            image,
+            f'P:{pitch:.0f} Y:{yaw:.0f} R:{roll:.0f}',
             x_min,
             y_min,
             bg_color=(0, 0, 255),

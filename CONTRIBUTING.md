@@ -186,6 +186,7 @@ Example notebooks demonstrating library usage:
 | Gaze Estimation    | [08_gaze_estimation.ipynb](examples/08_gaze_estimation.ipynb)       |
 | Face Segmentation  | [09_face_segmentation.ipynb](examples/09_face_segmentation.ipynb)   |
 | Face Vector Store  | [10_face_vector_store.ipynb](examples/10_face_vector_store.ipynb)   |
+| Head Pose Estimation | [11_head_pose_estimation.ipynb](examples/11_head_pose_estimation.ipynb) |
 
 ## Questions?
 

@@ -151,6 +151,7 @@ nav:
       - Attributes: modules/attributes.md
       - Parsing: modules/parsing.md
       - Gaze: modules/gaze.md
+      - Head Pose: modules/headpose.md
       - Anti-Spoofing: modules/spoofing.md
       - Privacy: modules/privacy.md
       - Indexing: modules/indexing.md

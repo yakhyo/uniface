@@ -109,11 +109,12 @@ import numpy as np
 from uniface.attribute import AgeGender, FairFace
 from uniface.detection import RetinaFace
 from uniface.gaze import MobileGaze
+from uniface.headpose import HeadPose
 from uniface.landmark import Landmark106
 from uniface.recognition import ArcFace
 from uniface.parsing import BiSeNet
 from uniface.spoofing import MiniFASNet
-from uniface.draw import draw_detections, draw_gaze
+from uniface.draw import draw_detections, draw_gaze, draw_head_pose
 
 class FaceAnalysisPipeline:
     def __init__(self):
@@ -124,6 +125,7 @@ class FaceAnalysisPipeline:
         self.fairface = FairFace()
         self.landmarker = Landmark106()
         self.gaze = MobileGaze()
+        self.head_pose = HeadPose()
         self.parser = BiSeNet()
         self.spoofer = MiniFASNet()
 
@@ -167,6 +169,13 @@ class FaceAnalysisPipeline:
                 result['gaze_pitch'] = gaze_result.pitch
                 result['gaze_yaw'] = gaze_result.yaw
 
+            # Head pose estimation
+            if face_crop.size > 0:
+                hp_result = self.head_pose.estimate(face_crop)
+                result['head_pitch'] = hp_result.pitch
+                result['head_yaw'] = hp_result.yaw
+                result['head_roll'] = hp_result.roll
+
             # Face parsing
             if face_crop.size > 0:
                 result['parsing_mask'] = self.parser.parse(face_crop)
@@ -189,6 +198,7 @@ for i, r in enumerate(results):
     print(f"  Gender: {r['gender']}, Age: {r['age']}")
     print(f"  Race: {r['race']}, Age Group: {r['age_group']}")
     print(f"  Gaze: pitch={np.degrees(r['gaze_pitch']):.1f}°")
+    print(f"  Head Pose: P={r['head_pitch']:.1f}° Y={r['head_yaw']:.1f}° R={r['head_roll']:.1f}°")
     print(f"  Real: {r['is_real']} ({r['spoof_confidence']:.1%})")
 ```
 
@@ -268,6 +278,11 @@ def results_to_json(results):
             'gaze': {
                 'pitch_deg': float(np.degrees(r['gaze_pitch'])) if 'gaze_pitch' in r else None,
                 'yaw_deg': float(np.degrees(r['gaze_yaw'])) if 'gaze_yaw' in r else None
+            },
+            'head_pose': {
+                'pitch': float(r['head_pitch']) if 'head_pitch' in r else None,
+                'yaw': float(r['head_yaw']) if 'head_yaw' in r else None,
+                'roll': float(r['head_roll']) if 'head_roll' in r else None
             }
         }
         output.append(item)
@@ -291,3 +306,4 @@ with open('results.json', 'w') as f:
 - [Face Search](face-search.md) - Build a search system
 - [Detection Module](../modules/detection.md) - Detection options
 - [Recognition Module](../modules/recognition.md) - Recognition details
+- [Head Pose Module](../modules/headpose.md) - Head orientation estimation

@@ -156,6 +156,20 @@ class GazeWeights(str, Enum):
     MOBILEONE_S0 = "gaze_mobileone_s0"
 
 
+class HeadPoseWeights(str, Enum):
+    """
+    Head pose estimation models using 6D rotation representation.
+    Trained on 300W-LP dataset, evaluated on AFLW2000.
+    https://github.com/yakhyo/head-pose-estimation
+    """
+    RESNET18           = "headpose_resnet18"
+    RESNET34           = "headpose_resnet34"
+    RESNET50           = "headpose_resnet50"
+    MOBILENET_V2       = "headpose_mobilenetv2"
+    MOBILENET_V3_SMALL = "headpose_mobilenetv3_small"
+    MOBILENET_V3_LARGE = "headpose_mobilenetv3_large"
+
+
 class ParsingWeights(str, Enum):
     """
     Face Parsing: Semantic Segmentation of Facial Components.
@@ -346,6 +360,32 @@ MODEL_REGISTRY: dict[Enum, ModelInfo] = {
     GazeWeights.MOBILEONE_S0: ModelInfo(
         url='https://github.com/yakhyo/gaze-estimation/releases/download/weights/mobileone_s0_gaze.onnx',
         sha256='8b4fdc4e3da44733c9a82e7776b411e4a39f94e8e285aee0fc85a548a55f7d9f'
+    ),
+
+    # Head Pose
+    HeadPoseWeights.RESNET18: ModelInfo(
+        url='https://github.com/yakhyo/head-pose-estimation/releases/download/weights/resnet18.onnx',
+        sha256='61c34e877989412980d1ea80c52391250b074abc00d19a6100de5c8e999212ee'
+    ),
+    HeadPoseWeights.RESNET34: ModelInfo(
+        url='https://github.com/yakhyo/head-pose-estimation/releases/download/weights/resnet34.onnx',
+        sha256='8da9f2ce4810298ebea68bd85fba1b6bd11716060c10534596f46be52cc908c9'
+    ),
+    HeadPoseWeights.RESNET50: ModelInfo(
+        url='https://github.com/yakhyo/head-pose-estimation/releases/download/weights/resnet50.onnx',
+        sha256='50c74d57b7663361b8ede83b0e4122546171119ef502ec55b790dbd7fc360260'
+    ),
+    HeadPoseWeights.MOBILENET_V2: ModelInfo(
+        url='https://github.com/yakhyo/head-pose-estimation/releases/download/weights/mobilenetv2.onnx',
+        sha256='1e902872868e483bd0e4f8f4a8ff2a4d61c2ccbca9dadf748e5479b5cc86a9e9'
+    ),
+    HeadPoseWeights.MOBILENET_V3_SMALL: ModelInfo(
+        url='https://github.com/yakhyo/head-pose-estimation/releases/download/weights/mobilenetv3_small.onnx',
+        sha256='e8ae4d932b3d13221638fc72e171603e020c6da28b770753f76146867f40e190'
+    ),
+    HeadPoseWeights.MOBILENET_V3_LARGE: ModelInfo(
+        url='https://github.com/yakhyo/head-pose-estimation/releases/download/weights/mobilenetv3_large.onnx',
+        sha256='3a68815fa00aba41ddc4e014bf631b637caba8619df71160383f1fee8c15a3c9'
     ),
 
     # Parsing
