@@ -24,7 +24,7 @@ import cv2
 
 from uniface import create_detector, create_recognizer
 from uniface.draw import draw_corner_bbox, draw_text_label
-from uniface.indexing import FAISS
+from uniface.stores import FAISS
 
 
 def _draw_face(image, bbox, text: str, color: tuple[int, int, int]) -> None:

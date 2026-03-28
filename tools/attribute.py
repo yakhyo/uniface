@@ -52,12 +52,7 @@ def process_image(
     if not faces:
         return
 
-    bboxes = [f.bbox for f in faces]
-    scores = [f.confidence for f in faces]
-    landmarks = [f.landmarks for f in faces]
-    draw_detections(
-        image=image, bboxes=bboxes, scores=scores, landmarks=landmarks, vis_threshold=threshold, corner_bbox=True
-    )
+    draw_detections(image=image, faces=faces, vis_threshold=threshold, corner_bbox=True)
 
     for i, face in enumerate(faces):
         result = age_gender.predict(image, face)
@@ -104,12 +99,7 @@ def process_video(
         frame_count += 1
         faces = detector.detect(frame)
 
-        bboxes = [f.bbox for f in faces]
-        scores = [f.confidence for f in faces]
-        landmarks = [f.landmarks for f in faces]
-        draw_detections(
-            image=frame, bboxes=bboxes, scores=scores, landmarks=landmarks, vis_threshold=threshold, corner_bbox=True
-        )
+        draw_detections(image=frame, faces=faces, vis_threshold=threshold, corner_bbox=True)
 
         for face in faces:
             result = age_gender.predict(frame, face)
@@ -143,12 +133,7 @@ def run_camera(detector, age_gender, camera_id: int = 0, threshold: float = 0.6)
 
         faces = detector.detect(frame)
 
-        bboxes = [f.bbox for f in faces]
-        scores = [f.confidence for f in faces]
-        landmarks = [f.landmarks for f in faces]
-        draw_detections(
-            image=frame, bboxes=bboxes, scores=scores, landmarks=landmarks, vis_threshold=threshold, corner_bbox=True
-        )
+        draw_detections(image=frame, faces=faces, vis_threshold=threshold, corner_bbox=True)
 
         for face in faces:
             result = age_gender.predict(frame, face)
