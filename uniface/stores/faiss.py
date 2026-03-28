@@ -12,9 +12,9 @@ import numpy as np
 
 from uniface.log import Logger
 
-__all__ = ['FAISS']
+from .base import BaseStore, Metadata
 
-Metadata = dict[str, Any]
+__all__ = ['FAISS']
 
 
 def _import_faiss():
@@ -34,7 +34,7 @@ def _import_faiss():
     return faiss
 
 
-class FAISS:
+class FAISS(BaseStore):
     """FAISS vector store using IndexFlatIP (inner product).
 
     Vectors must be L2-normalised **before** being added so that inner
@@ -49,7 +49,7 @@ class FAISS:
         db_path: Directory for persisting the index and metadata.
 
     Example:
-        >>> from uniface.indexing import FAISS
+        >>> from uniface.stores import FAISS
         >>> store = FAISS(embedding_size=512, db_path='./my_index')
         >>> store.add(embedding, {'person_id': '001', 'name': 'Alice'})
         >>> result, score = store.search(query_embedding)

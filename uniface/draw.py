@@ -232,9 +232,10 @@ def draw_text_label(
 def draw_detections(
     *,
     image: np.ndarray,
-    bboxes: list[np.ndarray] | list[list[float]],
-    scores: np.ndarray | list[float],
-    landmarks: list[np.ndarray] | list[list[list[float]]],
+    faces: list[Face] | None = None,
+    bboxes: list[np.ndarray] | list[list[float]] | None = None,
+    scores: np.ndarray | list[float] | None = None,
+    landmarks: list[np.ndarray] | list[list[list[float]]] | None = None,
     vis_threshold: float = 0.6,
     draw_score: bool = False,
     corner_bbox: bool = True,
@@ -243,17 +244,31 @@ def draw_detections(
 
     Modifies the image in-place.
 
+    Accepts either a list of :class:`Face` objects (preferred) or separate
+    lists of bboxes, scores, and landmarks for backward compatibility.
+
     Args:
         image: Input image to draw on (modified in-place).
+        faces: List of Face objects from detection. When provided,
+            ``bboxes``, ``scores``, and ``landmarks`` are ignored.
         bboxes: List of bounding boxes in xyxy format ``[x1, y1, x2, y2]``.
         scores: List of confidence scores.
         landmarks: List of landmark sets with shape ``(5, 2)``.
         vis_threshold: Confidence threshold for filtering. Defaults to 0.6.
         draw_score: Whether to draw confidence scores. Defaults to False.
         corner_bbox: Use corner-style bounding boxes. Defaults to True.
-    """
 
-    # Adaptive line thickness
+    Examples:
+        >>> draw_detections(image=image, faces=faces)
+        >>> draw_detections(image=image, faces=faces, vis_threshold=0.7, draw_score=True)
+    """
+    if faces is not None:
+        bboxes = [f.bbox for f in faces]
+        scores = [f.confidence for f in faces]
+        landmarks = [f.landmarks for f in faces]
+    elif bboxes is None or scores is None or landmarks is None:
+        raise ValueError('Provide either faces or all of bboxes, scores, and landmarks')
+
     line_thickness = max(round(sum(image.shape[:2]) / 2 * 0.003), 2)
 
     for i, score in enumerate(scores):
@@ -262,13 +277,11 @@ def draw_detections(
 
         bbox = np.array(bboxes[i], dtype=np.int32)
 
-        # Draw bounding box
         if corner_bbox:
             draw_corner_bbox(image, bbox, color=(0, 255, 0), thickness=line_thickness, proportion=0.2)
         else:
             cv2.rectangle(image, tuple(bbox[:2]), tuple(bbox[2:]), (0, 255, 0), line_thickness)
 
-        # Draw confidence score label
         if draw_score:
             font_scale = max(0.4, min(0.7, (bbox[3] - bbox[1]) / 200))
             draw_text_label(
@@ -281,7 +294,6 @@ def draw_detections(
                 font_scale=font_scale,
             )
 
-        # Draw landmarks
         landmark_set = np.array(landmarks[i], dtype=np.int32)
         for j, point in enumerate(landmark_set):
             cv2.circle(image, tuple(point), line_thickness + 1, _LANDMARK_COLORS[j % len(_LANDMARK_COLORS)], -1)

@@ -4,6 +4,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 import numpy as np
 
 from uniface.attribute.base import Attribute
@@ -13,6 +15,8 @@ from uniface.recognition.base import BaseRecognizer
 from uniface.types import Face
 
 __all__ = ['FaceAnalyzer']
+
+_UNSET: Any = object()
 
 
 class FaceAnalyzer:
@@ -27,35 +31,52 @@ class FaceAnalyzer:
     via the ``attributes`` list.  Each predictor's ``predict(image, face)``
     is called once per detected face, enriching the :class:`Face` in-place.
 
-    Args:
-        detector: Face detector instance for detecting faces in images.
-        recognizer: Optional face recognizer for extracting embeddings.
-        attributes: Optional list of ``Attribute`` predictors to run on
-            each detected face (e.g. ``[AgeGender(), FairFace(), Emotion()]``).
+    When called with no arguments, uses SCRFD (500M) for detection and
+    ArcFace (MobileNet) for recognition — the smallest and fastest variants.
 
-    Example:
-        >>> from uniface import RetinaFace, ArcFace, AgeGender, FaceAnalyzer
-        >>> detector = RetinaFace()
-        >>> recognizer = ArcFace()
-        >>> analyzer = FaceAnalyzer(detector, recognizer=recognizer, attributes=[AgeGender()])
+    Args:
+        detector: Face detector instance. Defaults to ``SCRFD(SCRFD_500M_KPS)``.
+        recognizer: Face recognizer for extracting embeddings.
+            Defaults to ``ArcFace(MNET)``. Pass ``None`` to disable recognition.
+        attributes: Optional list of ``Attribute`` predictors to run on
+            each detected face (e.g. ``[AgeGender()]``).
+
+    Examples:
+        >>> from uniface import FaceAnalyzer
+        >>> analyzer = FaceAnalyzer()
+        >>> faces = analyzer.analyze(image)
+
+        >>> from uniface import FaceAnalyzer, AgeGender
+        >>> analyzer = FaceAnalyzer(attributes=[AgeGender()])
         >>> faces = analyzer.analyze(image)
     """
 
     def __init__(
         self,
-        detector: BaseDetector,
-        recognizer: BaseRecognizer | None = None,
+        detector: BaseDetector | None = None,
+        recognizer: BaseRecognizer | None = _UNSET,
         attributes: list[Attribute] | None = None,
     ) -> None:
+        if detector is None:
+            from uniface.constants import SCRFDWeights
+            from uniface.detection import SCRFD
+
+            detector = SCRFD(model_name=SCRFDWeights.SCRFD_500M_KPS)
+
+        if recognizer is _UNSET:
+            from uniface.recognition import ArcFace
+
+            recognizer = ArcFace()
+
         self.detector = detector
         self.recognizer = recognizer
         self.attributes: list[Attribute] = attributes or []
 
         Logger.info(f'Initialized FaceAnalyzer with detector={detector.__class__.__name__}')
         if recognizer:
-            Logger.info(f'  - Recognition enabled: {recognizer.__class__.__name__}')
+            Logger.info(f'Recognition enabled: {recognizer.__class__.__name__}')
         for attr in self.attributes:
-            Logger.info(f'  - Attribute enabled: {attr.__class__.__name__}')
+            Logger.info(f'Attribute enabled: {attr.__class__.__name__}')
 
     def analyze(self, image: np.ndarray) -> list[Face]:
         """Analyze faces in an image.
@@ -76,17 +97,17 @@ class FaceAnalyzer:
             if self.recognizer is not None:
                 try:
                     face.embedding = self.recognizer.get_normalized_embedding(image, face.landmarks)
-                    Logger.debug(f'  Face {idx + 1}: Extracted embedding with shape {face.embedding.shape}')
+                    Logger.debug(f'Face {idx + 1}: Extracted embedding with shape {face.embedding.shape}')
                 except Exception as e:
-                    Logger.warning(f'  Face {idx + 1}: Failed to extract embedding: {e}')
+                    Logger.warning(f'Face {idx + 1}: Failed to extract embedding: {e}')
 
             for attr in self.attributes:
                 attr_name = attr.__class__.__name__
                 try:
                     attr.predict(image, face)
-                    Logger.debug(f'  Face {idx + 1}: {attr_name} prediction succeeded')
+                    Logger.debug(f'Face {idx + 1}: {attr_name} prediction succeeded')
                 except Exception as e:
-                    Logger.warning(f'  Face {idx + 1}: {attr_name} prediction failed: {e}')
+                    Logger.warning(f'Face {idx + 1}: {attr_name} prediction failed: {e}')
 
         Logger.info(f'Analysis complete: {len(faces)} face(s) processed')
         return faces

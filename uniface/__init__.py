@@ -30,7 +30,7 @@ from __future__ import annotations
 
 __license__ = 'MIT'
 __author__ = 'Yakhyokhuja Valikhujaev'
-__version__ = '3.2.0'
+__version__ = '3.3.0'
 
 import contextlib
 
@@ -60,7 +60,7 @@ from .types import AttributeResult, EmotionResult, Face, GazeResult, HeadPoseRes
 
 # Optional: FAISS vector store (requires `pip install faiss-cpu`)
 with contextlib.suppress(ImportError):
-    from .indexing import FAISS
+    from .stores import FAISS
 
 __all__ = [
     # Metadata
@@ -114,7 +114,7 @@ __all__ = [
     'BYTETracker',
     # Privacy
     'BlurFace',
-    # Indexing (optional)
+    # Stores (optional)
     'FAISS',
     # Utilities
     'Logger',
