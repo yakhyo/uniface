@@ -26,12 +26,7 @@ while True:
 
     faces = detector.detect(frame)
 
-    draw_detections(
-        image=frame,
-        bboxes=[f.bbox for f in faces],
-        scores=[f.confidence for f in faces],
-        landmarks=[f.landmarks for f in faces]
-    )
+    draw_detections(image=frame, faces=faces)
 
     cv2.imshow("Face Detection", frame)
 

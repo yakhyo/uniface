@@ -6,7 +6,7 @@ This guide covers all installation options for UniFace.
 
 ## Requirements
 
-- **Python**: 3.11 or higher
+- **Python**: 3.10 or higher
 - **Operating Systems**: macOS, Linux, Windows
 
 ---
@@ -70,16 +70,16 @@ print("Available providers:", ort.get_available_providers())
 
 ---
 
-### FAISS Vector Indexing
+### FAISS Vector Store
 
-For fast multi-identity face search using a FAISS index:
+For fast multi-identity face search using a FAISS vector store:
 
 ```bash
 pip install faiss-cpu   # CPU
 pip install faiss-gpu   # NVIDIA GPU (CUDA)
 ```
 
-See the [Indexing module](modules/indexing.md) for usage.
+See the [Stores module](modules/stores.md) for usage.
 
 ---
 
@@ -128,7 +128,7 @@ UniFace has minimal dependencies:
 
 | Package | Install extra | Purpose |
 |---------|---------------|---------|
-| `faiss-cpu` / `faiss-gpu` | `pip install faiss-cpu` | FAISS vector indexing |
+| `faiss-cpu` / `faiss-gpu` | `pip install faiss-cpu` | FAISS vector store |
 | `onnxruntime-gpu` | `uniface[gpu]` | CUDA acceleration |
 | `torch` | `pip install torch` | Emotion model uses TorchScript |
 | `torchvision` | `pip install torchvision` | Faster NMS for YOLO detectors |
@@ -159,11 +159,11 @@ print("Installation successful!")
 
 ### Import Errors
 
-If you encounter import errors, ensure you're using Python 3.11+:
+If you encounter import errors, ensure you're using Python 3.10+:
 
 ```bash
 python --version
-# Should show: Python 3.11.x or higher
+# Should show: Python 3.10.x or higher
 ```
 
 ### Model Download Issues

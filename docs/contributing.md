@@ -32,7 +32,7 @@ ruff check . --fix
 **Guidelines:**
 
 - Line length: 120
-- Python 3.11+ type hints
+- Python 3.10+ type hints
 - Google-style docstrings
 
 ---

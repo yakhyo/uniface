@@ -43,10 +43,7 @@ def process_image(
         from uniface.draw import draw_detections
 
         preview = image.copy()
-        bboxes = [face.bbox for face in faces]
-        scores = [face.confidence for face in faces]
-        landmarks = [face.landmarks for face in faces]
-        draw_detections(preview, bboxes, scores, landmarks)
+        draw_detections(image=preview, faces=faces)
 
         cv2.imshow('Detections (Press any key to continue)', preview)
         cv2.waitKey(0)

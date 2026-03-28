@@ -1,6 +1,6 @@
 [project]
 name = "uniface"
-version = "3.2.0"
+version = "3.3.0"
 description = "UniFace: A Comprehensive Library for Face Detection, Recognition, Tracking, Landmark Analysis, Face Parsing, Gaze Estimation, Age, and Gender Detection"
 readme = "README.md"
 license = "MIT"
@@ -9,7 +9,7 @@ maintainers = [
     { name = "Yakhyokhuja Valikhujaev", email = "yakhyo9696@gmail.com" },
 ]
 
-requires-python = ">=3.11,<3.15"
+requires-python = ">=3.10,<3.15"
 keywords = [
     "face-detection",
     "face-recognition",
@@ -34,6 +34,7 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
@@ -44,7 +45,7 @@ dependencies = [
     "numpy>=1.21.0",
     "opencv-python>=4.5.0",
     "onnxruntime>=1.16.0",
-    "scikit-image>=0.26.0",
+    "scikit-image>=0.22.0",
     "scipy>=1.7.0",
     "requests>=2.28.0",
     "tqdm>=4.64.0",
@@ -73,7 +74,7 @@ uniface = ["py.typed"]
 
 [tool.ruff]
 line-length = 120
-target-version = "py311"
+target-version = "py310"
 exclude = [
     ".git",
     ".ruff_cache",

@@ -71,7 +71,13 @@ def estimate_norm(
     alignment[:, 0] += diff_x
 
     # Compute the transformation matrix
-    transform = SimilarityTransform.from_estimate(landmark, alignment)
+    try:
+        # scikit-image >= 0.26
+        transform = SimilarityTransform.from_estimate(landmark, alignment)
+    except AttributeError:
+        # scikit-image < 0.26 (e.g. Python 3.10 with older scikit-image)
+        transform = SimilarityTransform()
+        transform.estimate(landmark, alignment)
 
     matrix = transform.params[0:2, :]
     inverse_matrix = np.linalg.inv(transform.params)[0:2, :]

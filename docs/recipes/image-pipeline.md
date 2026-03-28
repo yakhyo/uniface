@@ -48,12 +48,7 @@ def process_image(image_path):
         print(f"  Face {i+1}: {attrs.sex}, {attrs.age} years old")
 
     # Visualize
-    draw_detections(
-        image=image,
-        bboxes=[f.bbox for f in faces],
-        scores=[f.confidence for f in faces],
-        landmarks=[f.landmarks for f in faces]
-    )
+    draw_detections(image=image, faces=faces)
 
     return image, results
 

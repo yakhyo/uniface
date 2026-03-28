@@ -27,12 +27,17 @@ from uniface.draw import draw_detections
 from uniface.recognition import ArcFace
 
 
-def draw_face_info(image, face, face_id):
-    """Draw face ID and attributes above bounding box."""
+def draw_face_info(image, face):
+    """Draw face attributes above bounding box."""
     x1, y1, _x2, y2 = map(int, face.bbox)
-    lines = [f'ID: {face_id}', f'Conf: {face.confidence:.2f}']
-    if face.age and face.sex:
+    lines = []
+    if face.age is not None and face.sex is not None:
         lines.append(f'{face.sex}, {face.age}y')
+    if face.emotion is not None:
+        lines.append(face.emotion)
+
+    if not lines:
+        return
 
     for i, line in enumerate(lines):
         y_pos = y1 - 10 - (len(lines) - 1 - i) * 25
@@ -95,13 +100,10 @@ def process_image(analyzer, image_path: str, save_dir: str = 'outputs', show_sim
             status = 'Same' if sim > 0.4 else 'Different'
             print(f'  Face {i + 1} ↔ Face {j + 1}: {sim:.3f} ({status})')
 
-    bboxes = [f.bbox for f in faces]
-    scores = [f.confidence for f in faces]
-    landmarks = [f.landmarks for f in faces]
-    draw_detections(image=image, bboxes=bboxes, scores=scores, landmarks=landmarks, corner_bbox=True)
+    draw_detections(image=image, faces=faces, corner_bbox=True)
 
-    for i, face in enumerate(faces, 1):
-        draw_face_info(image, face, i)
+    for face in faces:
+        draw_face_info(image, face)
 
     os.makedirs(save_dir, exist_ok=True)
     output_path = os.path.join(save_dir, f'{Path(image_path).stem}_analysis.jpg')
@@ -137,13 +139,10 @@ def process_video(analyzer, video_path: str, save_dir: str = 'outputs'):
         frame_count += 1
         faces = analyzer.analyze(frame)
 
-        bboxes = [f.bbox for f in faces]
-        scores = [f.confidence for f in faces]
-        landmarks = [f.landmarks for f in faces]
-        draw_detections(image=frame, bboxes=bboxes, scores=scores, landmarks=landmarks, corner_bbox=True)
+        draw_detections(image=frame, faces=faces, corner_bbox=True)
 
-        for i, face in enumerate(faces, 1):
-            draw_face_info(frame, face, i)
+        for face in faces:
+            draw_face_info(frame, face)
 
         cv2.putText(frame, f'Faces: {len(faces)}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         out.write(frame)
@@ -173,13 +172,10 @@ def run_camera(analyzer, camera_id: int = 0):
 
         faces = analyzer.analyze(frame)
 
-        bboxes = [f.bbox for f in faces]
-        scores = [f.confidence for f in faces]
-        landmarks = [f.landmarks for f in faces]
-        draw_detections(image=frame, bboxes=bboxes, scores=scores, landmarks=landmarks, corner_bbox=True)
+        draw_detections(image=frame, faces=faces, corner_bbox=True)
 
-        for i, face in enumerate(faces, 1):
-            draw_face_info(frame, face, i)
+        for face in faces:
+            draw_face_info(frame, face)
 
         cv2.putText(frame, f'Faces: {len(faces)}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         cv2.imshow('Face Analyzer', frame)
