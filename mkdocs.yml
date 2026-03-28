@@ -154,7 +154,7 @@ nav:
       - Head Pose: modules/headpose.md
       - Anti-Spoofing: modules/spoofing.md
       - Privacy: modules/privacy.md
-      - Indexing: modules/indexing.md
+      - Stores: modules/stores.md
   - Guides:
       - Overview: concepts/overview.md
       - Inputs & Outputs: concepts/inputs-outputs.md
