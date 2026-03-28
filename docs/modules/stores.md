@@ -1,4 +1,4 @@
-# Indexing
+# Stores
 
 FAISS-backed vector store for fast similarity search over embeddings.
 
@@ -12,7 +12,7 @@ FAISS-backed vector store for fast similarity search over embeddings.
 ## FAISS
 
 ```python
-from uniface.indexing import FAISS
+from uniface.stores import FAISS
 ```
 
 A thin wrapper around a FAISS `IndexFlatIP` (inner-product) index. Vectors
@@ -134,7 +134,7 @@ loaded = store.load()  # True if files exist
 import cv2
 from uniface.detection import RetinaFace
 from uniface.recognition import ArcFace
-from uniface.indexing import FAISS
+from uniface.stores import FAISS
 
 detector = RetinaFace()
 recognizer = ArcFace()

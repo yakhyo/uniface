@@ -264,10 +264,8 @@ from uniface.draw import draw_detections
 
 draw_detections(
     image=image,
-    bboxes=[f.bbox for f in faces],
-    scores=[f.confidence for f in faces],
-    landmarks=[f.landmarks for f in faces],
-    vis_threshold=0.6
+    faces=faces,
+    vis_threshold=0.6,
 )
 
 cv2.imwrite("result.jpg", image)

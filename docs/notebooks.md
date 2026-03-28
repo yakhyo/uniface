@@ -19,6 +19,7 @@ Run UniFace examples directly in your browser with Google Colab, or download and
 | [Face Segmentation](https://github.com/yakhyo/uniface/blob/main/examples/09_face_segmentation.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/09_face_segmentation.ipynb) | Face segmentation with XSeg |
 | [Face Vector Store](https://github.com/yakhyo/uniface/blob/main/examples/10_face_vector_store.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/10_face_vector_store.ipynb) | FAISS-backed face database |
 | [Head Pose Estimation](https://github.com/yakhyo/uniface/blob/main/examples/11_head_pose_estimation.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/11_head_pose_estimation.ipynb) | 3D head orientation estimation |
+| [Face Recognition](https://github.com/yakhyo/uniface/blob/main/examples/12_face_recognition.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/12_face_recognition.ipynb) | Standalone face recognition pipeline |
 
 ---
 

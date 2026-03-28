@@ -33,7 +33,7 @@ graph TB
         TRK[BYTETracker]
     end
 
-    subgraph Indexing
+    subgraph Stores
         IDX[FAISS Vector Store]
     end
 
@@ -124,7 +124,7 @@ uniface/
 ├── headpose/       # Head pose estimation
 ├── spoofing/       # Anti-spoofing
 ├── privacy/        # Face anonymization
-├── indexing/       # Vector indexing (FAISS)
+├── stores/         # Vector stores (FAISS)
 ├── types.py        # Dataclasses (Face, GazeResult, HeadPoseResult, etc.)
 ├── constants.py    # Model weights and URLs
 ├── model_store.py  # Model download and caching

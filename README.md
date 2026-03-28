@@ -33,7 +33,7 @@
 - **Gaze Estimation** — Real-time gaze direction with MobileGaze
 - **Head Pose Estimation** — 3D head orientation (pitch, yaw, roll) with 6D rotation representation
 - **Attribute Analysis** — Age, gender, race (FairFace), and emotion
-- **Vector Indexing** — FAISS-backed embedding store for fast multi-identity search
+- **Vector Store** — FAISS-backed embedding store for fast multi-identity search
 - **Anti-Spoofing** — Face liveness detection with MiniFASNet
 - **Face Anonymization** — 5 blur methods for privacy protection
 - **Hardware Acceleration** — ARM64 (Apple Silicon), CUDA (NVIDIA), CPU
@@ -61,7 +61,7 @@ git clone https://github.com/yakhyo/uniface.git
 cd uniface && pip install -e .
 ```
 
-**FAISS vector indexing**
+**FAISS vector store**
 
 ```bash
 pip install faiss-cpu   # or faiss-gpu for CUDA
@@ -127,14 +127,10 @@ for face in faces:
 
 ```python
 import cv2
-from uniface.analyzer import FaceAnalyzer
-from uniface.detection import RetinaFace
-from uniface.recognition import ArcFace
+from uniface import FaceAnalyzer
 
-detector = RetinaFace()
-recognizer = ArcFace()
-
-analyzer = FaceAnalyzer(detector, recognizer=recognizer)
+# Zero-config: uses SCRFD (500M) + ArcFace (MobileNet) by default
+analyzer = FaceAnalyzer()
 
 image = cv2.imread("photo.jpg")
 if image is None:
@@ -146,51 +142,17 @@ for face in faces:
     print(face.bbox, face.embedding.shape if face.embedding is not None else None)
 ```
 
----
-
-## Execution Providers (ONNX Runtime)
+With attributes:
 
 ```python
-from uniface.detection import RetinaFace
+from uniface import FaceAnalyzer, AgeGender
 
-# Force CPU-only inference
-detector = RetinaFace(providers=["CPUExecutionProvider"])
+analyzer = FaceAnalyzer(attributes=[AgeGender()])
+faces = analyzer.analyze(image)
+
+for face in faces:
+    print(f"{face.sex}, {face.age}y, embedding={face.embedding.shape}")
 ```
-
-See more in the docs:
-https://yakhyo.github.io/uniface/concepts/execution-providers/
-
----
-
-## Documentation
-
-Full documentation: https://yakhyo.github.io/uniface/
-
-| Resource | Description |
-|----------|-------------|
-| [Quickstart](https://yakhyo.github.io/uniface/quickstart/) | Get up and running in 5 minutes |
-| [Model Zoo](https://yakhyo.github.io/uniface/models/) | All models, benchmarks, and selection guide |
-| [API Reference](https://yakhyo.github.io/uniface/modules/detection/) | Detailed module documentation |
-| [Tutorials](https://yakhyo.github.io/uniface/recipes/image-pipeline/) | Step-by-step workflow examples |
-| [Guides](https://yakhyo.github.io/uniface/concepts/overview/) | Architecture and design principles |
-| [Datasets](https://yakhyo.github.io/uniface/datasets/) | Training data and evaluation benchmarks |
-
----
-
-## Datasets
-
-| Task | Training Dataset | Models |
-|------|-----------------|--------|
-| Detection | WIDER FACE | RetinaFace, SCRFD, YOLOv5-Face, YOLOv8-Face |
-| Recognition | MS1MV2 | MobileFace, SphereFace |
-| Recognition | WebFace600K | ArcFace |
-| Recognition | WebFace4M / 12M | AdaFace |
-| Gaze | Gaze360 | MobileGaze |
-| Head Pose | 300W-LP | HeadPose (ResNet, MobileNet) |
-| Parsing | CelebAMask-HQ | BiSeNet |
-| Attributes | CelebA, FairFace, AffectNet | AgeGender, FairFace, Emotion |
-
-> See [Datasets documentation](https://yakhyo.github.io/uniface/datasets/) for download links, benchmarks, and details.
 
 ---
 
@@ -209,6 +171,53 @@ Full documentation: https://yakhyo.github.io/uniface/
 | [09_face_segmentation.ipynb](examples/09_face_segmentation.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/09_face_segmentation.ipynb) | Face segmentation with XSeg |
 | [10_face_vector_store.ipynb](examples/10_face_vector_store.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/10_face_vector_store.ipynb) | FAISS-backed face database |
 | [11_head_pose_estimation.ipynb](examples/11_head_pose_estimation.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/11_head_pose_estimation.ipynb) | Head pose estimation (pitch, yaw, roll) |
+| [12_face_recognition.ipynb](examples/12_face_recognition.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/12_face_recognition.ipynb) | Standalone face recognition pipeline |
+
+---
+
+## Documentation
+
+Full documentation: https://yakhyo.github.io/uniface/
+
+| Resource | Description |
+|----------|-------------|
+| [Quickstart](https://yakhyo.github.io/uniface/quickstart/) | Get up and running in 5 minutes |
+| [Model Zoo](https://yakhyo.github.io/uniface/models/) | All models, benchmarks, and selection guide |
+| [API Reference](https://yakhyo.github.io/uniface/modules/detection/) | Detailed module documentation |
+| [Tutorials](https://yakhyo.github.io/uniface/recipes/image-pipeline/) | Step-by-step workflow examples |
+| [Guides](https://yakhyo.github.io/uniface/concepts/overview/) | Architecture and design principles |
+| [Datasets](https://yakhyo.github.io/uniface/datasets/) | Training data and evaluation benchmarks |
+
+---
+
+## Execution Providers (ONNX Runtime)
+
+```python
+from uniface.detection import RetinaFace
+
+# Force CPU-only inference
+detector = RetinaFace(providers=["CPUExecutionProvider"])
+```
+
+See more in the docs:
+https://yakhyo.github.io/uniface/concepts/execution-providers/
+
+---
+
+## Datasets
+
+| Task | Training Dataset | Models |
+|------|-----------------|--------|
+| Detection | WIDER FACE | RetinaFace, SCRFD, YOLOv5-Face, YOLOv8-Face |
+| Recognition | MS1MV2 | MobileFace, SphereFace |
+| Recognition | WebFace600K | ArcFace |
+| Recognition | WebFace4M / 12M | AdaFace |
+| Gaze | Gaze360 | MobileGaze |
+| Head Pose | 300W-LP | HeadPose (ResNet, MobileNet) |
+| Parsing | CelebAMask-HQ | BiSeNet |
+| Attributes | CelebA, FairFace, AffectNet | AgeGender, FairFace, Emotion |
+
+> See [Datasets documentation](https://yakhyo.github.io/uniface/datasets/) for download links, benchmarks, and details.
 
 ---
 

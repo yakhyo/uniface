@@ -201,17 +201,11 @@ For drawing detections, filter by confidence:
 ```python
 from uniface.draw import draw_detections
 
-# Only draw high-confidence detections
-bboxes = [f.bbox for f in faces if f.confidence > 0.7]
-scores = [f.confidence for f in faces if f.confidence > 0.7]
-landmarks = [f.landmarks for f in faces if f.confidence > 0.7]
-
+# Only draw high-confidence detections (confidence ≥ vis_threshold)
 draw_detections(
     image=image,
-    bboxes=bboxes,
-    scores=scores,
-    landmarks=landmarks,
-    vis_threshold=0.6  # Additional visualization filter
+    faces=faces,
+    vis_threshold=0.7,
 )
 ```
 

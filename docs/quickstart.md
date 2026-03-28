@@ -54,19 +54,8 @@ detector = RetinaFace()
 image = cv2.imread("photo.jpg")
 faces = detector.detect(image)
 
-# Extract visualization data
-bboxes = [f.bbox for f in faces]
-scores = [f.confidence for f in faces]
-landmarks = [f.landmarks for f in faces]
-
 # Draw on image
-draw_detections(
-    image=image,
-    bboxes=bboxes,
-    scores=scores,
-    landmarks=landmarks,
-    vis_threshold=0.6,
-)
+draw_detections(image=image, faces=faces, vis_threshold=0.6)
 
 # Save result
 cv2.imwrite("output.jpg", image)
@@ -372,10 +361,7 @@ while True:
 
     faces = detector.detect(frame)
 
-    bboxes = [f.bbox for f in faces]
-    scores = [f.confidence for f in faces]
-    landmarks = [f.landmarks for f in faces]
-    draw_detections(image=frame, bboxes=bboxes, scores=scores, landmarks=landmarks)
+    draw_detections(image=frame, faces=faces)
 
     cv2.imshow("UniFace - Press 'q' to quit", frame)
 
@@ -507,7 +493,7 @@ from uniface.privacy import BlurFace
 from uniface.spoofing import MiniFASNet
 from uniface.tracking import BYTETracker
 from uniface.analyzer import FaceAnalyzer
-from uniface.indexing import FAISS  # pip install faiss-cpu
+from uniface.stores import FAISS  # pip install faiss-cpu
 from uniface.draw import draw_detections, draw_tracks
 ```
 

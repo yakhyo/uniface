@@ -52,7 +52,7 @@ python tools/search.py --reference ref.jpg --source 0  # webcam
 ## Vector Search (FAISS index)
 
 For identifying faces against a database of many known people, use the
-[`FAISS`](../modules/indexing.md) vector store.
+[`FAISS`](../modules/stores.md) vector store.
 
 !!! info "Install extra"
 `bash
@@ -80,7 +80,7 @@ import cv2
 from pathlib import Path
 from uniface.detection import RetinaFace
 from uniface.recognition import ArcFace
-from uniface.indexing import FAISS
+from uniface.stores import FAISS
 
 detector = RetinaFace()
 recognizer = ArcFace()
@@ -112,7 +112,7 @@ python tools/faiss_search.py build --faces-dir dataset/ --db-path ./my_index
 import cv2
 from uniface.detection import RetinaFace
 from uniface.recognition import ArcFace
-from uniface.indexing import FAISS
+from uniface.stores import FAISS
 
 detector = RetinaFace()
 recognizer = ArcFace()
@@ -143,7 +143,7 @@ python tools/faiss_search.py run --db-path ./my_index --source 0  # webcam
 ### Manage the index
 
 ```python
-from uniface.indexing import FAISS
+from uniface.stores import FAISS
 
 store = FAISS(db_path="./my_index")
 store.load()
@@ -160,7 +160,7 @@ store.save()
 
 ## See Also
 
-- [Indexing Module](../modules/indexing.md) - Full `FAISS` API reference
+- [Stores Module](../modules/stores.md) - Full `FAISS` API reference
 - [Recognition Module](../modules/recognition.md) - Face recognition details
 - [Video & Webcam](video-webcam.md) - Real-time processing
 - [Concepts: Thresholds](../concepts/thresholds-calibration.md) - Tuning similarity thresholds
