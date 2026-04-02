@@ -47,6 +47,38 @@ pre-commit run --all-files
 
 ---
 
+## Commit Messages
+
+We follow [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+<type>: <short description>
+```
+
+| Type         | When to use                                      |
+|--------------|--------------------------------------------------|
+| **feat**     | New feature or capability                        |
+| **fix**      | Bug fix                                          |
+| **docs**     | Documentation changes                            |
+| **style**    | Formatting, whitespace (no logic change)         |
+| **refactor** | Code restructuring without changing behavior     |
+| **perf**     | Performance improvement                          |
+| **test**     | Adding or updating tests                         |
+| **build**    | Build system or dependencies                     |
+| **ci**       | CI/CD and pre-commit configuration               |
+| **chore**    | Routine maintenance and tooling                  |
+
+**Examples:**
+
+```
+feat: Add gaze estimation model
+fix: Correct bounding box scaling for non-square images
+ci: Add nbstripout pre-commit hook
+docs: Update installation instructions
+```
+
+---
+
 ## Pull Request Process
 
 1. Fork the repository
