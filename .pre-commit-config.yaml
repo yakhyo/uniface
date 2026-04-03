@@ -18,6 +18,13 @@ repos:
       - id: debug-statements
       - id: check-ast
 
+  # Strip Jupyter notebook outputs
+  - repo: https://github.com/kynan/nbstripout
+    rev: 0.9.1
+    hooks:
+      - id: nbstripout
+        files: ^examples/
+
   # Ruff - Fast Python linter and formatter
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.14.10
