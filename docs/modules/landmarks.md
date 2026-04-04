@@ -2,6 +2,11 @@
 
 Facial landmark detection provides precise localization of facial features.
 
+<figure markdown="span">
+  ![106-Point Landmarks](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/landmarks.jpg){ width="50%" }
+  <figcaption>106-point facial landmark localization</figcaption>
+</figure>
+
 ---
 
 ## Available Models

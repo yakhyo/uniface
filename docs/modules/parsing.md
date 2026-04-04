@@ -2,6 +2,16 @@
 
 Face parsing segments faces into semantic components or face regions.
 
+<figure markdown="span">
+  ![Face Parsing](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/parsing.jpg){ width="80%" }
+  <figcaption>BiSeNet face parsing with 19 semantic component classes</figcaption>
+</figure>
+
+<figure markdown="span">
+  ![Face Segmentation](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/segmentation.jpg){ width="80%" }
+  <figcaption>XSeg face region segmentation mask</figcaption>
+</figure>
+
 ---
 
 ## Available Models

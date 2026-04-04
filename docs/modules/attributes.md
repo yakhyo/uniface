@@ -2,6 +2,11 @@
 
 Facial attribute analysis for age, gender, race, and emotion detection.
 
+<figure markdown="span">
+  ![Age & Gender Prediction](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/age_gender.jpg){ width="100%" }
+  <figcaption>Age and gender prediction with detection bounding boxes</figcaption>
+</figure>
+
 ---
 
 ## Available Models
