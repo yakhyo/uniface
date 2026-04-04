@@ -15,7 +15,7 @@
 
 This library provides unified APIs for:
 - Face detection (RetinaFace, SCRFD, YOLOv5Face, YOLOv8Face)
-- Face recognition (AdaFace, ArcFace, MobileFace, SphereFace)
+- Face recognition (AdaFace, ArcFace, EdgeFace, MobileFace, SphereFace)
 - Face tracking (ByteTrack with Kalman filtering)
 - Facial landmarks (106-point detection)
 - Face parsing (semantic segmentation)
@@ -30,7 +30,7 @@ from __future__ import annotations
 
 __license__ = 'MIT'
 __author__ = 'Yakhyokhuja Valikhujaev'
-__version__ = '3.3.0'
+__version__ = '3.4.0'
 
 import contextlib
 
@@ -53,7 +53,7 @@ from .headpose import HeadPose, create_head_pose_estimator
 from .landmark import Landmark106, create_landmarker
 from .parsing import BiSeNet, XSeg, create_face_parser
 from .privacy import BlurFace
-from .recognition import AdaFace, ArcFace, MobileFace, SphereFace, create_recognizer
+from .recognition import AdaFace, ArcFace, EdgeFace, MobileFace, SphereFace, create_recognizer
 from .spoofing import MiniFASNet, create_spoofer
 from .tracking import BYTETracker
 from .types import AttributeResult, EmotionResult, Face, GazeResult, HeadPoseResult, SpoofingResult
@@ -87,6 +87,7 @@ __all__ = [
     # Recognition models
     'AdaFace',
     'ArcFace',
+    'EdgeFace',
     'MobileFace',
     'SphereFace',
     # Landmark models

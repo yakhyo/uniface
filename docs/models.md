@@ -156,6 +156,24 @@ Face recognition using angular softmax loss.
 
 ---
 
+### EdgeFace
+
+Efficient face recognition designed for edge devices, using EdgeNeXt backbone with optional LoRA compression.
+
+| Model Name      | Backbone | Params | MFLOPs | Size  | LFW    | CALFW  | CPLFW  | CFP-FP | AgeDB-30 |
+| --------------- | -------- | ------ | ------ | ----- | ------ | ------ | ------ | ------ | -------- |
+| `XXS` :material-check-circle: | EdgeNeXt | 1.24M  | 94     | ~5 MB | 99.57% | 94.83% | 90.27% | 93.63% | 94.92%   |
+| `XS_GAMMA_06`   | EdgeNeXt | 1.77M  | 154    | ~7 MB | 99.73% | 95.28% | 91.58% | 94.71% | 96.08%   |
+| `S_GAMMA_05`    | EdgeNeXt | 3.65M  | 306    | ~14 MB | 99.78% | 95.55% | 92.48% | 95.74% | 97.03%  |
+| `BASE`          | EdgeNeXt | 18.2M  | 1399   | ~70 MB | 99.83% | 96.07% | 93.75% | 97.01% | 97.60%  |
+
+!!! info "Training Data & Reference"
+    **Paper**: [EdgeFace: Efficient Face Recognition Model for Edge Devices](https://arxiv.org/abs/2307.01838v2) (IEEE T-BIOM 2024)
+
+    **Source**: [github.com/otroshi/edgeface](https://github.com/otroshi/edgeface) | [github.com/yakhyo/edgeface-onnx](https://github.com/yakhyo/edgeface-onnx)
+
+---
+
 ## Facial Landmark Models
 
 ### 106-Point Landmark Detection

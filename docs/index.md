@@ -36,7 +36,7 @@ ONNX-optimized detectors (RetinaFace, SCRFD, YOLO) with 5-point landmarks.
 
 <div class="feature-card" markdown>
 ### :material-account-check: Face Recognition
-AdaFace, ArcFace, MobileFace, and SphereFace embeddings for identity verification.
+AdaFace, ArcFace, EdgeFace, MobileFace, and SphereFace embeddings for identity verification.
 </div>
 
 <div class="feature-card" markdown>

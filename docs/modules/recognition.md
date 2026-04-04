@@ -15,6 +15,7 @@ Face recognition extracts embeddings for identity verification and face search.
 |-------|----------|------|---------------|
 | **AdaFace** | IR-18/IR-101 | 92-249 MB | 512 |
 | **ArcFace** | MobileNet/ResNet | 8-166 MB | 512 |
+| **EdgeFace** | EdgeNeXt/LoRA | 5-70 MB | 512 |
 | **MobileFace** | MobileNet V2/V3 | 1-10 MB | 512 |
 | **SphereFace** | Sphere20/36 | 50-92 MB | 512 |
 
@@ -115,6 +116,64 @@ recognizer = ArcFace(providers=['CPUExecutionProvider'])
     **Dataset**: Trained on WebFace600K (600K images)
 
     **Accuracy**: IJB-C reported as TAR@FAR=1e-4
+
+---
+
+## EdgeFace
+
+Efficient face recognition designed for edge devices, using an EdgeNeXt backbone with optional LoRA low-rank compression. Competition-winning entry (compact track) at EFaR 2023, IJCB.
+
+### Basic Usage
+
+```python
+from uniface.detection import RetinaFace
+from uniface.recognition import EdgeFace
+
+detector = RetinaFace()
+recognizer = EdgeFace()
+
+# Detect face
+faces = detector.detect(image)
+
+# Extract embedding
+if faces:
+    embedding = recognizer.get_normalized_embedding(image, faces[0].landmarks)
+    print(f"Embedding shape: {embedding.shape}")  # (512,)
+```
+
+### Model Variants
+
+```python
+from uniface.recognition import EdgeFace
+from uniface.constants import EdgeFaceWeights
+
+# Ultra-compact (default)
+recognizer = EdgeFace(model_name=EdgeFaceWeights.XXS)
+
+# Compact with LoRA
+recognizer = EdgeFace(model_name=EdgeFaceWeights.XS_GAMMA_06)
+
+# Small with LoRA
+recognizer = EdgeFace(model_name=EdgeFaceWeights.S_GAMMA_05)
+
+# Full-size
+recognizer = EdgeFace(model_name=EdgeFaceWeights.BASE)
+
+# Force CPU execution
+recognizer = EdgeFace(providers=['CPUExecutionProvider'])
+```
+
+| Variant | Params | MFLOPs | Size | LFW | CALFW | CPLFW | CFP-FP | AgeDB-30 |
+|---------|--------|--------|------|-----|-------|-------|--------|----------|
+| **XXS** :material-check-circle: | 1.24M | 94 | ~5 MB | 99.57% | 94.83% | 90.27% | 93.63% | 94.92% |
+| XS_GAMMA_06 | 1.77M | 154 | ~7 MB | 99.73% | 95.28% | 91.58% | 94.71% | 96.08% |
+| S_GAMMA_05 | 3.65M | 306 | ~14 MB | 99.78% | 95.55% | 92.48% | 95.74% | 97.03% |
+| BASE | 18.2M | 1399 | ~70 MB | 99.83% | 96.07% | 93.75% | 97.01% | 97.60% |
+
+!!! info "Reference"
+    **Paper**: [EdgeFace: Efficient Face Recognition Model for Edge Devices](https://arxiv.org/abs/2307.01838v2) (IEEE T-BIOM 2024)
+
+    **Source**: [github.com/otroshi/edgeface](https://github.com/otroshi/edgeface)
 
 ---
 
@@ -292,9 +351,10 @@ else:
 ```python
 from uniface.recognition import create_recognizer
 
-# Available methods: 'arcface', 'adaface', 'mobileface', 'sphereface'
+# Available methods: 'arcface', 'adaface', 'edgeface', 'mobileface', 'sphereface'
 recognizer = create_recognizer('arcface')
 recognizer = create_recognizer('adaface')
+recognizer = create_recognizer('edgeface')
 ```
 
 ---

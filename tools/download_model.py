@@ -1,9 +1,11 @@
 import argparse
 
 from uniface.constants import (
+    AdaFaceWeights,
     AgeGenderWeights,
     ArcFaceWeights,
     DDAMFNWeights,
+    EdgeFaceWeights,
     HeadPoseWeights,
     LandmarkWeights,
     MobileFaceWeights,
@@ -15,9 +17,11 @@ from uniface.model_store import verify_model_weights
 
 MODEL_TYPES = {
     'retinaface': RetinaFaceWeights,
-    'sphereface': SphereFaceWeights,
-    'mobileface': MobileFaceWeights,
+    'adaface': AdaFaceWeights,
     'arcface': ArcFaceWeights,
+    'edgeface': EdgeFaceWeights,
+    'mobileface': MobileFaceWeights,
+    'sphereface': SphereFaceWeights,
     'scrfd': SCRFDWeights,
     'ddamfn': DDAMFNWeights,
     'agegender': AgeGenderWeights,

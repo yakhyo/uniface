@@ -91,6 +91,12 @@ def test_create_recognizer_sphereface():
     assert recognizer is not None, 'Failed to create SphereFace recognizer'
 
 
+def test_create_recognizer_edgeface():
+    """Test creating an EdgeFace recognizer using factory function."""
+    recognizer = create_recognizer('edgeface')
+    assert recognizer is not None, 'Failed to create EdgeFace recognizer'
+
+
 def test_create_recognizer_invalid_method():
     """
     Test that invalid recognizer method raises an error.

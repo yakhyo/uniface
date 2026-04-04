@@ -26,7 +26,7 @@
 ## Features
 
 - **Face Detection** — RetinaFace, SCRFD, YOLOv5-Face, and YOLOv8-Face with 5-point landmarks
-- **Face Recognition** — ArcFace, MobileFace, and SphereFace embeddings
+- **Face Recognition** — AdaFace, ArcFace, EdgeFace, MobileFace, and SphereFace embeddings
 - **Face Tracking** — Multi-object tracking with [BYTETracker](https://github.com/yakhyo/bytetrack-tracker) for persistent IDs across video frames
 - **Facial Landmarks** — 106-point landmark localization module (separate from 5-point detector landmarks)
 - **Face Parsing** — BiSeNet semantic segmentation (19 classes), XSeg face masking
@@ -242,6 +242,7 @@ https://yakhyo.github.io/uniface/concepts/execution-providers/
 | Recognition | MS1MV2 | MobileFace, SphereFace |
 | Recognition | WebFace600K | ArcFace |
 | Recognition | WebFace4M / 12M | AdaFace |
+| Recognition | MS1MV2 | EdgeFace |
 | Gaze | Gaze360 | MobileGaze |
 | Head Pose | 300W-LP | HeadPose (ResNet, MobileNet) |
 | Parsing | CelebAMask-HQ | BiSeNet |
@@ -273,6 +274,7 @@ If you plan commercial use, verify model license compatibility.
 | Detection | [yolov8-face-onnx-inference](https://github.com/yakhyo/yolov8-face-onnx-inference) | - | YOLOv8-Face ONNX Inference |
 | Tracking | [bytetrack-tracker](https://github.com/yakhyo/bytetrack-tracker) | - | BYTETracker Multi-Object Tracking |
 | Recognition | [face-recognition](https://github.com/yakhyo/face-recognition) | ✓ | MobileFace, SphereFace Training |
+| Recognition | [edgeface-onnx](https://github.com/yakhyo/edgeface-onnx) | - | EdgeFace ONNX Inference |
 | Parsing | [face-parsing](https://github.com/yakhyo/face-parsing) | ✓ | BiSeNet Face Parsing |
 | Parsing | [face-segmentation](https://github.com/yakhyo/face-segmentation) | - | XSeg Face Segmentation |
 | Gaze | [gaze-estimation](https://github.com/yakhyo/gaze-estimation) | ✓ | MobileGaze Training |

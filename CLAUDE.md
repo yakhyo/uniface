@@ -54,7 +54,7 @@ pre-commit run --all-files
 ```
 uniface/            # Main package
   detection/        # Face detection models (SCRFD, RetinaFace, YOLOv5, YOLOv8)
-  recognition/      # Face recognition/verification (AdaFace)
+  recognition/      # Face recognition/verification (AdaFace, ArcFace, EdgeFace, MobileFace, SphereFace)
   landmark/         # Facial landmark models
   tracking/         # Object tracking (ByteTrack)
   parsing/          # Face parsing/segmentation (BiSeNet, XSeg)

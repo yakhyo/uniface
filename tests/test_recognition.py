@@ -8,7 +8,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from uniface.recognition import ArcFace, MobileFace, SphereFace
+from uniface.recognition import ArcFace, EdgeFace, MobileFace, SphereFace
 
 
 @pytest.fixture
@@ -33,6 +33,12 @@ def sphereface_model():
     Fixture to initialize the SphereFace model for testing.
     """
     return SphereFace()
+
+
+@pytest.fixture
+def edgeface_model():
+    """Fixture to initialize the EdgeFace model for testing."""
+    return EdgeFace()
 
 
 @pytest.fixture
@@ -174,6 +180,45 @@ def test_sphereface_normalized_embedding(sphereface_model, mock_landmarks):
     assert embedding.shape == (512,), f'Expected shape (512,), got {embedding.shape}'
     norm = np.linalg.norm(embedding)
     assert np.isclose(norm, 1.0, atol=1e-5), f'Normalized embedding should have norm 1.0, got {norm}'
+
+
+# EdgeFace Tests
+def test_edgeface_initialization(edgeface_model):
+    """Test that the EdgeFace model initializes correctly."""
+    assert edgeface_model is not None, 'EdgeFace model initialization failed.'
+
+
+def test_edgeface_embedding_shape(edgeface_model, mock_aligned_face):
+    """Test that EdgeFace produces embeddings with the correct shape."""
+    embedding = edgeface_model.get_embedding(mock_aligned_face)
+
+    assert embedding.shape[1] == 512, f'Expected 512-dim embedding, got {embedding.shape[1]}'
+    assert embedding.shape[0] == 1, 'Embedding should have batch dimension of 1'
+
+
+def test_edgeface_normalized_embedding(edgeface_model, mock_landmarks):
+    """Test that EdgeFace normalized embeddings have unit length."""
+    mock_image = np.random.randint(0, 255, (640, 640, 3), dtype=np.uint8)
+
+    embedding = edgeface_model.get_normalized_embedding(mock_image, mock_landmarks)
+
+    assert embedding.shape == (512,), f'Expected shape (512,), got {embedding.shape}'
+    norm = np.linalg.norm(embedding)
+    assert np.isclose(norm, 1.0, atol=1e-5), f'Normalized embedding should have norm 1.0, got {norm}'
+
+
+def test_edgeface_embedding_dtype(edgeface_model, mock_aligned_face):
+    """Test that EdgeFace embeddings have the correct data type."""
+    embedding = edgeface_model.get_embedding(mock_aligned_face)
+    assert embedding.dtype == np.float32, f'Expected float32, got {embedding.dtype}'
+
+
+def test_edgeface_consistency(edgeface_model, mock_aligned_face):
+    """Test that the same input produces the same EdgeFace embedding."""
+    embedding1 = edgeface_model.get_embedding(mock_aligned_face)
+    embedding2 = edgeface_model.get_embedding(mock_aligned_face)
+
+    assert np.allclose(embedding1, embedding2), 'Same input should produce same embedding'
 
 
 # Cross-model comparison tests
