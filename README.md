@@ -40,6 +40,36 @@
 
 ---
 
+## Visual Examples
+
+<table>
+  <tr>
+    <td align="center"><b>Face Detection</b><br><img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/detection.jpg" width="100%"></td>
+    <td align="center"><b>Gaze Estimation</b><br><img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/gaze.jpg" width="100%"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Head Pose Estimation</b><br><img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/headpose.jpg" width="100%"></td>
+    <td align="center"><b>Age &amp; Gender</b><br><img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/age_gender.jpg" width="100%"></td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2"><b>Face Verification</b><br><img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/verification.jpg" width="80%"></td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2"><b>106-Point Landmarks</b><br><img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/landmarks.jpg" width="36%"></td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2"><b>Face Parsing</b><br><img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/parsing.jpg" width="80%"></td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2"><b>Face Segmentation</b><br><img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/segmentation.jpg" width="80%"></td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2"><b>Face Anonymization</b><br><img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/anonymization.jpg" width="100%"></td>
+  </tr>
+</table>
+
+---
+
 ## Installation
 
 **Standard installation**

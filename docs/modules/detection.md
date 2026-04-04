@@ -2,6 +2,11 @@
 
 Face detection is the first step in any face analysis pipeline. UniFace provides four detection models.
 
+<figure markdown="span">
+  ![Face Detection](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/detection.jpg){ width="100%" }
+  <figcaption>SCRFD detection with corner-style bounding boxes and 5-point landmarks</figcaption>
+</figure>
+
 ---
 
 ## Available Models

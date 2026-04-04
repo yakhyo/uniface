@@ -2,6 +2,11 @@
 
 Face recognition extracts embeddings for identity verification and face search.
 
+<figure markdown="span">
+  ![Face Verification](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/verification.jpg){ width="80%" }
+  <figcaption>Pairwise face verification with cosine similarity scores</figcaption>
+</figure>
+
 ---
 
 ## Available Models

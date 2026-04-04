@@ -2,6 +2,11 @@
 
 Gaze estimation predicts where a person is looking (pitch and yaw angles).
 
+<figure markdown="span">
+  ![Gaze Estimation](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/gaze.jpg){ width="100%" }
+  <figcaption>Gaze direction arrows with pitch/yaw angle labels</figcaption>
+</figure>
+
 ---
 
 ## Available Models

@@ -2,6 +2,11 @@
 
 Head pose estimation predicts the 3D orientation of a person's head (pitch, yaw, and roll angles).
 
+<figure markdown="span">
+  ![Head Pose Estimation](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/headpose.jpg){ width="100%" }
+  <figcaption>3D head pose visualization with pitch, yaw, and roll angles</figcaption>
+</figure>
+
 ---
 
 ## Available Models

@@ -2,6 +2,11 @@
 
 Face anonymization protects privacy by blurring or obscuring faces in images and videos.
 
+<figure markdown="span">
+  ![Face Anonymization](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/anonymization.jpg){ width="100%" }
+  <figcaption>Five anonymization methods: pixelate, gaussian, blackout, elliptical, and median</figcaption>
+</figure>
+
 ---
 
 ## Available Methods
