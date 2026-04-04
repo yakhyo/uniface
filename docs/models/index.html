@@ -866,6 +866,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#edgeface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EdgeFace
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2355,6 +2366,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#edgeface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EdgeFace
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3040,6 +3062,80 @@
 <p>SphereFace uses angular softmax loss, an earlier approach before ArcFace. These models provide good accuracy with moderate resource requirements.</p>
 </div>
 <hr />
+<h3 id="edgeface">EdgeFace</h3>
+<p>Efficient face recognition designed for edge devices, using EdgeNeXt backbone with optional LoRA compression.</p>
+<table>
+<thead>
+<tr>
+<th>Model Name</th>
+<th>Backbone</th>
+<th>Params</th>
+<th>MFLOPs</th>
+<th>Size</th>
+<th>LFW</th>
+<th>CALFW</th>
+<th>CPLFW</th>
+<th>CFP-FP</th>
+<th>AgeDB-30</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>XXS</code> <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2m-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8z"/></svg></span></td>
+<td>EdgeNeXt</td>
+<td>1.24M</td>
+<td>94</td>
+<td>~5 MB</td>
+<td>99.57%</td>
+<td>94.83%</td>
+<td>90.27%</td>
+<td>93.63%</td>
+<td>94.92%</td>
+</tr>
+<tr>
+<td><code>XS_GAMMA_06</code></td>
+<td>EdgeNeXt</td>
+<td>1.77M</td>
+<td>154</td>
+<td>~7 MB</td>
+<td>99.73%</td>
+<td>95.28%</td>
+<td>91.58%</td>
+<td>94.71%</td>
+<td>96.08%</td>
+</tr>
+<tr>
+<td><code>S_GAMMA_05</code></td>
+<td>EdgeNeXt</td>
+<td>3.65M</td>
+<td>306</td>
+<td>~14 MB</td>
+<td>99.78%</td>
+<td>95.55%</td>
+<td>92.48%</td>
+<td>95.74%</td>
+<td>97.03%</td>
+</tr>
+<tr>
+<td><code>BASE</code></td>
+<td>EdgeNeXt</td>
+<td>18.2M</td>
+<td>1399</td>
+<td>~70 MB</td>
+<td>99.83%</td>
+<td>96.07%</td>
+<td>93.75%</td>
+<td>97.01%</td>
+<td>97.60%</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition info">
+<p class="admonition-title">Training Data &amp; Reference</p>
+<p><strong>Paper</strong>: <a href="https://arxiv.org/abs/2307.01838v2">EdgeFace: Efficient Face Recognition Model for Edge Devices</a> (IEEE T-BIOM 2024)</p>
+<p><strong>Source</strong>: <a href="https://github.com/otroshi/edgeface">github.com/otroshi/edgeface</a> | <a href="https://github.com/yakhyo/edgeface-onnx">github.com/yakhyo/edgeface-onnx</a></p>
+</div>
+<hr />
 <h2 id="facial-landmark-models">Facial Landmark Models</h2>
 <h3 id="106-point-landmark-detection">106-Point Landmark Detection</h3>
 <p>Facial landmark localization model.</p>
@@ -3559,7 +3655,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="March 26, 2026 13:57:05 UTC"><span class="timeago" datetime="2026-03-26T13:57:05+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="March 26, 2026 13:57:05 UTC">2026-03-26</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="April 4, 2026 11:11:28 UTC"><span class="timeago" datetime="2026-04-04T11:11:28+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="April 4, 2026 11:11:28 UTC">2026-04-04</span>
   </span>
 
     
