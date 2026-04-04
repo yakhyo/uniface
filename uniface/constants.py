@@ -57,6 +57,18 @@ class AdaFaceWeights(str, Enum):
     IR_18  = "adaface_ir_18"
     IR_101 = "adaface_ir_101"
 
+class EdgeFaceWeights(str, Enum):
+    """
+    EdgeFace: Efficient Face Recognition Model for Edge Devices.
+    Based on EdgeNeXt backbone with optional LoRA low-rank compression.
+    All models output 512-D embeddings from 112x112 aligned face crops.
+    https://github.com/yakhyo/edgeface-onnx
+    """
+    XXS         = "edgeface_xxs"
+    XS_GAMMA_06 = "edgeface_xs_gamma_06"
+    S_GAMMA_05  = "edgeface_s_gamma_05"
+    BASE        = "edgeface_base"
+
 class RetinaFaceWeights(str, Enum):
     """
     Trained on WIDER FACE dataset.
@@ -276,6 +288,24 @@ MODEL_REGISTRY: dict[Enum, ModelInfo] = {
     AdaFaceWeights.IR_101: ModelInfo(
         url='https://github.com/yakhyo/adaface-onnx/releases/download/weights/adaface_ir_101.onnx',
         sha256='f2eb07d03de0af560a82e1214df799fec5e09375d43521e2868f9dc387e5a43e'
+    ),
+
+    # EdgeFace
+    EdgeFaceWeights.XXS: ModelInfo(
+        url='https://github.com/yakhyo/edgeface-onnx/releases/download/weights/edgeface_xxs.onnx',
+        sha256='dc674de4cbc77fa0bf9a82d5149558ab8581d82a2cd3bb60f28fd1a5d3ff8a2f'
+    ),
+    EdgeFaceWeights.XS_GAMMA_06: ModelInfo(
+        url='https://github.com/yakhyo/edgeface-onnx/releases/download/weights/edgeface_xs_gamma_06.onnx',
+        sha256='9206e2eb13a2761d7b5b76e13016d4b9acd3fa3535a9a09939f3adacd139a5ff'
+    ),
+    EdgeFaceWeights.S_GAMMA_05: ModelInfo(
+        url='https://github.com/yakhyo/edgeface-onnx/releases/download/weights/edgeface_s_gamma_05.onnx',
+        sha256='b850767cf791bda585600b5c4c7d7432b2f998ccd862caae34ef1afa967d2e54'
+    ),
+    EdgeFaceWeights.BASE: ModelInfo(
+        url='https://github.com/yakhyo/edgeface-onnx/releases/download/weights/edgeface_base.onnx',
+        sha256='b56942f072c67385f44734b9458b0ccc4a2226888a113f77e0c802ad0c77b4c3'
     ),
 
     # SCRFD

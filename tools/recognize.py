@@ -16,16 +16,22 @@ import numpy as np
 
 from uniface.detection import SCRFD, RetinaFace
 from uniface.face_utils import compute_similarity
-from uniface.recognition import ArcFace, MobileFace, SphereFace
+from uniface.recognition import AdaFace, ArcFace, EdgeFace, MobileFace, SphereFace
+
+RECOGNIZERS = {
+    'arcface': ArcFace,
+    'adaface': AdaFace,
+    'edgeface': EdgeFace,
+    'mobileface': MobileFace,
+    'sphereface': SphereFace,
+}
 
 
 def get_recognizer(name: str):
-    if name == 'arcface':
-        return ArcFace()
-    elif name == 'mobileface':
-        return MobileFace()
-    else:
-        return SphereFace()
+    cls = RECOGNIZERS.get(name)
+    if cls is None:
+        raise ValueError(f"Unknown recognizer: '{name}'. Available: {list(RECOGNIZERS)}")
+    return cls()
 
 
 def run_inference(detector, recognizer, image_path: str):
@@ -91,7 +97,7 @@ def main():
         '--recognizer',
         type=str,
         default='arcface',
-        choices=['arcface', 'mobileface', 'sphereface'],
+        choices=list(RECOGNIZERS),
     )
     args = parser.parse_args()
 

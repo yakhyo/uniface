@@ -4,8 +4,11 @@
 
 
 from .adaface import AdaFace
+from .arcface import ArcFace
 from .base import BaseRecognizer
-from .models import ArcFace, MobileFace, SphereFace
+from .edgeface import EdgeFace
+from .mobileface import MobileFace
+from .sphereface import SphereFace
 
 
 def create_recognizer(method: str = 'arcface', **kwargs) -> BaseRecognizer:
@@ -18,7 +21,7 @@ def create_recognizer(method: str = 'arcface', **kwargs) -> BaseRecognizer:
 
     Args:
         method (str): The recognition method to use.
-            Options: 'arcface' (default), 'adaface', 'mobileface', 'sphereface'.
+            Options: 'arcface' (default), 'adaface', 'edgeface', 'mobileface', 'sphereface'.
         **kwargs: Model-specific parameters passed to the recognizer's constructor.
             For example, `model_name` can be used to select a specific
             pre-trained weight from the available enums (e.g., `ArcFaceWeights.MNET`).
@@ -43,6 +46,10 @@ def create_recognizer(method: str = 'arcface', **kwargs) -> BaseRecognizer:
 
         >>> # Create a SphereFace recognizer
         >>> recognizer = create_recognizer('sphereface')
+
+        >>> # Create an EdgeFace recognizer
+        >>> from uniface.constants import EdgeFaceWeights
+        >>> recognizer = create_recognizer('edgeface', model_name=EdgeFaceWeights.XXS)
     """
     method = method.lower()
 
@@ -50,13 +57,15 @@ def create_recognizer(method: str = 'arcface', **kwargs) -> BaseRecognizer:
         return ArcFace(**kwargs)
     elif method == 'adaface':
         return AdaFace(**kwargs)
+    elif method == 'edgeface':
+        return EdgeFace(**kwargs)
     elif method == 'mobileface':
         return MobileFace(**kwargs)
     elif method == 'sphereface':
         return SphereFace(**kwargs)
     else:
-        available = ['arcface', 'adaface', 'mobileface', 'sphereface']
+        available = ['arcface', 'adaface', 'edgeface', 'mobileface', 'sphereface']
         raise ValueError(f"Unsupported method: '{method}'. Available: {available}")
 
 
-__all__ = ['AdaFace', 'ArcFace', 'BaseRecognizer', 'MobileFace', 'SphereFace', 'create_recognizer']
+__all__ = ['AdaFace', 'ArcFace', 'BaseRecognizer', 'EdgeFace', 'MobileFace', 'SphereFace', 'create_recognizer']
