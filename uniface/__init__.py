@@ -19,6 +19,7 @@ This library provides unified APIs for:
 - Face tracking (ByteTrack with Kalman filtering)
 - Facial landmarks (106-point detection)
 - Face parsing (semantic segmentation)
+- Portrait matting (trimap-free alpha matte)
 - Gaze estimation
 - Head pose estimation
 - Age, gender, and emotion prediction
@@ -30,7 +31,7 @@ from __future__ import annotations
 
 __license__ = 'MIT'
 __author__ = 'Yakhyokhuja Valikhujaev'
-__version__ = '3.4.0'
+__version__ = '3.5.0'
 
 import contextlib
 
@@ -51,6 +52,7 @@ from .detection import (
 from .gaze import MobileGaze, create_gaze_estimator
 from .headpose import HeadPose, create_head_pose_estimator
 from .landmark import Landmark106, create_landmarker
+from .matting import MODNet, create_matting_model
 from .parsing import BiSeNet, XSeg, create_face_parser
 from .privacy import BlurFace
 from .recognition import AdaFace, ArcFace, EdgeFace, MobileFace, SphereFace, create_recognizer
@@ -74,6 +76,7 @@ __all__ = [
     'create_detector',
     'create_face_parser',
     'create_gaze_estimator',
+    'create_matting_model',
     'create_head_pose_estimator',
     'create_landmarker',
     'create_recognizer',
@@ -98,6 +101,8 @@ __all__ = [
     # Head pose models
     'HeadPose',
     'HeadPoseResult',
+    # Matting models
+    'MODNet',
     # Parsing models
     'BiSeNet',
     'XSeg',

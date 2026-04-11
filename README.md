@@ -302,3 +302,6 @@ Questions or feedback:
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
+
+> **Disclaimer:** This project is not affiliated with or related to
+> [Uniface](https://uniface.com/) by Rocket Software.

@@ -201,6 +201,15 @@ class XSegWeights(str, Enum):
     DEFAULT = "xseg"
 
 
+class MODNetWeights(str, Enum):
+    """
+    MODNet: Real-Time Trimap-Free Portrait Matting via Objective Decomposition.
+    https://github.com/yakhyo/modnet
+    """
+    PHOTOGRAPHIC = "modnet_photographic"
+    WEBCAM       = "modnet_webcam"
+
+
 class MiniFASNetWeights(str, Enum):
     """
     MiniFASNet: Lightweight Face Anti-Spoofing models.
@@ -442,6 +451,16 @@ MODEL_REGISTRY: dict[Enum, ModelInfo] = {
     XSegWeights.DEFAULT: ModelInfo(
         url='https://github.com/yakhyo/face-segmentation/releases/download/weights/xseg.onnx',
         sha256='0b57328efcb839d85973164b617ceee9dfe6cfcb2c82e8a033bba9f4f09b27e5'
+    ),
+
+    # MODNet (Portrait Matting)
+    MODNetWeights.PHOTOGRAPHIC: ModelInfo(
+        url='https://github.com/yakhyo/modnet/releases/download/weights/modnet_photographic.onnx',
+        sha256='5069a5e306b9f5e9f4f2b0360264c9f8ea13b257c7c39943c7cf6a2ec3a102ae'
+    ),
+    MODNetWeights.WEBCAM: ModelInfo(
+        url='https://github.com/yakhyo/modnet/releases/download/weights/modnet_webcam.onnx',
+        sha256='de03cc16f3c91f25b7c2f0b42ea1a8d34f40a752234f3887572655e744e55306'
     ),
 }
 

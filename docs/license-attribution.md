@@ -20,5 +20,6 @@ UniFace is released under the [MIT License](https://opensource.org/licenses/MIT)
 | SphereFace | [yakhyo/face-recognition](https://github.com/yakhyo/face-recognition) | MIT |
 | BiSeNet | [yakhyo/face-parsing](https://github.com/yakhyo/face-parsing) | MIT |
 | MobileGaze | [yakhyo/gaze-estimation](https://github.com/yakhyo/gaze-estimation) | MIT |
+| MODNet | [yakhyo/modnet](https://github.com/yakhyo/modnet) | Apache-2.0 |
 | MiniFASNet | [yakhyo/face-anti-spoofing](https://github.com/yakhyo/face-anti-spoofing) | Apache-2.0 |
 | FairFace | [yakhyo/fairface-onnx](https://github.com/yakhyo/fairface-onnx) | CC BY 4.0 |
