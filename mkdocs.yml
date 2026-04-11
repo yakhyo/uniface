@@ -150,6 +150,7 @@ nav:
       - Landmarks: modules/landmarks.md
       - Attributes: modules/attributes.md
       - Parsing: modules/parsing.md
+      - Matting: modules/matting.md
       - Gaze: modules/gaze.md
       - Head Pose: modules/headpose.md
       - Anti-Spoofing: modules/spoofing.md

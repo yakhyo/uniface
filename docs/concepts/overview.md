@@ -26,6 +26,7 @@ graph TB
         HPOSE[Head Pose]
         PARSE[Parsing]
         SPOOF[Anti-Spoofing]
+        MATT[Matting]
         PRIV[Privacy]
     end
 
@@ -42,6 +43,7 @@ graph TB
     end
 
     IMG --> DET
+    IMG --> MATT
     DET --> REC
     DET --> LMK
     DET --> ATTR
@@ -120,6 +122,7 @@ uniface/
 ├── landmark/       # 106-point landmarks
 ├── attribute/      # Age, gender, emotion, race
 ├── parsing/        # Face semantic segmentation
+├── matting/        # Portrait matting (MODNet)
 ├── gaze/           # Gaze estimation
 ├── headpose/       # Head pose estimation
 ├── spoofing/       # Anti-spoofing

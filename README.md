@@ -30,6 +30,7 @@
 - **Face Tracking** — Multi-object tracking with [BYTETracker](https://github.com/yakhyo/bytetrack-tracker) for persistent IDs across video frames
 - **Facial Landmarks** — 106-point landmark localization module (separate from 5-point detector landmarks)
 - **Face Parsing** — BiSeNet semantic segmentation (19 classes), XSeg face masking
+- **Portrait Matting** — Trimap-free alpha matte with MODNet (background removal, green screen, compositing)
 - **Gaze Estimation** — Real-time gaze direction with MobileGaze
 - **Head Pose Estimation** — 3D head orientation (pitch, yaw, roll) with 6D rotation representation
 - **Attribute Analysis** — Age, gender, race (FairFace), and emotion
@@ -62,6 +63,9 @@
   </tr>
   <tr>
     <td align="center" colspan="2"><b>Face Segmentation</b><br><img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/segmentation.jpg" width="80%"></td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2"><b>Portrait Matting</b><br><img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/matting.jpg" width="100%"></td>
   </tr>
   <tr>
     <td align="center" colspan="2"><b>Face Anonymization</b><br><img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/anonymization.jpg" width="100%"></td>
@@ -186,6 +190,32 @@ for face in faces:
 
 ---
 
+## Example (Portrait Matting)
+
+```python
+import cv2
+import numpy as np
+from uniface.matting import MODNet
+
+matting = MODNet()
+
+image = cv2.imread("portrait.jpg")
+matte = matting.predict(image)  # (H, W) float32 in [0, 1]
+
+# Transparent PNG
+rgba = cv2.cvtColor(image, cv2.COLOR_BGR2BGRA)
+rgba[:, :, 3] = (matte * 255).astype(np.uint8)
+cv2.imwrite("transparent.png", rgba)
+
+# Green screen
+matte_3ch = matte[:, :, np.newaxis]
+bg = np.full_like(image, (0, 177, 64), dtype=np.uint8)
+result = (image * matte_3ch + bg * (1 - matte_3ch)).astype(np.uint8)
+cv2.imwrite("green_screen.jpg", result)
+```
+
+---
+
 ## Jupyter Notebooks
 
 | Example | Colab | Description |
@@ -202,6 +232,7 @@ for face in faces:
 | [10_face_vector_store.ipynb](examples/10_face_vector_store.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/10_face_vector_store.ipynb) | FAISS-backed face database |
 | [11_head_pose_estimation.ipynb](examples/11_head_pose_estimation.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/11_head_pose_estimation.ipynb) | Head pose estimation (pitch, yaw, roll) |
 | [12_face_recognition.ipynb](examples/12_face_recognition.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/12_face_recognition.ipynb) | Standalone face recognition pipeline |
+| [13_portrait_matting.ipynb](examples/13_portrait_matting.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/13_portrait_matting.ipynb) | Portrait matting with MODNet |
 
 ---
 
@@ -279,6 +310,7 @@ If you plan commercial use, verify model license compatibility.
 | Parsing | [face-segmentation](https://github.com/yakhyo/face-segmentation) | - | XSeg Face Segmentation |
 | Gaze | [gaze-estimation](https://github.com/yakhyo/gaze-estimation) | ✓ | MobileGaze Training |
 | Head Pose | [head-pose-estimation](https://github.com/yakhyo/head-pose-estimation) | ✓ | Head Pose Training (6DRepNet-style) |
+| Matting | [modnet](https://github.com/yakhyo/modnet) | - | MODNet Portrait Matting |
 | Anti-Spoofing | [face-anti-spoofing](https://github.com/yakhyo/face-anti-spoofing) | - | MiniFASNet Inference |
 | Attributes | [fairface-onnx](https://github.com/yakhyo/fairface-onnx) | - | FairFace ONNX Inference |
 
@@ -302,3 +334,6 @@ Questions or feedback:
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
+
+> **Disclaimer:** This project is not affiliated with or related to
+> [Uniface](https://uniface.com/) by Rocket Software.

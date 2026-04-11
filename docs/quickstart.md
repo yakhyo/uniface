@@ -280,6 +280,34 @@ print(f"Detected {len(np.unique(mask))} facial components")
 
 ---
 
+## Portrait Matting
+
+Remove backgrounds without a trimap:
+
+```python
+import cv2
+import numpy as np
+from uniface.matting import MODNet
+
+matting = MODNet()
+
+image = cv2.imread("portrait.jpg")
+matte = matting.predict(image)  # (H, W) float32 in [0, 1]
+
+# Transparent PNG
+rgba = cv2.cvtColor(image, cv2.COLOR_BGR2BGRA)
+rgba[:, :, 3] = (matte * 255).astype(np.uint8)
+cv2.imwrite("transparent.png", rgba)
+
+# Green screen
+matte_3ch = matte[:, :, np.newaxis]
+bg = np.full_like(image, (0, 177, 64), dtype=np.uint8)
+result = (image * matte_3ch + bg * (1 - matte_3ch)).astype(np.uint8)
+cv2.imwrite("green_screen.jpg", result)
+```
+
+---
+
 ## Face Anonymization
 
 Blur faces for privacy protection:

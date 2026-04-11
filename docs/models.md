@@ -371,6 +371,36 @@ XSeg from DeepFaceLab outputs masks for face regions. Requires 5-point landmarks
 
 ---
 
+## Portrait Matting Models
+
+### MODNet
+
+MODNet (Real-Time Trimap-Free Portrait Matting) produces soft alpha mattes from full images without requiring a trimap. Uses MobileNetV2 backbone with low-resolution, high-resolution, and fusion branches.
+
+| Model Name | Variant | Size | Use Case |
+| ---------- | ------- | ---- | -------- |
+| `PHOTOGRAPHIC` :material-check-circle: | High-quality | 25 MB | Portrait photos |
+| `WEBCAM` | Real-time | 25 MB | Webcam feeds |
+
+!!! info "Model Details"
+    **Paper**: [MODNet: Real-Time Trimap-Free Portrait Matting via Objective Decomposition](https://arxiv.org/abs/2011.11961) (AAAI 2022)
+
+    **Source**: [yakhyo/modnet](https://github.com/yakhyo/modnet) — ported weights and clean inference codebase
+
+    **Output**: Alpha matte `(H, W)` in `[0, 1]`
+
+**Applications:**
+
+- Background removal / replacement
+- Green screen compositing
+- Video conferencing virtual backgrounds
+- Portrait editing
+
+!!! note "Input Requirements"
+    Operates on full images (not face crops). No trimap or face detection required.
+
+---
+
 ## Anti-Spoofing Models
 
 ### MiniFASNet Family
@@ -420,6 +450,7 @@ See [Model Cache & Offline Use](concepts/model-cache-offline.md) for full detail
 - **Head Pose Estimation**: [yakhyo/head-pose-estimation](https://github.com/yakhyo/head-pose-estimation) - 6D rotation head pose estimation training and ONNX models
 - **Face Parsing Training**: [yakhyo/face-parsing](https://github.com/yakhyo/face-parsing) - BiSeNet training code and pretrained weights
 - **Face Segmentation**: [yakhyo/face-segmentation](https://github.com/yakhyo/face-segmentation) - XSeg ONNX Inference
+- **Portrait Matting**: [yakhyo/modnet](https://github.com/yakhyo/modnet) - MODNet ported weights and inference (from [ZHKKKe/MODNet](https://github.com/ZHKKKe/MODNet))
 - **Face Anti-Spoofing**: [yakhyo/face-anti-spoofing](https://github.com/yakhyo/face-anti-spoofing) - MiniFASNet ONNX inference (weights from [minivision-ai/Silent-Face-Anti-Spoofing](https://github.com/minivision-ai/Silent-Face-Anti-Spoofing))
 - **FairFace**: [yakhyo/fairface-onnx](https://github.com/yakhyo/fairface-onnx) - FairFace ONNX inference for race, gender, age prediction
 - **InsightFace**: [deepinsight/insightface](https://github.com/deepinsight/insightface) - Model architectures and pretrained weights
@@ -432,4 +463,5 @@ See [Model Cache & Offline Use](concepts/model-cache-offline.md) for full detail
 - **AdaFace**: [AdaFace: Quality Adaptive Margin for Face Recognition](https://arxiv.org/abs/2204.00964)
 - **ArcFace**: [Additive Angular Margin Loss for Deep Face Recognition](https://arxiv.org/abs/1801.07698)
 - **SphereFace**: [Deep Hypersphere Embedding for Face Recognition](https://arxiv.org/abs/1704.08063)
+- **MODNet**: [Real-Time Trimap-Free Portrait Matting via Objective Decomposition](https://arxiv.org/abs/2011.11961)
 - **BiSeNet**: [Bilateral Segmentation Network for Real-time Semantic Segmentation](https://arxiv.org/abs/1808.00897)
