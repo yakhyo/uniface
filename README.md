@@ -76,23 +76,25 @@
 
 ## Installation
 
-**Standard installation**
+**CPU / Apple Silicon**
 
 ```bash
-pip install uniface
+pip install uniface[cpu]
 ```
 
-**GPU support (CUDA)**
+**GPU support (NVIDIA CUDA)**
 
 ```bash
 pip install uniface[gpu]
 ```
 
+> **Why separate extras?** `onnxruntime` and `onnxruntime-gpu` conflict when both are installed — they own the same Python namespace. Installing only the extra you need prevents that conflict entirely.
+
 **From source (latest version)**
 
 ```bash
 git clone https://github.com/yakhyo/uniface.git
-cd uniface && pip install -e .
+cd uniface && pip install -e ".[cpu]"   # or .[gpu] for CUDA
 ```
 
 **FAISS vector store**

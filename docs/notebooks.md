@@ -34,7 +34,7 @@ git clone https://github.com/yakhyo/uniface.git
 cd uniface
 
 # Install dependencies
-pip install uniface jupyter
+pip install "uniface[cpu]" jupyter   # or uniface[gpu] for CUDA
 
 # Launch Jupyter
 jupyter notebook examples/

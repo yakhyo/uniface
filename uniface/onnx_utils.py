@@ -12,7 +12,15 @@ from __future__ import annotations
 
 import functools
 
-import onnxruntime as ort
+try:
+    import onnxruntime as ort
+except ImportError as e:
+    raise ImportError(
+        'onnxruntime is not installed. Install it with one of:\n'
+        '  pip install uniface[cpu]   # CPU / Apple Silicon\n'
+        '  pip install uniface[gpu]   # NVIDIA GPU (CUDA)\n'
+        'Do not install both — they conflict.'
+    ) from e
 
 from uniface.log import Logger
 
