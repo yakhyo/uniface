@@ -112,8 +112,18 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
         run: twine upload dist/*
 
+      - name: Detect pre-release
+        id: prerelease
+        run: |
+          if [[ "${{ needs.validate.outputs.version }}" =~ (a|b|rc|\.dev)[0-9]+ ]]; then
+            echo "is_prerelease=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_prerelease=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           files: dist/*
           generate_release_notes: true
+          prerelease: ${{ steps.prerelease.outputs.is_prerelease }}
