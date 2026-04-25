@@ -1,0 +1,84 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version (e.g. 3.6.0, 3.6.0b1, 3.6.0rc1)'
+        required: true
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate version (PEP 440)
+        run: |
+          python - <<'EOF'
+          import re, sys
+          v = "${{ inputs.version }}"
+          # PEP 440 subset: X.Y.Z, optional aN / bN / rcN / .devN
+          if not re.fullmatch(r'\d+\.\d+\.\d+((a|b|rc)\d+|\.dev\d+)?', v):
+              print(f"Invalid version: {v}")
+              print("Expected forms: 3.6.0, 3.6.0a1, 3.6.0b1, 3.6.0rc1, 3.6.0.dev1")
+              sys.exit(1)
+          EOF
+
+      - name: Check tag does not exist
+        run: |
+          if git rev-parse "v${{ inputs.version }}" >/dev/null 2>&1; then
+            echo "Tag v${{ inputs.version }} already exists."
+            exit 1
+          fi
+
+      - name: Update pyproject.toml
+        run: |
+          python - <<'EOF'
+          import re, pathlib
+          p = pathlib.Path('pyproject.toml')
+          text = p.read_text()
+          new = re.sub(r'^version\s*=\s*".*"', f'version = "${{ inputs.version }}"', text, count=1, flags=re.M)
+          if new == text:
+              raise SystemExit("Failed to update version in pyproject.toml")
+          p.write_text(new)
+          EOF
+
+      - name: Update uniface/__init__.py
+        run: |
+          python - <<'EOF'
+          import re, pathlib
+          p = pathlib.Path('uniface/__init__.py')
+          text = p.read_text()
+          new = re.sub(r"^__version__\s*=\s*'.*'", f"__version__ = '${{ inputs.version }}'", text, count=1, flags=re.M)
+          if new == text:
+              raise SystemExit("Failed to update __version__ in uniface/__init__.py")
+          p.write_text(new)
+          EOF
+
+      - name: Commit, tag, push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pyproject.toml uniface/__init__.py
+          git commit -m "chore: Release v${{ inputs.version }}"
+          git tag "v${{ inputs.version }}"
+          git push origin HEAD:${{ github.ref_name }}
+          git push origin "v${{ inputs.version }}"

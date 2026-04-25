@@ -4,10 +4,13 @@
 
 from __future__ import annotations
 
-from typing import ClassVar
+from typing import TYPE_CHECKING, ClassVar
 
 import cv2
 import numpy as np
+
+if TYPE_CHECKING:
+    from uniface.types import Face
 
 __all__ = ['BlurFace', 'EllipticalBlur']
 
@@ -137,7 +140,7 @@ class BlurFace:
     def anonymize(
         self,
         image: np.ndarray,
-        faces: list,
+        faces: list[Face],
         inplace: bool = False,
     ) -> np.ndarray:
         """Anonymize faces in an image.

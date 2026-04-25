@@ -58,7 +58,7 @@ class Landmark106(BaseLandmarker):
         self.model_path = verify_model_weights(model_name)
         self._initialize_model()
 
-    def _initialize_model(self):
+    def _initialize_model(self) -> None:
         """
         Initialize the ONNX model from the stored model path.
 

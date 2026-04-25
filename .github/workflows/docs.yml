@@ -1,9 +1,8 @@
 name: Deploy docs
 
 on:
-  push:
-    tags:
-      - "v*.*.*"
+  release:
+    types: [released]  # Fires only for stable releases (not pre-releases), after publish.yml creates the Release
   workflow_dispatch:
 
 permissions:

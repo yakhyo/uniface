@@ -59,12 +59,12 @@ This project uses [Ruff](https://docs.astral.sh/ruff/) for linting and formattin
 #### General Rules
 
 - **Line length:** 120 characters maximum
-- **Python version:** 3.11+ (use modern syntax)
+- **Python version:** 3.10+ (use modern syntax)
 - **Quote style:** Single quotes for strings, double quotes for docstrings
 
 #### Type Hints
 
-Use modern Python 3.11+ type hints (PEP 585 and PEP 604):
+Use modern Python 3.10+ type hints (PEP 585 and PEP 604):
 
 ```python
 # Preferred (modern)
@@ -187,6 +187,49 @@ Example notebooks demonstrating library usage:
 | Face Segmentation  | [09_face_segmentation.ipynb](examples/09_face_segmentation.ipynb)   |
 | Face Vector Store  | [10_face_vector_store.ipynb](examples/10_face_vector_store.ipynb)   |
 | Head Pose Estimation | [11_head_pose_estimation.ipynb](examples/11_head_pose_estimation.ipynb) |
+
+## Release Process
+
+Releases are fully automated via GitHub Actions. Only maintainers with branch-protection bypass privileges on `main` can trigger a release.
+
+### Cutting a release
+
+1. Go to **Actions → Release → Run workflow** on GitHub.
+2. Enter the version following [PEP 440](https://peps.python.org/pep-0440/):
+   - Stable: `0.7.0`, `1.0.0`
+   - Pre-release: `0.7.0rc1`, `0.7.0b1`, `0.7.0a1`, `0.7.0.dev1`
+3. Click **Run workflow**.
+
+### What happens automatically
+
+The `Release` workflow:
+
+1. Validates the version string.
+2. Updates `pyproject.toml` and `uniface/__init__.py`.
+3. Commits `chore: Release vX.Y.Z` to `main`.
+4. Creates and pushes tag `vX.Y.Z`.
+
+Pushing the tag then triggers:
+
+- **Publish to PyPI** — builds the package, runs tests on Python 3.10–3.14, uploads to PyPI, and creates a GitHub Release (flagged as pre-release for `a`/`b`/`rc`/`.dev` versions).
+- **Deploy docs** — fires only after a **stable** GitHub Release is published. Pre-releases do not update the live documentation site.
+
+### Verifying a release
+
+- PyPI: <https://pypi.org/project/uniface/>
+- GitHub Releases: <https://github.com/yakhyo/uniface/releases>
+- Docs (stable only): <https://yakhyo.github.io/uniface/>
+
+### Installing a pre-release
+
+End users can opt in to pre-releases with the `--pre` flag:
+
+```bash
+pip install uniface --pre                # latest pre-release
+pip install uniface==0.7.0rc1            # specific pre-release
+```
+
+Without `--pre`, `pip install uniface` always resolves to the latest stable version.
 
 ## Questions?
 

@@ -93,7 +93,7 @@ print("Available providers:", providers)
 No additional setup required. ARM64 optimizations are built into `onnxruntime`:
 
 ```bash
-pip install uniface
+pip install uniface[cpu]
 ```
 
 Verify ARM64:
@@ -110,7 +110,7 @@ python -c "import platform; print(platform.machine())"
 
 ### NVIDIA GPU (CUDA)
 
-Install with GPU support:
+Install with GPU support (this installs `onnxruntime-gpu`, which already includes CPU fallback):
 
 ```bash
 pip install uniface[gpu]
@@ -140,7 +140,7 @@ else:
 CPU execution is always available:
 
 ```bash
-pip install uniface
+pip install uniface[cpu]
 ```
 
 Works on all platforms without additional configuration.
@@ -215,7 +215,7 @@ for image_path in image_paths:
 
 3. Reinstall with GPU support:
    ```bash
-   pip uninstall onnxruntime onnxruntime-gpu
+   pip uninstall onnxruntime onnxruntime-gpu -y
    pip install uniface[gpu]
    ```
 
