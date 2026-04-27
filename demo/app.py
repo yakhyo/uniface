@@ -60,14 +60,14 @@ _gc_utils._json_schema_to_python_type = _safe_json_schema_to_python_type
 # Resolve asset paths relative to this script so examples work from any cwd
 # ---------------------------------------------------------------------------
 _DEMO_ASSETS_DIR = Path(__file__).resolve().parent / 'assets'
-EXAMPLE_DEFAULT = str(_DEMO_ASSETS_DIR / 'image.png')
-EXAMPLE_VER_IMG1 = str(_DEMO_ASSETS_DIR / 'verification' / 'image1.png')
-EXAMPLE_VER_IMG2 = str(_DEMO_ASSETS_DIR / 'verification' / 'image2.png')
-EXAMPLE_VER_IMG3 = str(_DEMO_ASSETS_DIR / 'verification' / 'image3.png')
-EXAMPLE_ATTR_1 = str(_DEMO_ASSETS_DIR / 'attribute' / 'image1.png')
-EXAMPLE_ATTR_2 = str(_DEMO_ASSETS_DIR / 'attribute' / 'image2.png')
-EXAMPLE_GAZE_1 = str(_DEMO_ASSETS_DIR / 'gaze' / 'image1.png')
-EXAMPLE_GAZE_2 = str(_DEMO_ASSETS_DIR / 'gaze' / 'image2.png')
+EXAMPLE_DEFAULT = str(_DEMO_ASSETS_DIR / 'image.jpg')
+EXAMPLE_VER_IMG1 = str(_DEMO_ASSETS_DIR / 'verification' / 'image1.jpg')
+EXAMPLE_VER_IMG2 = str(_DEMO_ASSETS_DIR / 'verification' / 'image2.jpg')
+EXAMPLE_VER_IMG3 = str(_DEMO_ASSETS_DIR / 'verification' / 'image3.jpg')
+EXAMPLE_ATTR_1 = str(_DEMO_ASSETS_DIR / 'attribute' / 'image1.jpg')
+EXAMPLE_ATTR_2 = str(_DEMO_ASSETS_DIR / 'attribute' / 'image2.jpg')
+EXAMPLE_GAZE_1 = str(_DEMO_ASSETS_DIR / 'gaze' / 'image1.jpg')
+EXAMPLE_GAZE_2 = str(_DEMO_ASSETS_DIR / 'gaze' / 'image2.jpg')
 EXAMPLE_HEADPOSE_1 = str(_DEMO_ASSETS_DIR / 'headpose' / 'image1.jpg')
 EXAMPLE_HEADPOSE_2 = str(_DEMO_ASSETS_DIR / 'headpose' / 'image2.jpg')
 EXAMPLE_HEADPOSE_3 = str(_DEMO_ASSETS_DIR / 'headpose' / 'image3.jpg')
@@ -78,7 +78,7 @@ EXAMPLE_PARSING_2 = str(_DEMO_ASSETS_DIR / 'parsing' / 'image2.jpg')
 EXAMPLE_SPOOF_1 = str(_DEMO_ASSETS_DIR / 'spoofing' / 'image1.jpg')
 EXAMPLE_SPOOF_2 = str(_DEMO_ASSETS_DIR / 'spoofing' / 'image2.jpg')
 EXAMPLE_SPOOF_3 = str(_DEMO_ASSETS_DIR / 'spoofing' / 'image3.jpg')
-EXAMPLE_ANONYMIZE = str(_DEMO_ASSETS_DIR / 'anonymize' / 'image.png')
+EXAMPLE_ANONYMIZE = str(_DEMO_ASSETS_DIR / 'anonymize' / 'image.jpg')
 
 # ---------------------------------------------------------------------------
 # Model cache: lazily create and reuse model instances
