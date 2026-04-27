@@ -176,7 +176,7 @@ jobs:
         run: twine upload dist/*
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ inputs.version }}
           files: dist/*
@@ -215,6 +215,8 @@ jobs:
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./site
