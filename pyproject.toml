@@ -1,7 +1,7 @@
 [project]
 name = "uniface"
 version = "3.5.1rc1"
-description = "UniFace: A Comprehensive Library for Face Detection, Recognition, Tracking, Landmark Analysis, Face Parsing, Gaze Estimation, Age, and Gender Detection"
+description = "UniFace: A Unified Face Analysis Library for Python"
 readme = "README.md"
 license = "MIT"
 authors = [{ name = "Yakhyokhuja Valikhujaev", email = "yakhyo9696@gmail.com" }]
