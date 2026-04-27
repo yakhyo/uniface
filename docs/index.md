@@ -10,7 +10,7 @@ template: home.html
 
 # UniFace { .hero-title }
 
-<p class="hero-subtitle">All-in-One Open-Source Face Analysis Library</p>
+<p class="hero-subtitle">A Unified Face Analysis Library for Python</p>
 
 [![PyPI Version](https://img.shields.io/pypi/v/uniface.svg?label=Version)](https://pypi.org/project/uniface/)
 [![Python Version](https://img.shields.io/badge/Python-3.10%2B-blue)](https://www.python.org/)
@@ -20,7 +20,7 @@ template: home.html
 [![Kaggle Badge](https://img.shields.io/badge/Notebooks-Kaggle?label=Kaggle&color=blue)](https://www.kaggle.com/yakhyokhuja/code)
 [![Discord](https://img.shields.io/badge/Discord-Join%20Server-5865F2?logo=discord&logoColor=white)](https://discord.gg/wdzrjr7R5j)
 
-<!-- <img src="https://raw.githubusercontent.com/yakhyo/uniface/main/.github/logos/uniface_rounded_q80.webp" alt="UniFace - All-in-One Open-Source Face Analysis Library" style="max-width: 70%; margin: 1rem 0;"> -->
+<!-- <img src="https://raw.githubusercontent.com/yakhyo/uniface/main/.github/logos/uniface_rounded_q80.webp" alt="UniFace - A Unified Face Analysis Library for Python" style="max-width: 70%; margin: 1rem 0;"> -->
 
 [Get Started](quickstart.md){ .md-button .md-button--primary }
 [View on GitHub](https://github.com/yakhyo/uniface){ .md-button }
@@ -31,7 +31,7 @@ template: home.html
 
 <div class="feature-card" markdown>
 ### :material-face-recognition: Face Detection
-ONNX-optimized detectors (RetinaFace, SCRFD, YOLO) with 5-point landmarks.
+RetinaFace, SCRFD, and YOLO detectors with 5-point landmarks.
 </div>
 
 <div class="feature-card" markdown>
@@ -90,7 +90,7 @@ FAISS-backed embedding store for fast multi-identity face search.
 
 ## Installation
 
-UniFace runs inference primarily via **ONNX Runtime**; some optional components (e.g., emotion TorchScript, torchvision NMS) require **PyTorch**.
+UniFace uses portable model runtimes for consistent inference across macOS, Linux, and Windows. Most core components run through **ONNX Runtime**, while optional components may use **PyTorch** where appropriate.
 
 **CPU / Apple Silicon**
 ```bash

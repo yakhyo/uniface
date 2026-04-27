@@ -64,15 +64,13 @@ graph TB
 
 ## Design Principles
 
-### 1. ONNX-First
+### 1. Cross-Platform Inference
 
-UniFace runs inference primarily via ONNX Runtime for core components:
+UniFace uses portable model runtimes to provide consistent inference across macOS, Linux, and Windows. Most core components run through ONNX Runtime, while optional components may use PyTorch where appropriate.
 
 - **Cross-platform**: Same models work on macOS, Linux, Windows
 - **Hardware acceleration**: Automatic selection of optimal provider
 - **Production-ready**: No Python-only dependencies for inference
-
-Some optional components (e.g., emotion TorchScript, torchvision NMS) require PyTorch.
 
 ### 2. Minimal Dependencies
 

@@ -1,8 +1,8 @@
-name: Deploy docs
+name: Deploy Documentation
 
 on:
   release:
-    types: [released]  # Fires only for stable releases (not pre-releases), after publish.yml creates the Release
+    types: [released]
   workflow_dispatch:
 
 permissions:
@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Fetch full history for git-committers and git-revision-date plugins
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:

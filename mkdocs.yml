@@ -1,5 +1,5 @@
 site_name: UniFace
-site_description: All-in-One Face Analysis Library with ONNX Runtime
+site_description: A Unified Face Analysis Library for Python
 site_author: Yakhyokhuja Valikhujaev
 site_url: https://yakhyo.github.io/uniface
 
