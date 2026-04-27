@@ -17,10 +17,13 @@ Interactive demo for [UniFace](https://github.com/yakhyo/uniface) — a comprehe
 ## Features
 
 - **Face Detection** — RetinaFace, SCRFD, YOLOv5-Face, YOLOv8-Face
-- **Face Verification** — ArcFace, AdaFace, MobileFace, SphereFace
-- **Face Analysis** — Age, gender, and race prediction
+- **Face Verification** — ArcFace, AdaFace, EdgeFace, MobileFace, SphereFace
+- **Face Analysis** — Age, gender, and race prediction (AgeGender, FairFace)
 - **Landmarks** — 106-point facial landmark detection
-- **Face Parsing** — BiSeNet semantic segmentation (19 classes)
-- **Gaze Estimation** — Real-time pitch/yaw gaze direction
+- **Face Parsing** — BiSeNet (19 classes) and XSeg (face mask)
+- **Gaze Estimation** — Pitch/yaw gaze direction (MobileGaze backbones)
+- **Head Pose** — Pitch/yaw/roll with 3D cube or axis visualization
+- **Portrait Matting** — Trimap-free MODNet alpha matte and background swap
+- **Face Tracking** — ByteTrack multi-face tracking on video input
 - **Anti-Spoofing** — Liveness detection (real vs. fake)
 - **Face Anonymization** — Privacy-preserving blur methods
