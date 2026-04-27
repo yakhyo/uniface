@@ -194,7 +194,7 @@ Releases are fully automated via GitHub Actions. Only maintainers with branch-pr
 
 ### Cutting a release
 
-1. Go to **Actions → Release → Run workflow** on GitHub.
+1. Go to **Actions → Release Pipeline → Run workflow** on GitHub.
 2. Enter the version following [PEP 440](https://peps.python.org/pep-0440/):
    - Stable: `0.7.0`, `1.0.0`
    - Pre-release: `0.7.0rc1`, `0.7.0b1`, `0.7.0a1`, `0.7.0.dev1`
@@ -202,17 +202,13 @@ Releases are fully automated via GitHub Actions. Only maintainers with branch-pr
 
 ### What happens automatically
 
-The `Release` workflow:
+The `Release Pipeline` workflow runs all stages in sequence:
 
-1. Validates the version string.
-2. Updates `pyproject.toml` and `uniface/__init__.py`.
-3. Commits `chore: Release vX.Y.Z` to `main`.
-4. Creates and pushes tag `vX.Y.Z`.
-
-Pushing the tag then triggers:
-
-- **Publish to PyPI** — builds the package, runs tests on Python 3.10–3.14, uploads to PyPI, and creates a GitHub Release (flagged as pre-release for `a`/`b`/`rc`/`.dev` versions).
-- **Deploy docs** — fires only after a **stable** GitHub Release is published. Pre-releases do not update the live documentation site.
+1. **Validate** — checks the version string against PEP 440 and confirms the tag does not already exist.
+2. **Test** — runs the test suite on Python 3.10–3.14.
+3. **Release** — updates `pyproject.toml` and `uniface/__init__.py`, commits `chore: Release vX.Y.Z` to `main`, creates and pushes tag `vX.Y.Z`.
+4. **Publish** — builds the package, uploads to PyPI, and creates a GitHub Release (flagged as pre-release for `a`/`b`/`rc`/`.dev` versions).
+5. **Deploy docs** — runs only for **stable** versions. Pre-releases do not update the live documentation site.
 
 ### Verifying a release
 

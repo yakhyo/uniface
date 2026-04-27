@@ -101,7 +101,7 @@ docs: Update installation instructions
 
 ## Releases
 
-Releases are automated via GitHub Actions. Maintainers trigger **Actions → Release → Run workflow** with a [PEP 440](https://peps.python.org/pep-0440/) version (e.g. `0.7.0`, `0.7.0rc1`). The workflow bumps `pyproject.toml` + `uniface/__init__.py`, tags the commit, and publishes to PyPI. Docs redeploy only for stable releases.
+Releases are automated via GitHub Actions. Maintainers trigger **Actions → Release Pipeline → Run workflow** with a [PEP 440](https://peps.python.org/pep-0440/) version (e.g. `0.7.0`, `0.7.0rc1`). The pipeline runs tests, bumps `pyproject.toml` + `uniface/__init__.py`, tags the commit, publishes to PyPI, and creates a GitHub Release. Docs redeploy only for stable releases.
 
 See [CONTRIBUTING.md](https://github.com/yakhyo/uniface/blob/main/CONTRIBUTING.md#release-process) for the full process.
 
