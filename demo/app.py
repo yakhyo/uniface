@@ -15,13 +15,17 @@ import uniface
 from uniface.constants import (
     AdaFaceWeights,
     ArcFaceWeights,
+    EdgeFaceWeights,
     GazeWeights,
+    HeadPoseWeights,
     MiniFASNetWeights,
     MobileFaceWeights,
+    MODNetWeights,
     ParsingWeights,
     RetinaFaceWeights,
     SCRFDWeights,
     SphereFaceWeights,
+    XSegWeights,
     YOLOv5FaceWeights,
     YOLOv8FaceWeights,
 )
@@ -30,6 +34,8 @@ from uniface.draw import (
     FACE_PARSING_LABELS,
     draw_detections,
     draw_gaze,
+    draw_head_pose,
+    draw_tracks,
     vis_parsing_maps,
 )
 
@@ -45,6 +51,13 @@ EXAMPLE_ATTR_1 = str(_DEMO_ASSETS_DIR / 'attribute' / 'image1.png')
 EXAMPLE_ATTR_2 = str(_DEMO_ASSETS_DIR / 'attribute' / 'image2.png')
 EXAMPLE_GAZE_1 = str(_DEMO_ASSETS_DIR / 'gaze' / 'image1.png')
 EXAMPLE_GAZE_2 = str(_DEMO_ASSETS_DIR / 'gaze' / 'image2.png')
+EXAMPLE_HEADPOSE_1 = str(_DEMO_ASSETS_DIR / 'headpose' / 'image1.jpg')
+EXAMPLE_HEADPOSE_2 = str(_DEMO_ASSETS_DIR / 'headpose' / 'image2.jpg')
+EXAMPLE_HEADPOSE_3 = str(_DEMO_ASSETS_DIR / 'headpose' / 'image3.jpg')
+EXAMPLE_MATTING_1 = str(_DEMO_ASSETS_DIR / 'matting' / 'image1.jpg')
+EXAMPLE_MATTING_2 = str(_DEMO_ASSETS_DIR / 'matting' / 'image2.jpg')
+EXAMPLE_PARSING_1 = str(_DEMO_ASSETS_DIR / 'parsing' / 'image1.jpg')
+EXAMPLE_PARSING_2 = str(_DEMO_ASSETS_DIR / 'parsing' / 'image2.jpg')
 EXAMPLE_SPOOF_1 = str(_DEMO_ASSETS_DIR / 'spoofing' / 'image1.jpg')
 EXAMPLE_SPOOF_2 = str(_DEMO_ASSETS_DIR / 'spoofing' / 'image2.jpg')
 EXAMPLE_SPOOF_3 = str(_DEMO_ASSETS_DIR / 'spoofing' / 'image3.jpg')
@@ -83,6 +96,7 @@ DETECTOR_METHOD_MAP: dict[str, str] = {
 RECOGNIZER_VARIANTS: dict[str, list[str]] = {
     'ArcFace': [w.value for w in ArcFaceWeights],
     'AdaFace': [w.value for w in AdaFaceWeights],
+    'EdgeFace': [w.value for w in EdgeFaceWeights],
     'MobileFace': [w.value for w in MobileFaceWeights],
     'SphereFace': [w.value for w in SphereFaceWeights],
 }
@@ -90,6 +104,7 @@ RECOGNIZER_VARIANTS: dict[str, list[str]] = {
 RECOGNIZER_METHOD_MAP: dict[str, str] = {
     'ArcFace': 'arcface',
     'AdaFace': 'adaface',
+    'EdgeFace': 'edgeface',
     'MobileFace': 'mobileface',
     'SphereFace': 'sphereface',
 }
@@ -102,14 +117,37 @@ GAZE_VARIANT_MAP: dict[str, GazeWeights] = {
     'MobileOne-S0': GazeWeights.MOBILEONE_S0,
 }
 
-PARSING_VARIANT_MAP: dict[str, ParsingWeights] = {
-    'ResNet18': ParsingWeights.RESNET18,
-    'ResNet34': ParsingWeights.RESNET34,
+HEADPOSE_VARIANT_MAP: dict[str, HeadPoseWeights] = {
+    'ResNet18': HeadPoseWeights.RESNET18,
+    'ResNet34': HeadPoseWeights.RESNET34,
+    'ResNet50': HeadPoseWeights.RESNET50,
+    'MobileNetV2': HeadPoseWeights.MOBILENET_V2,
+    'MobileNetV3-Small': HeadPoseWeights.MOBILENET_V3_SMALL,
+    'MobileNetV3-Large': HeadPoseWeights.MOBILENET_V3_LARGE,
+}
+
+PARSING_VARIANT_MAP: dict[str, ParsingWeights | XSegWeights] = {
+    'BiSeNet (ResNet18) — 19 classes': ParsingWeights.RESNET18,
+    'BiSeNet (ResNet34) — 19 classes': ParsingWeights.RESNET34,
+    'XSeg — face mask': XSegWeights.DEFAULT,
 }
 
 SPOOFING_VARIANT_MAP: dict[str, MiniFASNetWeights] = {
     'V1SE': MiniFASNetWeights.V1SE,
     'V2': MiniFASNetWeights.V2,
+}
+
+MATTING_VARIANT_MAP: dict[str, MODNetWeights] = {
+    'Photographic': MODNetWeights.PHOTOGRAPHIC,
+    'Webcam': MODNetWeights.WEBCAM,
+}
+
+MATTING_BACKGROUNDS: dict[str, tuple[int, int, int] | str] = {
+    'white': (255, 255, 255),
+    'black': (0, 0, 0),
+    'green': (0, 255, 0),
+    'blur': 'blur',
+    'alpha': 'alpha',
 }
 
 # Reverse lookup: enum .value string -> enum member (for all weight enums)
@@ -121,6 +159,7 @@ for _enum_cls in (
     YOLOv8FaceWeights,
     ArcFaceWeights,
     AdaFaceWeights,
+    EdgeFaceWeights,
     MobileFaceWeights,
     SphereFaceWeights,
 ):
@@ -293,10 +332,10 @@ def analyze_faces_fn(
 
     if attr_model == 'AgeGender':
         ag = _get_model('agegender', uniface.AgeGender)
-        analyzer = uniface.FaceAnalyzer(det, age_gender=ag)
+        analyzer = uniface.FaceAnalyzer(detector=det, recognizer=None, attributes=[ag])
     else:
         ff = _get_model('fairface', uniface.FairFace)
-        analyzer = uniface.FaceAnalyzer(det, fairface=ff)
+        analyzer = uniface.FaceAnalyzer(detector=det, recognizer=None, attributes=[ff])
 
     faces = analyzer.analyze(bgr)
     result = bgr.copy()
@@ -406,47 +445,59 @@ def parsing_fn(
 
     faces = det.detect(bgr)
     result = bgr.copy()
+    is_xseg = isinstance(weights, XSegWeights)
 
-    faces_json = {}
+    faces_json: dict = {}
     for i, face in enumerate(faces):
-        x1, y1, x2, y2 = _expand_bbox(face.bbox, bgr.shape)
-        crop = bgr[y1:y2, x1:x2]
-        if crop.size == 0:
-            continue
+        if is_xseg:
+            mask = parser.parse(bgr, landmarks=face.landmarks)  # (H, W) float in [0, 1]
+            x1, y1, x2, y2 = map(int, face.bbox)
+            mask_3 = np.clip(mask, 0.0, 1.0)[..., None]
+            overlay_color = np.array([0, 255, 0], dtype=np.float32)
+            overlay = mask_3 * overlay_color + (1.0 - mask_3) * bgr.astype(np.float32)
+            blended = (0.55 * bgr.astype(np.float32) + 0.45 * overlay).astype(np.uint8)
+            result = np.where(mask_3 > 0.05, blended, result).astype(np.uint8)
+            faces_json[f'face_{i + 1}'] = {
+                'x1': x1,
+                'y1': y1,
+                'x2': x2,
+                'y2': y2,
+                'mask_mean': round(float(mask.mean()), 4),
+                'face_pixels': int((mask > 0.5).sum()),
+            }
+        else:
+            x1, y1, x2, y2 = _expand_bbox(face.bbox, bgr.shape)
+            crop = bgr[y1:y2, x1:x2]
+            if crop.size == 0:
+                continue
 
-        mask = parser.parse(crop)
-        unique_classes = sorted(set(mask.flatten()))
-        class_names = [FACE_PARSING_LABELS[c] for c in unique_classes if c < len(FACE_PARSING_LABELS)]
-        faces_json[f'face_{i + 1}'] = {
-            'x1': x1,
-            'y1': y1,
-            'x2': x2,
-            'y2': y2,
-            'num_classes': len(unique_classes),
-            'classes': ', '.join(class_names),
-        }
+            mask = parser.parse(crop)
+            unique_classes = sorted(set(mask.flatten()))
+            class_names = [FACE_PARSING_LABELS[c] for c in unique_classes if c < len(FACE_PARSING_LABELS)]
+            faces_json[f'face_{i + 1}'] = {
+                'x1': x1,
+                'y1': y1,
+                'x2': x2,
+                'y2': y2,
+                'num_classes': len(unique_classes),
+                'classes': ', '.join(class_names),
+            }
 
-        crop_rgb = cv2.cvtColor(crop, cv2.COLOR_BGR2RGB)
-        vis = vis_parsing_maps(crop_rgb, mask, save_image=False)
-        result[y1:y2, x1:x2] = vis
+            crop_rgb = cv2.cvtColor(crop, cv2.COLOR_BGR2RGB)
+            vis = vis_parsing_maps(crop_rgb, mask, save_image=False)
+            result[y1:y2, x1:x2] = vis
 
-    # Build legend map
-    legend = {}
-    for idx, name in enumerate(FACE_PARSING_LABELS):
-        if idx == 0:
-            continue
-        r, g, b = FACE_PARSING_COLORS[idx]
-        legend[name] = f'rgb({r}, {g}, {b})'
+    info: dict = {'model': model_variant, 'num_faces': len(faces), **faces_json}
+    if not is_xseg:
+        legend = {}
+        for idx, name in enumerate(FACE_PARSING_LABELS):
+            if idx == 0:
+                continue
+            r, g, b = FACE_PARSING_COLORS[idx]
+            legend[name] = f'rgb({r}, {g}, {b})'
+        info['legend'] = legend
 
-    return _bgr_to_rgb(result), json.dumps(
-        {
-            'model': model_variant,
-            'num_faces': len(faces),
-            **faces_json,
-            'legend': legend,
-        },
-        indent=2,
-    )
+    return _bgr_to_rgb(result), json.dumps(info, indent=2)
 
 
 # ===================================================================
@@ -542,6 +593,212 @@ def spoofing_fn(
 
 
 # ===================================================================
+# Tab: Head Pose
+# ===================================================================
+def headpose_fn(
+    image: np.ndarray,
+    backbone: str,
+    draw_type: str,
+) -> tuple[np.ndarray, str]:
+    if image is None:
+        return None, ''
+
+    bgr = _rgb_to_bgr(image)
+    det = _get_model('det_retina_default', uniface.create_detector, 'retinaface')
+
+    weights = HEADPOSE_VARIANT_MAP[backbone]
+    estimator = _get_model(
+        f'headpose_{weights.value}',
+        uniface.create_head_pose_estimator,
+        model_name=weights,
+    )
+
+    faces = det.detect(bgr)
+    result = bgr.copy()
+
+    faces_json = {}
+    for i, face in enumerate(faces):
+        x1, y1, x2, y2 = map(int, face.bbox[:4])
+        crop = bgr[y1:y2, x1:x2]
+        if crop.size == 0:
+            continue
+
+        pose = estimator.estimate(crop)
+        faces_json[f'face_{i + 1}'] = {
+            'x1': x1,
+            'y1': y1,
+            'x2': x2,
+            'y2': y2,
+            'pitch_deg': round(float(pose.pitch), 2),
+            'yaw_deg': round(float(pose.yaw), 2),
+            'roll_deg': round(float(pose.roll), 2),
+        }
+
+        draw_head_pose(
+            result,
+            face.bbox,
+            pitch=pose.pitch,
+            yaw=pose.yaw,
+            roll=pose.roll,
+            draw_type=draw_type,
+            draw_bbox=True,
+            draw_angles=True,
+        )
+
+    return _bgr_to_rgb(result), json.dumps(
+        {'backbone': backbone, 'draw_type': draw_type, 'num_faces': len(faces), **faces_json},
+        indent=2,
+    )
+
+
+# ===================================================================
+# Tab: Portrait Matting (MODNet)
+# ===================================================================
+def matting_fn(
+    image: np.ndarray,
+    model_variant: str,
+    background: str,
+) -> tuple[np.ndarray, np.ndarray, str]:
+    if image is None:
+        return None, None, ''
+
+    bgr = _rgb_to_bgr(image)
+    weights = MATTING_VARIANT_MAP[model_variant]
+    matting = _get_model(f'modnet_{weights.value}', uniface.create_matting_model, weights)
+
+    matte = matting.predict(bgr)  # float32 (H, W) in [0, 1]
+    alpha = (matte * 255.0).clip(0, 255).astype(np.uint8)
+    alpha_3ch = cv2.cvtColor(alpha, cv2.COLOR_GRAY2BGR)
+
+    bg_choice = MATTING_BACKGROUNDS[background]
+    if bg_choice == 'alpha':
+        composited = alpha_3ch
+    elif bg_choice == 'blur':
+        bg_img = cv2.GaussianBlur(bgr, (0, 0), sigmaX=21, sigmaY=21)
+        matte_3 = matte[..., None]
+        composited = (bgr.astype(np.float32) * matte_3 + bg_img.astype(np.float32) * (1.0 - matte_3)).astype(np.uint8)
+    else:
+        bg_img = np.full_like(bgr, bg_choice, dtype=np.uint8)
+        matte_3 = matte[..., None]
+        composited = (bgr.astype(np.float32) * matte_3 + bg_img.astype(np.float32) * (1.0 - matte_3)).astype(np.uint8)
+
+    info = {
+        'model': model_variant,
+        'background': background,
+        'image_size': {'height': int(bgr.shape[0]), 'width': int(bgr.shape[1])},
+        'alpha_mean': round(float(matte.mean()), 4),
+        'alpha_max': round(float(matte.max()), 4),
+        'foreground_pixels': int((matte > 0.5).sum()),
+    }
+
+    return _bgr_to_rgb(composited), alpha, json.dumps(info, indent=2)
+
+
+# ===================================================================
+# Tab: Face Tracking (Video)
+# ===================================================================
+def _assign_track_ids(faces, tracks: np.ndarray) -> list:
+    """Match BYTETracker outputs back to ``Face`` objects by center distance."""
+    if len(tracks) == 0 or len(faces) == 0:
+        return []
+
+    track_ids = tracks[:, 4].astype(int)
+    track_centers = np.stack(
+        [(tracks[:, 0] + tracks[:, 2]) * 0.5, (tracks[:, 1] + tracks[:, 3]) * 0.5],
+        axis=1,
+    )
+    face_centers = np.array(
+        [[(f.bbox[0] + f.bbox[2]) * 0.5, (f.bbox[1] + f.bbox[3]) * 0.5] for f in faces],
+        dtype=np.float32,
+    )
+
+    for ti in range(len(tracks)):
+        dists = np.sum((track_centers[ti] - face_centers) ** 2, axis=1)
+        faces[int(np.argmin(dists))].track_id = int(track_ids[ti])
+
+    return [f for f in faces if f.track_id is not None]
+
+
+def tracking_fn(
+    video_path: str | None,
+    confidence: float,
+    track_buffer: int,
+    max_frames: int,
+) -> tuple[str | None, str]:
+    if not video_path:
+        return None, json.dumps({'error': 'Please upload a video.'}, indent=2)
+
+    cap = cv2.VideoCapture(video_path)
+    if not cap.isOpened():
+        return None, json.dumps({'error': f'Could not open video: {video_path}'}, indent=2)
+
+    fps = cap.get(cv2.CAP_PROP_FPS) or 25.0
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    frame_limit = min(total_frames, max_frames) if max_frames > 0 else total_frames
+
+    out_path = str(Path(video_path).with_name(Path(video_path).stem + '_tracked.mp4'))
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    writer = cv2.VideoWriter(out_path, fourcc, fps, (width, height))
+    if not writer.isOpened():
+        cap.release()
+        return None, json.dumps({'error': 'Could not initialise video writer.'}, indent=2)
+
+    detector = _get_model('det_retina_default', uniface.create_detector, 'retinaface')
+    # Always use a fresh tracker so IDs restart each run
+    tracker = uniface.BYTETracker(track_thresh=confidence, track_buffer=track_buffer)
+
+    seen_ids: set[int] = set()
+    processed = 0
+    while processed < frame_limit:
+        ret, frame = cap.read()
+        if not ret:
+            break
+
+        faces = detector.detect(frame)
+        if faces:
+            dets = np.array(
+                [[*f.bbox, f.confidence] for f in faces if f.confidence >= confidence],
+                dtype=np.float32,
+            )
+        else:
+            dets = np.empty((0, 5), dtype=np.float32)
+
+        tracks = tracker.update(dets) if len(dets) else np.empty((0, 5))
+        tracked_faces = _assign_track_ids(faces, tracks)
+        for tf in tracked_faces:
+            if tf.track_id is not None:
+                seen_ids.add(int(tf.track_id))
+
+        draw_tracks(image=frame, faces=tracked_faces)
+        cv2.putText(
+            frame,
+            f'frame {processed + 1}  tracks: {len(tracked_faces)}',
+            (10, 30),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.8,
+            (0, 255, 0),
+            2,
+        )
+        writer.write(frame)
+        processed += 1
+
+    cap.release()
+    writer.release()
+
+    info = {
+        'frames_processed': processed,
+        'video_total_frames': total_frames,
+        'fps': round(float(fps), 2),
+        'resolution': {'width': width, 'height': height},
+        'unique_track_ids': sorted(seen_ids),
+        'output_path': out_path,
+    }
+    return out_path, json.dumps(info, indent=2)
+
+
+# ===================================================================
 # Tab 8: Face Anonymization
 # ===================================================================
 def anonymize_fn(
@@ -573,7 +830,8 @@ def build_app() -> gr.Blocks:
             'Built on ONNX Runtime &nbsp;·&nbsp; Fast, lightweight, production-ready</p>'
             '<p style="margin: 0;">'
             'Face Detection · Recognition · Landmarks · Parsing · '
-            'Gaze Estimation · Attribute Analysis · Anti-Spoofing · Anonymization'
+            'Gaze · Head Pose · Portrait Matting · Tracking · '
+            'Attributes · Anti-Spoofing · Anonymization'
             '</p>'
             '<p style="margin: 8px 0 0;">'
             '<a href="https://github.com/yakhyo/uniface" target="_blank">⭐ Star on GitHub</a>'
@@ -731,7 +989,7 @@ def build_app() -> gr.Blocks:
                     with gr.Accordion('Settings', open=False):
                         par_variant = gr.Radio(
                             choices=list(PARSING_VARIANT_MAP.keys()),
-                            value='ResNet18',
+                            value=next(iter(PARSING_VARIANT_MAP)),
                             label='Parsing Model',
                         )
                     par_btn = gr.Button('Parse Faces', variant='primary')
@@ -745,8 +1003,16 @@ def build_app() -> gr.Blocks:
                 outputs=[par_output, par_text],
             )
 
+            _parsing_default_variant = next(iter(PARSING_VARIANT_MAP))
+            _parsing_xseg_variant = next(
+                (k for k, v in PARSING_VARIANT_MAP.items() if isinstance(v, XSegWeights)),
+                _parsing_default_variant,
+            )
             gr.Examples(
-                examples=[[EXAMPLE_DEFAULT, 'ResNet18']],
+                examples=[
+                    [EXAMPLE_PARSING_1, _parsing_default_variant],
+                    [EXAMPLE_PARSING_2, _parsing_xseg_variant],
+                ],
                 inputs=[par_image, par_variant],
                 label='Try an example',
             )
@@ -783,6 +1049,44 @@ def build_app() -> gr.Blocks:
                 label='Try an example',
             )
 
+        # ------ Tab: Head Pose ------
+        with gr.Tab('Head Pose'):
+            gr.Markdown('Estimate yaw, pitch, and roll of the head and visualize as a 3D cube or axis.')
+            with gr.Row():
+                with gr.Column():
+                    hp_image = gr.Image(label='Input Image', type='numpy')
+                    with gr.Accordion('Settings', open=False):
+                        hp_backbone = gr.Dropdown(
+                            choices=list(HEADPOSE_VARIANT_MAP.keys()),
+                            value='ResNet18',
+                            label='Backbone',
+                        )
+                        hp_draw_type = gr.Radio(
+                            choices=['cube', 'axis'],
+                            value='cube',
+                            label='Visualization',
+                        )
+                    hp_btn = gr.Button('Estimate Head Pose', variant='primary')
+                with gr.Column():
+                    hp_output = gr.Image(label='Result')
+                    hp_text = gr.Textbox(label='Pose Angles', lines=8, show_copy_button=True)
+
+            hp_btn.click(
+                headpose_fn,
+                inputs=[hp_image, hp_backbone, hp_draw_type],
+                outputs=[hp_output, hp_text],
+            )
+
+            gr.Examples(
+                examples=[
+                    [EXAMPLE_HEADPOSE_1, 'ResNet18', 'cube'],
+                    [EXAMPLE_HEADPOSE_2, 'ResNet18', 'axis'],
+                    [EXAMPLE_HEADPOSE_3, 'MobileNetV2', 'cube'],
+                ],
+                inputs=[hp_image, hp_backbone, hp_draw_type],
+                label='Try an example',
+            )
+
         # ------ Tab 7: Anti-Spoofing ------
         with gr.Tab('Anti-Spoofing'):
             gr.Markdown('Determine whether a face is real (live) or a spoof (printed photo, screen replay).')
@@ -814,6 +1118,71 @@ def build_app() -> gr.Blocks:
                 ],
                 inputs=[spf_image, spf_variant],
                 label='Try an example',
+            )
+
+        # ------ Tab: Portrait Matting ------
+        with gr.Tab('Portrait Matting'):
+            gr.Markdown(
+                'Trimap-free portrait matting with MODNet. Returns a soft alpha matte and '
+                'composites the foreground over a chosen background.',
+            )
+            with gr.Row():
+                with gr.Column():
+                    mat_image = gr.Image(label='Input Image', type='numpy')
+                    with gr.Accordion('Settings', open=False):
+                        mat_variant = gr.Radio(
+                            choices=list(MATTING_VARIANT_MAP.keys()),
+                            value='Photographic',
+                            label='Model Variant',
+                        )
+                        mat_background = gr.Dropdown(
+                            choices=list(MATTING_BACKGROUNDS.keys()),
+                            value='white',
+                            label='Background',
+                        )
+                    mat_btn = gr.Button('Run Matting', variant='primary')
+                with gr.Column():
+                    mat_output = gr.Image(label='Composited Result')
+                    mat_alpha = gr.Image(label='Alpha Matte')
+                    mat_text = gr.Textbox(label='Details', lines=8, show_copy_button=True)
+
+            mat_btn.click(
+                matting_fn,
+                inputs=[mat_image, mat_variant, mat_background],
+                outputs=[mat_output, mat_alpha, mat_text],
+            )
+
+            gr.Examples(
+                examples=[
+                    [EXAMPLE_MATTING_1, 'Photographic', 'white'],
+                    [EXAMPLE_MATTING_2, 'Photographic', 'blur'],
+                ],
+                inputs=[mat_image, mat_variant, mat_background],
+                label='Try an example',
+            )
+
+        # ------ Tab: Face Tracking (Video) ------
+        with gr.Tab('Face Tracking'):
+            gr.Markdown(
+                'Multi-face tracking on a short video using ByteTrack. '
+                'Each track gets a persistent ID and a unique colour across frames.',
+            )
+            with gr.Row():
+                with gr.Column():
+                    trk_video = gr.Video(label='Input Video', sources=['upload'])
+                    with gr.Accordion('Settings', open=False):
+                        trk_conf = gr.Slider(0.1, 0.95, value=0.5, step=0.05, label='Detection Confidence')
+                        trk_buffer = gr.Slider(5, 90, value=30, step=1, label='Track Buffer (frames)')
+                        trk_max_frames = gr.Slider(0, 600, value=300, step=10, label='Max Frames (0 = all)')
+                    trk_btn = gr.Button('Run Tracking', variant='primary')
+                with gr.Column():
+                    trk_output = gr.Video(label='Tracked Result')
+                    trk_text = gr.Textbox(label='Tracking Stats', lines=8, show_copy_button=True)
+
+            trk_btn.click(
+                tracking_fn,
+                inputs=[trk_video, trk_conf, trk_buffer, trk_max_frames],
+                outputs=[trk_output, trk_text],
             )
 
         # ------ Tab 8: Anonymization ------
