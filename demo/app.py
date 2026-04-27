@@ -9,6 +9,7 @@ from pathlib import Path
 
 import cv2
 import gradio as gr
+import gradio_client.utils as _gc_utils
 import numpy as np
 
 import uniface
@@ -38,6 +39,22 @@ from uniface.draw import (
     draw_tracks,
     vis_parsing_maps,
 )
+
+# Workaround for gradio_client bug: ``_json_schema_to_python_type`` recurses into
+# ``additionalProperties`` even when its value is a bool (a valid JSON Schema form),
+# producing ``TypeError: argument of type 'bool' is not iterable`` when Gradio's
+# SSR layer calls ``/info`` at boot. Patch defensively so any boolean schema
+# resolves to ``Any`` instead of crashing.
+_orig_json_schema_to_python_type = _gc_utils._json_schema_to_python_type
+
+
+def _safe_json_schema_to_python_type(schema, defs=None):
+    if isinstance(schema, bool):
+        return 'Any'
+    return _orig_json_schema_to_python_type(schema, defs)
+
+
+_gc_utils._json_schema_to_python_type = _safe_json_schema_to_python_type
 
 # ---------------------------------------------------------------------------
 # Resolve asset paths relative to this script so examples work from any cwd
@@ -1219,4 +1236,4 @@ def build_app() -> gr.Blocks:
 
 if __name__ == '__main__':
     app = build_app()
-    app.launch(allowed_paths=[str(_DEMO_ASSETS_DIR)])
+    app.launch(allowed_paths=[str(_DEMO_ASSETS_DIR)], ssr_mode=False, show_api=False)
