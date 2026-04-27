@@ -31,7 +31,7 @@ from __future__ import annotations
 
 __license__ = 'MIT'
 __author__ = 'Yakhyokhuja Valikhujaev'
-__version__ = '3.5.1rc1'
+__version__ = '3.5.1'
 
 import contextlib
 
