@@ -124,6 +124,7 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
+          token: ${{ secrets.RELEASE_TOKEN }}
           files: dist/*
           generate_release_notes: true
           prerelease: ${{ steps.prerelease.outputs.is_prerelease }}

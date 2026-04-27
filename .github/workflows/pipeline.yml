@@ -1,0 +1,221 @@
+name: Release Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version (e.g. 3.6.0, 3.6.0b1, 3.6.0rc1)'
+        required: true
+
+concurrency:
+  group: pipeline
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      is_prerelease: ${{ steps.prerelease.outputs.is_prerelease }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate version (PEP 440)
+        run: |
+          python - <<'EOF'
+          import re, sys
+          v = "${{ inputs.version }}"
+          if not re.fullmatch(r'\d+\.\d+\.\d+((a|b|rc)\d+|\.dev\d+)?', v):
+              print(f"Invalid version: {v}")
+              print("Expected forms: 3.6.0, 3.6.0a1, 3.6.0b1, 3.6.0rc1, 3.6.0.dev1")
+              sys.exit(1)
+          EOF
+
+      - name: Check tag does not exist
+        run: |
+          if git rev-parse "v${{ inputs.version }}" >/dev/null 2>&1; then
+            echo "Tag v${{ inputs.version }} already exists."
+            exit 1
+          fi
+
+      - name: Detect pre-release
+        id: prerelease
+        run: |
+          if [[ "${{ inputs.version }}" =~ (a|b|rc|\.dev)[0-9]+ ]]; then
+            echo "is_prerelease=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_prerelease=false" >> $GITHUB_OUTPUT
+          fi
+
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: validate
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install ".[cpu,dev]"
+
+      - name: Run tests
+        run: pytest -v --tb=short
+
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: test
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Update pyproject.toml
+        run: |
+          python - <<'EOF'
+          import re, pathlib
+          p = pathlib.Path('pyproject.toml')
+          text = p.read_text()
+          new = re.sub(r'^version\s*=\s*".*"', f'version = "${{ inputs.version }}"', text, count=1, flags=re.M)
+          if new == text:
+              raise SystemExit("Failed to update version in pyproject.toml")
+          p.write_text(new)
+          EOF
+
+      - name: Update uniface/__init__.py
+        run: |
+          python - <<'EOF'
+          import re, pathlib
+          p = pathlib.Path('uniface/__init__.py')
+          text = p.read_text()
+          new = re.sub(r"^__version__\s*=\s*'.*'", f"__version__ = '${{ inputs.version }}'", text, count=1, flags=re.M)
+          if new == text:
+              raise SystemExit("Failed to update __version__ in uniface/__init__.py")
+          p.write_text(new)
+          EOF
+
+      - name: Commit, tag, push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pyproject.toml uniface/__init__.py
+          git commit -m "chore: Release v${{ inputs.version }}"
+          git tag "v${{ inputs.version }}"
+          git push origin HEAD:${{ github.ref_name }}
+          git push origin "v${{ inputs.version }}"
+
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [validate, release]
+    permissions:
+      contents: write
+      id-token: write
+    environment:
+      name: pypi
+      url: https://pypi.org/project/uniface/
+
+    steps:
+      - name: Checkout tag
+        uses: actions/checkout@v4
+        with:
+          ref: v${{ inputs.version }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: 'pip'
+
+      - name: Install build tools
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install build twine
+
+      - name: Build package
+        run: python -m build
+
+      - name: Check package
+        run: twine check dist/*
+
+      - name: Publish to PyPI
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: twine upload dist/*
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ inputs.version }}
+          files: dist/*
+          generate_release_notes: true
+          prerelease: ${{ needs.validate.outputs.is_prerelease }}
+
+  docs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [validate, publish]
+    if: needs.validate.outputs.is_prerelease == 'false'
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout tag
+        uses: actions/checkout@v4
+        with:
+          ref: v${{ inputs.version }}
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install mkdocs-material pymdown-extensions mkdocs-git-committers-plugin-2 mkdocs-git-revision-date-localized-plugin
+
+      - name: Build docs
+        env:
+          MKDOCS_GIT_COMMITTERS_APIKEY: ${{ secrets.MKDOCS_GIT_COMMITTERS_APIKEY }}
+        run: mkdocs build --strict
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
+          destination_dir: docs
