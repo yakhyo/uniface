@@ -159,7 +159,7 @@ def download_file(url: str, dest_path: str, timeout: int = 60, max_retries: int 
                     unit_divisor=1024,
                 ) as progress,
             ):
-                for chunk in response.iter_content(chunk_size=const.CHUNK_SIZE):
+                for chunk in response.iter_content(chunk_size=const.DOWNLOAD_CHUNK_SIZE):
                     if chunk:
                         file.write(chunk)
                         progress.update(len(chunk))
@@ -178,7 +178,7 @@ def verify_file_hash(file_path: str, expected_hash: str) -> bool:
     """Compute the SHA-256 hash of the file and compare it with the expected hash."""
     file_hash = hashlib.sha256()
     with open(file_path, 'rb') as f:
-        for chunk in iter(lambda: f.read(const.CHUNK_SIZE), b''):
+        for chunk in iter(lambda: f.read(const.HASH_CHUNK_SIZE), b''):
             file_hash.update(chunk)
     actual_hash = file_hash.hexdigest()
     if actual_hash != expected_hash:
