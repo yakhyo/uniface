@@ -2,12 +2,6 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-"""Model weight management for UniFace.
-
-This module handles downloading, caching, and verifying model weights
-using SHA-256 checksums for integrity validation.
-"""
-
 from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -187,7 +181,7 @@ def verify_file_hash(file_path: str, expected_hash: str) -> bool:
 
 
 def download_models(
-    model_names: list[Enum], max_workers: int = 4, timeout: int = 60, max_retries: int = 3
+    model_names: list[Enum], max_workers: int | None = None, timeout: int = 60, max_retries: int = 3
 ) -> dict[Enum, str]:
     """Download and verify multiple models concurrently.
 
@@ -213,6 +207,17 @@ def download_models(
     """
     results: dict[Enum, str] = {}
     errors: list[str] = []
+
+    if isinstance(max_workers, bool) or not isinstance(max_workers, int | None):
+        raise TypeError(f'max_workers must be int or None, got {type(max_workers).__name__}')
+
+    if max_workers is None or max_workers < 1:
+        if max_workers < 1:
+            Logger.info(f'max_workers must be >= 1, got {max_workers}; falling back to auto mode')
+        max_workers = min(os.cpu_count(), 8)  # at most 8
+
+    if max_workers < 1:
+        raise ValueError(f'max_workers must be >= 1, got {max_workers}')
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         future_to_model = {

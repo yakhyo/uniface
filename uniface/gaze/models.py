@@ -6,6 +6,7 @@
 import cv2
 import numpy as np
 
+from uniface.common import softmax
 from uniface.constants import GazeWeights
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
@@ -142,11 +143,6 @@ class MobileGaze(BaseGazeEstimator):
 
         return image
 
-    def _softmax(self, x: np.ndarray) -> np.ndarray:
-        """Apply softmax along axis 1."""
-        e_x = np.exp(x - np.max(x, axis=1, keepdims=True))
-        return e_x / e_x.sum(axis=1, keepdims=True)
-
     def postprocess(self, outputs: tuple[np.ndarray, np.ndarray]) -> GazeResult:
         """
         Postprocess raw model outputs into gaze angles.
@@ -164,8 +160,8 @@ class MobileGaze(BaseGazeEstimator):
         yaw_logits, pitch_logits = outputs
 
         # Convert logits to probabilities
-        yaw_probs = self._softmax(yaw_logits)
-        pitch_probs = self._softmax(pitch_logits)
+        yaw_probs = softmax(yaw_logits)
+        pitch_probs = softmax(pitch_logits)
 
         # Compute expected bin index (soft-argmax)
         yaw_deg = np.sum(yaw_probs * self._idx_tensor, axis=1) * self._binwidth - self._angle_offset

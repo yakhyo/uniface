@@ -6,6 +6,7 @@
 import cv2
 import numpy as np
 
+from uniface.common import softmax
 from uniface.constants import MiniFASNetWeights
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
@@ -179,11 +180,6 @@ class MiniFASNet(BaseSpoofer):
 
         return face
 
-    def _softmax(self, x: np.ndarray) -> np.ndarray:
-        """Apply softmax to logits along axis 1."""
-        e_x = np.exp(x - np.max(x, axis=1, keepdims=True))
-        return e_x / e_x.sum(axis=1, keepdims=True)
-
     def postprocess(self, outputs: np.ndarray) -> SpoofingResult:
         """
         Postprocess raw model outputs into prediction result.
@@ -197,7 +193,7 @@ class MiniFASNet(BaseSpoofer):
         Returns:
             SpoofingResult: Result containing is_real flag and confidence score.
         """
-        probs = self._softmax(outputs)
+        probs = softmax(outputs)
         label_idx = int(np.argmax(probs))
         confidence = float(probs[0, label_idx])
 

@@ -677,14 +677,10 @@ def vis_parsing_maps(
     segmentation_mask = segmentation_mask.copy().astype(np.uint8)
 
     # Create a color mask
-    segmentation_mask_color = np.zeros((segmentation_mask.shape[0], segmentation_mask.shape[1], 3))
-
-    num_classes = np.max(segmentation_mask)
-    for class_index in range(1, num_classes + 1):
-        class_pixels = np.where(segmentation_mask == class_index)
-        segmentation_mask_color[class_pixels[0], class_pixels[1], :] = FACE_PARSING_COLORS[class_index]
-
-    segmentation_mask_color = segmentation_mask_color.astype(np.uint8)
+    max_class = int(segmentation_mask.max())
+    palette = np.zeros((max(max_class + 1, len(FACE_PARSING_COLORS)), 3), dtype=np.uint8)
+    palette[: len(FACE_PARSING_COLORS)] = FACE_PARSING_COLORS
+    segmentation_mask_color = palette[segmentation_mask]
 
     # Convert image to BGR format for blending
     bgr_image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)

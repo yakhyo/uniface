@@ -2,12 +2,6 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-"""Logging utilities for UniFace.
-
-This module provides a centralized logger for the UniFace library,
-allowing users to enable verbose logging when debugging or developing.
-"""
-
 from __future__ import annotations
 
 import logging

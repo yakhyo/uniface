@@ -13,7 +13,7 @@ from typing import Any, Literal
 
 import numpy as np
 
-from uniface.common import letterbox_resize, non_max_suppression
+from uniface.common import letterbox_resize, non_max_suppression, softmax
 from uniface.constants import YOLOv8FaceWeights
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
@@ -171,12 +171,6 @@ class YOLOv8Face(BaseDetector):
         """
         return self.session.run(self.output_names, {self.input_names: input_tensor})
 
-    @staticmethod
-    def _softmax(x: np.ndarray, axis: int = -1) -> np.ndarray:
-        """Compute softmax values for array x along specified axis."""
-        exp_x = np.exp(x - np.max(x, axis=axis, keepdims=True))
-        return exp_x / np.sum(exp_x, axis=axis, keepdims=True)
-
     def postprocess(
         self,
         predictions: list[np.ndarray],
@@ -224,7 +218,7 @@ class YOLOv8Face(BaseDetector):
 
             # Decode bounding boxes from DFL
             bbox_pred = bbox_pred.reshape(-1, 4, 16)
-            bbox_dist = self._softmax(bbox_pred, axis=-1) @ np.arange(16)
+            bbox_dist = softmax(bbox_pred, axis=-1) @ np.arange(16)
 
             # Convert distances to xyxy format
             x1 = (grid_x - bbox_dist[:, 0]) * stride
