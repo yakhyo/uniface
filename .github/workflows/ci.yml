@@ -52,26 +52,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v6
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
         with:
+          enable-cache: true
           python-version: ${{ matrix.python-version }}
-          cache: "pip"
 
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install ".[cpu,dev]"
+        run: uv sync --locked --extra cpu --extra dev
 
       - name: Check ONNX Runtime providers
-        run: |
-          python -c "import onnxruntime as ort; print('Available providers:', ort.get_available_providers())"
+        run: uv run python -c "import onnxruntime as ort; print('Available providers:', ort.get_available_providers())"
 
       - name: Run tests
-        run: pytest -v --tb=short
+        run: uv run pytest -v --tb=short
 
       - name: Test package imports
-        run: python -c "import uniface; print(f'uniface {uniface.__version__} loaded with {len(uniface.__all__)} exports')"
+        run: uv run python -c "import uniface; print(f'uniface {uniface.__version__} loaded with {len(uniface.__all__)} exports')"
 
   build:
     runs-on: ubuntu-latest

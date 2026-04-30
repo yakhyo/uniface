@@ -1,9 +1,0 @@
-numpy>=1.21.0
-opencv-python>=4.5.0
-scikit-image>=0.22.0
-scipy>=1.7.0
-requests>=2.28.0
-tqdm>=4.64.0
-# Install ONE of the following (not both):
-# onnxruntime>=1.16.0        # CPU / Apple Silicon  →  pip install uniface[cpu]
-# onnxruntime-gpu>=1.16.0    # NVIDIA CUDA          →  pip install uniface[gpu]

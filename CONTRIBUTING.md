@@ -21,25 +21,31 @@ Thank you for considering contributing to UniFace! We welcome contributions of a
 
 ## Development Setup
 
+We use [uv](https://docs.astral.sh/uv/) for reproducible dev installs. The committed `uv.lock` pins every transitive dependency so contributors and CI resolve to identical versions.
+
 ```bash
+# Install uv (https://docs.astral.sh/uv/getting-started/installation/)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
 git clone https://github.com/yakhyo/uniface.git
 cd uniface
-pip install -e ".[dev]"
+
+# Sync runtime + cpu + dev extras from uv.lock (use --extra gpu instead of cpu for CUDA)
+uv sync --extra cpu --extra dev
 ```
+
+`uv sync` creates a project-local `.venv/` and installs everything pinned in `uv.lock`. Run commands with `uv run <cmd>` (e.g. `uv run pytest`), or activate the venv with `source .venv/bin/activate`.
 
 ### Setting Up Pre-commit Hooks
 
-We use [pre-commit](https://pre-commit.com/) to ensure code quality and consistency. Install and configure it:
+We use [pre-commit](https://pre-commit.com/) to ensure code quality and consistency. `pre-commit` is included in the `[dev]` extra, so it's already installed after `uv sync`.
 
 ```bash
-# Install pre-commit
-pip install pre-commit
-
 # Install the git hooks
-pre-commit install
+uv run pre-commit install
 
 # (Optional) Run against all files
-pre-commit run --all-files
+uv run pre-commit run --all-files
 ```
 
 Once installed, pre-commit will automatically run on every commit to check:

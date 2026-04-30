@@ -6,16 +6,20 @@ Thank you for contributing to UniFace!
 
 ## Quick Start
 
+We use [uv](https://docs.astral.sh/uv/) for reproducible dev installs (lockfile-pinned).
+
 ```bash
+# Install uv first: https://docs.astral.sh/uv/getting-started/installation/
+
 # Clone
 git clone https://github.com/yakhyo/uniface.git
 cd uniface
 
-# Install dev dependencies
-pip install -e ".[dev]"
+# Install runtime + cpu + dev extras from uv.lock (--extra gpu for CUDA)
+uv sync --extra cpu --extra dev
 
 # Run tests
-pytest
+uv run pytest
 ```
 
 ---
@@ -39,10 +43,11 @@ ruff check . --fix
 
 ## Pre-commit Hooks
 
+`pre-commit` is included in the `[dev]` extra, so `uv sync` already installs it.
+
 ```bash
-pip install pre-commit
-pre-commit install
-pre-commit run --all-files
+uv run pre-commit install
+uv run pre-commit run --all-files
 ```
 
 ---
