@@ -198,7 +198,10 @@ def main():
     parser_arg.add_argument('--source', type=str, required=True, help='Image/video path or camera ID (0, 1, ...)')
     parser_arg.add_argument('--save-dir', type=str, default='outputs', help='Output directory')
     parser_arg.add_argument(
-        '--model', type=str, default=ParsingWeights.RESNET18, choices=[ParsingWeights.RESNET18, ParsingWeights.RESNET34]
+        '--model',
+        type=ParsingWeights,
+        default=ParsingWeights.RESNET18,
+        choices=list(ParsingWeights),
     )
     parser_arg.add_argument(
         '--expand-ratio',

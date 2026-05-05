@@ -19,6 +19,7 @@ __all__ = [
     'letterbox_resize',
     'non_max_suppression',
     'resize_image',
+    'softmax',
     'xyxy_to_cxcywh',
 ]
 
@@ -61,6 +62,21 @@ def resize_image(
     image[:new_height, :new_width, :] = resized_frame
 
     return image, resize_factor
+
+
+def softmax(x: np.ndarray, axis: int = -1) -> np.ndarray:
+    """Compute the numerically stable softmax of an array along ``axis``.
+
+    Args:
+        x: Input array.
+        axis: Axis along which softmax is computed. Defaults to the last axis.
+
+    Returns:
+        Array of the same shape as *x* with values in ``[0, 1]`` summing to 1
+        along *axis*.
+    """
+    exp_x = np.exp(x - np.max(x, axis=axis, keepdims=True))
+    return exp_x / np.sum(exp_x, axis=axis, keepdims=True)
 
 
 def xyxy_to_cxcywh(bboxes: np.ndarray) -> np.ndarray:

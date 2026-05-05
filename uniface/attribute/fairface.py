@@ -7,6 +7,7 @@ import cv2
 import numpy as np
 
 from uniface.attribute.base import Attribute
+from uniface.common import softmax
 from uniface.constants import FairFaceWeights
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
@@ -150,9 +151,9 @@ class FairFace(Attribute):
         race_logits, gender_logits, age_logits = prediction
 
         # Apply softmax
-        race_probs = self._softmax(race_logits[0])
-        gender_probs = self._softmax(gender_logits[0])
-        age_probs = self._softmax(age_logits[0])
+        race_probs = softmax(race_logits[0])
+        gender_probs = softmax(gender_logits[0])
+        age_probs = softmax(age_logits[0])
 
         # Get predictions
         race_idx = int(np.argmax(race_probs))
@@ -186,9 +187,3 @@ class FairFace(Attribute):
         face.age_group = result.age_group
         face.race = result.race
         return result
-
-    @staticmethod
-    def _softmax(x: np.ndarray) -> np.ndarray:
-        """Compute softmax values for numerical stability."""
-        exp_x = np.exp(x - np.max(x))
-        return exp_x / np.sum(exp_x)

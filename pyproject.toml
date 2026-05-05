@@ -51,14 +51,20 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-cpu = ["onnxruntime>=1.16.0"]
-gpu = ["onnxruntime-gpu>=1.16.0"]
+cpu = [
+    "onnxruntime>=1.16.0; python_version >= '3.11'",
+    "onnxruntime>=1.16.0,<1.24; python_version < '3.11'",
+]
+gpu = [
+    "onnxruntime-gpu>=1.16.0; python_version >= '3.11'",
+    "onnxruntime-gpu>=1.16.0,<1.24; python_version < '3.11'",
+]
 dev = ["pytest>=7.0.0", "ruff>=0.4.0", "pre-commit>=3.0.0"]
 docs = [
-    "mkdocs-material>=9.0",
-    "pymdown-extensions>=10.0",
-    "mkdocs-git-committers-plugin-2>=1.0",
-    "mkdocs-git-revision-date-localized-plugin>=2.0",
+    "mkdocs-material",
+    "pymdown-extensions",
+    "mkdocs-git-committers-plugin-2",
+    "mkdocs-git-revision-date-localized-plugin",
 ]
 
 [project.urls]

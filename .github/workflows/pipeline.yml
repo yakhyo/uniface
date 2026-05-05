@@ -68,19 +68,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v6
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
         with:
+          enable-cache: true
           python-version: ${{ matrix.python-version }}
-          cache: 'pip'
 
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install ".[cpu,dev]"
+        run: uv sync --locked --extra cpu --extra dev
 
       - name: Run tests
-        run: pytest -v --tb=short
+        run: uv run pytest -v --tb=short
 
   release:
     runs-on: ubuntu-latest
@@ -198,20 +196,19 @@ jobs:
           ref: v${{ inputs.version }}
           fetch-depth: 0
 
-      - name: Set up Python
-        uses: actions/setup-python@v6
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
         with:
+          enable-cache: true
           python-version: "3.11"
 
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install mkdocs-material pymdown-extensions mkdocs-git-committers-plugin-2 mkdocs-git-revision-date-localized-plugin
+        run: uv sync --locked --extra docs
 
       - name: Build docs
         env:
           MKDOCS_GIT_COMMITTERS_APIKEY: ${{ secrets.MKDOCS_GIT_COMMITTERS_APIKEY }}
-        run: mkdocs build --strict
+        run: uv run mkdocs build --strict
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4

@@ -469,4 +469,5 @@ MODEL_REGISTRY: dict[Enum, ModelInfo] = {
 MODEL_URLS: dict[Enum, str] = {k: v.url for k, v in MODEL_REGISTRY.items()}
 MODEL_SHA256: dict[Enum, str] = {k: v.sha256 for k, v in MODEL_REGISTRY.items()}
 
-CHUNK_SIZE = 8192
+DOWNLOAD_CHUNK_SIZE = 256 * 1024  # 256 KiB
+HASH_CHUNK_SIZE = 1024 * 1024  # 1 MiB

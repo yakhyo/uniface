@@ -113,9 +113,10 @@ class FaceAnalyzer:
         return faces
 
     def __repr__(self) -> str:
-        parts = [f'FaceAnalyzer(detector={self.detector.__class__.__name__}']
+        parts = [f'detector={self.detector.__class__.__name__}']
         if self.recognizer:
             parts.append(f'recognizer={self.recognizer.__class__.__name__}')
-        for attr in self.attributes:
-            parts.append(f'{attr.__class__.__name__}')
-        return ', '.join(parts) + ')'
+        if self.attributes:
+            attr_names = ', '.join(attr.__class__.__name__ for attr in self.attributes)
+            parts.append(f'attributes=[{attr_names}]')
+        return f'FaceAnalyzer({", ".join(parts)})'
