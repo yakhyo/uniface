@@ -115,7 +115,7 @@ class FAISS(BaseStore):
         return None, similarity
 
     def remove(self, key: str, value: Any) -> int:
-        """Remove all entries where ``metadata[key] == value`` and rebuild.
+        """Remove all entries where ``metadata[key] == value``.
 
         Args:
             key: Metadata key to match against.
@@ -126,22 +126,19 @@ class FAISS(BaseStore):
         """
         faiss = _import_faiss()
 
-        keep = [i for i, m in enumerate(self.metadata) if m.get(key) != value]
-        removed = len(self.metadata) - len(keep)
-        if removed == 0:
+        to_remove = [i for i, m in enumerate(self.metadata) if m.get(key) == value]
+        if not to_remove:
             return 0
 
-        if keep:
-            vectors = np.empty((len(keep), self.embedding_size), dtype=np.float32)
-            for dst, src in enumerate(keep):
-                self.index.reconstruct(src, vectors[dst])
-            new_index = faiss.IndexFlatIP(self.embedding_size)
-            new_index.add(vectors)
-        else:
-            new_index = faiss.IndexFlatIP(self.embedding_size)
+        ids = np.array(to_remove, dtype=np.int64)
+        self.index.remove_ids(faiss.IDSelectorBatch(ids))
 
-        self.index = new_index
-        self.metadata = [self.metadata[i] for i in keep]
+        # IndexFlatIP.remove_ids preserves the relative order of survivors,
+        # so deleting the same positions from metadata keeps them aligned.
+        drop = set(to_remove)
+        self.metadata = [m for i, m in enumerate(self.metadata) if i not in drop]
+
+        removed = len(to_remove)
         Logger.info('Removed %d entries where %s=%s (%d remaining)', removed, key, value, self.index.ntotal)
         return removed
 
