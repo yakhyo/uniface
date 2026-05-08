@@ -155,6 +155,16 @@ class LandmarkWeights(str, Enum):
     DEFAULT = "2d_106"
 
 
+class PIPNetWeights(str, Enum):
+    """
+    PIPNet: Pixel-in-Pixel Net for facial landmark detection.
+    ResNet-18 backbone, 256x256 input.
+    https://github.com/yakhyo/pipnet-onnx
+    """
+    WFLW_98         = "pipnet_r18_wflw_98"
+    DW300_CELEBA_68 = "pipnet_r18_300w_celeba_68"
+
+
 class GazeWeights(str, Enum):
     """
     MobileGaze: Real-Time Gaze Estimation models.
@@ -377,6 +387,16 @@ MODEL_REGISTRY: dict[Enum, ModelInfo] = {
     LandmarkWeights.DEFAULT: ModelInfo(
         url='https://github.com/yakhyo/uniface/releases/download/weights/2d106det.onnx',
         sha256='f001b856447c413801ef5c42091ed0cd516fcd21f2d6b79635b1e733a7109dbf'
+    ),
+
+    # PIPNet (98 / 68 point landmarks)
+    PIPNetWeights.WFLW_98: ModelInfo(
+        url='https://github.com/yakhyo/pipnet-onnx/releases/download/weights/pipnet_r18_wflw_98.onnx',
+        sha256='9862838dc6144bc772b6485f6f6d31295c0b1c1ab7293e6ddeb0a439cb10218d'
+    ),
+    PIPNetWeights.DW300_CELEBA_68: ModelInfo(
+        url='https://github.com/yakhyo/pipnet-onnx/releases/download/weights/pipnet_r18_300w_celeba_68.onnx',
+        sha256='63fa56fd4b8f6ccc4b88f2b36e00fa3d8c21a2c4244ab9381e8b432cef35197b'
     ),
 
     # Gaze (MobileGaze)

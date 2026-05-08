@@ -17,7 +17,7 @@ This library provides unified APIs for:
 - Face detection (RetinaFace, SCRFD, YOLOv5Face, YOLOv8Face)
 - Face recognition (AdaFace, ArcFace, EdgeFace, MobileFace, SphereFace)
 - Face tracking (ByteTrack with Kalman filtering)
-- Facial landmarks (106-point detection)
+- Facial landmarks (106 / 98 / 68-point detection: 2d106det, PIPNet)
 - Face parsing (semantic segmentation)
 - Portrait matting (trimap-free alpha matte)
 - Gaze estimation
@@ -51,7 +51,7 @@ from .detection import (
 )
 from .gaze import MobileGaze, create_gaze_estimator
 from .headpose import HeadPose, create_head_pose_estimator
-from .landmark import Landmark106, create_landmarker
+from .landmark import Landmark106, PIPNet, create_landmarker
 from .matting import MODNet, create_matting_model
 from .parsing import BiSeNet, XSeg, create_face_parser
 from .privacy import BlurFace
@@ -95,6 +95,7 @@ __all__ = [
     'SphereFace',
     # Landmark models
     'Landmark106',
+    'PIPNet',
     # Gaze models
     'GazeResult',
     'MobileGaze',
