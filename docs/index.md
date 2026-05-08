@@ -41,7 +41,7 @@ AdaFace, ArcFace, EdgeFace, MobileFace, and SphereFace embeddings for identity v
 
 <div class="feature-card" markdown>
 ### :material-map-marker: Landmarks
-Accurate 106-point facial landmark localization for detailed face analysis.
+Dense facial landmark localization — 106-point (2d106det) and 98 / 68-point (PIPNet) variants.
 </div>
 
 <div class="feature-card" markdown>

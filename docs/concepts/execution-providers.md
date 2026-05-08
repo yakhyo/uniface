@@ -43,7 +43,7 @@ All **ONNX-based** model classes accept the `providers` parameter:
 
 - Detection: `RetinaFace`, `SCRFD`, `YOLOv5Face`, `YOLOv8Face`
 - Recognition: `ArcFace`, `AdaFace`, `MobileFace`, `SphereFace`
-- Landmarks: `Landmark106`
+- Landmarks: `Landmark106`, `PIPNet`
 - Gaze: `MobileGaze`
 - Parsing: `BiSeNet`, `XSeg`
 - Attributes: `AgeGender`, `FairFace`

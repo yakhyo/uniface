@@ -43,7 +43,7 @@ class Face:
     # Required (from detection)
     bbox: np.ndarray        # [x1, y1, x2, y2]
     confidence: float       # 0.0 to 1.0
-    landmarks: np.ndarray   # (5, 2) or (106, 2)
+    landmarks: np.ndarray   # (5, 2) from detectors. Dense landmarkers return (106, 2), (98, 2), or (68, 2).
 
     # Optional (enriched by analyzers)
     embedding: np.ndarray | None = None

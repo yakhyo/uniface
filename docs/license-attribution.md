@@ -23,3 +23,4 @@ UniFace is released under the [MIT License](https://opensource.org/licenses/MIT)
 | MODNet | [yakhyo/modnet](https://github.com/yakhyo/modnet) | Apache-2.0 |
 | MiniFASNet | [yakhyo/face-anti-spoofing](https://github.com/yakhyo/face-anti-spoofing) | Apache-2.0 |
 | FairFace | [yakhyo/fairface-onnx](https://github.com/yakhyo/fairface-onnx) | CC BY 4.0 |
+| PIPNet | [yakhyo/pipnet-onnx](https://github.com/yakhyo/pipnet-onnx) — meanface tables vendored from [jhb86253817/PIPNet](https://github.com/jhb86253817/PIPNet) | MIT |

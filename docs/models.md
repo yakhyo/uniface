@@ -196,6 +196,26 @@ Facial landmark localization model.
 
 ---
 
+### PIPNet (98 / 68 points)
+
+PIPNet (Pixel-in-Pixel Net) facial landmark detector. ResNet-18 backbone, 256×256 input.
+
+| Model Name | Points | Backbone | Dataset | Size |
+| ---------- | ------ | -------- | ------- | ---- |
+| `WFLW_98` :material-check-circle: | 98 | ResNet-18 | WFLW (supervised) | 47 MB |
+| `DW300_CELEBA_68` | 68 | ResNet-18 | 300W+CelebA (GSSL) | 46 MB |
+
+!!! info "Reference"
+    **Paper**: [PIPNet: Towards Efficient Facial Landmark Detection in the Wild](https://arxiv.org/abs/2003.03771) (IJCV 2021)
+
+    **Source**: [yakhyo/pipnet-onnx](https://github.com/yakhyo/pipnet-onnx) — ONNX export from [jhb86253817/PIPNet](https://github.com/jhb86253817/PIPNet)
+
+!!! note "Auto-selected meanface"
+    Both variants share the same architecture; the number of landmarks (and the matching
+    meanface table) is inferred from the ONNX output channel count.
+
+---
+
 ## Attribute Analysis Models
 
 ### Age & Gender Detection
@@ -453,6 +473,7 @@ See [Model Cache & Offline Use](concepts/model-cache-offline.md) for full detail
 - **Portrait Matting**: [yakhyo/modnet](https://github.com/yakhyo/modnet) - MODNet ported weights and inference (from [ZHKKKe/MODNet](https://github.com/ZHKKKe/MODNet))
 - **Face Anti-Spoofing**: [yakhyo/face-anti-spoofing](https://github.com/yakhyo/face-anti-spoofing) - MiniFASNet ONNX inference (weights from [minivision-ai/Silent-Face-Anti-Spoofing](https://github.com/minivision-ai/Silent-Face-Anti-Spoofing))
 - **FairFace**: [yakhyo/fairface-onnx](https://github.com/yakhyo/fairface-onnx) - FairFace ONNX inference for race, gender, age prediction
+- **PIPNet**: [yakhyo/pipnet-onnx](https://github.com/yakhyo/pipnet-onnx) - PIPNet ONNX export and inference (from [jhb86253817/PIPNet](https://github.com/jhb86253817/PIPNet))
 - **InsightFace**: [deepinsight/insightface](https://github.com/deepinsight/insightface) - Model architectures and pretrained weights
 
 ### Papers
@@ -465,3 +486,4 @@ See [Model Cache & Offline Use](concepts/model-cache-offline.md) for full detail
 - **SphereFace**: [Deep Hypersphere Embedding for Face Recognition](https://arxiv.org/abs/1704.08063)
 - **MODNet**: [Real-Time Trimap-Free Portrait Matting via Objective Decomposition](https://arxiv.org/abs/2011.11961)
 - **BiSeNet**: [Bilateral Segmentation Network for Real-time Semantic Segmentation](https://arxiv.org/abs/1808.00897)
+- **PIPNet**: [Towards Efficient Facial Landmark Detection in the Wild](https://arxiv.org/abs/2003.03771)

@@ -12,6 +12,7 @@ Overview of all training datasets and evaluation benchmarks used by UniFace mode
 | Recognition | [MS1MV2](#ms1mv2)                                | 5.8M images, 85.7K IDs | MobileFace, SphereFace                      |
 | Recognition | [WebFace600K](#webface600k)                      | 600K images            | ArcFace                                     |
 | Recognition | [WebFace4M / WebFace12M](#webface4m--webface12m) | 4M / 12M images        | AdaFace                                     |
+| Landmarks   | [WFLW](#wflw) / [300W+CelebA](#300w--celeba)     | 10K / 3.8K labeled + 202.6K unlabeled | PIPNet (98 / 68 pts)         |
 | Gaze        | [Gaze360](#gaze360)                              | 238 subjects           | MobileGaze                                  |
 | Parsing     | [CelebAMask-HQ](#celebamask-hq)                  | 30K images             | BiSeNet                                     |
 | Attributes  | [CelebA](#celeba)                                | 200K images            | AgeGender                                   |
@@ -123,6 +124,41 @@ Large-scale dataset with wide variations in pose, age, illumination, ethnicity, 
 
 !!! info "Download"
 **Kaggle (aligned 112x112)**: [vggface2-112x112](https://www.kaggle.com/datasets/yakhyokhuja/vggface2-112x112) (from OpenSphere)
+
+---
+
+### Facial Landmarks
+
+#### WFLW
+
+Wider Facial Landmarks in-the-Wild — a 98-point landmark dataset whose images come from
+WIDER FACE. Used to train the supervised PIPNet 98-point variant shipped with UniFace.
+
+| Property   | Value                                  |
+| ---------- | -------------------------------------- |
+| Images     | 10,000 (7,500 train / 2,500 test)      |
+| Annotation | 98 manually labeled landmarks per face |
+| Used by    | PIPNet WFLW-98                         |
+
+!!! info "Reference"
+    **Project page**: [WFLW dataset](https://wywu.github.io/projects/LAB/WFLW.html)
+
+---
+
+#### 300W + CelebA
+
+The 68-point PIPNet variant is trained in a generalizable semi-supervised setting (GSSL):
+labeled images come from 300W and unlabeled images come from CelebA.
+
+| Property        | Value                                                                            |
+| --------------- | -------------------------------------------------------------------------------- |
+| Labeled images  | 3,837 (3,148 train: LFPW train + HELEN train + AFW; 689 test: LFPW test + HELEN test + iBUG) |
+| Unlabeled       | 202,599 (full CelebA; bounding boxes from RetinaFace per the PIPNet paper)        |
+| Annotation      | 68-point iBUG layout                                                             |
+| Used by         | PIPNet 300W+CelebA-68                                                            |
+
+!!! info "Reference"
+    **Paper**: [PIPNet (Pixel-in-Pixel Net)](https://arxiv.org/abs/2003.03771) (IJCV 2021)
 
 ---
 

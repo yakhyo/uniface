@@ -130,6 +130,25 @@ def test_create_landmarker_invalid_method():
         create_landmarker('invalid_method')
 
 
+def test_create_landmarker_pipnet_default():
+    """create_landmarker('pipnet') returns a PIPNet (98 points by default)."""
+    from uniface.landmark import PIPNet
+
+    landmarker = create_landmarker('pipnet')
+    assert isinstance(landmarker, PIPNet), 'Should return PIPNet instance'
+    assert landmarker.num_lms == 98
+
+
+def test_create_landmarker_pipnet_68():
+    """create_landmarker('pipnet', model_name=...) selects the 68-point variant."""
+    from uniface.constants import PIPNetWeights
+    from uniface.landmark import PIPNet
+
+    landmarker = create_landmarker('pipnet', model_name=PIPNetWeights.DW300_CELEBA_68)
+    assert isinstance(landmarker, PIPNet), 'Should return PIPNet instance'
+    assert landmarker.num_lms == 68
+
+
 # list_available_detectors tests
 def test_list_available_detectors():
     """
@@ -187,6 +206,17 @@ def test_landmarker_inference_from_factory():
     landmarks = landmarker.get_landmarks(mock_image, mock_bbox)
     assert landmarks is not None, 'Landmarker should return landmarks'
     assert landmarks.shape == (106, 2), 'Should return 106 landmarks'
+
+
+def test_pipnet_landmarker_inference_from_factory():
+    """PIPNet landmarker created from factory can perform inference."""
+    landmarker = create_landmarker('pipnet')
+    mock_image = np.random.randint(0, 255, (640, 640, 3), dtype=np.uint8)
+    mock_bbox = [100, 100, 300, 300]
+
+    landmarks = landmarker.get_landmarks(mock_image, mock_bbox)
+    assert landmarks is not None, 'Landmarker should return landmarks'
+    assert landmarks.shape == (98, 2), 'Should return 98 landmarks'
 
 
 def test_multiple_detector_creation():

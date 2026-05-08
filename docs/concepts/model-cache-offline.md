@@ -194,6 +194,8 @@ If a model fails verification, it's re-downloaded automatically.
 | Model | Size | Download |
 |-------|------|----------|
 | Landmark106 | 14 MB | ✅ |
+| PIPNet WFLW-98 | 47 MB | ✅ |
+| PIPNet 300W+CelebA-68 | 46 MB | ✅ |
 | AgeGender | 8 MB | ✅ |
 | FairFace | 44 MB | ✅ |
 | Gaze ResNet34 | 82 MB | ✅ |
