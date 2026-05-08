@@ -123,11 +123,20 @@ jobs:
           p.write_text(new)
           EOF
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          python-version: "3.11"
+
+      - name: Refresh uv.lock with new project version
+        run: uv lock --upgrade-package uniface
+
       - name: Commit, tag, push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add pyproject.toml uniface/__init__.py
+          git add pyproject.toml uniface/__init__.py uv.lock
           git commit -m "chore: Release v${{ inputs.version }}"
           git tag "v${{ inputs.version }}"
           git push origin HEAD:${{ github.ref_name }}
