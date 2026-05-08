@@ -291,6 +291,6 @@ python tools/detect.py --source image.jpg
 ## See Also
 
 - [Recognition Module](recognition.md) - Extract embeddings from detected faces
-- [Landmarks Module](landmarks.md) - Get 106-point landmarks
+- [Landmarks Module](landmarks.md) - Get 106 / 98 / 68-point dense landmarks
 - [Image Pipeline Recipe](../recipes/image-pipeline.md) - Complete detection workflow
 - [Concepts: Thresholds](../concepts/thresholds-calibration.md) - Tuning detection parameters

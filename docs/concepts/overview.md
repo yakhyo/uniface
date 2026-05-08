@@ -117,7 +117,7 @@ uniface/
 ├── detection/      # Face detection (RetinaFace, SCRFD, YOLOv5Face, YOLOv8Face)
 ├── recognition/    # Face recognition (AdaFace, ArcFace, EdgeFace, MobileFace, SphereFace)
 ├── tracking/       # Multi-object tracking (BYTETracker)
-├── landmark/       # 106-point landmarks
+├── landmark/       # Dense landmarks (Landmark106 = 106 pts, PIPNet = 98 / 68 pts)
 ├── attribute/      # Age, gender, emotion, race
 ├── parsing/        # Face semantic segmentation
 ├── matting/        # Portrait matting (MODNet)

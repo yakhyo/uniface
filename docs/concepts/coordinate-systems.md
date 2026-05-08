@@ -110,6 +110,28 @@ landmarks = landmarker.get_landmarks(image, face.bbox)
 | 63-86 | Eyes | 24 |
 | 87-105 | Mouth | 19 |
 
+### 98 / 68-Point Landmarks (PIPNet)
+
+Returned by `PIPNet`. The variant determines the layout:
+
+```python
+from uniface.constants import PIPNetWeights
+from uniface.landmark import PIPNet
+
+# 98-point WFLW layout (default)
+landmarks = PIPNet().get_landmarks(image, face.bbox)
+# Shape: (98, 2)
+
+# 68-point 300W layout
+landmarks = PIPNet(model_name=PIPNetWeights.DW300_CELEBA_68).get_landmarks(image, face.bbox)
+# Shape: (68, 2)
+```
+
+The 98-point output follows the standard [WFLW](https://wywu.github.io/projects/LAB/WFLW.html) layout
+(33 face-contour points, eyebrow/eye/nose/mouth groups). The 68-point output follows the standard
+[300W / iBUG](https://ibug.doc.ic.ac.uk/resources/300-W/) layout. Coordinates are in original-image
+pixel space, identical in convention to `Landmark106`.
+
 ---
 
 ## Face Crop

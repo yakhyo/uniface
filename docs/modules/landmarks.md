@@ -14,6 +14,8 @@ Facial landmark detection provides precise localization of facial features.
 | Model | Points | Size |
 |-------|--------|------|
 | **Landmark106** | 106 | 14 MB |
+| **PIPNet (WFLW-98)** | 98 | 47 MB |
+| **PIPNet (300W+CelebA-68)** | 68 | 46 MB |
 
 !!! info "5-Point Landmarks"
     Basic 5-point landmarks are included with all detection models (RetinaFace, SCRFD, YOLOv5-Face, YOLOv8-Face).
@@ -76,6 +78,48 @@ right_eye = landmarks[76:84]
 # Mouth
 mouth = landmarks[87:106]
 ```
+
+---
+
+## PIPNet (98 / 68 points)
+
+PIPNet (Pixel-in-Pixel Net) is a high-accuracy facial landmark detector. UniFace ships
+two ONNX variants that share a ResNet-18 backbone and 256×256 input — the only difference
+is the number of points and the dataset they were trained on.
+
+### Basic Usage
+
+```python
+from uniface.detection import RetinaFace
+from uniface.landmark import PIPNet
+
+detector = RetinaFace()
+landmarker = PIPNet()  # Default: 98 points (WFLW)
+
+faces = detector.detect(image)
+if faces:
+    landmarks = landmarker.get_landmarks(image, faces[0].bbox)
+    print(f"Landmarks shape: {landmarks.shape}")  # (98, 2)
+```
+
+### 68-Point Variant (300W+CelebA, GSSL)
+
+```python
+from uniface.constants import PIPNetWeights
+from uniface.landmark import PIPNet
+
+landmarker = PIPNet(model_name=PIPNetWeights.DW300_CELEBA_68)
+landmarks = landmarker.get_landmarks(image, face.bbox)
+print(landmarks.shape)  # (68, 2)
+```
+
+### Notes
+
+- The number of landmarks is read from the ONNX output and the matching meanface
+  table is selected automatically — there is no `num_lms=` argument.
+- PIPNet uses an asymmetric crop around the bbox (+10% left / right / bottom,
+  −10% top) and ImageNet normalization. This is handled internally.
+- Output landmarks are in original-image pixel coordinates as `float32`.
 
 ---
 
@@ -242,9 +286,17 @@ def estimate_head_pose(landmarks, image_shape):
 ## Factory Function
 
 ```python
+from uniface.constants import PIPNetWeights
 from uniface.landmark import create_landmarker
 
-landmarker = create_landmarker()  # Returns Landmark106
+# Default: 106-point InsightFace model
+landmarker = create_landmarker()
+
+# 98-point PIPNet (WFLW)
+landmarker = create_landmarker('pipnet')
+
+# 68-point PIPNet (300W+CelebA)
+landmarker = create_landmarker('pipnet', model_name=PIPNetWeights.DW300_CELEBA_68)
 ```
 
 ---

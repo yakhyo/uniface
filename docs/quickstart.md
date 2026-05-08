@@ -166,7 +166,9 @@ Face 2: Female, 20-29, White
 
 ---
 
-## Facial Landmarks (106 Points)
+## Facial Landmarks (106 / 98 / 68 Points)
+
+UniFace ships two dense-landmark families. Pick whichever fits your downstream task:
 
 ```python
 import cv2
@@ -174,20 +176,35 @@ from uniface.detection import RetinaFace
 from uniface.landmark import Landmark106
 
 detector = RetinaFace()
-landmarker = Landmark106()
+landmarker = Landmark106()  # 106-point InsightFace 2d106det model
 
 image = cv2.imread("photo.jpg")
 faces = detector.detect(image)
 
 if faces:
     landmarks = landmarker.get_landmarks(image, faces[0].bbox)
-    print(f"Detected {len(landmarks)} landmarks")
+    print(f"Detected {len(landmarks)} landmarks")  # 106
 
     # Draw landmarks
     for x, y in landmarks.astype(int):
         cv2.circle(image, (x, y), 2, (0, 255, 0), -1)
 
     cv2.imwrite("landmarks.jpg", image)
+```
+
+**PIPNet (98 / 68 points)** — ResNet-18 backbone trained on WFLW (98 pts) or 300W+CelebA (68 pts):
+
+```python
+from uniface.constants import PIPNetWeights
+from uniface.landmark import PIPNet
+
+# 98-point WFLW model (default)
+landmarker_98 = PIPNet()
+
+# 68-point 300W+CelebA model
+landmarker_68 = PIPNet(model_name=PIPNetWeights.DW300_CELEBA_68)
+
+landmarks = landmarker_98.get_landmarks(image, faces[0].bbox)  # (98, 2)
 ```
 
 ---
@@ -465,7 +482,8 @@ For detailed model comparisons and benchmarks, see the [Model Zoo](models.md).
 | Task | Available Models |
 |------|------------------|
 | Detection | `RetinaFace`, `SCRFD`, `YOLOv5Face`, `YOLOv8Face` |
-| Recognition | `ArcFace`, `AdaFace`, `MobileFace`, `SphereFace` |
+| Recognition | `ArcFace`, `AdaFace`, `EdgeFace`, `MobileFace`, `SphereFace` |
+| Landmarks | `Landmark106` (106 pts), `PIPNet` (98 / 68 pts) |
 | Tracking | `BYTETracker` |
 | Gaze | `MobileGaze` (ResNet18/34/50, MobileNetV2, MobileOneS0) |
 | Head Pose | `HeadPose` (ResNet18/34/50, MobileNetV2/V3) |
@@ -513,7 +531,7 @@ python -c "import platform; print(platform.machine())"
 from uniface.detection import RetinaFace, SCRFD
 from uniface.recognition import ArcFace, AdaFace
 from uniface.attribute import AgeGender, FairFace
-from uniface.landmark import Landmark106
+from uniface.landmark import Landmark106, PIPNet
 from uniface.gaze import MobileGaze
 from uniface.headpose import HeadPose
 from uniface.parsing import BiSeNet, XSeg
