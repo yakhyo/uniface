@@ -247,9 +247,10 @@ class SCRFD(BaseDetector):
 
         image_tensor = self.preprocess(image)
 
-        # ONNXRuntime inference
+        # Inference
         outputs = self.inference(image_tensor)
 
+        # Postprocessing
         scores_list, bboxes_list, kpss_list = self.postprocess(outputs, image_size=image.shape[:2])
 
         # Handle case when no faces are detected

@@ -202,7 +202,7 @@ class RetinaFace(BaseDetector):
         height, width, _ = image.shape
         image_tensor = self.preprocess(image)
 
-        # ONNXRuntime inference
+        # Inference
         outputs = self.inference(image_tensor)
 
         # Postprocessing

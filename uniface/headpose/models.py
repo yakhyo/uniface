@@ -170,6 +170,13 @@ class HeadPose(BaseHeadPoseEstimator):
 
         This method orchestrates the full pipeline: preprocessing the input,
         running inference, and postprocessing to return the head orientation.
+
+        Args:
+            face_image (np.ndarray): A cropped face image in BGR format with shape (H, W, 3).
+
+        Returns:
+            HeadPoseResult: Estimated head orientation containing ``pitch`` (vertical),
+                ``yaw`` (horizontal), and ``roll`` (in-plane) angles in degrees.
         """
         input_tensor = self.preprocess(face_image)
         outputs = self.session.run(self.output_names, {self.input_name: input_tensor})

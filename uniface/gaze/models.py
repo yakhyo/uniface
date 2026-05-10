@@ -179,6 +179,13 @@ class MobileGaze(BaseGazeEstimator):
 
         This method orchestrates the full pipeline: preprocessing the input,
         running inference, and postprocessing to return the gaze direction.
+
+        Args:
+            face_image (np.ndarray): A cropped face image in BGR format with shape (H, W, 3).
+
+        Returns:
+            GazeResult: Estimated gaze direction containing ``pitch`` (vertical) and
+                ``yaw`` (horizontal) angles in radians.
         """
         input_tensor = self.preprocess(face_image)
         outputs = self.session.run(self.output_names, {self.input_name: input_tensor})

@@ -2,13 +2,6 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-"""
-YOLOv8-Face detector implementation.
-
-Uses anchor-free design with DFL (Distribution Focal Loss) for bbox regression.
-Reference: https://github.com/yakhyo/yolov8-face-onnx-inference
-"""
-
 from typing import Any, Literal
 
 import numpy as np
@@ -273,16 +266,14 @@ class YOLOv8Face(BaseDetector):
         if len(keep) == 0:
             return np.array([]), np.array([])
 
-        # Limit to max_det
+        # Filter detections and limit to max_det
         keep = keep[: self.max_det]
         boxes = boxes[keep]
         scores = scores[keep]
         landmarks = landmarks[keep]
 
-        # === SCALE TO ORIGINAL IMAGE COORDINATES ===
+        # Scale back to original image coordinates
         pad_w, pad_h = padding
-
-        # Scale boxes back to original image coordinates
         boxes[:, [0, 2]] = (boxes[:, [0, 2]] - pad_w) / scale
         boxes[:, [1, 3]] = (boxes[:, [1, 3]] - pad_h) / scale
 
@@ -297,7 +288,7 @@ class YOLOv8Face(BaseDetector):
         # Reshape landmarks to (N, 5, 2)
         landmarks = landmarks.reshape(-1, 5, 2)
 
-        # Combine box and score
+        # Combine results
         detections = np.concatenate([boxes, scores[:, None]], axis=1)
 
         return detections, landmarks
