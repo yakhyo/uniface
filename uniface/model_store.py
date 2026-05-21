@@ -190,7 +190,9 @@ def download_models(
 
     Args:
         model_names: List of model weight enum identifiers to download.
-        max_workers: Maximum number of concurrent download threads. Defaults to 4.
+        max_workers: Maximum number of concurrent download threads. Defaults to
+            ``min(os.cpu_count() or 1, 8)`` (auto mode). Passing ``None`` or a
+            value ``< 1`` also selects auto mode and emits an info log line.
         timeout: Connection timeout in seconds. Defaults to 60.
         max_retries: Maximum number of attempts per model. Defaults to 3.
 
@@ -198,7 +200,11 @@ def download_models(
         Mapping of each model enum to its local file path.
 
     Raises:
-        RuntimeError: If any model download or verification fails.
+        TypeError: If ``max_workers`` is a ``bool`` or a non-int / non-None
+            value.
+        RuntimeError: If any model download or verification fails. The error
+            message aggregates every failure into a single multi-line message
+            of the form ``"Failed to download N model(s):\\n<name>: <err>\\n..."``.
 
     Example:
         >>> from uniface import download_models
@@ -211,13 +217,11 @@ def download_models(
     if isinstance(max_workers, bool) or not isinstance(max_workers, int | None):
         raise TypeError(f'max_workers must be int or None, got {type(max_workers).__name__}')
 
-    if max_workers is None or max_workers < 1:
-        if max_workers < 1:
-            Logger.info(f'max_workers must be >= 1, got {max_workers}; falling back to auto mode')
-        max_workers = min(os.cpu_count(), 8)  # at most 8
-
-    if max_workers < 1:
-        raise ValueError(f'max_workers must be >= 1, got {max_workers}')
+    if max_workers is None:
+        max_workers = min(os.cpu_count() or 1, 8)
+    elif max_workers < 1:
+        Logger.info(f'max_workers must be >= 1, got {max_workers}; falling back to auto mode')
+        max_workers = min(os.cpu_count() or 1, 8)
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         future_to_model = {

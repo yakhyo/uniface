@@ -288,9 +288,8 @@ face_image = cv2.imread("face.jpg")
 # Parse face into 19 components
 mask = parser.parse(face_image)
 
-# Visualize with overlay
-face_rgb = cv2.cvtColor(face_image, cv2.COLOR_BGR2RGB)
-vis_result = vis_parsing_maps(face_rgb, mask, save_image=False)
+# Visualize with overlay (BGR in, BGR out — same convention as cv2)
+vis_result = vis_parsing_maps(face_image, mask, save_image=False)
 
 print(f"Detected {len(np.unique(mask))} facial components")
 ```
