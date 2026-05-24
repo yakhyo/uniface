@@ -42,6 +42,12 @@ repos:
         additional_dependencies: ['bandit[toml]']
         exclude: ^tests/
 
+  # Keep uv.lock in sync with pyproject.toml
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.9.0
+    hooks:
+      - id: uv-lock
+
 # Configuration
 ci:
   autofix_commit_msg: 'style: auto-fix by pre-commit hooks'
