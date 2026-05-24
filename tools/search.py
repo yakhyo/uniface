@@ -22,7 +22,7 @@ from _common import get_source_type
 import cv2
 import numpy as np
 
-from uniface import create_detector, create_recognizer
+from uniface import ArcFace, RetinaFace
 from uniface.draw import draw_corner_bbox, draw_text_label
 from uniface.face_utils import compute_similarity
 
@@ -135,8 +135,8 @@ def main():
         print(f'Error: Reference image not found: {args.reference}')
         return
 
-    detector = create_detector()
-    recognizer = create_recognizer()
+    detector = RetinaFace()
+    recognizer = ArcFace()
 
     print(f'Loading reference: {args.reference}')
     ref_embedding = extract_reference_embedding(detector, recognizer, args.reference)

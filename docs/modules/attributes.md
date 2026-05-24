@@ -186,19 +186,15 @@ emotion = Emotion(model_name=DDAMFNWeights.AFFECNET8)
 
 ---
 
-## Factory Function
-
-Use `create_attribute_predictor()` for dynamic model selection:
+## Available Attribute Models
 
 ```python
-from uniface import create_attribute_predictor
+from uniface.attribute import AgeGender, Emotion, FairFace
 
-age_gender = create_attribute_predictor('age_gender')
-fairface = create_attribute_predictor('fairface')
-emotion = create_attribute_predictor('emotion')
+age_gender = AgeGender()
+fairface = FairFace()
+emotion = Emotion()  # requires the optional `torch` dependency
 ```
-
-Available model names: `'age_gender'`, `'fairface'`, `'emotion'`.
 
 ---
 

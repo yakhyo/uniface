@@ -6,10 +6,9 @@
 from __future__ import annotations
 
 import numpy as np
-import pytest
 
 from uniface.constants import MODNetWeights
-from uniface.matting import MODNet, create_matting_model
+from uniface.matting import MODNet
 
 
 def test_modnet_initialization():
@@ -122,37 +121,3 @@ def test_modnet_different_input_sizes():
 
         assert matte.shape == (h, w), f'Failed for size {h}x{w}'
         assert matte.dtype == np.float32
-
-
-# Factory tests
-
-
-def test_create_matting_model_default():
-    """Test factory with default parameters."""
-    matting = create_matting_model()
-    assert matting is not None
-    assert isinstance(matting, MODNet)
-
-
-def test_create_matting_model_with_enum():
-    """Test factory with enum."""
-    matting = create_matting_model(MODNetWeights.WEBCAM)
-    assert isinstance(matting, MODNet)
-
-
-def test_create_matting_model_with_string():
-    """Test factory with string model name."""
-    matting = create_matting_model('modnet_photographic')
-    assert isinstance(matting, MODNet)
-
-
-def test_create_matting_model_webcam_string():
-    """Test factory with webcam string model name."""
-    matting = create_matting_model('modnet_webcam')
-    assert isinstance(matting, MODNet)
-
-
-def test_create_matting_model_invalid():
-    """Test factory with invalid model name."""
-    with pytest.raises(ValueError, match='Unknown matting model'):
-        create_matting_model('invalid_model')

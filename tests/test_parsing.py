@@ -8,8 +8,8 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from uniface.constants import ParsingWeights, XSegWeights
-from uniface.parsing import BiSeNet, XSeg, create_face_parser
+from uniface.constants import ParsingWeights
+from uniface.parsing import BiSeNet, XSeg
 
 
 def test_bisenet_initialization():
@@ -84,26 +84,6 @@ def test_bisenet_callable():
 
     assert mask.shape == (256, 256)
     assert mask.dtype == np.uint8
-
-
-def test_create_face_parser_with_enum():
-    """Test factory function with enum."""
-    parser = create_face_parser(ParsingWeights.RESNET18)
-    assert parser is not None
-    assert isinstance(parser, BiSeNet)
-
-
-def test_create_face_parser_with_string():
-    """Test factory function with string."""
-    parser = create_face_parser('parsing_resnet18')
-    assert parser is not None
-    assert isinstance(parser, BiSeNet)
-
-
-def test_create_face_parser_invalid_model():
-    """Test factory function with invalid model name."""
-    with pytest.raises(ValueError, match='Unknown face parsing model'):
-        create_face_parser('invalid_model')
 
 
 def test_bisenet_different_input_sizes():
@@ -253,17 +233,3 @@ def test_xseg_parse_with_inverse():
     assert mask.shape == (256, 256)
     assert face_crop.shape == (256, 256, 3)
     assert inverse_matrix.shape == (2, 3)
-
-
-def test_create_face_parser_xseg_enum():
-    """Test factory function with XSeg enum."""
-    parser = create_face_parser(XSegWeights.DEFAULT)
-    assert parser is not None
-    assert isinstance(parser, XSeg)
-
-
-def test_create_face_parser_xseg_string():
-    """Test factory function with XSeg string."""
-    parser = create_face_parser('xseg')
-    assert parser is not None
-    assert isinstance(parser, XSeg)

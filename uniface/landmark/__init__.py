@@ -2,13 +2,24 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
+from typing_extensions import deprecated
+
 from .base import BaseLandmarker
 from .models import Landmark106
 from .pipnet import PIPNet
 
 
+@deprecated(
+    'create_landmarker() is deprecated and will be removed in uniface 4.0. '
+    'Instantiate the landmarker class directly, e.g. '
+    '`from uniface.landmark import Landmark106; Landmark106(**kwargs)`.'
+)
 def create_landmarker(method: str = '2d106det', **kwargs) -> BaseLandmarker:
     """Factory function to create facial landmark predictors.
+
+    .. deprecated:: 3.7.0
+        Use the landmarker class directly (``Landmark106``, ``PIPNet``).
+        This factory will be removed in uniface 4.0.
 
     Args:
         method (str): Landmark prediction method.

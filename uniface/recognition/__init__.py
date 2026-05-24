@@ -3,6 +3,8 @@
 # GitHub: https://github.com/yakhyo
 
 
+from typing_extensions import deprecated
+
 from .adaface import AdaFace
 from .arcface import ArcFace
 from .base import BaseRecognizer
@@ -11,9 +13,19 @@ from .mobileface import MobileFace
 from .sphereface import SphereFace
 
 
+@deprecated(
+    'create_recognizer() is deprecated and will be removed in uniface 4.0. '
+    'Instantiate the recognizer class directly, e.g. '
+    '`from uniface.recognition import ArcFace; ArcFace(**kwargs)`.'
+)
 def create_recognizer(method: str = 'arcface', **kwargs) -> BaseRecognizer:
     """
     Factory function to create face recognizers.
+
+    .. deprecated:: 3.7.0
+        Use the recognizer class directly (``ArcFace``, ``AdaFace``,
+        ``EdgeFace``, ``MobileFace``, ``SphereFace``). This factory will be
+        removed in uniface 4.0.
 
     This function initializes and returns a face recognizer instance based on the
     specified method. It acts as a high-level interface to the underlying
@@ -34,22 +46,27 @@ def create_recognizer(method: str = 'arcface', **kwargs) -> BaseRecognizer:
 
     Examples:
         >>> # Create the default ArcFace recognizer
-        >>> recognizer = create_recognizer()
+        >>> from uniface.recognition import ArcFace
+        >>> recognizer = ArcFace()
 
         >>> # Create an AdaFace recognizer
+        >>> from uniface.recognition import AdaFace
         >>> from uniface.constants import AdaFaceWeights
-        >>> recognizer = create_recognizer('adaface', model_name=AdaFaceWeights.IR_101)
+        >>> recognizer = AdaFace(model_name=AdaFaceWeights.IR_101)
 
         >>> # Create a specific MobileFace recognizer
+        >>> from uniface.recognition import MobileFace
         >>> from uniface.constants import MobileFaceWeights
-        >>> recognizer = create_recognizer('mobileface', model_name=MobileFaceWeights.MNET_V2)
+        >>> recognizer = MobileFace(model_name=MobileFaceWeights.MNET_V2)
 
         >>> # Create a SphereFace recognizer
-        >>> recognizer = create_recognizer('sphereface')
+        >>> from uniface.recognition import SphereFace
+        >>> recognizer = SphereFace()
 
         >>> # Create an EdgeFace recognizer
+        >>> from uniface.recognition import EdgeFace
         >>> from uniface.constants import EdgeFaceWeights
-        >>> recognizer = create_recognizer('edgeface', model_name=EdgeFaceWeights.XXS)
+        >>> recognizer = EdgeFace(model_name=EdgeFaceWeights.XXS)
     """
     method = method.lower()
 

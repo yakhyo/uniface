@@ -22,7 +22,7 @@ import numpy as np
 
 from uniface.constants import MiniFASNetWeights
 from uniface.detection import RetinaFace
-from uniface.spoofing import create_spoofer
+from uniface.spoofing import MiniFASNet
 
 
 def draw_spoofing_result(
@@ -173,7 +173,7 @@ def main():
     # Initialize models
     print(f'Initializing models (MiniFASNet {args.model.upper()})...')
     detector = RetinaFace()
-    spoofer = create_spoofer(model_name=model_name, scale=args.scale)
+    spoofer = MiniFASNet(model_name=model_name, scale=args.scale)
 
     source_type = get_source_type(args.source)
 

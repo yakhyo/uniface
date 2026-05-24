@@ -225,20 +225,20 @@ detector = YOLOv8Face(
 
 ---
 
-## Factory Function
+## Available Detectors
 
-Create detectors dynamically:
+Import the detector class you need:
 
 ```python
-from uniface.detection import create_detector
+from uniface.detection import RetinaFace, SCRFD, YOLOv5Face, YOLOv8Face
 
-detector = create_detector('retinaface')
+detector = RetinaFace()
 # or
-detector = create_detector('scrfd')
+detector = SCRFD()
 # or
-detector = create_detector('yolov5face')
+detector = YOLOv5Face()
 # or
-detector = create_detector('yolov8face')
+detector = YOLOv8Face()
 ```
 
 ---

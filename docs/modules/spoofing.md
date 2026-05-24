@@ -250,12 +250,12 @@ python tools/spoofing.py --source 0
 
 ---
 
-## Factory Function
+## Available Spoofers
 
 ```python
-from uniface.spoofing import create_spoofer
+from uniface.spoofing import MiniFASNet
 
-spoofer = create_spoofer()  # Returns MiniFASNet
+spoofer = MiniFASNet()
 ```
 
 ---

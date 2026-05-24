@@ -346,15 +346,16 @@ else:
 
 ---
 
-## Factory Function
+## Available Recognizers
 
 ```python
-from uniface.recognition import create_recognizer
+from uniface.recognition import ArcFace, AdaFace, EdgeFace, MobileFace, SphereFace
 
-# Available methods: 'arcface', 'adaface', 'edgeface', 'mobileface', 'sphereface'
-recognizer = create_recognizer('arcface')
-recognizer = create_recognizer('adaface')
-recognizer = create_recognizer('edgeface')
+recognizer = ArcFace()
+# or
+recognizer = AdaFace()
+# or
+recognizer = EdgeFace()
 ```
 
 ---

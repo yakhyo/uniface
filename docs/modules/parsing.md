@@ -317,17 +317,17 @@ mask, face_crop, inverse_matrix = parser.parse_with_inverse(image, landmarks)
 
 ---
 
-## Factory Function
+## Available Parsers
 
 ```python
-from uniface.parsing import create_face_parser
 from uniface.constants import ParsingWeights, XSegWeights
+from uniface.parsing import BiSeNet, XSeg
 
 # BiSeNet (default)
-parser = create_face_parser()
+parser = BiSeNet(model_name=ParsingWeights.RESNET18)
 
 # XSeg
-parser = create_face_parser(XSegWeights.DEFAULT)
+parser = XSeg(model_name=XSegWeights.DEFAULT)
 ```
 
 ---
