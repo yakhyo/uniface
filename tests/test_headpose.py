@@ -8,28 +8,8 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from uniface import HeadPose, HeadPoseResult, create_head_pose_estimator
-from uniface.headpose import BaseHeadPoseEstimator
+from uniface import HeadPose, HeadPoseResult
 from uniface.headpose.models import HeadPose as HeadPoseModel
-
-
-def test_create_head_pose_estimator_default():
-    """Test creating a head pose estimator with default parameters."""
-    estimator = create_head_pose_estimator()
-    assert isinstance(estimator, HeadPose), 'Should return HeadPose instance'
-
-
-def test_create_head_pose_estimator_aliases():
-    """Test that factory accepts all documented aliases."""
-    for alias in ('headpose', 'head_pose', '6drepnet'):
-        estimator = create_head_pose_estimator(alias)
-        assert isinstance(estimator, HeadPose), f"Alias '{alias}' should return HeadPose"
-
-
-def test_create_head_pose_estimator_invalid():
-    """Test that invalid method raises ValueError."""
-    with pytest.raises(ValueError, match='Unsupported head pose estimation method'):
-        create_head_pose_estimator('invalid_method')
 
 
 def test_head_pose_inference():
@@ -101,12 +81,6 @@ def test_rotation_matrix_to_euler_batch():
 
     assert euler.shape == (3, 3), 'Batch of 3 should return (3, 3)'
     np.testing.assert_allclose(euler, 0.0, atol=1e-5)
-
-
-def test_factory_returns_correct_type():
-    """Test that factory function returns BaseHeadPoseEstimator subclass."""
-    estimator = create_head_pose_estimator()
-    assert isinstance(estimator, BaseHeadPoseEstimator), 'Should be BaseHeadPoseEstimator subclass'
 
 
 def test_head_pose_with_providers():

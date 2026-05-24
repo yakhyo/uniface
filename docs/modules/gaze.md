@@ -260,12 +260,12 @@ print(f"Looking: {direction}")
 
 ---
 
-## Factory Function
+## Available Estimators
 
 ```python
-from uniface.gaze import create_gaze_estimator
+from uniface.gaze import MobileGaze
 
-gaze = create_gaze_estimator()  # Returns MobileGaze
+gaze = MobileGaze()
 ```
 
 ---

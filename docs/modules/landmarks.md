@@ -283,20 +283,20 @@ def estimate_head_pose(landmarks, image_shape):
 
 ---
 
-## Factory Function
+## Available Landmarkers
 
 ```python
 from uniface.constants import PIPNetWeights
-from uniface.landmark import create_landmarker
+from uniface.landmark import Landmark106, PIPNet
 
 # Default: 106-point InsightFace model
-landmarker = create_landmarker()
+landmarker = Landmark106()
 
 # 98-point PIPNet (WFLW)
-landmarker = create_landmarker('pipnet')
+landmarker = PIPNet()
 
 # 68-point PIPNet (300W+CelebA)
-landmarker = create_landmarker('pipnet', model_name=PIPNetWeights.DW300_CELEBA_68)
+landmarker = PIPNet(model_name=PIPNetWeights.DW300_CELEBA_68)
 ```
 
 ---

@@ -220,12 +220,12 @@ else:
 
 ---
 
-## Factory Function
+## Available Estimators
 
 ```python
-from uniface.headpose import create_head_pose_estimator
+from uniface.headpose import HeadPose
 
-hp = create_head_pose_estimator()  # Returns HeadPose
+hp = HeadPose()
 ```
 
 ---

@@ -22,7 +22,7 @@ from pathlib import Path
 from _common import IMAGE_EXTENSIONS, get_source_type
 import cv2
 
-from uniface import create_detector, create_recognizer
+from uniface import ArcFace, RetinaFace
 from uniface.draw import draw_corner_bbox, draw_text_label
 from uniface.stores import FAISS
 
@@ -117,8 +117,8 @@ def build(args: argparse.Namespace) -> None:
         print(f"Error: '{faces_dir}' is not a directory")
         return
 
-    detector = create_detector()
-    recognizer = create_recognizer()
+    detector = RetinaFace()
+    recognizer = ArcFace()
     store = FAISS(db_path=args.db_path)
 
     persons = sorted(p.name for p in faces_dir.iterdir() if p.is_dir())
@@ -160,8 +160,8 @@ def build(args: argparse.Namespace) -> None:
 
 
 def run(args: argparse.Namespace) -> None:
-    detector = create_detector()
-    recognizer = create_recognizer()
+    detector = RetinaFace()
+    recognizer = ArcFace()
 
     store = FAISS(db_path=args.db_path)
     if not store.load():

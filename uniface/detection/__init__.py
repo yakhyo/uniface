@@ -6,6 +6,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from typing_extensions import deprecated
+
 from uniface.constants import (
     RetinaFaceWeights,
     SCRFDWeights,
@@ -20,8 +22,18 @@ from .yolov5 import YOLOv5Face
 from .yolov8 import YOLOv8Face
 
 
+@deprecated(
+    'create_detector() is deprecated and will be removed in uniface 4.0. '
+    'Instantiate the detector class directly, e.g. '
+    '`from uniface.detection import SCRFD; SCRFD(**kwargs)`.'
+)
 def create_detector(method: str = 'retinaface', **kwargs: Any) -> BaseDetector:
     """Factory function to create face detectors.
+
+    .. deprecated:: 3.7.0
+        Use the detector class directly (``RetinaFace``, ``SCRFD``,
+        ``YOLOv5Face``, ``YOLOv8Face``). This factory will be removed in
+        uniface 4.0.
 
     Args:
         method: Detection method. Options:
@@ -39,17 +51,18 @@ def create_detector(method: str = 'retinaface', **kwargs: Any) -> BaseDetector:
 
     Example:
         >>> # Basic usage
-        >>> detector = create_detector('retinaface')
+        >>> from uniface.detection import RetinaFace
+        >>> detector = RetinaFace()
 
         >>> # SCRFD detector with custom parameters
+        >>> from uniface.detection import SCRFD
         >>> from uniface.constants import SCRFDWeights
-        >>> detector = create_detector(
-        ...     'scrfd', model_name=SCRFDWeights.SCRFD_10G_KPS, confidence_threshold=0.8, input_size=(640, 640)
-        ... )
+        >>> detector = SCRFD(model_name=SCRFDWeights.SCRFD_10G_KPS, confidence_threshold=0.8, input_size=(640, 640))
 
         >>> # YOLOv8-Face detector
+        >>> from uniface.detection import YOLOv8Face
         >>> from uniface.constants import YOLOv8FaceWeights
-        >>> detector = create_detector('yolov8face', model_name=YOLOv8FaceWeights.YOLOV8N, confidence_threshold=0.5)
+        >>> detector = YOLOv8Face(model_name=YOLOv8FaceWeights.YOLOV8N, confidence_threshold=0.5)
     """
     method = method.lower()
 
@@ -70,8 +83,17 @@ def create_detector(method: str = 'retinaface', **kwargs: Any) -> BaseDetector:
         raise ValueError(f"Unsupported detection method: '{method}'. Available methods: {available_methods}")
 
 
+@deprecated(
+    'list_available_detectors() is deprecated and will be removed in uniface 4.0. '
+    'Import the detector classes directly from `uniface.detection` instead.'
+)
 def list_available_detectors() -> dict[str, dict[str, Any]]:
     """List all available detection methods with their descriptions and parameters.
+
+    .. deprecated:: 3.7.0
+        Import the detector classes (``RetinaFace``, ``SCRFD``, ``YOLOv5Face``,
+        ``YOLOv8Face``) directly from ``uniface.detection``. This helper will be
+        removed in uniface 4.0.
 
     Returns:
         Dictionary mapping detector names to their information including

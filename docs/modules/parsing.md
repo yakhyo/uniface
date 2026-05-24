@@ -41,13 +41,11 @@ face_image = cv2.imread("face.jpg")
 mask = parser.parse(face_image)
 print(f"Mask shape: {mask.shape}")  # (H, W)
 
-# Visualize
-face_rgb = cv2.cvtColor(face_image, cv2.COLOR_BGR2RGB)
-vis_result = vis_parsing_maps(face_rgb, mask, save_image=False)
+# Visualize (BGR in, BGR out — same convention as cv2)
+vis_result = vis_parsing_maps(face_image, mask, save_image=False)
 
 # Save result
-vis_bgr = cv2.cvtColor(vis_result, cv2.COLOR_RGB2BGR)
-cv2.imwrite("parsed.jpg", vis_bgr)
+cv2.imwrite("parsed.jpg", vis_result)
 ```
 
 ---
@@ -113,13 +111,11 @@ for i, face in enumerate(faces):
     # Parse
     mask = parser.parse(face_crop)
 
-    # Visualize
-    face_rgb = cv2.cvtColor(face_crop, cv2.COLOR_BGR2RGB)
-    vis_result = vis_parsing_maps(face_rgb, mask, save_image=False)
+    # Visualize (BGR in, BGR out)
+    vis_result = vis_parsing_maps(face_crop, mask, save_image=False)
 
     # Save
-    vis_bgr = cv2.cvtColor(vis_result, cv2.COLOR_RGB2BGR)
-    cv2.imwrite(f"face_{i}_parsed.jpg", vis_bgr)
+    cv2.imwrite(f"face_{i}_parsed.jpg", vis_result)
 ```
 
 ---
@@ -242,12 +238,12 @@ def get_hair_mask(mask):
 ```python
 from uniface.draw import vis_parsing_maps
 
-# Default visualization
-vis_result = vis_parsing_maps(face_rgb, mask)
+# Default visualization (BGR in, BGR out)
+vis_result = vis_parsing_maps(face_image, mask)
 
 # With different parameters
 vis_result = vis_parsing_maps(
-    face_rgb,
+    face_image,
     mask,
     save_image=False,  # Don't save to file
 )
@@ -321,17 +317,17 @@ mask, face_crop, inverse_matrix = parser.parse_with_inverse(image, landmarks)
 
 ---
 
-## Factory Function
+## Available Parsers
 
 ```python
-from uniface.parsing import create_face_parser
 from uniface.constants import ParsingWeights, XSegWeights
+from uniface.parsing import BiSeNet, XSeg
 
 # BiSeNet (default)
-parser = create_face_parser()
+parser = BiSeNet(model_name=ParsingWeights.RESNET18)
 
 # XSeg
-parser = create_face_parser(XSegWeights.DEFAULT)
+parser = XSeg(model_name=XSegWeights.DEFAULT)
 ```
 
 ---

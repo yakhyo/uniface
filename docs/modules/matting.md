@@ -132,20 +132,17 @@ cv2.destroyAllWindows()
 
 ---
 
-## Factory Function
+## Available Matting Models
 
 ```python
-from uniface.matting import create_matting_model
 from uniface.constants import MODNetWeights
+from uniface.matting import MODNet
 
 # Default (Photographic)
-matting = create_matting_model()
+matting = MODNet()
 
-# With enum
-matting = create_matting_model(MODNetWeights.WEBCAM)
-
-# With string
-matting = create_matting_model("modnet_webcam")
+# Webcam variant
+matting = MODNet(model_name=MODNetWeights.WEBCAM)
 ```
 
 ---

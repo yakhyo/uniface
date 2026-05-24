@@ -7,6 +7,7 @@ from __future__ import annotations
 from typing import Any
 
 import numpy as np
+from typing_extensions import deprecated
 
 from uniface.attribute.age_gender import AgeGender
 from uniface.attribute.base import Attribute
@@ -51,10 +52,19 @@ if _EMOTION_AVAILABLE:
     _ATTRIBUTE_MODELS.update(dict.fromkeys(DDAMFNWeights, Emotion))
 
 
+@deprecated(
+    'create_attribute_predictor() is deprecated and will be removed in uniface 4.0. '
+    'Instantiate the attribute class directly, e.g. '
+    '`from uniface.attribute import AgeGender; AgeGender(model_name=...)`.'
+)
 def create_attribute_predictor(
     model_name: AgeGenderWeights | DDAMFNWeights | FairFaceWeights, **kwargs: Any
 ) -> Attribute:
     """Factory function to create an attribute predictor instance.
+
+    .. deprecated:: 3.7.0
+        Use the attribute class directly (``AgeGender``, ``FairFace``,
+        ``Emotion``). This factory will be removed in uniface 4.0.
 
     Args:
         model_name: The enum corresponding to the desired attribute model

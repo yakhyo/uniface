@@ -4,6 +4,8 @@
 
 from __future__ import annotations
 
+from typing_extensions import deprecated
+
 from uniface.constants import MODNetWeights
 
 from .base import BaseMatting
@@ -12,11 +14,19 @@ from .modnet import MODNet
 __all__ = ['BaseMatting', 'MODNet', 'create_matting_model']
 
 
+@deprecated(
+    'create_matting_model() is deprecated and will be removed in uniface 4.0. '
+    'Instantiate MODNet directly, e.g. '
+    '`from uniface.matting import MODNet; MODNet(model_name=...)`.'
+)
 def create_matting_model(
     model_name: str | MODNetWeights = MODNetWeights.PHOTOGRAPHIC,
     **kwargs,
 ) -> BaseMatting:
     """Factory function to create a portrait matting model.
+
+    .. deprecated:: 3.7.0
+        Use ``MODNet`` directly. This factory will be removed in uniface 4.0.
 
     Args:
         model_name: Model to create. Options: ``MODNetWeights.PHOTOGRAPHIC``
@@ -33,7 +43,8 @@ def create_matting_model(
         ValueError: If the model_name is not recognized.
 
     Example:
-        >>> matting = create_matting_model()
+        >>> from uniface.matting import MODNet
+        >>> matting = MODNet()
         >>> matte = matting.predict(image)
     """
     if isinstance(model_name, MODNetWeights):

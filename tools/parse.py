@@ -87,8 +87,7 @@ def process_image(detector, parser, image_path: str, save_dir: str = 'outputs', 
         mask = parser.parse(face_crop)
         print(f'  Face {i + 1}: parsed with {len(set(mask.flatten()))} unique classes')
 
-        face_crop_rgb = cv2.cvtColor(face_crop, cv2.COLOR_BGR2RGB)
-        vis_result = vis_parsing_maps(face_crop_rgb, mask, save_image=False)
+        vis_result = vis_parsing_maps(face_crop, mask, save_image=False)
 
         result_image[y1:y2, x1:x2] = vis_result
         cv2.rectangle(result_image, (x1, y1), (x2, y2), (0, 255, 0), 2)
@@ -135,8 +134,7 @@ def process_video(detector, parser, video_path: str, save_dir: str = 'outputs', 
                 continue
 
             mask = parser.parse(face_crop)
-            face_crop_rgb = cv2.cvtColor(face_crop, cv2.COLOR_BGR2RGB)
-            vis_result = vis_parsing_maps(face_crop_rgb, mask, save_image=False)
+            vis_result = vis_parsing_maps(face_crop, mask, save_image=False)
 
             frame[y1:y2, x1:x2] = vis_result
             cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
@@ -177,8 +175,7 @@ def run_camera(detector, parser, camera_id: int = 0, expand_ratio: float = 0.2):
                 continue
 
             mask = parser.parse(face_crop)
-            face_crop_rgb = cv2.cvtColor(face_crop, cv2.COLOR_BGR2RGB)
-            vis_result = vis_parsing_maps(face_crop_rgb, mask, save_image=False)
+            vis_result = vis_parsing_maps(face_crop, mask, save_image=False)
 
             frame[y1:y2, x1:x2] = vis_result
             cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)

@@ -191,17 +191,30 @@ def bbox_center_alignment(
 def transform_points_2d(points: np.ndarray, transform: np.ndarray) -> np.ndarray:
     """Apply a 2D affine transformation to an array of 2D points.
 
+    Both inputs are coerced to contiguous ``float32`` before the transform is
+    applied; the output dtype is ``float32`` regardless of the input dtypes.
+
     Args:
-        points: An (N, 2) array of 2D points.
-        transform: A (2, 3) affine transformation matrix.
+        points: An ``(N, 2)`` array of 2D points. When ``N == 0`` the function
+            short-circuits and returns an empty ``(0, 2)`` ``float32`` array
+            without touching ``transform``.
+        transform: A ``(2, 3)`` affine transformation matrix. ``(3, 3)``
+            homogeneous matrices are **not** accepted — pass only the top two
+            rows.
 
     Returns:
-        Transformed (N, 2) array of points.
+        Transformed ``(N, 2)`` ``float32`` array of points.
     """
-    transformed = np.zeros_like(points, dtype=np.float32)
-    for i in range(points.shape[0]):
-        point = np.array([points[i, 0], points[i, 1], 1.0], dtype=np.float32)
-        result = np.dot(transform, point)
-        transformed[i] = result[:2]
+    if points.shape[0] == 0:
+        return np.empty((0, 2), dtype=np.float32)
 
-    return transformed
+    # Standardize inputs to float32
+    points = np.ascontiguousarray(points, dtype=np.float32)
+    transform = np.ascontiguousarray(transform, dtype=np.float32)
+
+    # Append a column of ones for homogeneous coordinates (N, 3)
+    ones = np.ones((points.shape[0], 1), dtype=np.float32)
+    points_homogeneous = np.hstack([points, ones])
+
+    # Apply transformation: (N, 3) dot (3, 2) -> (N, 2)
+    return np.dot(points_homogeneous, transform.T)

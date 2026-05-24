@@ -4,6 +4,8 @@
 
 from __future__ import annotations
 
+from typing_extensions import deprecated
+
 from uniface.constants import ParsingWeights, XSegWeights
 
 from .base import BaseFaceParser
@@ -13,11 +15,20 @@ from .xseg import XSeg
 __all__ = ['BaseFaceParser', 'BiSeNet', 'XSeg', 'create_face_parser']
 
 
+@deprecated(
+    'create_face_parser() is deprecated and will be removed in uniface 4.0. '
+    'Instantiate the parser class directly, e.g. '
+    '`from uniface.parsing import BiSeNet; BiSeNet(model_name=...)`.'
+)
 def create_face_parser(
     model_name: str | ParsingWeights | XSegWeights = ParsingWeights.RESNET18,
     **kwargs,
 ) -> BaseFaceParser:
     """Factory function to create a face parsing model.
+
+    .. deprecated:: 3.7.0
+        Use the parser class directly (``BiSeNet``, ``XSeg``). This factory
+        will be removed in uniface 4.0.
 
     Args:
         model_name: Model to create. Options: ParsingWeights.RESNET18/RESNET34 (BiSeNet),
@@ -31,7 +42,8 @@ def create_face_parser(
         ValueError: If the model_name is not recognized.
 
     Example:
-        >>> parser = create_face_parser(ParsingWeights.RESNET18)
+        >>> from uniface.parsing import BiSeNet
+        >>> parser = BiSeNet(model_name=ParsingWeights.RESNET18)
         >>> mask = parser.parse(face_crop)
     """
     # Handle XSegWeights

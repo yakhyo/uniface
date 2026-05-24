@@ -6,6 +6,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from typing_extensions import deprecated
+
 from uniface.constants import MiniFASNetWeights
 from uniface.types import SpoofingResult
 
@@ -21,12 +23,20 @@ __all__ = [
 ]
 
 
+@deprecated(
+    'create_spoofer() is deprecated and will be removed in uniface 4.0. '
+    'Instantiate MiniFASNet directly, e.g. '
+    '`from uniface.spoofing import MiniFASNet; MiniFASNet(model_name=...)`.'
+)
 def create_spoofer(
     model_name: MiniFASNetWeights = MiniFASNetWeights.V2,
     scale: float | None = None,
     **kwargs: Any,
 ) -> MiniFASNet:
     """Factory function to create a face anti-spoofing model.
+
+    .. deprecated:: 3.7.0
+        Use ``MiniFASNet`` directly. This factory will be removed in uniface 4.0.
 
     This is a convenience function that creates a MiniFASNet instance
     with the specified model variant and optional custom scale.
@@ -44,8 +54,8 @@ def create_spoofer(
         An initialized face anti-spoofing model.
 
     Example:
-        >>> from uniface.spoofing import create_spoofer, MiniFASNetWeights
-        >>> spoofer = create_spoofer()
+        >>> from uniface.spoofing import MiniFASNet, MiniFASNetWeights
+        >>> spoofer = MiniFASNet(model_name=MiniFASNetWeights.V2)
         >>> result = spoofer.predict(image, face.bbox)
         >>> print(f'Is real: {result.is_real}, Confidence: {result.confidence:.2%}')
     """

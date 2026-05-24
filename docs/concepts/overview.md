@@ -86,17 +86,14 @@ tqdm          # Progress bars
 
 ### 3. Simple API
 
-Factory functions and direct instantiation:
+Direct class instantiation:
 
 ```python
-from uniface.detection import RetinaFace
+from uniface.detection import RetinaFace, SCRFD
 
 detector = RetinaFace()
-
-# Or via factory function
-from uniface.detection import create_detector
-
-detector = create_detector('retinaface')
+# or
+detector = SCRFD()
 ```
 
 ### 4. Type Safety

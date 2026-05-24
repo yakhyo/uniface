@@ -105,16 +105,14 @@ class FaceAnalyzer:
                 attr_name = attr.__class__.__name__
                 try:
                     attr.predict(image, face)
-                    Logger.debug(f'Face {idx + 1}: {attr_name} prediction succeeded')
                 except Exception as e:
                     Logger.warning(f'Face {idx + 1}: {attr_name} prediction failed: {e}')
 
-        Logger.info(f'Analysis complete: {len(faces)} face(s) processed')
         return faces
 
     def __repr__(self) -> str:
         parts = [f'detector={self.detector.__class__.__name__}']
-        if self.recognizer:
+        if self.recognizer is not None:
             parts.append(f'recognizer={self.recognizer.__class__.__name__}')
         if self.attributes:
             attr_names = ', '.join(attr.__class__.__name__ for attr in self.attributes)

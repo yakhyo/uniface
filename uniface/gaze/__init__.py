@@ -2,15 +2,25 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
+from typing_extensions import deprecated
+
 from uniface.types import GazeResult
 
 from .base import BaseGazeEstimator
 from .models import MobileGaze
 
 
+@deprecated(
+    'create_gaze_estimator() is deprecated and will be removed in uniface 4.0. '
+    'Instantiate the estimator class directly, e.g. '
+    '`from uniface.gaze import MobileGaze; MobileGaze(**kwargs)`.'
+)
 def create_gaze_estimator(method: str = 'mobilegaze', **kwargs) -> BaseGazeEstimator:
     """
     Factory function to create gaze estimators.
+
+    .. deprecated:: 3.7.0
+        Use ``MobileGaze`` directly. This factory will be removed in uniface 4.0.
 
     This function initializes and returns a gaze estimator instance based on the
     specified method. It acts as a high-level interface to the underlying
@@ -32,11 +42,12 @@ def create_gaze_estimator(method: str = 'mobilegaze', **kwargs) -> BaseGazeEstim
 
     Examples:
         >>> # Create the default MobileGaze estimator (ResNet34 backbone)
-        >>> estimator = create_gaze_estimator()
+        >>> from uniface.gaze import MobileGaze
+        >>> estimator = MobileGaze()
 
         >>> # Create with MobileNetV2 backbone
         >>> from uniface.constants import GazeWeights
-        >>> estimator = create_gaze_estimator('mobilegaze', model_name=GazeWeights.MOBILENET_V2)
+        >>> estimator = MobileGaze(model_name=GazeWeights.MOBILENET_V2)
 
         >>> # Use the estimator
         >>> result = estimator.estimate(face_crop)
