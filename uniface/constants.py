@@ -233,6 +233,27 @@ class MiniFASNetWeights(str, Enum):
     V1SE = "minifasnet_v1se"
     V2   = "minifasnet_v2"
 
+
+class EDifFIQAWeights(str, Enum):
+    """
+    eDifFIQA: Face Image Quality Assessment.
+    Predicts a single quality score from an aligned 112x112 face.
+    Higher score = better quality.
+
+    eDifFIQA-L ranks first on the NIST FATE-Quality Kiosk-to-Entry track.
+    https://github.com/yakhyo/face-image-quality-assessment
+
+    Model Variants:
+    - T: MobileFaceNet backbone (1.7M params, smallest)
+    - S: IResNet-18 backbone (24.6M params)
+    - M: IResNet-50 backbone (44.1M params)
+    - L: IResNet-100 backbone (65.7M params, most accurate)
+    """
+    T = "ediffiqa_t"
+    S = "ediffiqa_s"
+    M = "ediffiqa_m"
+    L = "ediffiqa_l"
+
 # Centralized Model Registry
 MODEL_REGISTRY: dict[Enum, ModelInfo] = {
     # RetinaFace
@@ -481,6 +502,24 @@ MODEL_REGISTRY: dict[Enum, ModelInfo] = {
     MODNetWeights.WEBCAM: ModelInfo(
         url='https://github.com/yakhyo/modnet/releases/download/weights/modnet_webcam.onnx',
         sha256='de03cc16f3c91f25b7c2f0b42ea1a8d34f40a752234f3887572655e744e55306'
+    ),
+
+    # eDifFIQA (Face Image Quality Assessment)
+    EDifFIQAWeights.T: ModelInfo(
+        url='https://github.com/yakhyo/face-image-quality-assessment/releases/download/weights/ediffiqa_t.onnx',
+        sha256='7a83be63e6583ec5800fa0762e219b65b4b9f1721c4d210bfe2f16c0478832bb'
+    ),
+    EDifFIQAWeights.S: ModelInfo(
+        url='https://github.com/yakhyo/face-image-quality-assessment/releases/download/weights/ediffiqa_s.onnx',
+        sha256='1797c144f4c9b1244b5561efcab80d588a640d15cebb38dbcfdedfe65439fb47'
+    ),
+    EDifFIQAWeights.M: ModelInfo(
+        url='https://github.com/yakhyo/face-image-quality-assessment/releases/download/weights/ediffiqa_m.onnx',
+        sha256='b02ea2dcc0536d6b2480fe67ec7d8c5993bf39fe5e00f77c971a21f2701b3f37'
+    ),
+    EDifFIQAWeights.L: ModelInfo(
+        url='https://github.com/yakhyo/face-image-quality-assessment/releases/download/weights/ediffiqa_l.onnx',
+        sha256='72238239298cf645d3f5954d657b4aca7b64fd25bc808c0260778386da9b00a1'
     ),
 }
 

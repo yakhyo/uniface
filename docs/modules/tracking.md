@@ -228,27 +228,6 @@ draw_tracks(
 
 ---
 
-## CLI Tool
-
-```bash
-# Track faces in a video
-python tools/track.py --source video.mp4
-
-# Webcam
-python tools/track.py --source 0
-
-# Save output
-python tools/track.py --source video.mp4 --output tracked.mp4
-
-# Use RetinaFace instead of SCRFD
-python tools/track.py --source video.mp4 --detector retinaface
-
-# Keep lost tracks longer
-python tools/track.py --source video.mp4 --track-buffer 60
-```
-
----
-
 ## References
 
 - [yakhyo/bytetrack-tracker](https://github.com/yakhyo/bytetrack-tracker) — standalone BYTETracker implementation used in UniFace
@@ -261,3 +240,4 @@ python tools/track.py --source video.mp4 --track-buffer 60
 - [Detection](detection.md) — face detection models
 - [Video & Webcam](../recipes/video-webcam.md) — video processing patterns
 - [Inputs & Outputs](../concepts/inputs-outputs.md) — data types and formats
+- [CLI Tools](https://github.com/yakhyo/uniface/blob/main/tools/README.md) — command-line scripts for all UniFace modules

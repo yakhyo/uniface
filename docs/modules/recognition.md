@@ -365,3 +365,4 @@ recognizer = EdgeFace()
 - [Detection Module](detection.md) - Detect faces first
 - [Face Search Recipe](../recipes/face-search.md) - Complete search system
 - [Thresholds](../concepts/thresholds-calibration.md) - Calibration guide
+- [CLI Tools](https://github.com/yakhyo/uniface/blob/main/tools/README.md) - Command-line scripts for all UniFace modules

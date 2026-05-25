@@ -300,3 +300,4 @@ cv2.imwrite("attributes.jpg", image)
 - [Parsing](parsing.md) - Face semantic segmentation
 - [Gaze](gaze.md) - Gaze estimation
 - [Image Pipeline Recipe](../recipes/image-pipeline.md) - Complete workflow
+- [CLI Tools](https://github.com/yakhyo/uniface/blob/main/tools/README.md) - Command-line scripts for all UniFace modules

@@ -307,3 +307,4 @@ landmarker = PIPNet(model_name=PIPNetWeights.DW300_CELEBA_68)
 - [Attributes Module](attributes.md) - Age, gender, emotion
 - [Gaze Module](gaze.md) - Gaze estimation
 - [Concepts: Coordinate Systems](../concepts/coordinate-systems.md) - Landmark formats
+- [CLI Tools](https://github.com/yakhyo/uniface/blob/main/tools/README.md) - Command-line scripts for all UniFace modules

@@ -440,6 +440,27 @@ Face anti-spoofing models for liveness detection. Detect if a face is real (live
 
 ---
 
+## Face Image Quality Models
+
+### eDifFIQA Family
+
+Face image quality assessment. Predicts a single scalar score from an aligned 112x112 face crop — higher = better. eDifFIQA-L ranks first on the NIST FATE-Quality Kiosk-to-Entry track.
+
+| Model Name | Backbone | Params | Size |
+| ---------- | -------- | ------ | ---- |
+| `T` :material-check-circle: | MobileFaceNet | 1.7M | 6.6 MB |
+| `S` | IResNet-18 | 24.6M | 93.7 MB |
+| `M` | IResNet-50 | 44.1M | 168.3 MB |
+| `L` | IResNet-100 | 65.7M | 250.6 MB |
+
+!!! info "Output Format"
+    **Output**: Returns `QualityResult(score)` — float, roughly in `[0, 1]`. Not a calibrated probability; calibrate your threshold on a held-out set.
+
+!!! note "Input Requirements"
+    Requires 5-point landmarks from a detector (e.g. SCRFD, RetinaFace) for alignment, or a pre-aligned 112x112 crop via `score_aligned()`.
+
+---
+
 ## Model Management
 
 Models are automatically downloaded and cached on first use.
@@ -472,6 +493,7 @@ See [Model Cache & Offline Use](concepts/model-cache-offline.md) for full detail
 - **Face Segmentation**: [yakhyo/face-segmentation](https://github.com/yakhyo/face-segmentation) - XSeg ONNX Inference
 - **Portrait Matting**: [yakhyo/modnet](https://github.com/yakhyo/modnet) - MODNet ported weights and inference (from [ZHKKKe/MODNet](https://github.com/ZHKKKe/MODNet))
 - **Face Anti-Spoofing**: [yakhyo/face-anti-spoofing](https://github.com/yakhyo/face-anti-spoofing) - MiniFASNet ONNX inference (weights from [minivision-ai/Silent-Face-Anti-Spoofing](https://github.com/minivision-ai/Silent-Face-Anti-Spoofing))
+- **Face Image Quality Assessment**: [yakhyo/face-image-quality-assessment](https://github.com/yakhyo/face-image-quality-assessment) - eDifFIQA PyTorch inference, ONNX export and inference
 - **FairFace**: [yakhyo/fairface-onnx](https://github.com/yakhyo/fairface-onnx) - FairFace ONNX inference for race, gender, age prediction
 - **PIPNet**: [yakhyo/pipnet-onnx](https://github.com/yakhyo/pipnet-onnx) - PIPNet ONNX export and inference (from [jhb86253817/PIPNet](https://github.com/jhb86253817/PIPNet))
 - **InsightFace**: [deepinsight/insightface](https://github.com/deepinsight/insightface) - Model architectures and pretrained weights

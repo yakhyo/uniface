@@ -152,3 +152,4 @@ matting = MODNet(model_name=MODNetWeights.WEBCAM)
 - [Parsing](parsing.md) - Face semantic segmentation
 - [Privacy](privacy.md) - Face anonymization
 - [Detection](detection.md) - Face detection
+- [CLI Tools](https://github.com/yakhyo/uniface/blob/main/tools/README.md) - Command-line scripts for all UniFace modules

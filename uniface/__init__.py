@@ -24,6 +24,7 @@ This library provides unified APIs for:
 - Head pose estimation
 - Age, gender, and emotion prediction
 - Face anti-spoofing
+- Face image quality assessment (eDifFIQA)
 - Privacy/anonymization
 """
 
@@ -55,10 +56,11 @@ from .landmark import Landmark106, PIPNet, create_landmarker
 from .matting import MODNet, create_matting_model
 from .parsing import BiSeNet, XSeg, create_face_parser
 from .privacy import BlurFace
+from .quality import EDifFIQA
 from .recognition import AdaFace, ArcFace, EdgeFace, MobileFace, SphereFace, create_recognizer
 from .spoofing import MiniFASNet, create_spoofer
 from .tracking import BYTETracker
-from .types import AttributeResult, EmotionResult, Face, GazeResult, HeadPoseResult, SpoofingResult
+from .types import AttributeResult, EmotionResult, Face, GazeResult, HeadPoseResult, QualityResult, SpoofingResult
 
 # Optional: FAISS vector store (requires `pip install faiss-cpu`)
 with contextlib.suppress(ImportError):
@@ -117,6 +119,9 @@ __all__ = [
     # Spoofing models
     'MiniFASNet',
     'SpoofingResult',
+    # Quality models
+    'EDifFIQA',
+    'QualityResult',
     # Tracking
     'BYTETracker',
     # Privacy

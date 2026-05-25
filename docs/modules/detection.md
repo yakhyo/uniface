@@ -294,3 +294,4 @@ python tools/detect.py --source image.jpg
 - [Landmarks Module](landmarks.md) - Get 106 / 98 / 68-point dense landmarks
 - [Image Pipeline Recipe](../recipes/image-pipeline.md) - Complete detection workflow
 - [Concepts: Thresholds](../concepts/thresholds-calibration.md) - Tuning detection parameters
+- [CLI Tools](https://github.com/yakhyo/uniface/blob/main/tools/README.md) - Command-line scripts for all UniFace modules
