@@ -137,6 +137,11 @@
   background: var(--md-code-bg-color);
   border: 1px solid var(--md-default-fg-color--lightest);
   position: relative;
+  transition: border-color 0.2s ease;
+}
+
+.feature-card:hover {
+  border-color: var(--md-accent-fg-color);
 }
 
 /* Transparent overlay link — makes the whole card clickable. */
