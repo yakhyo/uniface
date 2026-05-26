@@ -384,6 +384,30 @@ for i, face in enumerate(faces):
 
 ---
 
+## Face Image Quality Assessment
+
+Score how usable each face is for downstream recognition:
+
+```python
+import cv2
+from uniface.detection import SCRFD
+from uniface.quality import EDifFIQA
+
+detector = SCRFD(confidence_threshold=0.3)
+quality = EDifFIQA()
+
+image = cv2.imread("photo.jpg")
+faces = detector.detect(image)
+
+for i, face in enumerate(faces):
+    result = quality.predict(image, face.landmarks)
+    print(f"Face {i+1}: quality={result.score:.4f}")
+```
+
+Higher = better. Use it to filter or rank faces before recognition.
+
+---
+
 ## Webcam Demo
 
 Real-time face detection:
@@ -489,6 +513,7 @@ For detailed model comparisons and benchmarks, see the [Model Zoo](models.md).
 | Parsing | `BiSeNet` (ResNet18/34) |
 | Attributes | `AgeGender`, `FairFace`, `Emotion` |
 | Anti-Spoofing | `MiniFASNet` (V1SE, V2) |
+| Quality | `EDifFIQA` (T, S, M, L) |
 
 ---
 
@@ -535,6 +560,7 @@ from uniface.gaze import MobileGaze
 from uniface.headpose import HeadPose
 from uniface.parsing import BiSeNet, XSeg
 from uniface.privacy import BlurFace
+from uniface.quality import EDifFIQA
 from uniface.spoofing import MiniFASNet
 from uniface.tracking import BYTETracker
 from uniface.analyzer import FaceAnalyzer

@@ -238,18 +238,6 @@ MiniFASNet can detect various spoof attacks:
 
 ---
 
-## Command-Line Tool
-
-```bash
-# Image
-python tools/spoofing.py --source photo.jpg
-
-# Webcam
-python tools/spoofing.py --source 0
-```
-
----
-
 ## Available Spoofers
 
 ```python
@@ -265,3 +253,4 @@ spoofer = MiniFASNet()
 - [Privacy](privacy.md) - Face anonymization
 - [Detection](detection.md) - Face detection
 - [Recognition](recognition.md) - Face recognition
+- [CLI Tools](https://github.com/yakhyo/uniface/blob/main/tools/README.md) - Command-line scripts for all UniFace modules

@@ -29,6 +29,7 @@ __all__ = [
     'Face',
     'GazeResult',
     'HeadPoseResult',
+    'QualityResult',
     'SpoofingResult',
 ]
 
@@ -82,6 +83,20 @@ class SpoofingResult:
     def __repr__(self) -> str:
         label = 'Real' if self.is_real else 'Fake'
         return f'SpoofingResult({label}, confidence={self.confidence:.4f})'
+
+
+@dataclass(slots=True, frozen=True)
+class QualityResult:
+    """Result of face image quality assessment.
+
+    Attributes:
+        score: Quality score in [0, 1]. Higher = better quality.
+    """
+
+    score: float
+
+    def __repr__(self) -> str:
+        return f'QualityResult(score={self.score:.4f})'
 
 
 @dataclass(slots=True, frozen=True)
@@ -171,6 +186,7 @@ class Face:
         race: Predicted race/ethnicity (optional, from FairFace).
         emotion: Predicted emotion label (optional, from Emotion model).
         emotion_confidence: Confidence score for emotion prediction (optional).
+        quality: Face image quality score in [0, 1] (optional, from eDifFIQA).
         track_id: Persistent track ID assigned by BYTETracker (optional).
 
     Properties:
@@ -192,6 +208,7 @@ class Face:
     race: str | None = None
     emotion: str | None = None
     emotion_confidence: float | None = None
+    quality: float | None = None
     track_id: int | None = None
 
     def compute_similarity(self, other: Face) -> float:
@@ -263,6 +280,8 @@ class Face:
             parts.append(f'race={self.race}')
         if self.emotion is not None:
             parts.append(f'emotion={self.emotion}')
+        if self.quality is not None:
+            parts.append(f'quality={self.quality:.4f}')
         if self.embedding is not None:
             parts.append(f'embedding_dim={self.embedding.shape[-1]}')
         return ', '.join(parts) + ')'

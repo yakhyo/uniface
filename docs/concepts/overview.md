@@ -26,6 +26,7 @@ graph TB
         HPOSE[Head Pose]
         PARSE[Parsing]
         SPOOF[Anti-Spoofing]
+        QUAL[Quality]
         MATT[Matting]
         PRIV[Privacy]
     end
@@ -51,6 +52,7 @@ graph TB
     DET --> HPOSE
     DET --> PARSE
     DET --> SPOOF
+    DET --> QUAL
     DET --> PRIV
     DET --> TRK
     REC --> IDX
@@ -120,7 +122,8 @@ uniface/
 ├── matting/        # Portrait matting (MODNet)
 ├── gaze/           # Gaze estimation
 ├── headpose/       # Head pose estimation
-├── spoofing/       # Anti-spoofing
+├── spoofing/       # Anti-spoofing (MiniFASNet)
+├── quality/        # Face image quality assessment (eDifFIQA)
 ├── privacy/        # Face anonymization
 ├── stores/         # Vector stores (FAISS)
 ├── types.py        # Dataclasses (Face, GazeResult, HeadPoseResult, etc.)

@@ -276,3 +276,4 @@ gaze = MobileGaze()
 - [Anti-Spoofing](spoofing.md) - Face liveness detection
 - [Privacy](privacy.md) - Face anonymization
 - [Video Recipe](../recipes/video-webcam.md) - Real-time processing
+- [CLI Tools](https://github.com/yakhyo/uniface/blob/main/tools/README.md) - Command-line scripts for all UniFace modules

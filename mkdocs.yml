@@ -154,6 +154,7 @@ nav:
       - Gaze: modules/gaze.md
       - Head Pose: modules/headpose.md
       - Anti-Spoofing: modules/spoofing.md
+      - Quality: modules/quality.md
       - Privacy: modules/privacy.md
       - Stores: modules/stores.md
   - Guides:

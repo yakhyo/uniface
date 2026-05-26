@@ -24,6 +24,7 @@ __all__ = [
     'draw_head_pose',
     'draw_head_pose_axis',
     'draw_head_pose_cube',
+    'draw_quality_score',
     'draw_text_label',
     'draw_tracks',
     'vis_parsing_maps',
@@ -577,6 +578,67 @@ def draw_head_pose(
             text_color=(255, 255, 255),
             font_scale=font_scale,
         )
+
+
+def draw_quality_score(
+    image: np.ndarray,
+    bbox: list[int] | np.ndarray,
+    score: float,
+    *,
+    draw_bbox: bool = True,
+    corner_bbox: bool = True,
+    low_threshold: float = 0.3,
+    high_threshold: float = 0.6,
+) -> None:
+    """Draw a face image quality score with a color-coded label.
+
+    Color encoding (BGR):
+    - Red    if score < low_threshold
+    - Orange if low_threshold <= score < high_threshold
+    - Green  if score >= high_threshold
+
+    Modifies the image in-place.
+
+    Args:
+        image: Input image to draw on (modified in-place).
+        bbox: Face bounding box in xyxy format ``[x1, y1, x2, y2]``.
+        score: Quality score in [0, 1]. Higher = better quality.
+        draw_bbox: Whether to draw the bounding box. Defaults to True.
+        corner_bbox: Use corner-style bounding box. Defaults to True.
+        low_threshold: Below this, the label is drawn in red. Defaults to 0.3.
+        high_threshold: At/above this, the label is drawn in green. Defaults to 0.6.
+
+    Example:
+        >>> from uniface.draw import draw_quality_score
+        >>> draw_quality_score(image, face.bbox, result.score)
+    """
+    x_min, y_min, x_max, y_max = map(int, bbox[:4])
+
+    if score < low_threshold:
+        color = (0, 0, 255)  # red
+    elif score < high_threshold:
+        color = (0, 165, 255)  # orange
+    else:
+        color = (0, 255, 0)  # green
+
+    line_thickness = max(round(sum(image.shape[:2]) / 2 * 0.003), 2)
+
+    if draw_bbox:
+        if corner_bbox:
+            draw_corner_bbox(image, bbox, color=color, thickness=line_thickness)
+        else:
+            cv2.rectangle(image, (x_min, y_min), (x_max, y_max), color, line_thickness)
+
+    font_scale = max(0.4, min(0.7, (y_max - y_min) / 200))
+    draw_text_label(
+        image,
+        f'Q:{score:.2f}',
+        x_min,
+        y_min,
+        bg_color=color,
+        text_color=(255, 255, 255),
+        font_scale=font_scale,
+    )
 
 
 def draw_tracks(

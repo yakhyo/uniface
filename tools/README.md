@@ -20,6 +20,7 @@ CLI utilities for testing and running UniFace features.
 | `fairface.py` | FairFace attribute prediction (race, gender, age) |
 | `attribute.py` | Age and gender prediction |
 | `spoofing.py` | Face anti-spoofing detection |
+| `quality.py` | Face image quality assessment (eDifFIQA) |
 | `parse.py` | Face semantic segmentation (BiSeNet) |
 | `xseg.py` | Face segmentation (XSeg) |
 | `batch_process.py` | Batch process folder of images |
@@ -87,6 +88,11 @@ python tools/xseg.py --source 0
 # Face anti-spoofing
 python tools/spoofing.py --source assets/test.jpg
 python tools/spoofing.py --source 0
+
+# Face image quality assessment (eDifFIQA)
+python tools/quality.py --source assets/test.jpg
+python tools/quality.py --source 0
+python tools/quality.py --source assets/test.jpg --variant l
 
 # Face analyzer
 python tools/analyze.py --source assets/test.jpg

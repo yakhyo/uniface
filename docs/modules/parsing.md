@@ -337,3 +337,4 @@ parser = XSeg(model_name=XSegWeights.DEFAULT)
 - [Gaze](gaze.md) - Gaze estimation
 - [Privacy](privacy.md) - Face anonymization
 - [Detection](detection.md) - Face detection
+- [CLI Tools](https://github.com/yakhyo/uniface/blob/main/tools/README.md) - Command-line scripts for all UniFace modules

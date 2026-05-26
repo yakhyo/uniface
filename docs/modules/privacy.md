@@ -243,23 +243,9 @@ for method in methods:
 
 ---
 
-## Command-Line Tool
-
-```bash
-# Anonymize image with pixelation
-python tools/anonymize.py --source photo.jpg
-
-# Real-time webcam
-python tools/anonymize.py --source 0 --method gaussian
-
-# Custom blur strength
-python tools/anonymize.py --source photo.jpg --method gaussian --blur-strength 5.0
-```
-
----
-
 ## Next Steps
 
 - [Anonymize Stream Recipe](../recipes/anonymize-stream.md) - Video pipeline
 - [Detection](detection.md) - Face detection options
 - [Batch Processing Recipe](../recipes/batch-processing.md) - Process multiple files
+- [CLI Tools](https://github.com/yakhyo/uniface/blob/main/tools/README.md) - Command-line scripts for all UniFace modules

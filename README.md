@@ -36,6 +36,7 @@
 - **Attribute Analysis** — Age, gender, race (FairFace), and emotion
 - **Vector Store** — FAISS-backed embedding store for fast multi-identity search
 - **Anti-Spoofing** — Face liveness detection with MiniFASNet
+- **Face Quality Assessment** — eDifFIQA single-score quality (T/S/M/L, NIST FATE-Quality #1 with the L variant)
 - **Face Anonymization** — 5 blur methods for privacy protection
 - **Hardware Acceleration** — ARM64 (Apple Silicon), CUDA (NVIDIA), CPU
 
@@ -316,6 +317,7 @@ If you plan commercial use, verify model license compatibility.
 | Head Pose | [head-pose-estimation](https://github.com/yakhyo/head-pose-estimation) | ✓ | Head Pose Training (6DRepNet-style) |
 | Matting | [modnet](https://github.com/yakhyo/modnet) | - | MODNet Portrait Matting |
 | Anti-Spoofing | [face-anti-spoofing](https://github.com/yakhyo/face-anti-spoofing) | - | MiniFASNet Inference |
+| Quality | [face-image-quality-assessment](https://github.com/yakhyo/face-image-quality-assessment) | - | eDifFIQA ONNX Inference |
 | Attributes | [fairface-onnx](https://github.com/yakhyo/fairface-onnx) | - | FairFace ONNX Inference |
 
 *SCRFD and ArcFace models are from [InsightFace](https://github.com/deepinsight/insightface).

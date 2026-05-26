@@ -170,3 +170,4 @@ else:
 - [Face Search Recipe](../recipes/face-search.md) - Building and querying indexes
 - [Recognition Module](recognition.md) - Embedding extraction
 - [Thresholds Guide](../concepts/thresholds-calibration.md) - Tuning similarity thresholds
+- [CLI Tools](https://github.com/yakhyo/uniface/blob/main/tools/README.md) - Command-line scripts for all UniFace modules
