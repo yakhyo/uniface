@@ -18,7 +18,7 @@
         <link rel="prev" href="../headpose/">
       
       
-        <link rel="next" href="../privacy/">
+        <link rel="next" href="../quality/">
       
       
         
@@ -1015,6 +1015,8 @@
       
         
       
+        
+      
     
     
     
@@ -1507,21 +1509,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#command-line-tool" class="md-nav__link">
+  <a href="#available-spoofers" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Command-Line Tool
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#factory-function" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Factory Function
+        Available Spoofers
       
     </span>
   </a>
@@ -1543,6 +1534,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -2183,21 +2202,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#command-line-tool" class="md-nav__link">
+  <a href="#available-spoofers" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Command-Line Tool
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#factory-function" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Factory Function
+        Available Spoofers
       
     </span>
   </a>
@@ -2500,18 +2508,10 @@ apply your own confidence threshold:</p>
 </ul>
 </div>
 <hr />
-<h2 id="command-line-tool">Command-Line Tool</h2>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Image</span>
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>python<span class="w"> </span>tools/spoofing.py<span class="w"> </span>--source<span class="w"> </span>photo.jpg
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
-</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="c1"># Webcam</span>
-</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>python<span class="w"> </span>tools/spoofing.py<span class="w"> </span>--source<span class="w"> </span><span class="m">0</span>
-</span></code></pre></div>
-<hr />
-<h2 id="factory-function">Factory Function</h2>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.spoofing</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_spoofer</span>
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="n">spoofer</span> <span class="o">=</span> <span class="n">create_spoofer</span><span class="p">()</span>  <span class="c1"># Returns MiniFASNet</span>
+<h2 id="available-spoofers">Available Spoofers</h2>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.spoofing</span><span class="w"> </span><span class="kn">import</span> <span class="n">MiniFASNet</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="n">spoofer</span> <span class="o">=</span> <span class="n">MiniFASNet</span><span class="p">()</span>
 </span></code></pre></div>
 <hr />
 <h2 id="next-steps">Next Steps</h2>
@@ -2519,6 +2519,7 @@ apply your own confidence threshold:</p>
 <li><a href="../privacy/">Privacy</a> - Face anonymization</li>
 <li><a href="../detection/">Detection</a> - Face detection</li>
 <li><a href="../recognition/">Recognition</a> - Face recognition</li>
+<li><a href="https://github.com/yakhyo/uniface/blob/main/tools/README.md">CLI Tools</a> - Command-line scripts for all UniFace modules</li>
 </ul>
 
 
@@ -2542,7 +2543,7 @@ apply your own confidence threshold:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="February 11, 2026 15:20:23 UTC"><span class="timeago" datetime="2026-02-11T15:20:23+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="February 11, 2026 15:20:23 UTC">2026-02-11</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="May 26, 2026 14:29:27 UTC"><span class="timeago" datetime="2026-05-26T14:29:27+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="May 26, 2026 14:29:27 UTC">2026-05-26</span>
   </span>
 
     
@@ -2636,13 +2637,13 @@ apply your own confidence threshold:</p>
         
         
           
-          <a href="../privacy/" class="md-footer__link md-footer__link--next" aria-label="Next: Privacy">
+          <a href="../quality/" class="md-footer__link md-footer__link--next" aria-label="Next: Quality">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Privacy
+                Quality
               </div>
             </div>
             <div class="md-footer__button md-icon">

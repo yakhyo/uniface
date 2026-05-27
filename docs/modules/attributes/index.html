@@ -1015,6 +1015,8 @@
       
         
       
+        
+      
     
     
     
@@ -1401,10 +1403,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#factory-function" class="md-nav__link">
+  <a href="#available-attribute-models" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Factory Function
+        Available Attribute Models
       
     </span>
   </a>
@@ -1619,6 +1621,34 @@
     
   
     Anti-Spoofing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quality
   
 
     
@@ -2301,10 +2331,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#factory-function" class="md-nav__link">
+  <a href="#available-attribute-models" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Factory Function
+        Available Attribute Models
       
     </span>
   </a>
@@ -2683,15 +2713,13 @@
 </span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="n">emotion</span> <span class="o">=</span> <span class="n">Emotion</span><span class="p">(</span><span class="n">model_name</span><span class="o">=</span><span class="n">DDAMFNWeights</span><span class="o">.</span><span class="n">AFFECNET8</span><span class="p">)</span>
 </span></code></pre></div>
 <hr />
-<h2 id="factory-function">Factory Function</h2>
-<p>Use <code>create_attribute_predictor()</code> for dynamic model selection:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_attribute_predictor</span>
+<h2 id="available-attribute-models">Available Attribute Models</h2>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.attribute</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgeGender</span><span class="p">,</span> <span class="n">Emotion</span><span class="p">,</span> <span class="n">FairFace</span>
 </span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="n">age_gender</span> <span class="o">=</span> <span class="n">create_attribute_predictor</span><span class="p">(</span><span class="s1">&#39;age_gender&#39;</span><span class="p">)</span>
-</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="n">fairface</span> <span class="o">=</span> <span class="n">create_attribute_predictor</span><span class="p">(</span><span class="s1">&#39;fairface&#39;</span><span class="p">)</span>
-</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="n">emotion</span> <span class="o">=</span> <span class="n">create_attribute_predictor</span><span class="p">(</span><span class="s1">&#39;emotion&#39;</span><span class="p">)</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="n">age_gender</span> <span class="o">=</span> <span class="n">AgeGender</span><span class="p">()</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="n">fairface</span> <span class="o">=</span> <span class="n">FairFace</span><span class="p">()</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="n">emotion</span> <span class="o">=</span> <span class="n">Emotion</span><span class="p">()</span>  <span class="c1"># requires the optional `torch` dependency</span>
 </span></code></pre></div>
-<p>Available model names: <code>'age_gender'</code>, <code>'fairface'</code>, <code>'emotion'</code>.</p>
 <hr />
 <h2 id="combining-models">Combining Models</h2>
 <h3 id="full-attribute-analysis">Full Attribute Analysis</h3>
@@ -2783,6 +2811,7 @@
 <li><a href="../parsing/">Parsing</a> - Face semantic segmentation</li>
 <li><a href="../gaze/">Gaze</a> - Gaze estimation</li>
 <li><a href="../../recipes/image-pipeline/">Image Pipeline Recipe</a> - Complete workflow</li>
+<li><a href="https://github.com/yakhyo/uniface/blob/main/tools/README.md">CLI Tools</a> - Command-line scripts for all UniFace modules</li>
 </ul>
 
 
@@ -2806,7 +2835,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="April 4, 2026 09:28:27 UTC"><span class="timeago" datetime="2026-04-04T09:28:27+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="April 4, 2026 09:28:27 UTC">2026-04-04</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="May 26, 2026 14:29:27 UTC"><span class="timeago" datetime="2026-05-26T14:29:27+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="May 26, 2026 14:29:27 UTC">2026-05-26</span>
   </span>
 
     

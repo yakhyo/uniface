@@ -1,5 +1,45 @@
 /* UniFace Documentation - Custom Styles */
 
+/* ===== Announcement Bar ===== */
+
+/* Light theme: indigo gradient, white text. */
+[data-md-color-scheme="default"] .md-banner {
+  background: linear-gradient(90deg, #3f51b5 0%, #7c4dff 100%);
+  color: #ffffff;
+}
+
+[data-md-color-scheme="default"] .md-banner a {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+[data-md-color-scheme="default"] .md-banner a:hover {
+  text-decoration: underline;
+}
+
+[data-md-color-scheme="default"] .md-banner .twemoji svg {
+  fill: #ffd54f;
+}
+
+/* Dark theme: deeper purple gradient, soft gold star. */
+[data-md-color-scheme="slate"] .md-banner {
+  background: linear-gradient(90deg, #4527a0 0%, #7c4dff 100%);
+  color: #ffffff;
+}
+
+[data-md-color-scheme="slate"] .md-banner a {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+[data-md-color-scheme="slate"] .md-banner a:hover {
+  text-decoration: underline;
+}
+
+[data-md-color-scheme="slate"] .md-banner .twemoji svg {
+  fill: #ffd54f;
+}
+
 /* ===== Hero Section ===== */
 
 .md-content .hero {
@@ -36,34 +76,45 @@
 
 .hero .md-button {
   margin: 0.5rem 0.25rem;
-  padding: 0.7rem 1.5rem;
-  font-weight: 600;
-  border-radius: 8px;
-  transition: all 0.2s ease;
+  padding: 0.6rem 1.25rem;
+  font-weight: 500;
+  font-size: 0.9rem;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.hero .md-button .twemoji,
+.hero .md-button svg {
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
 }
 
 .hero .md-button--primary {
-  background: linear-gradient(135deg, var(--md-primary-fg-color) 0%, #5c6bc0 100%);
-  border: none;
-  box-shadow: 0 4px 14px rgba(63, 81, 181, 0.4);
+  background: var(--md-primary-fg-color);
+  border: 1px solid var(--md-primary-fg-color);
+  color: #ffffff;
 }
 
 .hero .md-button--primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(63, 81, 181, 0.5);
+  background: var(--md-primary-fg-color--dark, #303f9f);
+  border-color: var(--md-primary-fg-color--dark, #303f9f);
+  color: #ffffff;
 }
 
 .hero .md-button:not(.md-button--primary) {
-  border: 2px solid var(--md-primary-fg-color);
   background: transparent;
-  color: var(--md-primary-fg-color);
+  border: 1px solid var(--md-default-fg-color--lighter);
+  color: var(--md-default-fg-color);
 }
 
 .hero .md-button:not(.md-button--primary):hover {
-  background: var(--md-primary-fg-color);
-  border-color: var(--md-primary-fg-color);
-  color: white;
-  transform: translateY(-2px);
+  background: var(--md-default-fg-color--lightest);
+  border-color: var(--md-default-fg-color--light);
+  color: var(--md-default-fg-color);
 }
 
 /* Badge styling in hero */
@@ -85,31 +136,21 @@
   border-radius: 12px;
   background: var(--md-code-bg-color);
   border: 1px solid var(--md-default-fg-color--lightest);
-  transition: all 0.3s ease;
   position: relative;
-  overflow: hidden;
-}
-
-.feature-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--md-primary-fg-color), #7c4dff);
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: border-color 0.2s ease;
 }
 
 .feature-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
-  border-color: var(--md-primary-fg-color--light);
+  border-color: var(--md-accent-fg-color);
 }
 
-.feature-card:hover::before {
-  opacity: 1;
+/* Transparent overlay link — makes the whole card clickable. */
+.feature-card-link {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  text-decoration: none;
 }
 
 .feature-card h3 {
@@ -127,13 +168,6 @@
   font-size: 0.875rem;
   color: var(--md-default-fg-color--light);
   line-height: 1.5;
-}
-
-.feature-card a {
-  display: inline-block;
-  margin-top: 0.75rem;
-  font-weight: 500;
-  font-size: 0.875rem;
 }
 
 /* ===== Next Steps Grid (2 columns) ===== */
@@ -160,30 +194,28 @@
   background-clip: text;
 }
 
-[data-md-color-scheme="slate"] .feature-card:hover {
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
-}
-
 [data-md-color-scheme="slate"] .hero .md-button--primary {
-  background: linear-gradient(135deg, #7c4dff 0%, #b388ff 100%);
-  box-shadow: 0 4px 14px rgba(124, 77, 255, 0.4);
+  background: #ffffff;
+  border-color: #ffffff;
+  color: #1a1a2e;
 }
 
 [data-md-color-scheme="slate"] .hero .md-button--primary:hover {
-  box-shadow: 0 6px 20px rgba(124, 77, 255, 0.5);
+  background: #e6e6e6;
+  border-color: #e6e6e6;
+  color: #1a1a2e;
 }
 
 [data-md-color-scheme="slate"] .hero .md-button:not(.md-button--primary) {
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.05);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.25);
   color: rgba(255, 255, 255, 0.9);
 }
 
 [data-md-color-scheme="slate"] .hero .md-button:not(.md-button--primary):hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.5);
-  color: white;
-  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #ffffff;
 }
 
 /* ===== Responsive Design ===== */

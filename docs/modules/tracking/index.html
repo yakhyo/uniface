@@ -1015,6 +1015,8 @@
       
         
       
+        
+      
     
     
     
@@ -1272,17 +1274,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#cli-tool" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        CLI Tool
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#references" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1496,6 +1487,34 @@
     
   
     Anti-Spoofing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quality
   
 
     
@@ -2105,17 +2124,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#cli-tool" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        CLI Tool
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#references" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2381,23 +2389,6 @@ things that can help:</p>
 </span></code></pre></div>
 </div>
 <hr />
-<h2 id="cli-tool">CLI Tool</h2>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Track faces in a video</span>
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>python<span class="w"> </span>tools/track.py<span class="w"> </span>--source<span class="w"> </span>video.mp4
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
-</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="c1"># Webcam</span>
-</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>python<span class="w"> </span>tools/track.py<span class="w"> </span>--source<span class="w"> </span><span class="m">0</span>
-</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>
-</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="c1"># Save output</span>
-</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>python<span class="w"> </span>tools/track.py<span class="w"> </span>--source<span class="w"> </span>video.mp4<span class="w"> </span>--output<span class="w"> </span>tracked.mp4
-</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>
-</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="c1"># Use RetinaFace instead of SCRFD</span>
-</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>python<span class="w"> </span>tools/track.py<span class="w"> </span>--source<span class="w"> </span>video.mp4<span class="w"> </span>--detector<span class="w"> </span>retinaface
-</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>
-</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="c1"># Keep lost tracks longer</span>
-</span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a>python<span class="w"> </span>tools/track.py<span class="w"> </span>--source<span class="w"> </span>video.mp4<span class="w"> </span>--track-buffer<span class="w"> </span><span class="m">60</span>
-</span></code></pre></div>
-<hr />
 <h2 id="references">References</h2>
 <ul>
 <li><a href="https://github.com/yakhyo/bytetrack-tracker">yakhyo/bytetrack-tracker</a> — standalone BYTETracker implementation used in UniFace</li>
@@ -2409,6 +2400,7 @@ things that can help:</p>
 <li><a href="../detection/">Detection</a> — face detection models</li>
 <li><a href="../../recipes/video-webcam/">Video &amp; Webcam</a> — video processing patterns</li>
 <li><a href="../../concepts/inputs-outputs/">Inputs &amp; Outputs</a> — data types and formats</li>
+<li><a href="https://github.com/yakhyo/uniface/blob/main/tools/README.md">CLI Tools</a> — command-line scripts for all UniFace modules</li>
 </ul>
 
 
@@ -2432,7 +2424,7 @@ things that can help:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="February 11, 2026 15:20:23 UTC"><span class="timeago" datetime="2026-02-11T15:20:23+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="February 11, 2026 15:20:23 UTC">2026-02-11</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="May 26, 2026 14:29:27 UTC"><span class="timeago" datetime="2026-05-26T14:29:27+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="May 26, 2026 14:29:27 UTC">2026-05-26</span>
   </span>
 
     
