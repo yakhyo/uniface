@@ -40,7 +40,7 @@ faces = detector.detect(image)
 # Extract embedding
 if faces:
     embedding = recognizer.get_normalized_embedding(image, faces[0].landmarks)
-    print(f"Embedding shape: {embedding.shape}")  # (1, 512)
+    print(f"Embedding shape: {embedding.shape}")  # (512,)
 ```
 
 ### Model Variants
@@ -88,7 +88,7 @@ faces = detector.detect(image)
 # Extract embedding
 if faces:
     embedding = recognizer.get_normalized_embedding(image, faces[0].landmarks)
-    print(f"Embedding shape: {embedding.shape}")  # (1, 512)
+    print(f"Embedding shape: {embedding.shape}")  # (512,)
 ```
 
 ### Model Variants
@@ -251,8 +251,8 @@ emb2 = recognizer.get_normalized_embedding(image2, landmarks2)
 # Method 1: Using utility function
 similarity = compute_similarity(emb1, emb2)
 
-# Method 2: Direct computation
-similarity = np.dot(emb1, emb2.T)[0][0]
+# Method 2: Direct computation (embeddings are L2-normalized 1-D vectors)
+similarity = np.dot(emb1, emb2)
 
 print(f"Similarity: {similarity:.4f}")
 ```
@@ -279,8 +279,8 @@ embedding = recognizer.get_normalized_embedding(image, landmarks)
 # Or manually align
 from uniface.face_utils import face_alignment
 
-aligned_face = face_alignment(image, landmarks)
-# Returns: 112x112 aligned face image
+aligned_face, _ = face_alignment(image, landmarks)
+# Returns: (112x112 aligned face, inverse transform matrix)
 ```
 
 ---
@@ -326,7 +326,7 @@ def search_face(query_embedding, database, threshold=0.6):
     best_similarity = -1
 
     for person_id, db_embedding in database.items():
-        similarity = np.dot(query_embedding, db_embedding.T)[0][0]
+        similarity = np.dot(query_embedding, db_embedding)
 
         if similarity > best_similarity and similarity > threshold:
             best_similarity = similarity

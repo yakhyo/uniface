@@ -108,8 +108,9 @@ cv2.imwrite("custom_bg.jpg", result)
 import cv2
 import numpy as np
 from uniface.matting import MODNet
+from uniface.constants import MODNetWeights
 
-matting = MODNet(model_name="modnet_webcam")
+matting = MODNet(model_name=MODNetWeights.WEBCAM)
 cap = cv2.VideoCapture(0)
 
 while True:

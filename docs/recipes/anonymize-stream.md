@@ -52,7 +52,7 @@ w, h = int(cap.get(3)), int(cap.get(4))
 
 out = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc(*'mp4v'), fps, (w, h))
 
-while cap.read()[0]:
+while True:
     ret, frame = cap.read()
     if not ret:
         break

@@ -128,7 +128,7 @@ def calibrate_threshold(same_pairs, diff_pairs, recognizer, detector):
         if faces1 and faces2:
             emb1 = recognizer.get_normalized_embedding(img1, faces1[0].landmarks)
             emb2 = recognizer.get_normalized_embedding(img2, faces2[0].landmarks)
-            same_scores.append(np.dot(emb1, emb2.T)[0][0])
+            same_scores.append(float(np.dot(emb1, emb2)))
 
     # Compute similarities for different-person pairs
     for img1_path, img2_path in diff_pairs:
@@ -183,7 +183,7 @@ else:
 ### Emotion
 
 ```python
-result = emotion_predictor.predict(image, landmarks)
+result = emotion_predictor.predict(image, face)
 
 # Filter low-confidence predictions
 if result.confidence > 0.6:

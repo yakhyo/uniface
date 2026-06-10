@@ -1,6 +1,6 @@
 # Execution Providers
 
-UniFace uses ONNX Runtime for model inference, which supports multiple hardware acceleration backends.
+UniFace automatically runs each model on the best available hardware — Apple Silicon (CoreML), NVIDIA GPU (CUDA), or CPU. Under the hood this is handled by ONNX Runtime execution providers.
 
 ---
 
