@@ -3,8 +3,9 @@
 Facial landmark detection provides precise localization of facial features.
 
 <figure markdown="span">
-  ![106-Point Landmarks](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/landmarks.jpg){ width="50%" }
-  <figcaption>106-point facial landmark localization</figcaption>
+  ![106-Point Landmarks](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/landmarks.jpg){ width="40%" }
+  ![98-Point Landmarks (PIPNet)](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/landmarks_pipnet.jpg){ width="40%" }
+  <figcaption>106-point (left) and PIPNet 98-point (right) facial landmark localization</figcaption>
 </figure>
 
 ---
