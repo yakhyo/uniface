@@ -8,6 +8,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from enum import Enum
 import hashlib
 import os
+import tempfile
 import time
 
 import requests
@@ -109,42 +110,56 @@ def verify_model_weights(
     file_ext = os.path.splitext(url)[1]
     model_path = os.path.normpath(os.path.join(root, f'{model_name.value}{file_ext}'))
 
+    # Re-download if the cached file is missing or fails verification (e.g. corrupted externally).
+    if os.path.exists(model_path) and expected_hash and not verify_file_hash(model_path, expected_hash):
+        Logger.warning(f"Cached weights for '{model_name.value}' are corrupted; re-downloading.")
+        os.remove(model_path)
+
     if not os.path.exists(model_path):
         Logger.info(f"Downloading model '{model_name.value}' from {url}")
         try:
-            download_file(url, model_path, timeout=timeout, max_retries=max_retries)
+            download_file(url, model_path, expected_hash=expected_hash, timeout=timeout, max_retries=max_retries)
             Logger.info(f"Successfully downloaded '{model_name.value}' to {model_path}")
         except Exception as e:
             Logger.error(f"Failed to download model '{model_name.value}': {e}")
             raise ConnectionError(f"Download failed for '{model_name.value}' after {max_retries} attempts") from e
 
-    if expected_hash and not verify_file_hash(model_path, expected_hash):
-        os.remove(model_path)  # Remove corrupted file
-        Logger.warning(f"Corrupted weights detected for '{model_name.value}'. Removing...")
-        raise ValueError(f"Hash mismatch for '{model_name.value}'. The file may be corrupted; please try again.")
-
     return model_path
 
 
-def download_file(url: str, dest_path: str, timeout: int = 60, max_retries: int = 3) -> None:
-    """Download a file from a URL with retry logic.
+def download_file(
+    url: str,
+    dest_path: str,
+    expected_hash: str | None = None,
+    timeout: int = 60,
+    max_retries: int = 3,
+) -> None:
+    """Download a file with retries, streaming to a temp file and committing atomically.
+
+    Bytes are written to a temp file, optionally hash-verified, then moved into
+    place with :func:`os.replace`, so ``dest_path`` is never left partial or corrupted.
 
     Args:
         url: URL to download from.
         dest_path: Local file path to save to.
+        expected_hash: Expected SHA-256 hash; if set, a mismatch triggers a retry.
         timeout: Connection timeout in seconds. Defaults to 60.
         max_retries: Maximum number of attempts. Defaults to 3.
     """
     last_error = None
+    dest_dir = os.path.dirname(dest_path) or '.'
     for attempt in range(max_retries):
+        tmp_path = None
         try:
             response = requests.get(url, stream=True, timeout=timeout)
             response.raise_for_status()
 
             total_size = int(response.headers.get('content-length', 0))
 
+            # Write to a unique temp file in the same directory so os.replace is atomic.
+            fd, tmp_path = tempfile.mkstemp(dir=dest_dir, suffix='.tmp')
             with (
-                open(dest_path, 'wb') as file,
+                os.fdopen(fd, 'wb') as file,
                 tqdm(
                     total=total_size,
                     desc=f'Attempt {attempt + 1}/{max_retries}',
@@ -157,13 +172,20 @@ def download_file(url: str, dest_path: str, timeout: int = 60, max_retries: int 
                     if chunk:
                         file.write(chunk)
                         progress.update(len(chunk))
+
+            if expected_hash and not verify_file_hash(tmp_path, expected_hash):
+                raise ValueError('SHA-256 hash mismatch on downloaded file')
+
+            os.replace(tmp_path, dest_path)  # Atomic commit
             return  # Success
-        except (OSError, requests.RequestException) as e:
+        except (OSError, requests.RequestException, ValueError) as e:
             last_error = e
             Logger.warning(f'Download attempt {attempt + 1} failed: {e}. Retrying...')
-            if os.path.exists(dest_path):
-                os.remove(dest_path)
-            time.sleep(2**attempt)  # Exponential backoff
+            if attempt < max_retries - 1:
+                time.sleep(2**attempt)  # Exponential backoff
+        finally:
+            if tmp_path and os.path.exists(tmp_path):
+                os.remove(tmp_path)
 
     raise ConnectionError(f'Failed to download file from {url}. Error: {last_error}')
 
