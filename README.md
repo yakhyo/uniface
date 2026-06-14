@@ -9,7 +9,6 @@
 [![PyPI Downloads](https://static.pepy.tech/personalized-badge/uniface?period=total&units=INTERNATIONAL_SYSTEM&left_color=GRAY&right_color=BLUE&left_text=Downloads)](https://pepy.tech/projects/uniface)
 [![UniFace Documentation](https://img.shields.io/badge/Docs-UniFace-blue.svg)](https://yakhyo.github.io/uniface/)
 [![Kaggle Badge](https://img.shields.io/badge/Notebooks-Kaggle?label=Kaggle&color=blue)](https://www.kaggle.com/yakhyokhuja/code)
-[![Discord](https://img.shields.io/badge/Discord-Join%20Server-5865F2?logo=discord&logoColor=white)](https://discord.gg/wdzrjr7R5j)
 
 </div>
 
@@ -51,13 +50,14 @@
   </tr>
   <tr>
     <td align="center"><b>Head Pose Estimation</b><br><img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/headpose.jpg" width="100%"></td>
-    <td align="center"><b>Age &amp; Gender</b><br><img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/age_gender.jpg" width="100%"></td>
+    <td align="center"><b>Age & Gender</b><br><img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/age_gender.jpg" width="100%"></td>
   </tr>
   <tr>
     <td align="center" colspan="2"><b>Face Verification</b><br><img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/verification.jpg" width="80%"></td>
   </tr>
   <tr>
-    <td align="center" colspan="2"><b>106-Point Landmarks</b><br><img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/landmarks.jpg" width="36%"></td>
+    <td align="center"><b>106-Point Landmarks</b><br><img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/landmarks.jpg" width="70%"></td>
+    <td align="center"><b>98-Point Landmarks (PIPNet)</b><br><img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/landmarks_pipnet.jpg" width="70%"></td>
   </tr>
   <tr>
     <td align="center" colspan="2"><b>Face Parsing</b><br><img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/parsing.jpg" width="80%"></td>
@@ -105,6 +105,7 @@ pip install faiss-cpu   # or faiss-gpu for CUDA
 ```
 
 **Optional dependencies**
+
 - Emotion model uses TorchScript and requires `torch`:
   `pip install torch` (choose the correct build for your OS/CUDA)
 - YOLOv5-Face and YOLOv8-Face support faster NMS with `torchvision`:
@@ -152,11 +153,6 @@ for face in faces:
     print(f"BBox: {face.bbox}")
     print(f"Landmarks: {face.landmarks.shape}")
 ```
-
-<div align="center">
-    <img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/test_result.png" width="90%">
-    <p>Face Detection Model Output</p>
-</div>
 
 ---
 
@@ -221,21 +217,21 @@ cv2.imwrite("green_screen.jpg", result)
 
 ## Jupyter Notebooks
 
-| Example | Colab | Description |
-|---------|:-----:|-------------|
-| [01_face_detection.ipynb](examples/01_face_detection.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/01_face_detection.ipynb) | Face detection and landmarks |
-| [02_face_alignment.ipynb](examples/02_face_alignment.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/02_face_alignment.ipynb) | Face alignment for recognition |
-| [03_face_verification.ipynb](examples/03_face_verification.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/03_face_verification.ipynb) | Compare faces for identity |
-| [04_face_search.ipynb](examples/04_face_search.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/04_face_search.ipynb) | Find a person in group photos |
-| [05_face_analyzer.ipynb](examples/05_face_analyzer.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/05_face_analyzer.ipynb) | Unified face analysis |
-| [06_face_parsing.ipynb](examples/06_face_parsing.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/06_face_parsing.ipynb) | Semantic face segmentation |
-| [07_face_anonymization.ipynb](examples/07_face_anonymization.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/07_face_anonymization.ipynb) | Privacy-preserving blur |
-| [08_gaze_estimation.ipynb](examples/08_gaze_estimation.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/08_gaze_estimation.ipynb) | Gaze direction estimation |
-| [09_face_segmentation.ipynb](examples/09_face_segmentation.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/09_face_segmentation.ipynb) | Face segmentation with XSeg |
-| [10_face_vector_store.ipynb](examples/10_face_vector_store.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/10_face_vector_store.ipynb) | FAISS-backed face database |
+| Example                                                              |                                                                                       Colab                                                                                       | Description                             |
+| -------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | --------------------------------------- |
+| [01_face_detection.ipynb](examples/01_face_detection.ipynb)             |    [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/01_face_detection.ipynb)    | Face detection and landmarks            |
+| [02_face_alignment.ipynb](examples/02_face_alignment.ipynb)             |    [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/02_face_alignment.ipynb)    | Face alignment for recognition          |
+| [03_face_verification.ipynb](examples/03_face_verification.ipynb)       |  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/03_face_verification.ipynb)  | Compare faces for identity              |
+| [04_face_search.ipynb](examples/04_face_search.ipynb)                   |     [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/04_face_search.ipynb)     | Find a person in group photos           |
+| [05_face_analyzer.ipynb](examples/05_face_analyzer.ipynb)               |    [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/05_face_analyzer.ipynb)    | Unified face analysis                   |
+| [06_face_parsing.ipynb](examples/06_face_parsing.ipynb)                 |     [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/06_face_parsing.ipynb)     | Semantic face segmentation              |
+| [07_face_anonymization.ipynb](examples/07_face_anonymization.ipynb)     |  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/07_face_anonymization.ipynb)  | Privacy-preserving blur                 |
+| [08_gaze_estimation.ipynb](examples/08_gaze_estimation.ipynb)           |   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/08_gaze_estimation.ipynb)   | Gaze direction estimation               |
+| [09_face_segmentation.ipynb](examples/09_face_segmentation.ipynb)       |  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/09_face_segmentation.ipynb)  | Face segmentation with XSeg             |
+| [10_face_vector_store.ipynb](examples/10_face_vector_store.ipynb)       |  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/10_face_vector_store.ipynb)  | FAISS-backed face database              |
 | [11_head_pose_estimation.ipynb](examples/11_head_pose_estimation.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/11_head_pose_estimation.ipynb) | Head pose estimation (pitch, yaw, roll) |
-| [12_face_recognition.ipynb](examples/12_face_recognition.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/12_face_recognition.ipynb) | Standalone face recognition pipeline |
-| [13_portrait_matting.ipynb](examples/13_portrait_matting.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/13_portrait_matting.ipynb) | Portrait matting with MODNet |
+| [12_face_recognition.ipynb](examples/12_face_recognition.ipynb)         |   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/12_face_recognition.ipynb)   | Standalone face recognition pipeline    |
+| [13_portrait_matting.ipynb](examples/13_portrait_matting.ipynb)         |   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/13_portrait_matting.ipynb)   | Portrait matting with MODNet            |
 
 ---
 
@@ -243,14 +239,14 @@ cv2.imwrite("green_screen.jpg", result)
 
 Full documentation: https://yakhyo.github.io/uniface/
 
-| Resource | Description |
-|----------|-------------|
-| [Quickstart](https://yakhyo.github.io/uniface/quickstart/) | Get up and running in 5 minutes |
-| [Model Zoo](https://yakhyo.github.io/uniface/models/) | All models, benchmarks, and selection guide |
-| [API Reference](https://yakhyo.github.io/uniface/modules/detection/) | Detailed module documentation |
-| [Tutorials](https://yakhyo.github.io/uniface/recipes/image-pipeline/) | Step-by-step workflow examples |
-| [Guides](https://yakhyo.github.io/uniface/concepts/overview/) | Architecture and design principles |
-| [Datasets](https://yakhyo.github.io/uniface/datasets/) | Training data and evaluation benchmarks |
+| Resource                                                           | Description                                 |
+| ------------------------------------------------------------------ | ------------------------------------------- |
+| [Quickstart](https://yakhyo.github.io/uniface/quickstart/)            | Get up and running in 5 minutes             |
+| [Model Zoo](https://yakhyo.github.io/uniface/models/)                 | All models, benchmarks, and selection guide |
+| [API Reference](https://yakhyo.github.io/uniface/modules/detection/)  | Detailed module documentation               |
+| [Tutorials](https://yakhyo.github.io/uniface/recipes/image-pipeline/) | Step-by-step workflow examples              |
+| [Guides](https://yakhyo.github.io/uniface/concepts/overview/)         | Architecture and design principles          |
+| [Datasets](https://yakhyo.github.io/uniface/datasets/)                | Training data and evaluation benchmarks     |
 
 ---
 
@@ -270,18 +266,18 @@ https://yakhyo.github.io/uniface/concepts/execution-providers/
 
 ## Datasets
 
-| Task | Training Dataset | Models |
-|------|-----------------|--------|
-| Detection | WIDER FACE | RetinaFace, SCRFD, YOLOv5-Face, YOLOv8-Face |
-| Recognition | MS1MV2 | MobileFace, SphereFace |
-| Recognition | WebFace600K | ArcFace |
-| Recognition | WebFace4M / 12M | AdaFace |
-| Recognition | MS1MV2 | EdgeFace |
-| Landmarks | WFLW, 300W+CelebA | PIPNet (98 / 68 pts) |
-| Gaze | Gaze360 | MobileGaze |
-| Head Pose | 300W-LP | HeadPose (ResNet, MobileNet) |
-| Parsing | CelebAMask-HQ | BiSeNet |
-| Attributes | CelebA, FairFace, AffectNet | AgeGender, FairFace, Emotion |
+| Task        | Training Dataset            | Models                                      |
+| ----------- | --------------------------- | ------------------------------------------- |
+| Detection   | WIDER FACE                  | RetinaFace, SCRFD, YOLOv5-Face, YOLOv8-Face |
+| Recognition | MS1MV2                      | MobileFace, SphereFace                      |
+| Recognition | WebFace600K                 | ArcFace                                     |
+| Recognition | WebFace4M / 12M             | AdaFace                                     |
+| Recognition | MS1MV2                      | EdgeFace                                    |
+| Landmarks   | WFLW, 300W+CelebA           | PIPNet (98 / 68 pts)                        |
+| Gaze        | Gaze360                     | MobileGaze                                  |
+| Head Pose   | 300W-LP                     | HeadPose (ResNet, MobileNet)                |
+| Parsing     | CelebAMask-HQ               | BiSeNet                                     |
+| Attributes  | CelebA, FairFace, AffectNet | AgeGender, FairFace, Emotion                |
 
 > See [Datasets documentation](https://yakhyo.github.io/uniface/datasets/) for download links, benchmarks, and details.
 
@@ -293,6 +289,7 @@ UniFace is MIT-licensed, but several pretrained models carry their own licenses.
 Review: https://yakhyo.github.io/uniface/license-attribution/
 
 Notable examples:
+
 - YOLOv5-Face and YOLOv8-Face weights are GPL-3.0
 - FairFace weights are CC BY 4.0
 
@@ -302,23 +299,23 @@ If you plan commercial use, verify model license compatibility.
 
 ## References
 
-| Feature | Repository | Training | Description |
-|---------|------------|:--------:|-------------|
-| Detection | [retinaface-pytorch](https://github.com/yakhyo/retinaface-pytorch) | ✓ | RetinaFace PyTorch Training & Export |
-| Detection | [yolov5-face-onnx-inference](https://github.com/yakhyo/yolov5-face-onnx-inference) | - | YOLOv5-Face ONNX Inference |
-| Detection | [yolov8-face-onnx-inference](https://github.com/yakhyo/yolov8-face-onnx-inference) | - | YOLOv8-Face ONNX Inference |
-| Tracking | [bytetrack-tracker](https://github.com/yakhyo/bytetrack-tracker) | - | BYTETracker Multi-Object Tracking |
-| Recognition | [face-recognition](https://github.com/yakhyo/face-recognition) | ✓ | MobileFace, SphereFace Training |
-| Recognition | [edgeface-onnx](https://github.com/yakhyo/edgeface-onnx) | - | EdgeFace ONNX Inference |
-| Landmarks | [pipnet-onnx](https://github.com/yakhyo/pipnet-onnx) | - | PIPNet 98 / 68-point ONNX Inference |
-| Parsing | [face-parsing](https://github.com/yakhyo/face-parsing) | ✓ | BiSeNet Face Parsing |
-| Parsing | [face-segmentation](https://github.com/yakhyo/face-segmentation) | - | XSeg Face Segmentation |
-| Gaze | [gaze-estimation](https://github.com/yakhyo/gaze-estimation) | ✓ | MobileGaze Training |
-| Head Pose | [head-pose-estimation](https://github.com/yakhyo/head-pose-estimation) | ✓ | Head Pose Training (6DRepNet-style) |
-| Matting | [modnet](https://github.com/yakhyo/modnet) | - | MODNet Portrait Matting |
-| Anti-Spoofing | [face-anti-spoofing](https://github.com/yakhyo/face-anti-spoofing) | - | MiniFASNet Inference |
-| Quality | [face-image-quality-assessment](https://github.com/yakhyo/face-image-quality-assessment) | - | eDifFIQA ONNX Inference |
-| Attributes | [fairface-onnx](https://github.com/yakhyo/fairface-onnx) | - | FairFace ONNX Inference |
+| Feature       | Repository                                                                            | Training | Description                          |
+| ------------- | ------------------------------------------------------------------------------------- | :------: | ------------------------------------ |
+| Detection     | [retinaface-pytorch](https://github.com/yakhyo/retinaface-pytorch)                       |    ✓    | RetinaFace PyTorch Training & Export |
+| Detection     | [yolov5-face-onnx-inference](https://github.com/yakhyo/yolov5-face-onnx-inference)       |    -    | YOLOv5-Face ONNX Inference           |
+| Detection     | [yolov8-face-onnx-inference](https://github.com/yakhyo/yolov8-face-onnx-inference)       |    -    | YOLOv8-Face ONNX Inference           |
+| Tracking      | [bytetrack-tracker](https://github.com/yakhyo/bytetrack-tracker)                         |    -    | BYTETracker Multi-Object Tracking    |
+| Recognition   | [face-recognition](https://github.com/yakhyo/face-recognition)                           |    ✓    | MobileFace, SphereFace Training      |
+| Recognition   | [edgeface-onnx](https://github.com/yakhyo/edgeface-onnx)                                 |    -    | EdgeFace ONNX Inference              |
+| Landmarks     | [pipnet-onnx](https://github.com/yakhyo/pipnet-onnx)                                     |    -    | PIPNet 98 / 68-point ONNX Inference  |
+| Parsing       | [face-parsing](https://github.com/yakhyo/face-parsing)                                   |    ✓    | BiSeNet Face Parsing                 |
+| Parsing       | [face-segmentation](https://github.com/yakhyo/face-segmentation)                         |    -    | XSeg Face Segmentation               |
+| Gaze          | [gaze-estimation](https://github.com/yakhyo/gaze-estimation)                             |    ✓    | MobileGaze Training                  |
+| Head Pose     | [head-pose-estimation](https://github.com/yakhyo/head-pose-estimation)                   |    ✓    | Head Pose Training (6DRepNet-style)  |
+| Matting       | [modnet](https://github.com/yakhyo/modnet)                                               |    -    | MODNet Portrait Matting              |
+| Anti-Spoofing | [face-anti-spoofing](https://github.com/yakhyo/face-anti-spoofing)                       |    -    | MiniFASNet Inference                 |
+| Quality       | [face-image-quality-assessment](https://github.com/yakhyo/face-image-quality-assessment) |    -    | eDifFIQA ONNX Inference              |
+| Attributes    | [fairface-onnx](https://github.com/yakhyo/fairface-onnx)                                 |    -    | FairFace ONNX Inference              |
 
 *SCRFD and ArcFace models are from [InsightFace](https://github.com/deepinsight/insightface).
 
@@ -333,6 +330,7 @@ Contributions are welcome. Please see [CONTRIBUTING.md](CONTRIBUTING.md).
 If you find this project useful, consider giving it a ⭐ on GitHub — it helps others discover it!
 
 Questions or feedback:
+
 - Discord: https://discord.gg/wdzrjr7R5j
 - GitHub Issues: https://github.com/yakhyo/uniface/issues
 - DeepWiki Q&A: https://deepwiki.com/yakhyo/uniface
