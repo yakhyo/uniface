@@ -205,8 +205,8 @@ def draw_landmarks_with_connections(image, landmarks):
 from uniface.face_utils import face_alignment
 
 # Align face using 5-point landmarks
-aligned = face_alignment(image, faces[0].landmarks)
-# Returns: 112x112 aligned face
+aligned, _ = face_alignment(image, faces[0].landmarks)
+# Returns: (112x112 aligned face, inverse transform matrix)
 ```
 
 ### Eye Aspect Ratio (Blink Detection)

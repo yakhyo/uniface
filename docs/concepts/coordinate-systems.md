@@ -199,8 +199,8 @@ Face alignment uses 5-point landmarks to normalize face orientation:
 from uniface.face_utils import face_alignment
 
 # Align face to standard template
-aligned_face = face_alignment(image, face.landmarks)
-# Output: 112x112 aligned face image
+aligned_face, _ = face_alignment(image, face.landmarks)
+# Output: (112x112 aligned face image, inverse transform matrix)
 ```
 
 The alignment transforms faces to a canonical pose for better recognition accuracy.

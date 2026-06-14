@@ -102,7 +102,7 @@ FAISS-backed embedding store for fast multi-identity face search.
 
 ## Installation
 
-UniFace uses portable model runtimes for consistent inference across macOS, Linux, and Windows. Most core components run through **ONNX Runtime**, while optional components may use **PyTorch** where appropriate.
+UniFace runs out of the box on macOS, Linux, and Windows, with automatic hardware acceleration on Apple Silicon, NVIDIA CUDA, and CPU. Inference runs on **ONNX Runtime** (with **PyTorch** for a few optional models) — installed automatically by the extra you choose below.
 
 **CPU / Apple Silicon**
 ```bash

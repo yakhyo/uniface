@@ -59,7 +59,7 @@ def process_video(input_path, output_path):
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
 
-    while cap.read()[0]:
+    while True:
         ret, frame = cap.read()
         if not ret:
             break

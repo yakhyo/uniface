@@ -68,7 +68,7 @@ graph TB
 
 ### 1. Cross-Platform Inference
 
-UniFace uses portable model runtimes to provide consistent inference across macOS, Linux, and Windows. Most core components run through ONNX Runtime, while optional components may use PyTorch where appropriate.
+UniFace gives you consistent, hardware-accelerated face analysis across macOS, Linux, and Windows from a single API. The optimal hardware backend is selected automatically; models run on ONNX Runtime, with PyTorch for a few optional ones.
 
 - **Cross-platform**: Same models work on macOS, Linux, Windows
 - **Hardware acceleration**: Automatic selection of optimal provider
@@ -81,10 +81,13 @@ Core dependencies are kept minimal:
 ```
 numpy         # Array operations
 opencv-python # Image processing
-onnxruntime   # Model inference
+scikit-image  # Geometric transforms (face alignment)
+scipy         # Scientific computing
 requests      # Model download
 tqdm          # Progress bars
 ```
+
+ONNX Runtime is installed separately via the `uniface[cpu]` or `uniface[gpu]` extra (see [Installation](../installation.md)).
 
 ### 3. Simple API
 

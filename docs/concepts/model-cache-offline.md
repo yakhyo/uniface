@@ -76,7 +76,7 @@ from uniface.constants import (
     AgeGenderWeights,
 )
 
-# Download multiple models concurrently (up to 4 threads by default)
+# Download multiple models concurrently (defaults to min(CPU count, 8) threads)
 paths = download_models([
     RetinaFaceWeights.MNET_V2,
     ArcFaceWeights.MNET,
@@ -218,7 +218,7 @@ print(get_cache_dir())  # shows the active cache path
 rm -rf ~/.uniface/models/
 
 # Remove specific model
-rm ~/.uniface/models/retinaface_mv2.onnx
+rm ~/.uniface/models/retinaface_mnet_v2.onnx
 ```
 
 Models will be re-downloaded on next use.

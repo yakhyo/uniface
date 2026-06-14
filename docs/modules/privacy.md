@@ -199,7 +199,7 @@ def anonymize_except(image, all_faces, exclude_embeddings, recognizer, threshold
         # Check if should be excluded
         should_exclude = False
         for ref_emb in exclude_embeddings:
-            similarity = np.dot(embedding, ref_emb.T)[0][0]
+            similarity = np.dot(embedding, ref_emb)
             if similarity > threshold:
                 should_exclude = True
                 break
