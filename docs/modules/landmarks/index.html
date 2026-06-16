@@ -2427,9 +2427,10 @@
 <h1 id="landmarks">Landmarks</h1>
 <p>Facial landmark detection provides precise localization of facial features.</p>
 <figure>
-  <img alt="106-Point Landmarks" src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/landmarks.jpg" width="50%" />
+  <img alt="106-Point Landmarks" src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/landmarks.jpg" width="40%" />
+  <img alt="98-Point Landmarks (PIPNet)" src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/landmarks_pipnet.jpg" width="40%" />
 <br />
-<figcaption>106-point facial landmark localization</figcaption>
+<figcaption>106-point (left) and PIPNet 98-point (right) facial landmark localization</figcaption>
 </figure>
 <hr />
 <h2 id="available-models">Available Models</h2>
@@ -2641,8 +2642,8 @@ is the number of points and the dataset they were trained on.</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.face_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">face_alignment</span>
 </span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
 </span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="c1"># Align face using 5-point landmarks</span>
-</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="n">aligned</span> <span class="o">=</span> <span class="n">face_alignment</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">faces</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">landmarks</span><span class="p">)</span>
-</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="c1"># Returns: 112x112 aligned face</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="n">aligned</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">face_alignment</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">faces</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">landmarks</span><span class="p">)</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="c1"># Returns: (112x112 aligned face, inverse transform matrix)</span>
 </span></code></pre></div>
 <h3 id="eye-aspect-ratio-blink-detection">Eye Aspect Ratio (Blink Detection)</h3>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -2755,7 +2756,7 @@ is the number of points and the dataset they were trained on.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="May 26, 2026 14:29:27 UTC"><span class="timeago" datetime="2026-05-26T14:29:27+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="May 26, 2026 14:29:27 UTC">2026-05-26</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="June 14, 2026 15:53:47 UTC"><span class="timeago" datetime="2026-06-14T15:53:47+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="June 14, 2026 15:53:47 UTC">2026-06-14</span>
   </span>
 
     

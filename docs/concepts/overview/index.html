@@ -2271,7 +2271,7 @@
 <hr />
 <h2 id="design-principles">Design Principles</h2>
 <h3 id="1-cross-platform-inference">1. Cross-Platform Inference</h3>
-<p>UniFace uses portable model runtimes to provide consistent inference across macOS, Linux, and Windows. Most core components run through ONNX Runtime, while optional components may use PyTorch where appropriate.</p>
+<p>UniFace gives you consistent, hardware-accelerated face analysis across macOS, Linux, and Windows from a single API. The optimal hardware backend is selected automatically; models run on ONNX Runtime, with PyTorch for a few optional ones.</p>
 <ul>
 <li><strong>Cross-platform</strong>: Same models work on macOS, Linux, Windows</li>
 <li><strong>Hardware acceleration</strong>: Automatic selection of optimal provider</li>
@@ -2281,10 +2281,12 @@
 <p>Core dependencies are kept minimal:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>numpy         # Array operations
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>opencv-python # Image processing
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>onnxruntime   # Model inference
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>requests      # Model download
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>tqdm          # Progress bars
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>scikit-image  # Geometric transforms (face alignment)
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>scipy         # Scientific computing
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>requests      # Model download
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>tqdm          # Progress bars
 </span></code></pre></div>
+<p>ONNX Runtime is installed separately via the <code>uniface[cpu]</code> or <code>uniface[gpu]</code> extra (see <a href="../../installation/">Installation</a>).</p>
 <h3 id="3-simple-api">3. Simple API</h3>
 <p>Direct class instantiation:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">uniface.detection</span><span class="w"> </span><span class="kn">import</span> <span class="n">RetinaFace</span><span class="p">,</span> <span class="n">SCRFD</span>
@@ -2426,7 +2428,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="May 26, 2026 14:29:27 UTC"><span class="timeago" datetime="2026-05-26T14:29:27+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="May 26, 2026 14:29:27 UTC">2026-05-26</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="June 14, 2026 13:17:15 UTC"><span class="timeago" datetime="2026-06-14T13:17:15+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="June 14, 2026 13:17:15 UTC">2026-06-14</span>
   </span>
 
     
