@@ -283,8 +283,8 @@ MODEL_REGISTRY: dict[Enum, ModelInfo] = {
         sha256='bd0263dc2a465d32859555cb1741f2d98991eb0053696e8ee33fec583d30e630'
     ),
     RetinaFaceWeights.RESNET50: ModelInfo(
-        url='https://huggingface.co/TheEeeeLin/HivisionIDPhotos_matting/resolve/main/retinaface-resnet50.onnx',
-        sha256='40f825cf7dd0a88b26fb61db9a3aaedc2cad35162091113f4017b3c26a4f792d'
+        url='https://github.com/yakhyo/uniface/releases/download/weights/retinaface_r50.onnx',
+        sha256='905eac744dc165dbcd62960938a191de3fecea6bef198fb1c5e13e690bc6a828'
     ),
 
     # MobileFace

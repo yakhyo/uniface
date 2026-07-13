@@ -8,6 +8,7 @@ Usage:
     python tools/detect.py --source path/to/image.jpg
     python tools/detect.py --source path/to/video.mp4
     python tools/detect.py --source 0  # webcam
+    python tools/detect.py --source path/to/image.jpg --detector retinaface --model retinaface_r50
 """
 
 from __future__ import annotations
@@ -21,8 +22,17 @@ from _common import get_source_type
 import cv2
 from tqdm import tqdm
 
+from uniface.constants import RetinaFaceWeights, SCRFDWeights, YOLOv5FaceWeights, YOLOv8FaceWeights
 from uniface.detection import SCRFD, RetinaFace, YOLOv5Face, YOLOv8Face
 from uniface.draw import draw_detections
+
+# detector name -> (class, weights enum, default weights)
+DETECTORS = {
+    'retinaface': (RetinaFace, RetinaFaceWeights, RetinaFaceWeights.MNET_V2),
+    'scrfd': (SCRFD, SCRFDWeights, SCRFDWeights.SCRFD_10G_KPS),
+    'yolov5face': (YOLOv5Face, YOLOv5FaceWeights, YOLOv5FaceWeights.YOLOV5M),
+    'yolov8face': (YOLOv8Face, YOLOv8FaceWeights, YOLOv8FaceWeights.YOLOV8N),
+}
 
 
 def process_image(detector, image_path: str, threshold: float = 0.6, save_dir: str = 'outputs'):
@@ -163,7 +173,13 @@ def main():
         '--method',
         type=str,
         default='retinaface',
-        choices=['retinaface', 'scrfd', 'yolov5face', 'yolov8face'],
+        choices=list(DETECTORS),
+    )
+    parser.add_argument(
+        '--model',
+        type=str,
+        default=None,
+        help="Model weights for the chosen detector (e.g. 'retinaface_r50'). Defaults to the detector's own default.",
     )
     parser.add_argument('--threshold', type=float, default=0.25, help='Visualization threshold')
     parser.add_argument('--preview', action='store_true', help='Show live preview during video processing')
@@ -172,18 +188,17 @@ def main():
     args = parser.parse_args()
 
     # Initialize detector
-    if args.detector == 'retinaface':
-        detector = RetinaFace()
-    elif args.detector == 'scrfd':
-        detector = SCRFD()
-    elif args.detector == 'yolov5face':
-        from uniface.constants import YOLOv5FaceWeights
-
-        detector = YOLOv5Face(model_name=YOLOv5FaceWeights.YOLOV5M)
-    else:  # yolov8face
-        from uniface.constants import YOLOv8FaceWeights
-
-        detector = YOLOv8Face(model_name=YOLOv8FaceWeights.YOLOV8N)
+    detector_cls, weights_enum, default_weights = DETECTORS[args.detector]
+    if args.model is None:
+        model_name = default_weights
+    else:
+        try:
+            model_name = weights_enum(args.model)
+        except ValueError:
+            valid = ', '.join(w.value for w in weights_enum)
+            print(f"Error: '{args.model}' is not a valid model for {args.detector}.\nAvailable: {valid}")
+            return
+    detector = detector_cls(model_name=model_name)
 
     source_type = get_source_type(args.source)
 

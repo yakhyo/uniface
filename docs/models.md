@@ -18,11 +18,27 @@ RetinaFace models are trained on the [WIDER FACE](datasets.md#wider-face) datase
 | `MNET_V2` :material-check-circle: | 3.2M   | 3.5MB | 91.70% | 91.03% | 86.60% |
 | `RESNET18`   | 11.7M  | 27MB  | 92.50% | 91.02% | 86.63% |
 | `RESNET34`   | 24.8M  | 56MB  | 94.16% | 93.12% | 88.90% |
+| `RESNET50`   | 27.4M  | 104MB | 94.72%* | 93.67%* | 88.82%* |
 
 !!! info "Accuracy & Benchmarks"
     **Accuracy**: WIDER FACE validation set (Easy/Medium/Hard subsets) - from [RetinaFace paper](https://arxiv.org/abs/1905.00641)
 
+    *\* `RESNET50` values are measured on all 3226 WIDER FACE val images (short-side-1600 upscale, confidence 0.02,
+    NMS 0.4) and scored with [widerface_evaluation](https://github.com/yakhyo/widerface_evaluation). The other rows
+    are quoted from the paper, so the numbers are not strictly directly comparable.*
+
     **Speed**: Benchmark on your own hardware using `python tools/detect.py --source <image>`
+
+!!! note "`RESNET50` weights"
+    The `RESNET50` weights originate from
+    [HivisionIDPhotos](https://huggingface.co/TheEeeeLin/HivisionIDPhotos_matting/blob/main/retinaface-resnet50.onnx)
+    (`retinaface-resnet50.onnx`), not from the UniFace RetinaFace training runs. UniFace re-hosts the model with its
+    graph metadata normalized to match the rest of the family (outputs renamed to `loc`/`conf`/`landmarks`, dynamic
+    input dims labelled, batch dimension unpinned); the weights themselves are unmodified and produce bitwise
+    identical outputs.
+
+    Note that `RESNET50` trails `RESNET34` on the Hard subset despite being roughly twice the size, so `RESNET34`
+    remains the better accuracy-per-byte choice.
 
 ---
 
