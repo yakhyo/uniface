@@ -6,7 +6,7 @@ This guide covers all installation options for UniFace.
 
 ## Requirements
 
-- **Python**: 3.10 or higher
+- **Python**: 3.10 – 3.14
 - **Operating Systems**: macOS, Linux, Windows
 
 ---
@@ -143,6 +143,7 @@ UniFace has minimal core dependencies:
 | `scipy` | Signal processing |
 | `requests` | Model download |
 | `tqdm` | Progress bars |
+| `typing_extensions` | Typing backports |
 
 **Runtime extras (install exactly one):**
 

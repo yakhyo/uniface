@@ -53,6 +53,7 @@ class Face:
     race: str | None = None             # "East Asian", etc.
     emotion: str | None = None          # "Happy", etc.
     emotion_confidence: float | None = None
+    quality: float | None = None        # [0, 1] quality score from eDifFIQA
     track_id: int | None = None         # Persistent ID from tracker
 ```
 
@@ -77,6 +78,9 @@ similarity = face1.compute_similarity(face2)
 
 # Convert to dictionary
 face_dict = face.to_dict()
+
+# Convert to JSON string
+face_json = face.to_json(indent=2)
 ```
 
 ---

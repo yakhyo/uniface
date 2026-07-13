@@ -187,7 +187,7 @@ Facial landmark localization model.
 
 | Model Name | Points | Params | Size |
 | ---------- | ------ | ------ | ---- |
-| `2D106`  | 106    | 3.7M   | 14MB |
+| `DEFAULT` (2d_106) | 106 | 3.7M | 14MB |
 
 **Landmark Groups:**
 

@@ -11,7 +11,7 @@ Overview of all training datasets and evaluation benchmarks used by UniFace mode
 | Detection   | [WIDER FACE](#wider-face)                        | 32K images             | RetinaFace, SCRFD, YOLOv5-Face, YOLOv8-Face |
 | Recognition | [MS1MV2](#ms1mv2)                                | 5.8M images, 85.7K IDs | MobileFace, SphereFace                      |
 | Recognition | [WebFace600K](#webface600k)                      | 600K images            | ArcFace                                     |
-| Recognition | [WebFace4M / WebFace12M](#webface4m--webface12m) | 4M / 12M images        | AdaFace                                     |
+| Recognition | [WebFace4M / WebFace12M](#webface4m--webface12m) | 4M / 12M images        | AdaFace, EdgeFace                           |
 | Landmarks   | [WFLW](#wflw) / [300W+CelebA](#300w--celeba)     | 10K / 3.8K labeled + 202.6K unlabeled | PIPNet (98 / 68 pts)         |
 | Gaze        | [Gaze360](#gaze360)                              | 238 subjects           | MobileGaze                                  |
 | Parsing     | [CelebAMask-HQ](#celebamask-hq)                  | 30K images             | BiSeNet                                     |
@@ -81,7 +81,7 @@ Medium-scale face recognition dataset from the WebFace series.
 
 #### WebFace4M / WebFace12M
 
-Large-scale face recognition datasets from the WebFace260M collection. Used for training AdaFace models with adaptive quality-aware margin.
+Large-scale face recognition datasets from the WebFace260M collection. Used for training AdaFace models with adaptive quality-aware margin, and EdgeFace models for edge devices.
 
 | Property | WebFace4M     | WebFace12M     |
 | -------- | ------------- | -------------- |

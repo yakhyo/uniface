@@ -271,8 +271,7 @@ https://yakhyo.github.io/uniface/concepts/execution-providers/
 | Detection   | WIDER FACE                  | RetinaFace, SCRFD, YOLOv5-Face, YOLOv8-Face |
 | Recognition | MS1MV2                      | MobileFace, SphereFace                      |
 | Recognition | WebFace600K                 | ArcFace                                     |
-| Recognition | WebFace4M / 12M             | AdaFace                                     |
-| Recognition | MS1MV2                      | EdgeFace                                    |
+| Recognition | WebFace4M / 12M             | AdaFace, EdgeFace                           |
 | Landmarks   | WFLW, 300W+CelebA           | PIPNet (98 / 68 pts)                        |
 | Gaze        | Gaze360                     | MobileGaze                                  |
 | Head Pose   | 300W-LP                     | HeadPose (ResNet, MobileNet)                |

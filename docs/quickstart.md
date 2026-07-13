@@ -517,6 +517,20 @@ For detailed model comparisons and benchmarks, see the [Model Zoo](models.md).
 
 ---
 
+## Verbose Logging
+
+Enable logging to see what happens during model loading and inference (useful for debugging):
+
+```python
+import logging
+from uniface import enable_logging
+
+enable_logging()                     # INFO level
+enable_logging(level=logging.DEBUG)  # DEBUG level
+```
+
+---
+
 ## Common Issues
 
 ### Models Not Downloading

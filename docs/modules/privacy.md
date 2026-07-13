@@ -91,6 +91,15 @@ blurrer = BlurFace(method='elliptical', blur_strength=3.0, margin=20)
 | `blur_strength` | 3.0 | Blur intensity |
 | `margin` | 20 | Margin around face |
 
+The elliptical blur is also available as a standalone class for direct use on bounding boxes:
+
+```python
+from uniface.privacy import EllipticalBlur
+
+blur = EllipticalBlur(blur_strength=3.0, margin=20)
+result = blur(image, bboxes=[face.bbox for face in faces])
+```
+
 ### Median
 
 Edge-preserving blur with artistic effect:
