@@ -66,10 +66,8 @@ detector = RetinaFace(model_name=RetinaFaceWeights.RESNET34)
 | RESNET34 | 24.8M | 56 MB | 94.2% | 93.1% | 88.9% |
 | RESNET50 | 27.4M | 104 MB | 94.7%* | 93.7%* | 88.8%* |
 
-*\* Measured on WIDER FACE val with [widerface_evaluation](https://github.com/yakhyo/widerface_evaluation); other
-rows are quoted from the [RetinaFace paper](https://arxiv.org/abs/1905.00641). `RESNET50` weights come from
-[HivisionIDPhotos](https://huggingface.co/TheEeeeLin/HivisionIDPhotos_matting/blob/main/retinaface-resnet50.onnx)
-and trail `RESNET34` on the Hard subset despite being ~2x the size. See [Models](../models.md#retinaface-family).*
+*\* `RESNET50` weights come from [HivisionIDPhotos](https://huggingface.co/TheEeeeLin/HivisionIDPhotos_matting/blob/main/retinaface-resnet50.onnx);
+its scores are measured, not quoted from the paper. See [Models](../models.md#retinaface-family).*
 
 ### Configuration
 
