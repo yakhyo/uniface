@@ -529,9 +529,5 @@ MODEL_REGISTRY: dict[Enum, ModelInfo] = {
 }
 
 
-# Backward compatibility (optional, can be removed if all code uses MODEL_REGISTRY)
-MODEL_URLS: dict[Enum, str] = {k: v.url for k, v in MODEL_REGISTRY.items()}
-MODEL_SHA256: dict[Enum, str] = {k: v.sha256 for k, v in MODEL_REGISTRY.items()}
-
 DOWNLOAD_CHUNK_SIZE = 256 * 1024  # 256 KiB
 HASH_CHUNK_SIZE = 1024 * 1024  # 1 MiB
