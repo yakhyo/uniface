@@ -143,7 +143,6 @@ UniFace has minimal core dependencies:
 | `scipy` | Signal processing |
 | `requests` | Model download |
 | `tqdm` | Progress bars |
-| `typing_extensions` | Typing backports |
 
 **Runtime extras (install exactly one):**
 

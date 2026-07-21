@@ -70,7 +70,7 @@ class BaseMatting(ABC):
             Alpha matte with shape ``(H, W)``, float32 in ``[0, 1]``.
 
         Example:
-            >>> matting = create_matting_model()
+            >>> matting = MODNet()
             >>> matte = matting.predict(image)
             >>> print(f'Matte shape: {matte.shape}, dtype: {matte.dtype}')
         """

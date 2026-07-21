@@ -94,7 +94,7 @@ class BaseGazeEstimator(ABC):
                 - yaw: Horizontal gaze angle (positive = right, negative = left)
 
         Example:
-            >>> estimator = create_gaze_estimator()
+            >>> estimator = MobileGaze()
             >>> result = estimator.estimate(face_crop)
             >>> print(f'Looking: pitch={np.degrees(result.pitch):.1f}°, yaw={np.degrees(result.yaw):.1f}°')
         """

@@ -96,7 +96,7 @@ class BaseHeadPoseEstimator(ABC):
                 - roll: Rotation around Z-axis (positive = clockwise)
 
         Example:
-            >>> estimator = create_head_pose_estimator()
+            >>> estimator = HeadPose()
             >>> result = estimator.estimate(face_crop)
             >>> print(f'Pose: pitch={result.pitch:.1f}°, yaw={result.yaw:.1f}°, roll={result.roll:.1f}°')
         """

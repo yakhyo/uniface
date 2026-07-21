@@ -99,7 +99,7 @@ class BaseFaceParser(ABC):
                 - ``"probability"``: float32 with values in [0, 1]
 
         Example:
-            >>> parser = create_face_parser()
+            >>> parser = BiSeNet()
             >>> mask = parser.parse(face_crop)
             >>> print(f'Mask type: {parser.mask_type}')
             >>> print(f'Mask shape: {mask.shape}, dtype: {mask.dtype}')
