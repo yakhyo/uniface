@@ -274,6 +274,23 @@ PIPNet (Pixel-in-Pixel Net) facial landmark detector. ResNet-18 backbone, 256×2
 
 ---
 
+### Face State Detection (FaceAttribNet)
+
+| Model Name      | Attributes                                              | Params | Size |
+| --------------- | ------------------------------------------------------- | ------ | ---- |
+| `FaceAttribNet` | Eye openness (L/R), Eyeglasses, Mask, Sunglasses        | 10.8M  | 41MB |
+
+Qualcomm's [Facial-Attribute-Detection](https://github.com/qualcomm/ai-hub-models/tree/main/src/qai_hub_models/models/face_attrib_net) model. Outputs five independent binary probabilities from a 128x128 face crop.
+
+!!! info "Training Data"
+    **Dataset**: Trained by Qualcomm on a proprietary face dataset
+
+!!! warning "Multi-label Output"
+    The five probabilities come from independent binary heads: they do not sum to 1
+    and several can be high at once. Threshold each attribute separately; never `argmax`.
+
+---
+
 ## Gaze Estimation Models
 
 ### MobileGaze Family
@@ -500,6 +517,7 @@ See [Model Cache & Offline Use](concepts/model-cache-offline.md) for full detail
 - **Face Anti-Spoofing**: [yakhyo/face-anti-spoofing](https://github.com/yakhyo/face-anti-spoofing) - MiniFASNet ONNX inference (weights from [minivision-ai/Silent-Face-Anti-Spoofing](https://github.com/minivision-ai/Silent-Face-Anti-Spoofing))
 - **Face Image Quality Assessment**: [yakhyo/face-image-quality-assessment](https://github.com/yakhyo/face-image-quality-assessment) - eDifFIQA PyTorch inference, ONNX export and inference
 - **FairFace**: [yakhyo/fairface-onnx](https://github.com/yakhyo/fairface-onnx) - FairFace ONNX inference for race, gender, age prediction
+- **FaceAttribNet**: [yakhyo/face-attribute](https://github.com/yakhyo/face-attribute) - FaceAttribNet ONNX export and inference (weights from [qualcomm/ai-hub-models](https://github.com/qualcomm/ai-hub-models/tree/main/src/qai_hub_models/models/face_attrib_net))
 - **PIPNet**: [yakhyo/pipnet-onnx](https://github.com/yakhyo/pipnet-onnx) - PIPNet ONNX export and inference (from [jhb86253817/PIPNet](https://github.com/jhb86253817/PIPNet))
 - **InsightFace**: [deepinsight/insightface](https://github.com/deepinsight/insightface) - Model architectures and pretrained weights
 

@@ -150,11 +150,11 @@ print(f"{label}: {result.confidence:.1%}")
 
 ---
 
-### AttributeResult
+### DemographyResult
 
 ```python
 @dataclass(frozen=True)
-class AttributeResult:
+class DemographyResult:
     gender: int              # 0=Female, 1=Male
     age: int | None          # Years (AgeGender model)
     age_group: str | None    # "20-29" (FairFace model)

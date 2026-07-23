@@ -122,9 +122,9 @@ class YOLOv8FaceWeights(str, Enum):
     YOLOV8N       = "yolov8n_face"
 
 
-class DDAMFNWeights(str, Enum):
+class EmotionWeights(str, Enum):
     """
-    Trained on AffectNet dataset.
+    DDAMFN emotion recognition models trained on AffectNet dataset.
     https://github.com/SainingZhang/DDAMFN/tree/main/DDAMFN
     """
     AFFECNET7 = "affecnet7"
@@ -146,6 +146,18 @@ class FairFaceWeights(str, Enum):
     https://github.com/yakhyo/fairface-onnx
     """
     DEFAULT = "fairface"
+
+
+class FaceAttribNetWeights(str, Enum):
+    """
+    FaceAttribNet (Qualcomm "Facial-Attribute-Detection").
+    Predicts five independent binary face attributes from a 128x128 face crop:
+    left/right eye openness, eyeglasses, sunglasses, and face mask.
+    Trained by Qualcomm on a proprietary face dataset.
+    https://github.com/qualcomm/ai-hub-models/tree/main/src/qai_hub_models/models/face_attrib_net
+    https://github.com/yakhyo/face-attribute
+    """
+    DEFAULT = "face_attrib_net"
 
 
 class LandmarkWeights(str, Enum):
@@ -387,12 +399,12 @@ MODEL_REGISTRY: dict[Enum, ModelInfo] = {
         sha256='33f3951af7fc0c4d9b321b29cdcd8c9a59d0a29a8d4bdc01fcb5507d5c714809'
     ),
 
-    # DDAFM
-    DDAMFNWeights.AFFECNET7: ModelInfo(
+    # Emotion (DDAMFN)
+    EmotionWeights.AFFECNET7: ModelInfo(
         url='https://github.com/yakhyo/uniface/releases/download/weights/affecnet7.script',
         sha256='10535bf8b6afe8e9d6ae26cea6c3add9a93036e9addb6adebfd4a972171d015d'
     ),
-    DDAMFNWeights.AFFECNET8: ModelInfo(
+    EmotionWeights.AFFECNET8: ModelInfo(
         url='https://github.com/yakhyo/uniface/releases/download/weights/affecnet8.script',
         sha256='8c66963bc71db42796a14dfcbfcd181b268b65a3fc16e87147d6a3a3d7e0f487'
     ),
@@ -407,6 +419,12 @@ MODEL_REGISTRY: dict[Enum, ModelInfo] = {
     FairFaceWeights.DEFAULT: ModelInfo(
         url='https://github.com/yakhyo/fairface-onnx/releases/download/weights/fairface.onnx',
         sha256='9c8c47d437cd310538d233f2465f9ed0524cb7fb51882a37f74e8bc22437fdbf'
+    ),
+
+    # FaceAttribNet
+    FaceAttribNetWeights.DEFAULT: ModelInfo(
+        url='https://github.com/yakhyo/uniface/releases/download/weights/face_attrib_net.onnx',
+        sha256='1bf7c6453bec2fb28e0830f3a76dceb9ffd020124f87b28da5355940a7bc6e48'
     ),
 
     # Landmarks

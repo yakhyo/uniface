@@ -10,8 +10,9 @@ import numpy as np
 
 from uniface.attribute.age_gender import AgeGender
 from uniface.attribute.base import Attribute
+from uniface.attribute.faceattribnet import FaceAttribNet
 from uniface.attribute.fairface import FairFace
-from uniface.types import AttributeResult, EmotionResult, Face
+from uniface.types import DemographyResult, EmotionResult, Face, FaceStateResult
 
 try:
     from uniface.attribute.emotion import Emotion
@@ -34,8 +35,10 @@ except ImportError:
 
 __all__ = [
     'AgeGender',
-    'AttributeResult',
+    'DemographyResult',
     'Emotion',
     'EmotionResult',
+    'FaceAttribNet',
+    'FaceStateResult',
     'FairFace',
 ]

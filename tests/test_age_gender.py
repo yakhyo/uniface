@@ -8,7 +8,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from uniface.attribute import AgeGender, AttributeResult
+from uniface.attribute import AgeGender, DemographyResult
 from uniface.types import Face
 
 
@@ -40,7 +40,7 @@ def test_model_initialization(age_gender_model):
 
 def test_prediction_output_format(age_gender_model, mock_image, mock_face):
     result = age_gender_model.predict(mock_image, mock_face)
-    assert isinstance(result, AttributeResult), f'Result should be AttributeResult, got {type(result)}'
+    assert isinstance(result, DemographyResult), f'Result should be DemographyResult, got {type(result)}'
     assert isinstance(result.gender, int), f'Gender should be int, got {type(result.gender)}'
     assert isinstance(result.age, int), f'Age should be int, got {type(result.age)}'
     assert isinstance(result.sex, str), f'Sex should be str, got {type(result.sex)}'
@@ -149,7 +149,7 @@ def test_output_format_for_visualization(age_gender_model, mock_image, mock_face
 
 
 def test_attribute_result_fields(age_gender_model, mock_image, mock_face):
-    """Test that AttributeResult has correct fields for AgeGender model."""
+    """Test that DemographyResult has correct fields for AgeGender model."""
     result = age_gender_model.predict(mock_image, mock_face)
 
     assert result.gender is not None

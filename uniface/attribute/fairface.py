@@ -12,7 +12,7 @@ from uniface.constants import FairFaceWeights
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
 from uniface.onnx_utils import create_onnx_session
-from uniface.types import AttributeResult, Face
+from uniface.types import DemographyResult, Face
 
 __all__ = ['AGE_LABELS', 'RACE_LABELS', 'FairFace']
 
@@ -137,7 +137,7 @@ class FairFace(Attribute):
 
         return image
 
-    def postprocess(self, prediction: tuple[np.ndarray, np.ndarray, np.ndarray]) -> AttributeResult:
+    def postprocess(self, prediction: tuple[np.ndarray, np.ndarray, np.ndarray]) -> DemographyResult:
         """
         Processes the raw model output to extract race, gender, and age.
 
@@ -146,7 +146,7 @@ class FairFace(Attribute):
                 (race_logits, gender_logits, age_logits).
 
         Returns:
-            AttributeResult: Result containing gender (0=Female, 1=Male), age_group, and race.
+            DemographyResult: Result containing gender (0=Female, 1=Male), age_group, and race.
         """
         race_logits, gender_logits, age_logits = prediction
 
@@ -163,13 +163,13 @@ class FairFace(Attribute):
         # Normalize gender: model outputs 0=Male, 1=Female → standard 0=Female, 1=Male
         gender = 1 - raw_gender_idx
 
-        return AttributeResult(
+        return DemographyResult(
             gender=gender,
             age_group=AGE_LABELS[age_idx],
             race=RACE_LABELS[race_idx],
         )
 
-    def predict(self, image: np.ndarray, face: Face) -> AttributeResult:
+    def predict(self, image: np.ndarray, face: Face) -> DemographyResult:
         """Predict race, gender, and age and enrich the Face in-place.
 
         Args:
@@ -177,7 +177,7 @@ class FairFace(Attribute):
             face: Detected face; ``face.bbox`` is used for cropping.
 
         Returns:
-            ``AttributeResult`` with gender, age_group, and race.
+            ``DemographyResult`` with gender, age_group, and race.
         """
         input_blob = self.preprocess(image, face.bbox)
         outputs = self.session.run(self.output_names, {self.input_name: input_blob})

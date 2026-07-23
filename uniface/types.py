@@ -8,7 +8,7 @@ This module centralizes all result dataclasses used across the library,
 providing consistent and immutable return types for model predictions.
 
 Note on mutability:
-- Result dataclasses (GazeResult, SpoofingResult, EmotionResult, AttributeResult)
+- Result dataclasses (GazeResult, SpoofingResult, EmotionResult, DemographyResult)
   are frozen (immutable) since they represent computation outputs that shouldn't change.
 - Face dataclass is mutable because FaceAnalyzer enriches it with additional
   attributes (embedding, age, gender, etc.) after initial detection.
@@ -24,9 +24,10 @@ import numpy as np
 from uniface.face_utils import compute_similarity
 
 __all__ = [
-    'AttributeResult',
+    'DemographyResult',
     'EmotionResult',
     'Face',
+    'FaceStateResult',
     'GazeResult',
     'HeadPoseResult',
     'QualityResult',
@@ -116,11 +117,11 @@ class EmotionResult:
 
 
 @dataclass(slots=True, frozen=True)
-class AttributeResult:
-    """Unified result structure for face attribute prediction.
+class DemographyResult:
+    """Unified result structure for demographic attribute prediction.
 
-    This dataclass provides a consistent return type across different attribute
-    prediction models (e.g., AgeGender, FairFace), enabling interoperability
+    This dataclass provides a consistent return type across demographic
+    prediction models (AgeGender, FairFace), enabling interoperability
     and unified handling of results.
 
     Attributes:
@@ -134,12 +135,12 @@ class AttributeResult:
 
     Examples:
         >>> # AgeGender result
-        >>> result = AttributeResult(gender=1, age=25)
+        >>> result = DemographyResult(gender=1, age=25)
         >>> result.sex
         'Male'
 
         >>> # FairFace result
-        >>> result = AttributeResult(gender=0, age_group='20-29', race='East Asian')
+        >>> result = DemographyResult(gender=0, age_group='20-29', race='East Asian')
         >>> result.sex
         'Female'
     """
@@ -162,7 +163,43 @@ class AttributeResult:
             parts.append(f'age_group={self.age_group}')
         if self.race is not None:
             parts.append(f'race={self.race}')
-        return f'AttributeResult({", ".join(parts)})'
+        return f'DemographyResult({", ".join(parts)})'
+
+
+@dataclass(slots=True, frozen=True)
+class FaceStateResult:
+    """Result of face state prediction (FaceAttribNet).
+
+    Five independent binary probabilities in [0, 1], in the model's output
+    order. Each value comes from its own classifier head, so the values do not
+    sum to 1 and several can be high at once (a face can wear both sunglasses
+    and a mask). Threshold each attribute separately; never argmax.
+
+    Attributes:
+        left_eye_open: Probability the left eye is open.
+        right_eye_open: Probability the right eye is open.
+        eyeglasses: Probability eyeglasses are present.
+        mask: Probability a face mask is present.
+        sunglasses: Probability sunglasses are present.
+    """
+
+    left_eye_open: float
+    right_eye_open: float
+    eyeglasses: float
+    mask: float
+    sunglasses: float
+
+    def as_dict(self) -> dict[str, float]:
+        """Return the attributes as a name -> probability mapping."""
+        return {f.name: getattr(self, f.name) for f in fields(self)}
+
+    def labels(self, threshold: float = 0.5) -> list[str]:
+        """Return the names of attributes whose probability exceeds ``threshold``."""
+        return [name for name, value in self.as_dict().items() if value > threshold]
+
+    def __repr__(self) -> str:
+        body = ', '.join(f'{name}={value:.4f}' for name, value in self.as_dict().items())
+        return f'FaceStateResult({body})'
 
 
 @dataclass(slots=True)
@@ -186,6 +223,11 @@ class Face:
         race: Predicted race/ethnicity (optional, from FairFace).
         emotion: Predicted emotion label (optional, from Emotion model).
         emotion_confidence: Confidence score for emotion prediction (optional).
+        left_eye_open: Probability the left eye is open (optional, from FaceAttribNet).
+        right_eye_open: Probability the right eye is open (optional, from FaceAttribNet).
+        eyeglasses: Probability eyeglasses are present (optional, from FaceAttribNet).
+        mask: Probability a face mask is present (optional, from FaceAttribNet).
+        sunglasses: Probability sunglasses are present (optional, from FaceAttribNet).
         quality: Face image quality score in [0, 1] (optional, from eDifFIQA).
         track_id: Persistent track ID assigned by BYTETracker (optional).
 
@@ -208,6 +250,11 @@ class Face:
     race: str | None = None
     emotion: str | None = None
     emotion_confidence: float | None = None
+    left_eye_open: float | None = None
+    right_eye_open: float | None = None
+    eyeglasses: float | None = None
+    mask: float | None = None
+    sunglasses: float | None = None
     quality: float | None = None
     track_id: int | None = None
 
@@ -280,6 +327,12 @@ class Face:
             parts.append(f'race={self.race}')
         if self.emotion is not None:
             parts.append(f'emotion={self.emotion}')
+        if self.eyeglasses is not None:
+            states = ', '.join(
+                f'{name}={getattr(self, name):.2f}'
+                for name in ('left_eye_open', 'right_eye_open', 'eyeglasses', 'mask', 'sunglasses')
+            )
+            parts.append(states)
         if self.quality is not None:
             parts.append(f'quality={self.quality:.4f}')
         if self.embedding is not None:

@@ -12,7 +12,7 @@ from uniface.face_utils import bbox_center_alignment
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
 from uniface.onnx_utils import create_onnx_session
-from uniface.types import AttributeResult, Face
+from uniface.types import DemographyResult, Face
 
 __all__ = ['AgeGender']
 
@@ -117,7 +117,7 @@ class AgeGender(Attribute):
         )
         return blob
 
-    def postprocess(self, prediction: np.ndarray) -> AttributeResult:
+    def postprocess(self, prediction: np.ndarray) -> DemographyResult:
         """
         Processes the raw model output to extract gender and age.
 
@@ -125,15 +125,15 @@ class AgeGender(Attribute):
             prediction (np.ndarray): The raw output from the model inference.
 
         Returns:
-            AttributeResult: Result containing gender (0=Female, 1=Male) and age (in years).
+            DemographyResult: Result containing gender (0=Female, 1=Male) and age (in years).
         """
         # First two values are gender logits
         gender = int(np.argmax(prediction[:2]))
         # Third value is normalized age, scaled by 100
         age = int(np.round(prediction[2] * 100))
-        return AttributeResult(gender=gender, age=age)
+        return DemographyResult(gender=gender, age=age)
 
-    def predict(self, image: np.ndarray, face: Face) -> AttributeResult:
+    def predict(self, image: np.ndarray, face: Face) -> DemographyResult:
         """Predict age and gender and enrich the Face in-place.
 
         Args:
@@ -141,7 +141,7 @@ class AgeGender(Attribute):
             face: Detected face; ``face.bbox`` is used for alignment.
 
         Returns:
-            ``AttributeResult`` with gender (0=Female, 1=Male) and age (years).
+            ``DemographyResult`` with gender (0=Female, 1=Male) and age (years).
         """
         face_blob = self.preprocess(image, face.bbox)
         prediction = self.session.run(self.output_names, {self.input_name: face_blob})[0][0]

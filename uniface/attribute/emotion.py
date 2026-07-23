@@ -8,7 +8,7 @@ import numpy as np
 import torch
 
 from uniface.attribute.base import Attribute
-from uniface.constants import DDAMFNWeights
+from uniface.constants import EmotionWeights
 from uniface.face_utils import face_alignment
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
@@ -28,14 +28,14 @@ class Emotion(Attribute):
 
     def __init__(
         self,
-        model_name: DDAMFNWeights = DDAMFNWeights.AFFECNET7,
+        model_name: EmotionWeights = EmotionWeights.AFFECNET7,
         input_size: tuple[int, int] = (112, 112),
     ) -> None:
         """
         Initializes the emotion recognition model.
 
         Args:
-            model_name (DDAMFNWeights): The enum for the model weights to load.
+            model_name (EmotionWeights): The enum for the model weights to load.
             input_size (Tuple[int, int]): The expected input size for the model.
         """
         Logger.info(f'Initializing Emotion with model={model_name.name}')
@@ -60,7 +60,7 @@ class Emotion(Attribute):
             'Disgust',
             'Angry',
         ]
-        if model_name == DDAMFNWeights.AFFECNET8:
+        if model_name == EmotionWeights.AFFECNET8:
             self.emotion_labels.append('Contempt')
 
         self._initialize_model()

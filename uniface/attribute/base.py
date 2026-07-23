@@ -9,9 +9,9 @@ from typing import Any
 
 import numpy as np
 
-from uniface.types import AttributeResult, EmotionResult, Face
+from uniface.types import DemographyResult, EmotionResult, Face, FaceStateResult
 
-__all__ = ['Attribute', 'AttributeResult', 'EmotionResult']
+__all__ = ['Attribute', 'DemographyResult', 'EmotionResult', 'FaceStateResult']
 
 
 class Attribute(ABC):
@@ -52,12 +52,12 @@ class Attribute(ABC):
             prediction: Raw output from the model.
 
         Returns:
-            An ``AttributeResult`` or ``EmotionResult``.
+            An ``DemographyResult``, ``EmotionResult``, or ``FaceStateResult``.
         """
         raise NotImplementedError('Subclasses must implement the postprocess method.')
 
     @abstractmethod
-    def predict(self, image: np.ndarray, face: Face) -> AttributeResult | EmotionResult:
+    def predict(self, image: np.ndarray, face: Face) -> DemographyResult | EmotionResult | FaceStateResult:
         """Run end-to-end prediction and enrich the Face in-place.
 
         Each subclass extracts what it needs from *face* (e.g. ``face.bbox``
@@ -70,10 +70,10 @@ class Attribute(ABC):
             face: Detected face whose attribute fields will be populated.
 
         Returns:
-            The prediction result (``AttributeResult`` or ``EmotionResult``).
+            The prediction result (``DemographyResult``, ``EmotionResult``, or ``FaceStateResult``).
         """
         raise NotImplementedError('Subclasses must implement the predict method.')
 
-    def __call__(self, image: np.ndarray, face: Face) -> AttributeResult | EmotionResult:
+    def __call__(self, image: np.ndarray, face: Face) -> DemographyResult | EmotionResult | FaceStateResult:
         """Callable shortcut for :meth:`predict`."""
         return self.predict(image, face)

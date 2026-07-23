@@ -22,7 +22,7 @@ This library provides unified APIs for:
 - Portrait matting (trimap-free alpha matte)
 - Gaze estimation
 - Head pose estimation
-- Age, gender, and emotion prediction
+- Age, gender, emotion, and face state prediction (eyes open, glasses, mask)
 - Face anti-spoofing
 - Face image quality assessment (eDifFIQA)
 - Privacy/anonymization
@@ -41,7 +41,7 @@ from uniface.log import Logger, enable_logging
 from uniface.model_store import download_models, get_cache_dir, set_cache_dir, verify_model_weights
 
 from .analyzer import FaceAnalyzer
-from .attribute import AgeGender, Emotion, FairFace
+from .attribute import AgeGender, Emotion, FaceAttribNet, FairFace
 from .detection import SCRFD, RetinaFace, YOLOv5Face, YOLOv8Face
 from .gaze import MobileGaze
 from .headpose import HeadPose
@@ -53,7 +53,16 @@ from .quality import EDifFIQA
 from .recognition import AdaFace, ArcFace, EdgeFace, MobileFace, SphereFace
 from .spoofing import MiniFASNet
 from .tracking import BYTETracker
-from .types import AttributeResult, EmotionResult, Face, GazeResult, HeadPoseResult, QualityResult, SpoofingResult
+from .types import (
+    DemographyResult,
+    EmotionResult,
+    Face,
+    FaceStateResult,
+    GazeResult,
+    HeadPoseResult,
+    QualityResult,
+    SpoofingResult,
+)
 
 # Optional: FAISS vector store (requires `pip install faiss-cpu`)
 with contextlib.suppress(ImportError):
@@ -94,9 +103,11 @@ __all__ = [
     'XSeg',
     # Attribute models
     'AgeGender',
-    'AttributeResult',
+    'DemographyResult',
     'Emotion',
     'EmotionResult',
+    'FaceAttribNet',
+    'FaceStateResult',
     'FairFace',
     # Spoofing models
     'MiniFASNet',
