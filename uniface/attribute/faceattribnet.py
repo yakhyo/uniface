@@ -32,7 +32,8 @@ class FaceAttribNet(Attribute):
     The model is Qualcomm's "Facial-Attribute-Detection" (FaceAttribNet),
     mean/std normalization is baked into the ONNX graph itself, so
     preprocessing only scales pixel values to [0, 1].
-    https://github.com/qualcomm/ai-hub-models/tree/main/src/qai_hub_models/models/face_attrib_net
+    Original model: https://github.com/qualcomm/ai-hub-models/tree/main/src/qai_hub_models/models/face_attrib_net
+    ONNX export and inference: https://github.com/yakhyo/face-attribute
 
     Args:
         model_name (FaceAttribNetWeights): The enum specifying the model weights to load.

@@ -191,6 +191,11 @@ emotion = Emotion(model_name=EmotionWeights.AFFECNET8)
 
 Predicts five independent binary face states from a face crop: left/right eye openness, eyeglasses, face mask, and sunglasses. Based on Qualcomm's [Facial-Attribute-Detection](https://github.com/qualcomm/ai-hub-models/tree/main/src/qai_hub_models/models/face_attrib_net) model.
 
+<figure markdown="span">
+  ![Face Attribute Detection](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/face_attributes.png){ width="100%" }
+  <figcaption>Face state prediction: per-attribute True/False with probabilities</figcaption>
+</figure>
+
 !!! warning "Multi-label output"
     The five values come from independent binary heads: they do not sum to 1 and
     several can be high at once (a face can wear both sunglasses and a mask).

@@ -1,18 +1,6 @@
 <h1 align="center">UniFace: A Unified Face Analysis Library for Python</h1>
 
 <div align="center">
-
-[![PyPI Version](https://img.shields.io/pypi/v/uniface.svg?label=Version)](https://pypi.org/project/uniface/)
-[![Python Version](https://img.shields.io/badge/Python-3.10%2B-blue)](https://www.python.org/)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Github Build Status](https://github.com/yakhyo/uniface/actions/workflows/ci.yml/badge.svg)](https://github.com/yakhyo/uniface/actions)
-[![PyPI Downloads](https://static.pepy.tech/personalized-badge/uniface?period=total&units=INTERNATIONAL_SYSTEM&left_color=GRAY&right_color=BLUE&left_text=Downloads)](https://pepy.tech/projects/uniface)
-[![UniFace Documentation](https://img.shields.io/badge/Docs-UniFace-blue.svg)](https://yakhyo.github.io/uniface/)
-[![Kaggle Badge](https://img.shields.io/badge/Notebooks-Kaggle?label=Kaggle&color=blue)](https://www.kaggle.com/yakhyokhuja/code)
-
-</div>
-
-<div align="center">
     <img src="https://raw.githubusercontent.com/yakhyo/uniface/main/.github/logos/uniface_rounded_q80.webp" width="90%" alt="UniFace - A Unified Face Analysis Library for Python">
 </div>
 
@@ -24,20 +12,22 @@
 
 ## Features
 
-- **Face Detection** — RetinaFace, SCRFD, YOLOv5-Face, and YOLOv8-Face with 5-point landmarks
-- **Face Recognition** — AdaFace, ArcFace, EdgeFace, MobileFace, and SphereFace embeddings
-- **Face Tracking** — Multi-object tracking with [BYTETracker](https://github.com/yakhyo/bytetrack-tracker) for persistent IDs across video frames
-- **Facial Landmarks** — 106-point (2d106det) and 98 / 68-point (PIPNet) landmark localization (separate from the 5-point detector landmarks)
-- **Face Parsing** — BiSeNet semantic segmentation (19 classes), XSeg face masking
-- **Portrait Matting** — Trimap-free alpha matte with MODNet (background removal, green screen, compositing)
-- **Gaze Estimation** — Real-time gaze direction with MobileGaze
-- **Head Pose Estimation** — 3D head orientation (pitch, yaw, roll) with 6D rotation representation
-- **Attribute Analysis** — Age, gender, race (FairFace), and emotion
-- **Vector Store** — FAISS-backed embedding store for fast multi-identity search
-- **Anti-Spoofing** — Face liveness detection with MiniFASNet
-- **Face Quality Assessment** — eDifFIQA single-score quality (T/S/M/L, NIST FATE-Quality #1 with the L variant)
-- **Face Anonymization** — 5 blur methods for privacy protection
-- **Hardware Acceleration** — ARM64 (Apple Silicon), CUDA (NVIDIA), CPU
+| Feature                     | Details                                                                                          |
+| --------------------------- | ------------------------------------------------------------------------------------------------ |
+| **Face Detection**          | RetinaFace, SCRFD, YOLOv5-Face, and YOLOv8-Face with 5-point landmarks                           |
+| **Face Recognition**        | AdaFace, ArcFace, EdgeFace, MobileFace, and SphereFace embeddings                                |
+| **Face Tracking**           | Multi-object tracking with [BYTETracker](https://github.com/yakhyo/bytetrack-tracker) for persistent IDs across video frames |
+| **Facial Landmarks**        | 106-point (2d106det) and 98 / 68-point (PIPNet) landmark localization (separate from the 5-point detector landmarks) |
+| **Face Parsing**            | BiSeNet semantic segmentation (19 classes), XSeg face masking                                    |
+| **Portrait Matting**        | Trimap-free alpha matte with MODNet (background removal, green screen, compositing)              |
+| **Gaze Estimation**         | Real-time gaze direction with MobileGaze                                                         |
+| **Head Pose Estimation**    | 3D head orientation (pitch, yaw, roll) with 6D rotation representation                           |
+| **Attribute Analysis**      | Age, gender, race (FairFace), emotion, and face states (eye openness, glasses, mask with FaceAttribNet) |
+| **Vector Store**            | FAISS-backed embedding store for fast multi-identity search                                      |
+| **Anti-Spoofing**           | Face liveness detection with MiniFASNet                                                          |
+| **Face Quality Assessment** | eDifFIQA single-score quality (T/S/M/L, NIST FATE-Quality #1 with the L variant)                 |
+| **Face Anonymization**      | 5 blur methods for privacy protection                                                            |
+| **Hardware Acceleration**   | ARM64 (Apple Silicon), CUDA (NVIDIA), CPU                                                        |
 
 ---
 
@@ -217,8 +207,8 @@ cv2.imwrite("green_screen.jpg", result)
 
 ## Jupyter Notebooks
 
-| Example                                                              |                                                                                       Colab                                                                                       | Description                             |
-| -------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | --------------------------------------- |
+| Example                                                                |                                                                                         Colab                                                                                         | Description                             |
+| ---------------------------------------------------------------------- | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | --------------------------------------- |
 | [01_face_detection.ipynb](examples/01_face_detection.ipynb)             |    [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/01_face_detection.ipynb)    | Face detection and landmarks            |
 | [02_face_alignment.ipynb](examples/02_face_alignment.ipynb)             |    [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/02_face_alignment.ipynb)    | Face alignment for recognition          |
 | [03_face_verification.ipynb](examples/03_face_verification.ipynb)       |  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/03_face_verification.ipynb)  | Compare faces for identity              |
@@ -232,6 +222,7 @@ cv2.imwrite("green_screen.jpg", result)
 | [11_head_pose_estimation.ipynb](examples/11_head_pose_estimation.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/11_head_pose_estimation.ipynb) | Head pose estimation (pitch, yaw, roll) |
 | [12_face_recognition.ipynb](examples/12_face_recognition.ipynb)         |   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/12_face_recognition.ipynb)   | Standalone face recognition pipeline    |
 | [13_portrait_matting.ipynb](examples/13_portrait_matting.ipynb)         |   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/13_portrait_matting.ipynb)   | Portrait matting with MODNet            |
+| [14_face_attributes.ipynb](examples/14_face_attributes.ipynb)           |   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/14_face_attributes.ipynb)   | Face states (eyes, glasses, mask)       |
 
 ---
 
@@ -239,8 +230,8 @@ cv2.imwrite("green_screen.jpg", result)
 
 Full documentation: https://yakhyo.github.io/uniface/
 
-| Resource                                                           | Description                                 |
-| ------------------------------------------------------------------ | ------------------------------------------- |
+| Resource                                                             | Description                                 |
+| -------------------------------------------------------------------- | ------------------------------------------- |
 | [Quickstart](https://yakhyo.github.io/uniface/quickstart/)            | Get up and running in 5 minutes             |
 | [Model Zoo](https://yakhyo.github.io/uniface/models/)                 | All models, benchmarks, and selection guide |
 | [API Reference](https://yakhyo.github.io/uniface/modules/detection/)  | Detailed module documentation               |
@@ -277,6 +268,7 @@ https://yakhyo.github.io/uniface/concepts/execution-providers/
 | Head Pose   | 300W-LP                     | HeadPose (ResNet, MobileNet)                |
 | Parsing     | CelebAMask-HQ               | BiSeNet                                     |
 | Attributes  | CelebA, FairFace, AffectNet | AgeGender, FairFace, Emotion                |
+| Attributes  | Proprietary (Qualcomm)      | FaceAttribNet                               |
 
 > See [Datasets documentation](https://yakhyo.github.io/uniface/datasets/) for download links, benchmarks, and details.
 
@@ -291,6 +283,7 @@ Notable examples:
 
 - YOLOv5-Face and YOLOv8-Face weights are GPL-3.0
 - FairFace weights are CC BY 4.0
+- FaceAttribNet weights are BSD-3-Clause (© Qualcomm Technologies, Inc.)
 
 If you plan commercial use, verify model license compatibility.
 
@@ -298,23 +291,24 @@ If you plan commercial use, verify model license compatibility.
 
 ## References
 
-| Feature       | Repository                                                                            | Training | Description                          |
-| ------------- | ------------------------------------------------------------------------------------- | :------: | ------------------------------------ |
+| Feature       | Repository                                                                              | Training | Description                          |
+| ------------- | --------------------------------------------------------------------------------------- | :------: | ------------------------------------ |
 | Detection     | [retinaface-pytorch](https://github.com/yakhyo/retinaface-pytorch)                       |    ✓    | RetinaFace PyTorch Training & Export |
-| Detection     | [yolov5-face-onnx-inference](https://github.com/yakhyo/yolov5-face-onnx-inference)       |    -    | YOLOv5-Face ONNX Inference           |
-| Detection     | [yolov8-face-onnx-inference](https://github.com/yakhyo/yolov8-face-onnx-inference)       |    -    | YOLOv8-Face ONNX Inference           |
+| Detection     | [yolov5-face-onnx-inference](https://github.com/yakhyo/yolov5-face-onnx-inference)       |    -    | YOLOv5-Face Inference                |
+| Detection     | [yolov8-face-onnx-inference](https://github.com/yakhyo/yolov8-face-onnx-inference)       |    -    | YOLOv8-Face Inference                |
 | Tracking      | [bytetrack-tracker](https://github.com/yakhyo/bytetrack-tracker)                         |    -    | BYTETracker Multi-Object Tracking    |
 | Recognition   | [face-recognition](https://github.com/yakhyo/face-recognition)                           |    ✓    | MobileFace, SphereFace Training      |
-| Recognition   | [edgeface-onnx](https://github.com/yakhyo/edgeface-onnx)                                 |    -    | EdgeFace ONNX Inference              |
-| Landmarks     | [pipnet-onnx](https://github.com/yakhyo/pipnet-onnx)                                     |    -    | PIPNet 98 / 68-point ONNX Inference  |
+| Recognition   | [edgeface-onnx](https://github.com/yakhyo/edgeface-onnx)                                 |    -    | EdgeFace Inference                   |
+| Landmarks     | [pipnet-onnx](https://github.com/yakhyo/pipnet-onnx)                                     |    -    | PIPNet 98 / 68-point Inference       |
 | Parsing       | [face-parsing](https://github.com/yakhyo/face-parsing)                                   |    ✓    | BiSeNet Face Parsing                 |
 | Parsing       | [face-segmentation](https://github.com/yakhyo/face-segmentation)                         |    -    | XSeg Face Segmentation               |
 | Gaze          | [gaze-estimation](https://github.com/yakhyo/gaze-estimation)                             |    ✓    | MobileGaze Training                  |
 | Head Pose     | [head-pose-estimation](https://github.com/yakhyo/head-pose-estimation)                   |    ✓    | Head Pose Training (6DRepNet-style)  |
 | Matting       | [modnet](https://github.com/yakhyo/modnet)                                               |    -    | MODNet Portrait Matting              |
 | Anti-Spoofing | [face-anti-spoofing](https://github.com/yakhyo/face-anti-spoofing)                       |    -    | MiniFASNet Inference                 |
-| Quality       | [face-image-quality-assessment](https://github.com/yakhyo/face-image-quality-assessment) |    -    | eDifFIQA ONNX Inference              |
-| Attributes    | [fairface-onnx](https://github.com/yakhyo/fairface-onnx)                                 |    -    | FairFace ONNX Inference              |
+| Quality       | [face-image-quality-assessment](https://github.com/yakhyo/face-image-quality-assessment) |    -    | eDifFIQA Inference                   |
+| Attributes    | [fairface-onnx](https://github.com/yakhyo/fairface-onnx)                                 |    -    | FairFace Inference                   |
+| Attributes    | [face-attribute](https://github.com/yakhyo/face-attribute)                               |    -    | FaceAttribNet Inference             |
 
 *SCRFD and ArcFace models are from [InsightFace](https://github.com/deepinsight/insightface).
 
