@@ -25,7 +25,7 @@ The record of one detected face: its detection facts plus a slot for each predic
 What detection guarantees on every Face: bounding box, confidence, and landmarks. The only inputs a face predictor may rely on.
 
 **Face predictor**:
-A per-face model that consumes an image and a Face, does its own cropping/alignment from the detection facts, and writes its result to its own slot. Order-independent: reads only detection facts, writes only its own slot. In code, the seam is the `Attribute` base class and `FaceAnalyzer(attributes=...)` — the v3 names, kept deliberately (see ADR-0002).
+A per-face model that consumes an image and a Face, does its own cropping/alignment from the detection facts, and writes its result to its own slot. Order-independent: reads only detection facts, writes only its own slot. In code, the seam is the `Attribute` base class (v3 name, kept deliberately — see ADR-0002), passed via `FaceAnalyzer(predictors=...)`.
 
 **Attribute**:
 An intrinsic property of a face (age, gender, emotion, eyeglasses, mask). Also the code name of the face-predictor base class, which future non-attribute predictors (head pose, gaze) will subclass despite the name — a deliberate stretch (ADR-0002).

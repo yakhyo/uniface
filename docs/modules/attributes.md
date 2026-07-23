@@ -285,7 +285,7 @@ from uniface.detection import RetinaFace
 
 analyzer = FaceAnalyzer(
     RetinaFace(),
-    attributes=[AgeGender()],
+    predictors=[AgeGender()],
 )
 
 faces = analyzer.analyze(image)

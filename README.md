@@ -170,7 +170,7 @@ With attributes:
 ```python
 from uniface import FaceAnalyzer, AgeGender
 
-analyzer = FaceAnalyzer(attributes=[AgeGender()])
+analyzer = FaceAnalyzer(predictors=[AgeGender()])
 faces = analyzer.analyze(image)
 
 for face in faces:

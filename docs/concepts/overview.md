@@ -192,7 +192,7 @@ fairface = FairFace()
 analyzer = FaceAnalyzer(
     detector,
     recognizer=recognizer,
-    attributes=[age_gender, fairface],
+    predictors=[age_gender, fairface],
 )
 
 faces = analyzer.analyze(image)

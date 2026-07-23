@@ -78,7 +78,7 @@ age_gender = AgeGender()
 analyzer = FaceAnalyzer(
     detector,
     recognizer=recognizer,
-    attributes=[age_gender],
+    predictors=[age_gender],
 )
 
 # Process image
