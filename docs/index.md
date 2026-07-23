@@ -26,7 +26,7 @@ template: home.html
 
 <div class="feature-card" markdown>
 ### :material-face-recognition: Face Detection
-RetinaFace, SCRFD, and YOLO detectors with 5-point landmarks.
+RetinaFace, SCRFD, CenterFace, and YOLO detectors with 5-point landmarks.
 <a class="feature-card-link" href="modules/detection/" aria-label="Face Detection"></a>
 </div>
 

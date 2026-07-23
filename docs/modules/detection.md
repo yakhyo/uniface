@@ -1,6 +1,6 @@
 # Detection
 
-Face detection is the first step in any face analysis pipeline. UniFace provides four detection models.
+Face detection is the first step in any face analysis pipeline. UniFace provides five detection models.
 
 <figure markdown="span">
   ![Face Detection](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/detection.jpg){ width="100%" }
@@ -15,6 +15,7 @@ Face detection is the first step in any face analysis pipeline. UniFace provides
 |-------|----------|------|------|--------|------|:---------:|
 | **RetinaFace** | MobileNet V2 | 3.5 MB | 91.7% | 91.0% | 86.6% | :material-check: |
 | **SCRFD** | SCRFD-10G | 17 MB | 95.2% | 93.9% | 83.1% | :material-check: |
+| **CenterFace** | MobileNet V2 | 7.0 MB | 92.2% | 91.1% | 78.2% | :material-check: |
 | **YOLOv5-Face** | YOLOv5s | 28 MB | 94.3% | 92.6% | 83.2% | :material-check: |
 | **YOLOv8-Face** | YOLOv8n | 12 MB | 94.6% | 92.3% | 79.6% | :material-check: |
 
@@ -129,6 +130,55 @@ detector = SCRFD(
 
 ---
 
+## CenterFace
+
+Anchor-free detection that treats faces as center points (MobileNetV2 + FPN), with joint 5-point landmark prediction. Lightweight and fast on CPU.
+
+Paper: [CenterFace: Joint Face Detection and Alignment Using Face as Point](https://arxiv.org/abs/1911.03599)
+
+### Basic Usage
+
+```python
+from uniface.detection import CenterFace
+
+detector = CenterFace()
+faces = detector.detect(image)
+```
+
+| Variant | Size | Easy | Medium | Hard |
+|---------|------|------|--------|------|
+| **DEFAULT** :material-check-circle: | 7.0 MB | 92.2% | 91.1% | 78.2% |
+
+!!! note "Benchmark schema"
+    Scores are WIDER FACE val with single inference on the original image (SIO).
+    With multi-scale and flip testing the [original repo](https://github.com/Star-Clouds/CenterFace)
+    reports 93.5% / 92.4% / 87.5%.
+
+!!! warning "Limitations"
+    - **Landmark precision**: landmarks are decoded from a single coarse feature-map cell
+      per face, so they are less precise than SCRFD or RetinaFace (roughly 5% of box size
+      deviation on upright faces). For alignment-critical recognition, prefer SCRFD/RetinaFace,
+      or refine with [PIPNet / Landmark106](landmarks.md) on CenterFace boxes.
+    - **Rotated faces**: detection recall and landmark accuracy drop faster than SCRFD as
+      in-plane rotation increases (noticeable beyond ~20-30 degrees). Best suited for
+      roughly upright faces (webcams, portraits, surveillance).
+
+### Configuration
+
+```python
+from uniface.constants import CenterFaceWeights
+
+detector = CenterFace(
+    model_name=CenterFaceWeights.DEFAULT,
+    confidence_threshold=0.35,
+    nms_threshold=0.3,
+    input_size=(640, 640),  # width and height must be multiples of 32
+    providers=None,         # Auto-detect, or ['CPUExecutionProvider']
+)
+```
+
+---
+
 ## YOLOv5-Face
 
 YOLO-based detection optimized for faces.
@@ -234,11 +284,13 @@ detector = YOLOv8Face(
 Import the detector class you need:
 
 ```python
-from uniface.detection import RetinaFace, SCRFD, YOLOv5Face, YOLOv8Face
+from uniface.detection import CenterFace, RetinaFace, SCRFD, YOLOv5Face, YOLOv8Face
 
 detector = RetinaFace()
 # or
 detector = SCRFD()
+# or
+detector = CenterFace()
 # or
 detector = YOLOv5Face()
 # or

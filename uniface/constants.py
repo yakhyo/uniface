@@ -92,6 +92,22 @@ class SCRFDWeights(str, Enum):
     SCRFD_500M_KPS = "scrfd_500m"
 
 
+class CenterFaceWeights(str, Enum):
+    """
+    CenterFace: Joint Face Detection and Alignment Using Face as Point.
+    Anchor-free detector (MobileNetV2 + FPN) with 5-point landmarks, trained on WIDER FACE.
+    Paper: https://arxiv.org/abs/1911.03599
+    Original weights: https://github.com/Star-Clouds/CenterFace
+
+    Re-exported to ONNX (opset 17, dynamic batch/height/width) from the original
+    weights; outputs verified numerically identical to the upstream model.
+
+    Model Performance (WIDER FACE val, single inference on the original image):
+    - 92.2% Easy / 91.1% Medium / 78.2% Hard
+    """
+    DEFAULT = "centerface"
+
+
 class YOLOv5FaceWeights(str, Enum):
     """
     Trained on WIDER FACE dataset.
@@ -373,6 +389,12 @@ MODEL_REGISTRY: dict[Enum, ModelInfo] = {
     SCRFDWeights.SCRFD_500M_KPS: ModelInfo(
         url='https://github.com/yakhyo/uniface/releases/download/weights/scrfd_500m_kps.onnx',
         sha256='5e4447f50245bbd7966bd6c0fa52938c61474a04ec7def48753668a9d8b4ea3a'
+    ),
+
+    # CenterFace
+    CenterFaceWeights.DEFAULT: ModelInfo(
+        url='https://github.com/yakhyo/uniface/releases/download/weights/centerface.onnx',
+        sha256='f50be8b97eae35b969905619136765897e401171ab4f92aa2b8c9909292d2ba0'
     ),
 
     # YOLOv5-Face

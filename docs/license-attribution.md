@@ -12,6 +12,7 @@ UniFace is released under the [MIT License](https://opensource.org/licenses/MIT)
 |-------|--------|---------|
 | RetinaFace | [yakhyo/retinaface-pytorch](https://github.com/yakhyo/retinaface-pytorch) | MIT |
 | SCRFD | [InsightFace](https://github.com/deepinsight/insightface) | MIT |
+| CenterFace | [Star-Clouds/CenterFace](https://github.com/Star-Clouds/CenterFace) | MIT |
 | YOLOv5-Face | [yakhyo/yolov5-face-onnx-inference](https://github.com/yakhyo/yolov5-face-onnx-inference) | GPL-3.0 |
 | YOLOv8-Face | [yakhyo/yolov8-face-onnx-inference](https://github.com/yakhyo/yolov8-face-onnx-inference) | GPL-3.0 |
 | AdaFace | [yakhyo/adaface-onnx](https://github.com/yakhyo/adaface-onnx) | MIT |

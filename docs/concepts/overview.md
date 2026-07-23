@@ -94,11 +94,13 @@ ONNX Runtime is installed separately via the `uniface[cpu]` or `uniface[gpu]` ex
 Direct class instantiation:
 
 ```python
-from uniface.detection import RetinaFace, SCRFD
+from uniface.detection import CenterFace, RetinaFace, SCRFD
 
 detector = RetinaFace()
 # or
 detector = SCRFD()
+# or
+detector = CenterFace()
 ```
 
 ### 4. Type Safety
@@ -116,7 +118,7 @@ def detect(self, image: np.ndarray) -> list[Face]:
 
 ```
 uniface/
-├── detection/      # Face detection (RetinaFace, SCRFD, YOLOv5Face, YOLOv8Face)
+├── detection/      # Face detection (CenterFace, RetinaFace, SCRFD, YOLOv5Face, YOLOv8Face)
 ├── recognition/    # Face recognition (AdaFace, ArcFace, EdgeFace, MobileFace, SphereFace)
 ├── tracking/       # Multi-object tracking (BYTETracker)
 ├── landmark/       # Dense landmarks (Landmark106 = 106 pts, PIPNet = 98 / 68 pts)

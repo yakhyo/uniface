@@ -566,7 +566,7 @@ python -c "import platform; print(platform.machine())"
 ### Import Errors
 
 ```python
-from uniface.detection import RetinaFace, SCRFD
+from uniface.detection import CenterFace, RetinaFace, SCRFD
 from uniface.recognition import ArcFace, AdaFace
 from uniface.attribute import AgeGender, FairFace
 from uniface.landmark import Landmark106, PIPNet

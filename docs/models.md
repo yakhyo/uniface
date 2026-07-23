@@ -47,6 +47,28 @@ SCRFD (Sample and Computation Redistribution for Efficient Face Detection) model
 
 ---
 
+### CenterFace
+
+CenterFace is an anchor-free detector (MobileNetV2 + FPN) that treats faces as center points, with joint 5-point landmark prediction. Trained on [WIDER FACE](datasets.md#wider-face) dataset.
+
+| Model Name | Size  | Easy   | Medium | Hard   |
+| ---------- | ----- | ------ | ------ | ------ |
+| `DEFAULT` :material-check-circle: | 7.0MB | 92.2%* | 91.1%* | 78.2%* |
+
+*\* Single inference on the original image (SIO). With multi-scale and flip testing the
+[original repo](https://github.com/Star-Clouds/CenterFace) reports 93.5% / 92.4% / 87.5%.*
+
+!!! info "Accuracy & Benchmarks"
+    **Accuracy**: WIDER FACE validation set - from [CenterFace paper](https://arxiv.org/abs/1911.03599)
+
+    **Speed**: Benchmark on your own hardware using `python tools/detect.py --source <image> --method centerface`
+
+!!! note "Input Size"
+    Input width and height must be multiples of 32 (default 640×640). The ONNX model
+    supports dynamic batch and spatial dimensions.
+
+---
+
 ### YOLOv5-Face Family
 
 YOLOv5-Face models provide detection with 5-point facial landmarks, trained on [WIDER FACE](datasets.md#wider-face) dataset.

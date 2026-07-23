@@ -14,7 +14,7 @@
 
 | Feature                     | Details                                                                                          |
 | --------------------------- | ------------------------------------------------------------------------------------------------ |
-| **Face Detection**          | RetinaFace, SCRFD, YOLOv5-Face, and YOLOv8-Face with 5-point landmarks                           |
+| **Face Detection**          | RetinaFace, SCRFD, CenterFace, YOLOv5-Face, and YOLOv8-Face with 5-point landmarks               |
 | **Face Recognition**        | AdaFace, ArcFace, EdgeFace, MobileFace, and SphereFace embeddings                                |
 | **Face Tracking**           | Multi-object tracking with [BYTETracker](https://github.com/yakhyo/bytetrack-tracker) for persistent IDs across video frames |
 | **Facial Landmarks**        | 106-point (2d106det) and 98 / 68-point (PIPNet) landmark localization (separate from the 5-point detector landmarks) |
@@ -259,7 +259,7 @@ https://yakhyo.github.io/uniface/concepts/execution-providers/
 
 | Task        | Training Dataset            | Models                                      |
 | ----------- | --------------------------- | ------------------------------------------- |
-| Detection   | WIDER FACE                  | RetinaFace, SCRFD, YOLOv5-Face, YOLOv8-Face |
+| Detection   | WIDER FACE                  | RetinaFace, SCRFD, CenterFace, YOLOv5-Face, YOLOv8-Face |
 | Recognition | MS1MV2                      | MobileFace, SphereFace                      |
 | Recognition | WebFace600K                 | ArcFace                                     |
 | Recognition | WebFace4M / 12M             | AdaFace, EdgeFace                           |
@@ -296,6 +296,7 @@ If you plan commercial use, verify model license compatibility.
 | Detection     | [retinaface-pytorch](https://github.com/yakhyo/retinaface-pytorch)                       |    ✓    | RetinaFace PyTorch Training & Export |
 | Detection     | [yolov5-face-onnx-inference](https://github.com/yakhyo/yolov5-face-onnx-inference)       |    -    | YOLOv5-Face Inference                |
 | Detection     | [yolov8-face-onnx-inference](https://github.com/yakhyo/yolov8-face-onnx-inference)       |    -    | YOLOv8-Face Inference                |
+| Detection     | [Star-Clouds/CenterFace](https://github.com/Star-Clouds/CenterFace)                      |    -    | CenterFace Original Weights          |
 | Tracking      | [bytetrack-tracker](https://github.com/yakhyo/bytetrack-tracker)                         |    -    | BYTETracker Multi-Object Tracking    |
 | Recognition   | [face-recognition](https://github.com/yakhyo/face-recognition)                           |    ✓    | MobileFace, SphereFace Training      |
 | Recognition   | [edgeface-onnx](https://github.com/yakhyo/edgeface-onnx)                                 |    -    | EdgeFace Inference                   |

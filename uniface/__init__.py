@@ -14,7 +14,7 @@
 """UniFace: A comprehensive library for face analysis.
 
 This library provides unified APIs for:
-- Face detection (RetinaFace, SCRFD, YOLOv5Face, YOLOv8Face)
+- Face detection (CenterFace, RetinaFace, SCRFD, YOLOv5Face, YOLOv8Face)
 - Face recognition (AdaFace, ArcFace, EdgeFace, MobileFace, SphereFace)
 - Face tracking (ByteTrack with Kalman filtering)
 - Facial landmarks (106 / 98 / 68-point detection: 2d106det, PIPNet)
@@ -42,7 +42,7 @@ from uniface.model_store import download_models, get_cache_dir, set_cache_dir, v
 
 from .analyzer import FaceAnalyzer
 from .attribute import AgeGender, Emotion, FaceAttribNet, FairFace
-from .detection import SCRFD, RetinaFace, YOLOv5Face, YOLOv8Face
+from .detection import SCRFD, CenterFace, RetinaFace, YOLOv5Face, YOLOv8Face
 from .gaze import MobileGaze
 from .headpose import HeadPose
 from .landmark import Landmark106, PIPNet
@@ -77,6 +77,7 @@ __all__ = [
     'Face',
     'FaceAnalyzer',
     # Detection models
+    'CenterFace',
     'RetinaFace',
     'SCRFD',
     'YOLOv5Face',
