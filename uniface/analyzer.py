@@ -8,7 +8,7 @@ from typing import Any
 
 import numpy as np
 
-from uniface.attribute.base import Attribute
+from uniface.attribute.base import BaseAttribute
 from uniface.detection.base import BaseDetector
 from uniface.log import Logger
 from uniface.recognition.base import BaseRecognizer
@@ -27,7 +27,7 @@ class FaceAnalyzer:
     and an extensible list of per-face predictors (age, gender, race,
     emotion, etc.).
 
-    Any :class:`~uniface.attribute.base.Attribute` subclass can be passed
+    Any :class:`~uniface.attribute.base.BaseAttribute` subclass can be passed
     via the ``predictors`` list.  Each predictor's ``predict(image, face)``
     is called once per detected face, enriching the :class:`Face` in-place.
 
@@ -38,7 +38,7 @@ class FaceAnalyzer:
         detector: Face detector instance. Defaults to ``SCRFD(SCRFD_500M_KPS)``.
         recognizer: Face recognizer for extracting embeddings.
             Defaults to ``ArcFace(MNET)``. Pass ``None`` to disable recognition.
-        predictors: Optional list of ``Attribute`` predictors to run on
+        predictors: Optional list of ``BaseAttribute`` predictors to run on
             each detected face (e.g. ``[AgeGender()]``).
 
     Examples:
@@ -55,7 +55,7 @@ class FaceAnalyzer:
         self,
         detector: BaseDetector | None = None,
         recognizer: BaseRecognizer | None = _UNSET,
-        predictors: list[Attribute] | None = None,
+        predictors: list[BaseAttribute] | None = None,
     ) -> None:
         if detector is None:
             from uniface.constants import SCRFDWeights
@@ -70,7 +70,7 @@ class FaceAnalyzer:
 
         self.detector = detector
         self.recognizer = recognizer
-        self.predictors: list[Attribute] = predictors or []
+        self.predictors: list[BaseAttribute] = predictors or []
 
         Logger.info(f'Initialized FaceAnalyzer with detector={detector.__class__.__name__}')
         if recognizer:

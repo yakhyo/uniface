@@ -5,7 +5,7 @@
 
 import numpy as np
 
-from uniface.attribute.base import Attribute
+from uniface.attribute.base import BaseAttribute
 from uniface.common import letterbox_resize
 from uniface.constants import FaceAttribNetWeights
 from uniface.log import Logger
@@ -16,11 +16,11 @@ from uniface.types import Face, FaceStateResult
 __all__ = ['FaceAttribNet']
 
 
-class FaceAttribNet(Attribute):
+class FaceAttribNet(BaseAttribute):
     """
     FaceAttribNet face state prediction model using ONNX Runtime.
 
-    This class inherits from the base `Attribute` class and implements the
+    This class inherits from the `BaseAttribute` base class and implements the
     functionality for predicting five independent binary face attributes from
     a face crop: left/right eye openness, eyeglasses, face mask, and
     sunglasses. It requires a bounding box to locate the face.

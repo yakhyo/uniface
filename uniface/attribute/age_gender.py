@@ -6,7 +6,7 @@
 import cv2
 import numpy as np
 
-from uniface.attribute.base import Attribute
+from uniface.attribute.base import BaseAttribute
 from uniface.constants import AgeGenderWeights
 from uniface.face_utils import bbox_center_alignment
 from uniface.log import Logger
@@ -17,11 +17,11 @@ from uniface.types import DemographyResult, Face
 __all__ = ['AgeGender']
 
 
-class AgeGender(Attribute):
+class AgeGender(BaseAttribute):
     """
     Age and gender prediction model using ONNX Runtime.
 
-    This class inherits from the base `Attribute` class and implements the
+    This class inherits from the `BaseAttribute` base class and implements the
     functionality for predicting age (in years) and gender ID (0 for Female,
     1 for Male) from a face image. It requires a bounding box to locate the face.
 

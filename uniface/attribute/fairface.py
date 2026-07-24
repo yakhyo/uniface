@@ -6,7 +6,7 @@
 import cv2
 import numpy as np
 
-from uniface.attribute.base import Attribute
+from uniface.attribute.base import BaseAttribute
 from uniface.common import softmax
 from uniface.constants import FairFaceWeights
 from uniface.log import Logger
@@ -29,11 +29,11 @@ RACE_LABELS = [
 AGE_LABELS = ['0-2', '3-9', '10-19', '20-29', '30-39', '40-49', '50-59', '60-69', '70+']
 
 
-class FairFace(Attribute):
+class FairFace(BaseAttribute):
     """
     FairFace attribute prediction model using ONNX Runtime.
 
-    This class inherits from the base `Attribute` class and implements the
+    This class inherits from the `BaseAttribute` base class and implements the
     functionality for predicting race (7 categories), gender (2 categories),
     and age (9 groups) from a face image. It requires a bounding box to locate the face.
 

@@ -11,10 +11,10 @@ import numpy as np
 
 from uniface.types import DemographyResult, EmotionResult, Face, FaceStateResult
 
-__all__ = ['Attribute', 'DemographyResult', 'EmotionResult', 'FaceStateResult']
+__all__ = ['BaseAttribute', 'DemographyResult', 'EmotionResult', 'FaceStateResult']
 
 
-class Attribute(ABC):
+class BaseAttribute(ABC):
     """Abstract base class for face attribute models.
 
     All attribute models (age-gender, emotion, FairFace, etc.) implement this

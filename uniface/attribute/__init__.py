@@ -9,7 +9,7 @@ from typing import Any
 import numpy as np
 
 from uniface.attribute.age_gender import AgeGender
-from uniface.attribute.base import Attribute
+from uniface.attribute.base import BaseAttribute
 from uniface.attribute.faceattribnet import FaceAttribNet
 from uniface.attribute.fairface import FairFace
 from uniface.types import DemographyResult, EmotionResult, Face, FaceStateResult
@@ -21,7 +21,7 @@ try:
 except ImportError:
     _EMOTION_AVAILABLE = False
 
-    class Emotion(Attribute):  # type: ignore[no-redef]
+    class Emotion(BaseAttribute):  # type: ignore[no-redef]
         """Stub for Emotion when PyTorch is not installed."""
 
         def __init__(self, *args: Any, **kwargs: Any) -> None:

@@ -7,7 +7,7 @@ import cv2
 import numpy as np
 import torch
 
-from uniface.attribute.base import Attribute
+from uniface.attribute.base import BaseAttribute
 from uniface.constants import EmotionWeights
 from uniface.face_utils import face_alignment
 from uniface.log import Logger
@@ -17,11 +17,11 @@ from uniface.types import EmotionResult, Face
 __all__ = ['Emotion']
 
 
-class Emotion(Attribute):
+class Emotion(BaseAttribute):
     """
     Emotion recognition model using a TorchScript model.
 
-    This class inherits from the base `Attribute` class and implements the
+    This class inherits from the `BaseAttribute` base class and implements the
     functionality for predicting one of several emotion categories from a face
     image. It requires 5-point facial landmarks for alignment.
     """
