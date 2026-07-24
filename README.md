@@ -16,11 +16,7 @@
     <img src="https://raw.githubusercontent.com/yakhyo/uniface/main/.github/logos/uniface_rounded_q80.webp" width="90%" alt="UniFace - A Unified Face Analysis Library for Python">
 </div>
 
----
-
 **UniFace** is a lightweight, production-ready Python library for face detection, recognition, tracking, landmark analysis, face parsing, gaze estimation, and face attributes.
-
----
 
 ## Features
 
@@ -40,8 +36,6 @@
 | **Face Quality Assessment** | eDifFIQA single-score quality (T/S/M/L, NIST FATE-Quality #1 with the L variant)                 |
 | **Face Anonymization**      | 5 blur methods for privacy protection                                                            |
 | **Hardware Acceleration**   | ARM64 (Apple Silicon), CUDA (NVIDIA), CPU                                                        |
-
----
 
 ## Visual Examples
 
@@ -74,8 +68,6 @@
     <td align="center" colspan="2"><b>Face Anonymization</b><br><img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/anonymization.jpg" width="100%"></td>
   </tr>
 </table>
-
----
 
 ## Installation
 
@@ -113,8 +105,6 @@ pip install faiss-cpu   # or faiss-gpu for CUDA
 - YOLOv5-Face and YOLOv8-Face support faster NMS with `torchvision`:
   `pip install torch torchvision` then use `nms_mode='torchvision'`
 
----
-
 ## Model Downloads and Cache
 
 Models are downloaded automatically on first use and verified via SHA-256.
@@ -133,8 +123,6 @@ print(get_cache_dir())  # /data/models
 ```bash
 export UNIFACE_CACHE_DIR=/data/models
 ```
-
----
 
 ## Quick Example (Detection)
 
@@ -155,8 +143,6 @@ for face in faces:
     print(f"BBox: {face.bbox}")
     print(f"Landmarks: {face.landmarks.shape}")
 ```
-
----
 
 ## Example (Face Analyzer)
 
@@ -189,8 +175,6 @@ for face in faces:
     print(f"{face.sex}, {face.age}y, embedding={face.embedding.shape}")
 ```
 
----
-
 ## Example (Portrait Matting)
 
 ```python
@@ -215,8 +199,6 @@ result = (image * matte_3ch + bg * (1 - matte_3ch)).astype(np.uint8)
 cv2.imwrite("green_screen.jpg", result)
 ```
 
----
-
 ## Jupyter Notebooks
 
 | Example                                                                |                                                                                         Colab                                                                                         | Description                             |
@@ -236,8 +218,6 @@ cv2.imwrite("green_screen.jpg", result)
 | [13_portrait_matting.ipynb](examples/13_portrait_matting.ipynb)         |   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/13_portrait_matting.ipynb)   | Portrait matting with MODNet            |
 | [14_face_attributes.ipynb](examples/14_face_attributes.ipynb)           |   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/14_face_attributes.ipynb)   | Face states (eyes, glasses, mask)       |
 
----
-
 ## Documentation
 
 Full documentation: https://yakhyo.github.io/uniface/
@@ -251,8 +231,6 @@ Full documentation: https://yakhyo.github.io/uniface/
 | [Guides](https://yakhyo.github.io/uniface/concepts/overview/)         | Architecture and design principles          |
 | [Datasets](https://yakhyo.github.io/uniface/datasets/)                | Training data and evaluation benchmarks     |
 
----
-
 ## Execution Providers (ONNX Runtime)
 
 ```python
@@ -264,8 +242,6 @@ detector = RetinaFace(providers=["CPUExecutionProvider"])
 
 See more in the docs:
 https://yakhyo.github.io/uniface/concepts/execution-providers/
-
----
 
 ## Datasets
 
@@ -284,8 +260,6 @@ https://yakhyo.github.io/uniface/concepts/execution-providers/
 
 > See [Datasets documentation](https://yakhyo.github.io/uniface/datasets/) for download links, benchmarks, and details.
 
----
-
 ## Licensing and Model Usage
 
 UniFace is MIT-licensed, but several pretrained models carry their own licenses.
@@ -298,8 +272,6 @@ Notable examples:
 - FaceAttribNet weights are BSD-3-Clause (© Qualcomm Technologies, Inc.)
 
 If you plan commercial use, verify model license compatibility.
-
----
 
 ## References
 
@@ -324,8 +296,6 @@ If you plan commercial use, verify model license compatibility.
 | Attributes    | [face-attribute](https://github.com/yakhyo/face-attribute)                               |    -    | FaceAttribNet Inference             |
 
 *SCRFD and ArcFace models are from [InsightFace](https://github.com/deepinsight/insightface).
-
----
 
 ## Contributing
 
