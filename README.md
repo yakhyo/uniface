@@ -16,7 +16,8 @@
     <img src="https://raw.githubusercontent.com/yakhyo/uniface/main/.github/logos/uniface_rounded_q80.webp" width="90%" alt="UniFace - A Unified Face Analysis Library for Python">
 </div>
 
-**UniFace** is a lightweight, production-ready Python library for face detection, recognition, tracking, landmark analysis, face parsing, gaze estimation, and face attributes.
+> [!NOTE]
+> **UniFace** is a lightweight, production-ready Python library for face detection, recognition, tracking, landmark analysis, face parsing, gaze estimation, and face attributes.
 
 ## Features
 
