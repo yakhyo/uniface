@@ -193,19 +193,19 @@ def bbox_center_alignment(
 def transform_points_2d(points: np.ndarray, transform: np.ndarray) -> np.ndarray:
     """Apply a 2D affine transformation to an array of 2D points.
 
-    Both inputs are coerced to contiguous ``float32`` before the transform is
-    applied; the output dtype is ``float32`` regardless of the input dtypes.
+    Both inputs are coerced to contiguous `float32` before the transform is
+    applied; the output dtype is `float32` regardless of the input dtypes.
 
     Args:
-        points: An ``(N, 2)`` array of 2D points. When ``N == 0`` the function
-            short-circuits and returns an empty ``(0, 2)`` ``float32`` array
-            without touching ``transform``.
-        transform: A ``(2, 3)`` affine transformation matrix. ``(3, 3)``
+        points: An `(N, 2)` array of 2D points. When `N == 0` the function
+            short-circuits and returns an empty `(0, 2)` `float32` array
+            without touching `transform`.
+        transform: A `(2, 3)` affine transformation matrix. `(3, 3)`
             homogeneous matrices are **not** accepted — pass only the top two
             rows.
 
     Returns:
-        Transformed ``(N, 2)`` ``float32`` array of points.
+        Transformed `(N, 2)` `float32` array of points.
     """
     if points.shape[0] == 0:
         return np.empty((0, 2), dtype=np.float32)
