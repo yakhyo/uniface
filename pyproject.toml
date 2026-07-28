@@ -116,6 +116,8 @@ select = [
     "C4",     # flake8-comprehensions
     "SIM",    # flake8-simplify
     "RUF",    # Ruff-specific rules
+    "D205",   # pydocstyle: blank line between docstring summary and description
+    "D212",   # pydocstyle: multi-line docstring summary starts on the first line
 ]
 ignore = [
     "E501",   # Line too long (handled by formatter)
