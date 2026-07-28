@@ -9,6 +9,7 @@ import numpy as np
 import pytest
 
 from uniface import compute_similarity, face_alignment
+from uniface.face_utils import estimate_norm
 
 
 @pytest.fixture
@@ -233,3 +234,36 @@ def test_compute_similarity_with_recognition_embeddings():
     # Should be a valid similarity score
     assert -1.0 <= similarity <= 1.0
     assert isinstance(similarity, float | np.floating)
+
+
+# estimate_norm landmark-count validation
+def test_estimate_norm_accepts_five_points(mock_landmarks):
+    """estimate_norm should accept the 5-point alignment template."""
+    matrix, inverse_matrix = estimate_norm(mock_landmarks)
+
+    assert matrix.shape == (2, 3)
+    assert inverse_matrix.shape == (2, 3)
+
+
+def test_estimate_norm_rejects_six_points():
+    """A 6-keypoint layout (e.g. BlazeFace) cannot be fitted to the alignment template.
+
+    Must raise ValueError, not AssertionError: asserts are stripped under `python -O`,
+    which would let the mismatch fall through to an opaque scikit-image matmul error.
+    """
+    six_points = np.zeros((6, 2), dtype=np.float32)
+
+    with pytest.raises(ValueError, match='requires 5 alignment landmarks'):
+        estimate_norm(six_points)
+
+
+def test_estimate_norm_error_names_the_constraint():
+    """The error should tell the caller which detectors are unusable and why."""
+    with pytest.raises(ValueError, match='supports_alignment'):
+        estimate_norm(np.zeros((3, 2), dtype=np.float32))
+
+
+def test_face_alignment_rejects_six_points(mock_image):
+    """The rejection should propagate through face_alignment, the public entry point."""
+    with pytest.raises(ValueError, match='requires 5 alignment landmarks'):
+        face_alignment(mock_image, np.zeros((6, 2), dtype=np.float32))

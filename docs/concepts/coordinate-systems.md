@@ -88,6 +88,16 @@ landmarks = face.landmarks  # Shape: (5, 2)
         3 ●     ● 4
 ```
 
+This ordering is the *alignment template* (`uniface.face_utils.reference_alignment`)
+that recognition, quality scoring, and XSeg parsing all require.
+
+!!! warning "BlazeFace uses a different layout"
+    `BlazeFace` returns 6 keypoints — right eye, left eye, nose tip, mouth **center**,
+    right ear tragion, left ear tragion — named from the subject's perspective, so rows
+    0/1 are still the viewer-left and viewer-right eye. With no mouth corners they
+    cannot be fitted to the template above, which is why `BlazeFace.supports_alignment`
+    is `False`.
+
 ### 106-Point Landmarks
 
 Returned by `Landmark106`:
@@ -131,6 +141,26 @@ The 98-point output follows the standard [WFLW](https://wywu.github.io/projects/
 (33 face-contour points, eyebrow/eye/nose/mouth groups). The 68-point output follows the standard
 [300W / iBUG](https://ibug.doc.ic.ac.uk/resources/300-W/) layout. Coordinates are in original-image
 pixel space, identical in convention to `Landmark106`.
+
+### 468-Point Landmarks (Face Mesh)
+
+`FaceMesh` is the only model in UniFace that returns **three** coordinates per point:
+
+```python
+from uniface import FaceMesh
+
+results = FaceMesh().predict(image, faces)
+results[0].landmarks   # Shape: (468, 3)
+```
+
+| Axis | Meaning |
+|------|---------|
+| `x`, `y` | Original-image pixel coordinates, same convention as every other landmarker |
+| `z` | **Relative** depth, on the same pixel scale as `x`/`y`. Smaller is closer to the camera |
+
+`z` has no absolute origin — it is only meaningful *within* one face, for comparing which
+features sit nearer the camera. It is not a distance measurement and is not comparable
+between faces or between images. Use `results[0].points_2d` to drop it.
 
 ---
 

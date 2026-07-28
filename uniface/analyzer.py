@@ -27,21 +27,21 @@ class FaceAnalyzer:
     and an extensible list of per-face predictors (age, gender, race,
     emotion, etc.).
 
-    Any :class:`~uniface.attribute.base.BaseAttribute` subclass can be passed
-    via the ``predictors`` list.  Each predictor's ``predict(image, face)``
-    is called once per detected face, enriching the :class:`Face` in-place.
+    Any `BaseAttribute` subclass can be passed
+    via the `predictors` list.  Each predictor's `predict(image, face)`
+    is called once per detected face, enriching the `Face` in-place.
 
     When called with no arguments, uses SCRFD (500M) for detection and
     ArcFace (MobileNet) for recognition — the smallest and fastest variants.
 
     Args:
-        detector: Face detector instance. Defaults to ``SCRFD(SCRFD_500M_KPS)``.
+        detector: Face detector instance. Defaults to `SCRFD(SCRFD_500M_KPS)`.
         recognizer: Face recognizer for extracting embeddings.
-            Defaults to ``ArcFace(MNET)``. Pass ``None`` to disable recognition.
-        predictors: Optional list of ``BaseAttribute`` predictors to run on
-            each detected face (e.g. ``[AgeGender()]``).
+            Defaults to `ArcFace(MNET)`. Pass `None` to disable recognition.
+        predictors: Optional list of `BaseAttribute` predictors to run on
+            each detected face (e.g. `[AgeGender()]`).
 
-    Examples:
+    Example:
         >>> from uniface import FaceAnalyzer
         >>> analyzer = FaceAnalyzer()
         >>> faces = analyzer.analyze(image)
@@ -62,6 +62,16 @@ class FaceAnalyzer:
             from uniface.detection import SCRFD
 
             detector = SCRFD(model_name=SCRFDWeights.SCRFD_500M_KPS)
+
+        # Checked before the _UNSET branch below so an unusable recognizer is never loaded.
+        if not getattr(detector, 'supports_alignment', True):
+            if recognizer is _UNSET or recognizer is not None:
+                Logger.warning(
+                    f'{detector.__class__.__name__} does not produce alignment landmarks; '
+                    'recognition disabled. Use SCRFD, RetinaFace, CenterFace, YOLOv5Face or '
+                    'YOLOv8Face if you need embeddings.'
+                )
+            recognizer = None
 
         if recognizer is _UNSET:
             from uniface.recognition import ArcFace

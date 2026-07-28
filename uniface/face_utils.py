@@ -36,7 +36,8 @@ def estimate_norm(
     """Estimate the normalization transformation matrix for facial landmarks.
 
     Args:
-        landmark: Array of shape (5, 2) representing the coordinates of the facial landmarks.
+        landmark: Array of shape (5, 2) holding the alignment landmarks in the order
+            left eye, right eye, nose, left mouth corner, right mouth corner.
         image_size: The size of the output image. Can be an integer (for square images)
             or a tuple (width, height). Default is 112.
 
@@ -50,7 +51,11 @@ def estimate_norm(
             or if image_size is not a multiple of 112 or 128.
     """
     if landmark.shape != (5, 2):
-        raise ValueError(f'Landmark array must have shape (5, 2), got {landmark.shape}')
+        raise ValueError(
+            f'estimate_norm requires 5 alignment landmarks, got shape {landmark.shape}. '
+            'Detectors whose supports_alignment is False (e.g. BlazeFace) cannot be used '
+            'for alignment, recognition, quality scoring, or XSeg parsing.'
+        )
 
     # Handle both int and tuple inputs
     if isinstance(image_size, tuple):

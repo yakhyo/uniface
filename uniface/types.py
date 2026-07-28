@@ -27,6 +27,7 @@ __all__ = [
     'DemographyResult',
     'EmotionResult',
     'Face',
+    'FaceMeshResult',
     'FaceStateResult',
     'GazeResult',
     'HeadPoseResult',
@@ -129,11 +130,9 @@ class DemographyResult:
         age: Exact age in years. Provided by AgeGender model, None for FairFace.
         age_group: Age range string like "20-29". Provided by FairFace, None for AgeGender.
         race: Race/ethnicity label. Provided by FairFace only.
+        sex: Read-only. Gender as a human-readable string ("Female" or "Male").
 
-    Properties:
-        sex: Gender as a human-readable string ("Female" or "Male").
-
-    Examples:
+    Example:
         >>> # AgeGender result
         >>> result = DemographyResult(gender=1, age=25)
         >>> result.sex
@@ -194,12 +193,45 @@ class FaceStateResult:
         return {f.name: getattr(self, f.name) for f in fields(self)}
 
     def labels(self, threshold: float = 0.5) -> list[str]:
-        """Return the names of attributes whose probability exceeds ``threshold``."""
+        """Return the names of attributes whose probability exceeds `threshold`."""
         return [name for name, value in self.as_dict().items() if value > threshold]
 
     def __repr__(self) -> str:
         body = ', '.join(f'{name}={value:.4f}' for name, value in self.as_dict().items())
         return f'FaceStateResult({body})'
+
+
+@dataclass(slots=True, frozen=True, eq=False)
+class FaceMeshResult:
+    """Result of dense facial landmark prediction (Face Mesh).
+
+    Note on `eq=False`: this dataclass holds a numpy array, and the generated
+    `__eq__`/`__hash__` would raise (`ValueError` on `==`, `TypeError`
+    on `hash`). Identity comparison is used instead; compare `landmarks`
+    directly with `np.allclose` if you need value semantics.
+
+    Attributes:
+        landmarks: Dense landmarks with shape (468, 3), float32. `x`/`y` are
+            in full-image pixel coordinates; `z` is relative depth on the same
+            pixel scale (smaller is closer to the camera).
+        score: Face-presence score in [0, 1].
+
+            This value saturates. The network emits a raw logit that is typically
+            20-40 for any plausible face, so after the sigmoid it is ~1.0 almost
+            always. Treat it as confirmation that the model ran, not as a
+            discriminative confidence, and do not threshold on it.
+    """
+
+    landmarks: np.ndarray
+    score: float
+
+    @property
+    def points_2d(self) -> np.ndarray:
+        """Get the landmarks without the depth component, shape (468, 2)."""
+        return self.landmarks[:, :2]
+
+    def __repr__(self) -> str:
+        return f'FaceMeshResult(landmarks={self.landmarks.shape}, score={self.score:.4f})'
 
 
 @dataclass(slots=True)
@@ -230,11 +262,9 @@ class Face:
         sunglasses: Probability sunglasses are present (optional, from FaceAttribNet).
         quality: Face image quality score in [0, 1] (optional, from eDifFIQA).
         track_id: Persistent track ID assigned by BYTETracker (optional).
-
-    Properties:
-        sex: Gender as a human-readable string ("Female" or "Male").
-        bbox_xyxy: Bounding box in (x1, y1, x2, y2) format.
-        bbox_xywh: Bounding box in (x1, y1, width, height) format.
+        sex: Read-only. Gender as a human-readable string ("Female" or "Male").
+        bbox_xyxy: Read-only. Bounding box in (x1, y1, x2, y2) format.
+        bbox_xywh: Read-only. Bounding box in (x1, y1, width, height) format.
     """
 
     # Required attributes (from detection)
@@ -259,7 +289,11 @@ class Face:
     track_id: int | None = None
 
     def compute_similarity(self, other: Face) -> float:
-        """Compute cosine similarity with another face."""
+        """Compute cosine similarity with another face.
+
+        Raises:
+            ValueError: If either face has no embedding.
+        """
         if self.embedding is None or other.embedding is None:
             raise ValueError('Both faces must have embeddings for similarity computation')
         return float(compute_similarity(self.embedding, other.embedding))

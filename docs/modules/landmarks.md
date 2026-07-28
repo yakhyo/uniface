@@ -17,9 +17,11 @@ Facial landmark detection provides precise localization of facial features.
 | **Landmark106** | 106 | 14 MB |
 | **PIPNet (WFLW-98)** | 98 | 47 MB |
 | **PIPNet (300W+CelebA-68)** | 68 | 46 MB |
+| **FaceMesh** | 468 (3D) | 2.4 MB |
 
 !!! info "5-Point Landmarks"
     Basic 5-point landmarks are included with all detection models (RetinaFace, SCRFD, YOLOv5-Face, YOLOv8-Face).
+    BlazeFace is the exception — it returns 6 MediaPipe keypoints instead; see [Detection](detection.md#blazeface).
 
 ---
 
@@ -121,6 +123,84 @@ print(landmarks.shape)  # (68, 2)
 - PIPNet uses an asymmetric crop around the bbox (+10% left / right / bottom,
   −10% top) and ImageNet normalization. This is handled internally.
 - Output landmarks are in original-image pixel coordinates as `float32`.
+
+---
+
+## Face Mesh (468 points, 3D)
+
+Google MediaPipe's dense mesh. Unlike the other landmarkers it returns **3D** points
+and a face-presence score, and it processes every face in an image in a single batched
+inference call.
+
+### Basic Usage
+
+Works with any detector — it needs a bounding box, plus the first two landmarks (the
+eyes) to align the crop:
+
+```python
+from uniface import SCRFD, FaceMesh
+
+detector, mesher = SCRFD(), FaceMesh()
+
+faces = detector.detect(image)
+results = mesher.predict(image, faces)   # one batched call for all faces
+
+results[0].landmarks.shape   # (468, 3) — x, y in image pixels; z is relative depth
+results[0].points_2d.shape   # (468, 2) — depth dropped
+results[0].score             # face presence, [0, 1]
+```
+
+Without a detector, pass boxes directly:
+
+```python
+results = mesher.predict(image, bboxes=[[x1, y1, x2, y2]])
+```
+
+### Drop-in Use
+
+`FaceMesh` implements the same interface as `Landmark106` and `PIPNet`, so it can be
+swapped into existing code that expects 2D points:
+
+```python
+landmarks = mesher.get_landmarks(image, face.bbox)   # (468, 2)
+```
+
+### MediaPipe Parity
+
+Seeding the mesh with [BlazeFace](detection.md#blazeface) — the detector MediaPipe uses
+internally — reproduces MediaPipe's own output:
+
+```python
+from uniface import BlazeFace, FaceMesh
+
+detector, mesher = BlazeFace(), FaceMesh()
+results = mesher.predict(image, detector.detect(image))
+```
+
+### Visualization
+
+```python
+from uniface.draw import draw_mesh
+
+draw_mesh(image, results[0].landmarks)                 # 'partial': contours + points
+draw_mesh(image, results[0].landmarks, mode='full')    # dense 2556-edge tessellation
+draw_mesh(image, results[0].landmarks, mode='points')  # points only
+```
+
+!!! tip "Use `partial` or `points` for video"
+    `mode='full'` issues 2556 line draws per face. It is the most detailed view but
+    noticeably slower — prefer the other two for real-time work.
+
+### Notes
+
+- The crop follows MediaPipe's ROI rule: a square region at 1.5× the detector box,
+  rotated so the eye line is horizontal. Tune it with `margin=` if the mesh clips.
+- Passing `Face` objects roll-normalizes the crop automatically. With bare `bboxes`
+  the crop is axis-aligned, which degrades the mesh on tilted heads.
+- `roi_from_box` and `warp_roi` are public, so you can build MediaPipe's video-mode
+  ROI tracking (ROI from the previous frame's mesh) on top of the model.
+- `score` saturates near 1.0 for anything plausible. It confirms the model ran; it is
+  not a discriminative confidence, so do not threshold on it.
 
 ---
 
@@ -288,7 +368,7 @@ def estimate_head_pose(landmarks, image_shape):
 
 ```python
 from uniface.constants import PIPNetWeights
-from uniface.landmark import Landmark106, PIPNet
+from uniface.landmark import FaceMesh, Landmark106, PIPNet
 
 # Default: 106-point InsightFace model
 landmarker = Landmark106()
@@ -298,6 +378,9 @@ landmarker = PIPNet()
 
 # 68-point PIPNet (300W+CelebA)
 landmarker = PIPNet(model_name=PIPNetWeights.DW300_CELEBA_68)
+
+# 468-point dense 3D mesh (MediaPipe)
+landmarker = FaceMesh()
 ```
 
 ---

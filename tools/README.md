@@ -14,11 +14,13 @@ CLI utilities for testing and running UniFace features.
 | `gaze.py` | Gaze direction estimation |
 | `headpose.py` | Head pose estimation (pitch, yaw, roll) |
 | `landmarks.py` | 106-point facial landmark detection |
+| `facemesh.py` | 468-point dense 3D face mesh (MediaPipe Face Mesh) |
 | `recognize.py` | Face embedding extraction and comparison |
 | `search.py` | Real-time face matching against reference |
 | `faiss_search.py` | FAISS index build and multi-identity face search |
 | `fairface.py` | FairFace attribute prediction (race, gender, age) |
 | `attribute.py` | Age and gender prediction |
+| `facestate.py` | Face states (eye openness, glasses, mask, sunglasses) with FaceAttribNet |
 | `spoofing.py` | Face anti-spoofing detection |
 | `quality.py` | Face image quality assessment (eDifFIQA) |
 | `parse.py` | Face semantic segmentation (BiSeNet) |
@@ -60,6 +62,11 @@ python tools/attribute.py --source 0
 python tools/emotion.py --source assets/test.jpg
 python tools/emotion.py --source 0
 
+# Face states (eye openness, glasses, mask, sunglasses)
+python tools/facestate.py --source assets/test.jpg
+python tools/facestate.py --source 0
+python tools/facestate.py --source assets/test.jpg --threshold 0.7 --margin 0.1
+
 # Gaze estimation
 python tools/gaze.py --source assets/test.jpg
 python tools/gaze.py --source 0
@@ -72,6 +79,11 @@ python tools/headpose.py --source 0 --draw-type axis
 # Landmarks
 python tools/landmarks.py --source assets/test.jpg
 python tools/landmarks.py --source 0
+
+# Face mesh (468-point dense 3D)
+python tools/facemesh.py --source assets/test.jpg
+python tools/facemesh.py --source 0 --mode points
+python tools/facemesh.py --source assets/test.jpg --detector blazeface  # MediaPipe parity
 
 # FairFace attributes
 python tools/fairface.py --source assets/test.jpg

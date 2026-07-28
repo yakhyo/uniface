@@ -26,6 +26,11 @@ from uniface.types import Face
 import numpy as np
 
 class MyDetector(BaseDetector):
+    # Set False if your landmarks are NOT the 5-point alignment template
+    # (left eye, right eye, nose, left mouth corner, right mouth corner).
+    # FaceAnalyzer then disables recognition instead of producing broken embeddings.
+    supports_alignment = True
+
     def __init__(self, model_path: str, confidence_threshold: float = 0.5):
         super().__init__(confidence_threshold=confidence_threshold)
         self.session = create_onnx_session(model_path)

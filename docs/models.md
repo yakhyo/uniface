@@ -69,6 +69,33 @@ CenterFace is an anchor-free detector (MobileNetV2 + FPN) that treats faces as c
 
 ---
 
+### BlazeFace
+
+Google MediaPipe's short-range SSD detector — the one `mp.solutions.face_mesh` runs
+internally. Pairing it with [Face Mesh](#face-mesh-468-points) reproduces MediaPipe's own output.
+
+| Model Name | Input | Keypoints | Size |
+| ---------- | ----- | --------- | ---- |
+| `DEFAULT` :material-check-circle: | 128×128 | 6 | 0.5MB |
+
+!!! warning "Not for recognition pipelines"
+    BlazeFace emits 6 MediaPipe keypoints (right eye, left eye, nose tip, mouth **center**,
+    right/left ear tragion), not the 5-point alignment template. With no mouth corners they
+    cannot drive face alignment, so `supports_alignment` is `False` and `FaceAnalyzer`
+    disables recognition for it.
+
+!!! note "Short range"
+    Tuned for faces within roughly 2m. Not benchmarked on WIDER FACE, and less accurate
+    than SCRFD or YOLOv8 on small or distant faces. Choose it for its 0.5MB footprint or
+    for MediaPipe parity.
+
+!!! info "Reference"
+    **Paper**: [BlazeFace: Sub-millisecond Neural Face Detection on Mobile GPUs](https://arxiv.org/abs/1907.05047)
+
+    **Source**: [yakhyo/mediapipe-face-mesh-onnx](https://github.com/yakhyo/mediapipe-face-mesh-onnx) — ONNX export of Google [MediaPipe](https://github.com/google-ai-edge/mediapipe)
+
+---
+
 ### YOLOv5-Face Family
 
 YOLOv5-Face models provide detection with 5-point facial landmarks, trained on [WIDER FACE](datasets.md#wider-face) dataset.
@@ -240,6 +267,32 @@ PIPNet (Pixel-in-Pixel Net) facial landmark detector. ResNet-18 backbone, 256×2
 !!! note "Auto-selected meanface"
     Both variants share the same architecture; the number of landmarks (and the matching
     meanface table) is inferred from the ONNX output channel count.
+
+---
+
+### Face Mesh (468 points)
+
+Google MediaPipe's dense mesh. The only UniFace landmarker that returns 3D points and a
+face-presence score, and the only model that batches every face of an image into one
+inference call.
+
+| Model Name | Points | Input | Size |
+| ---------- | ------ | ----- | ---- |
+| `DEFAULT` :material-check-circle: | 468 (3D) | 192×192 | 2.4MB |
+
+!!! info "Reference"
+    **Paper**: [Real-time Facial Surface Geometry from Monocular Video on Mobile GPUs](https://arxiv.org/abs/1907.06724)
+
+    **Source**: [yakhyo/mediapipe-face-mesh-onnx](https://github.com/yakhyo/mediapipe-face-mesh-onnx) — architecture recovered from Google [MediaPipe](https://github.com/google-ai-edge/mediapipe), weights via [PINTO0309's conversion](https://github.com/PINTO0309/facemesh_onnx_tensorrt)
+
+!!! note "Works with any detector"
+    Face Mesh needs a bounding box plus the first two landmarks (the eyes) to align its
+    crop. Rows 0/1 are the viewer-left and viewer-right eye in both the 5-point template
+    and BlazeFace's 6-point layout, so every UniFace detector can seed it.
+
+!!! note "Relative depth"
+    The `z` coordinate is relative depth on the same pixel scale as `x`/`y` (smaller is
+    closer). It has no absolute origin and is not comparable between faces or images.
 
 ---
 

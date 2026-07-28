@@ -14,10 +14,10 @@
 """UniFace: A comprehensive library for face analysis.
 
 This library provides unified APIs for:
-- Face detection (CenterFace, RetinaFace, SCRFD, YOLOv5Face, YOLOv8Face)
+- Face detection (BlazeFace, CenterFace, RetinaFace, SCRFD, YOLOv5Face, YOLOv8Face)
 - Face recognition (AdaFace, ArcFace, EdgeFace, MobileFace, SphereFace)
 - Face tracking (ByteTrack with Kalman filtering)
-- Facial landmarks (106 / 98 / 68-point detection: 2d106det, PIPNet)
+- Facial landmarks (106 / 98 / 68-point: 2d106det, PIPNet; 468-point dense: FaceMesh)
 - Face parsing (semantic segmentation)
 - Portrait matting (trimap-free alpha matte)
 - Gaze estimation
@@ -42,10 +42,10 @@ from uniface.model_store import download_models, get_cache_dir, set_cache_dir, v
 
 from .analyzer import FaceAnalyzer
 from .attribute import AgeGender, Emotion, FaceAttribNet, FairFace
-from .detection import SCRFD, CenterFace, RetinaFace, YOLOv5Face, YOLOv8Face
+from .detection import SCRFD, BlazeFace, CenterFace, RetinaFace, YOLOv5Face, YOLOv8Face
 from .gaze import MobileGaze
 from .headpose import HeadPose
-from .landmark import Landmark106, PIPNet
+from .landmark import FaceMesh, Landmark106, PIPNet
 from .matting import MODNet
 from .parsing import BiSeNet, XSeg
 from .privacy import BlurFace
@@ -57,6 +57,7 @@ from .types import (
     DemographyResult,
     EmotionResult,
     Face,
+    FaceMeshResult,
     FaceStateResult,
     GazeResult,
     HeadPoseResult,
@@ -77,6 +78,7 @@ __all__ = [
     'Face',
     'FaceAnalyzer',
     # Detection models
+    'BlazeFace',
     'CenterFace',
     'RetinaFace',
     'SCRFD',
@@ -89,6 +91,8 @@ __all__ = [
     'MobileFace',
     'SphereFace',
     # Landmark models
+    'FaceMesh',
+    'FaceMeshResult',
     'Landmark106',
     'PIPNet',
     # Gaze models

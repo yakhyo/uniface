@@ -22,8 +22,15 @@ from _common import get_source_type
 import cv2
 from tqdm import tqdm
 
-from uniface.constants import CenterFaceWeights, RetinaFaceWeights, SCRFDWeights, YOLOv5FaceWeights, YOLOv8FaceWeights
-from uniface.detection import SCRFD, CenterFace, RetinaFace, YOLOv5Face, YOLOv8Face
+from uniface.constants import (
+    BlazeFaceWeights,
+    CenterFaceWeights,
+    RetinaFaceWeights,
+    SCRFDWeights,
+    YOLOv5FaceWeights,
+    YOLOv8FaceWeights,
+)
+from uniface.detection import SCRFD, BlazeFace, CenterFace, RetinaFace, YOLOv5Face, YOLOv8Face
 from uniface.draw import draw_detections
 
 # detector name -> (class, weights enum, default weights)
@@ -33,6 +40,7 @@ DETECTORS = {
     'centerface': (CenterFace, CenterFaceWeights, CenterFaceWeights.DEFAULT),
     'yolov5face': (YOLOv5Face, YOLOv5FaceWeights, YOLOv5FaceWeights.YOLOV5M),
     'yolov8face': (YOLOv8Face, YOLOv8FaceWeights, YOLOv8FaceWeights.YOLOV8N),
+    'blazeface': (BlazeFace, BlazeFaceWeights, BlazeFaceWeights.DEFAULT),
 }
 
 

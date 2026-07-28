@@ -108,6 +108,22 @@ class CenterFaceWeights(str, Enum):
     DEFAULT = "centerface"
 
 
+class BlazeFaceWeights(str, Enum):
+    """BlazeFace short-range: SSD face detector on a 128x128 letterboxed image.
+
+    The detector MediaPipe's Face Mesh seeds from, reproducing its exact output.
+
+    Emits 6 keypoints (right eye, left eye, nose tip, mouth center, right ear
+    tragion, left ear tragion) rather than the 5-point alignment template, so it
+    cannot feed recognition, quality scoring, or XSeg parsing.
+
+    Short-range: tuned for faces within ~2m and weaker on WIDER FACE than
+    SCRFD/YOLOv8. Its value is 460KB and MediaPipe parity, not general detection.
+    https://github.com/yakhyo/mediapipe-face-mesh-onnx
+    """
+    DEFAULT = "blazeface"  # face_detection_short_range
+
+
 class YOLOv5FaceWeights(str, Enum):
     """Trained on WIDER FACE dataset.
 
@@ -192,6 +208,16 @@ class PIPNetWeights(str, Enum):
     """
     WFLW_98         = "pipnet_r18_wflw_98"
     DW300_CELEBA_68 = "pipnet_r18_300w_celeba_68"
+
+
+class FaceMeshWeights(str, Enum):
+    """MediaPipe Face Mesh: 468 dense 3D landmarks from a 192x192 face crop.
+
+    Architecture recovered from Google's MediaPipe; weights sourced through
+    PINTO0309's ONNX conversion. Dynamic batch dimension.
+    https://github.com/yakhyo/mediapipe-face-mesh-onnx
+    """
+    DEFAULT = "face_mesh"
 
 
 class GazeWeights(str, Enum):
@@ -397,6 +423,12 @@ MODEL_REGISTRY: dict[Enum, ModelInfo] = {
         sha256='f50be8b97eae35b969905619136765897e401171ab4f92aa2b8c9909292d2ba0'
     ),
 
+    # BlazeFace (MediaPipe short-range)
+    BlazeFaceWeights.DEFAULT: ModelInfo(
+        url='https://github.com/yakhyo/uniface/releases/download/weights/face_detection_short_range.onnx',
+        sha256='2f2689b040becf555706d2cb978d2f0e3296ea82413734fba9a856c66c5f2b17'
+    ),
+
     # YOLOv5-Face
     YOLOv5FaceWeights.YOLOV5N: ModelInfo(
         url='https://github.com/yakhyo/yolov5-face-onnx-inference/releases/download/weights/yolov5n_face.onnx',
@@ -463,6 +495,12 @@ MODEL_REGISTRY: dict[Enum, ModelInfo] = {
     PIPNetWeights.DW300_CELEBA_68: ModelInfo(
         url='https://github.com/yakhyo/pipnet-onnx/releases/download/weights/pipnet_r18_300w_celeba_68.onnx',
         sha256='63fa56fd4b8f6ccc4b88f2b36e00fa3d8c21a2c4244ab9381e8b432cef35197b'
+    ),
+
+    # Face Mesh (468 dense 3D landmarks)
+    FaceMeshWeights.DEFAULT: ModelInfo(
+        url='https://github.com/yakhyo/uniface/releases/download/weights/face_mesh_Nx3x192x192.onnx',
+        sha256='3ca77cf59c18e4da0eccb46695bf604683fa564253e3385892981a5c274fb10f'
     ),
 
     # Gaze (MobileGaze)

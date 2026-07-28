@@ -23,10 +23,10 @@
 
 | Feature                     | Details                                                                                          |
 | --------------------------- | ------------------------------------------------------------------------------------------------ |
-| **Face Detection**          | RetinaFace, SCRFD, CenterFace, YOLOv5-Face, and YOLOv8-Face with 5-point landmarks               |
+| **Face Detection**          | RetinaFace, SCRFD, CenterFace, YOLOv5-Face, and YOLOv8-Face with 5-point landmarks; BlazeFace (MediaPipe, 6 keypoints) |
 | **Face Recognition**        | AdaFace, ArcFace, EdgeFace, MobileFace, and SphereFace embeddings                                |
 | **Face Tracking**           | Multi-object tracking with [BYTETracker](https://github.com/yakhyo/bytetrack-tracker) for persistent IDs across video frames |
-| **Facial Landmarks**        | 106-point (2d106det) and 98 / 68-point (PIPNet) landmark localization (separate from the 5-point detector landmarks) |
+| **Facial Landmarks**        | 106-point (2d106det), 98 / 68-point (PIPNet), and 468-point dense 3D mesh (MediaPipe Face Mesh) — separate from the 5-point detector landmarks |
 | **Face Parsing**            | BiSeNet semantic segmentation (19 classes), XSeg face masking                                    |
 | **Portrait Matting**        | Trimap-free alpha matte with MODNet (background removal, green screen, compositing)              |
 | **Gaze Estimation**         | Real-time gaze direction with MobileGaze                                                         |
@@ -271,6 +271,7 @@ Notable examples:
 - YOLOv5-Face and YOLOv8-Face weights are GPL-3.0
 - FairFace weights are CC BY 4.0
 - FaceAttribNet weights are BSD-3-Clause (© Qualcomm Technologies, Inc.)
+- BlazeFace and Face Mesh weights are Apache-2.0 (© Google, from MediaPipe)
 
 If you plan commercial use, verify model license compatibility.
 

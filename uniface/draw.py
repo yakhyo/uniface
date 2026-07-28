@@ -24,6 +24,7 @@ __all__ = [
     'draw_head_pose',
     'draw_head_pose_axis',
     'draw_head_pose_cube',
+    'draw_mesh',
     'draw_quality_score',
     'draw_text_label',
     'draw_tracks',
@@ -111,7 +112,7 @@ def calculate_optimal_line_thickness(resolution_wh: tuple[int, int]) -> int:
     """Calculate adaptive line thickness based on image resolution.
 
     Args:
-        resolution_wh: Image resolution as ``(width, height)``.
+        resolution_wh: Image resolution as `(width, height)`.
 
     Returns:
         Recommended line thickness in pixels.
@@ -129,7 +130,7 @@ def calculate_optimal_text_scale(resolution_wh: tuple[int, int]) -> float:
     """Calculate adaptive font scale based on image resolution.
 
     Args:
-        resolution_wh: Image resolution as ``(width, height)``.
+        resolution_wh: Image resolution as `(width, height)`.
 
     Returns:
         Recommended font scale factor.
@@ -157,8 +158,8 @@ def draw_corner_bbox(
 
     Args:
         image: Input image to draw on (modified in-place).
-        bbox: Bounding box in xyxy format ``[x1, y1, x2, y2]``.
-        color: BGR color of the box. Defaults to green ``(0, 255, 0)``.
+        bbox: Bounding box in xyxy format `[x1, y1, x2, y2]`.
+        color: BGR color of the box. Defaults to green `(0, 255, 0)`.
         thickness: Thickness of corner bracket lines. Defaults to 3.
         proportion: Corner length as a fraction of the shorter side.
             Defaults to 0.2.
@@ -206,7 +207,7 @@ def draw_text_label(
         image: Input image to draw on (modified in-place).
         text: The text string to render.
         x: Left x-coordinate for the label.
-        y: Bottom y-coordinate for the label (e.g. ``bbox[1]``).
+        y: Bottom y-coordinate for the label (e.g. `bbox[1]`).
         bg_color: BGR background fill color.
         text_color: BGR text color. Defaults to white.
         font_scale: OpenCV font scale factor. Defaults to 0.5.
@@ -247,21 +248,24 @@ def draw_detections(
 
     Modifies the image in-place.
 
-    Accepts either a list of :class:`Face` objects (preferred) or separate
+    Accepts either a list of `Face` objects (preferred) or separate
     lists of bboxes, scores, and landmarks for backward compatibility.
 
     Args:
         image: Input image to draw on (modified in-place).
         faces: List of Face objects from detection. When provided,
-            ``bboxes``, ``scores``, and ``landmarks`` are ignored.
-        bboxes: List of bounding boxes in xyxy format ``[x1, y1, x2, y2]``.
+            `bboxes`, `scores`, and `landmarks` are ignored.
+        bboxes: List of bounding boxes in xyxy format `[x1, y1, x2, y2]`.
         scores: List of confidence scores.
-        landmarks: List of landmark sets with shape ``(5, 2)``.
+        landmarks: List of landmark sets with shape `(5, 2)`.
         vis_threshold: Confidence threshold for filtering. Defaults to 0.6.
         draw_score: Whether to draw confidence scores. Defaults to False.
         corner_bbox: Use corner-style bounding boxes. Defaults to True.
 
-    Examples:
+    Raises:
+        ValueError: If `faces` is None and any of `bboxes`, `scores`, or `landmarks` is missing.
+
+    Example:
         >>> draw_detections(image=image, faces=faces)
         >>> draw_detections(image=image, faces=faces, vis_threshold=0.7, draw_score=True)
     """
@@ -297,9 +301,66 @@ def draw_detections(
                 font_scale=font_scale,
             )
 
-        landmark_set = np.array(landmarks[i], dtype=np.int32)
-        for j, point in enumerate(landmark_set):
-            cv2.circle(image, tuple(point), line_thickness + 1, _LANDMARK_COLORS[j % len(_LANDMARK_COLORS)], -1)
+        if landmarks[i] is not None:
+            landmark_set = np.array(landmarks[i], dtype=np.int32)
+            for j, point in enumerate(landmark_set):
+                cv2.circle(image, tuple(point), line_thickness + 1, _LANDMARK_COLORS[j % len(_LANDMARK_COLORS)], -1)
+
+
+def draw_mesh(
+    image: np.ndarray,
+    landmarks: np.ndarray,
+    *,
+    mode: str = 'partial',
+    color: tuple[int, int, int] = (0, 255, 0),
+    point_color: tuple[int, int, int] = (0, 220, 255),
+) -> np.ndarray:
+    """Draw a dense face mesh onto an image.
+
+    Args:
+        image: Image to draw on, modified in place.
+        landmarks: Dense landmarks with shape (468, 2) or (468, 3); the depth
+            component is ignored. Typically `FaceMeshResult.landmarks`.
+        mode: What to render.
+            - `'partial'`: sparse contour edges plus every landmark point (default).
+            - `'full'`: the dense tessellation, 2556 edges. Detailed but heavy —
+              prefer `'partial'` or `'points'` for video.
+            - `'points'`: landmark points only, no edges.
+        color: Edge color in BGR.
+        point_color: Landmark point color in BGR.
+
+    Returns:
+        The annotated image (the same array that was passed in).
+
+    Raises:
+        ValueError: If `mode` is not one of the three supported values.
+
+    Example:
+        >>> results = FaceMesh().predict(image, faces)
+        >>> draw_mesh(image, results[0].landmarks)
+    """
+    if mode not in ('full', 'partial', 'points'):
+        raise ValueError(f"mode must be 'full', 'partial', or 'points', got {mode!r}")
+
+    # Imported lazily: a module-level import would pull in uniface.landmark and
+    # therefore onnxruntime, which is an optional extra. draw_mesh stays usable
+    # in a numpy/OpenCV-only environment.
+    from uniface.landmark._tessellation import FACEMESH_TESSELATION_FULL, FACEMESH_TESSELATION_PARTIAL
+
+    points = np.rint(np.asarray(landmarks)[:, :2]).astype(np.int32)
+
+    if mode in ('full', 'partial'):
+        edges = FACEMESH_TESSELATION_FULL if mode == 'full' else FACEMESH_TESSELATION_PARTIAL
+        for start_idx, end_idx in edges:
+            cv2.line(image, points[start_idx], points[end_idx], color, 1, cv2.LINE_AA)
+
+    if mode in ('partial', 'points'):
+        face_height = points[:, 1].max() - points[:, 1].min()
+        radius = max(1, round(face_height / 120))
+        for x, y in points:
+            cv2.circle(image, (x, y), radius, point_color, -1, cv2.LINE_AA)
+
+    return image
 
 
 def draw_gaze(
@@ -318,7 +379,7 @@ def draw_gaze(
 
     Args:
         image: Input image to draw on (modified in-place).
-        bbox: Face bounding box in xyxy format ``[x1, y1, x2, y2]``.
+        bbox: Face bounding box in xyxy format `[x1, y1, x2, y2]`.
         pitch: Vertical gaze angle in radians.
         yaw: Horizontal gaze angle in radians.
         draw_bbox: Whether to draw the bounding box. Defaults to True.
@@ -394,7 +455,7 @@ def draw_head_pose_cube(
         yaw: Yaw angle in degrees.
         pitch: Pitch angle in degrees.
         roll: Roll angle in degrees.
-        bbox: Bounding box as ``[x_min, y_min, x_max, y_max]``.
+        bbox: Bounding box as `[x_min, y_min, x_max, y_max]`.
         size: Cube size in pixels. If None, uses the bounding box width.
 
     Example:
@@ -476,7 +537,7 @@ def draw_head_pose_axis(
         yaw: Yaw angle in degrees.
         pitch: Pitch angle in degrees.
         roll: Roll angle in degrees.
-        bbox: Bounding box as ``[x_min, y_min, x_max, y_max]``.
+        bbox: Bounding box as `[x_min, y_min, x_max, y_max]`.
         size_ratio: Axis length as a fraction of bbox size. Defaults to 0.5.
 
     Example:
@@ -534,12 +595,12 @@ def draw_head_pose(
 
     Args:
         image: Input image to draw on (modified in-place).
-        bbox: Face bounding box in xyxy format ``[x1, y1, x2, y2]``.
+        bbox: Face bounding box in xyxy format `[x1, y1, x2, y2]`.
         pitch: Pitch angle in degrees (rotation around X-axis).
         yaw: Yaw angle in degrees (rotation around Y-axis).
         roll: Roll angle in degrees (rotation around Z-axis).
-        draw_type: Visualization type, ``'cube'`` or ``'axis'``.
-            Defaults to ``'cube'``.
+        draw_type: Visualization type, `'cube'` or `'axis'`.
+            Defaults to `'cube'`.
         draw_bbox: Whether to draw the bounding box. Defaults to False.
         corner_bbox: Use corner-style bounding box. Defaults to True.
         draw_angles: Whether to display angle values as text. Defaults to True.
@@ -601,7 +662,7 @@ def draw_quality_score(
 
     Args:
         image: Input image to draw on (modified in-place).
-        bbox: Face bounding box in xyxy format ``[x1, y1, x2, y2]``.
+        bbox: Face bounding box in xyxy format `[x1, y1, x2, y2]`.
         score: Quality score in [0, 1]. Higher = better quality.
         draw_bbox: Whether to draw the bounding box. Defaults to True.
         corner_bbox: Use corner-style bounding box. Defaults to True.
@@ -652,13 +713,13 @@ def draw_tracks(
     """Draw tracked faces with color-coded track IDs on an image.
 
     Each track ID is assigned a deterministic color for consistent visualization
-    across frames. Faces without a ``track_id`` are drawn in gray.
+    across frames. Faces without a `track_id` are drawn in gray.
 
     Modifies the image in-place.
 
     Args:
         image: Input image to draw on (modified in-place).
-        faces: List of Face objects (with ``track_id`` assigned by BYTETracker).
+        faces: List of Face objects (with `track_id` assigned by BYTETracker).
         draw_landmarks: Whether to draw facial landmarks. Defaults to True.
         draw_id: Whether to draw track ID labels. Defaults to True.
         corner_bbox: Use corner-style bounding boxes. Defaults to True.
@@ -717,8 +778,8 @@ def vis_parsing_maps(
     """Visualize face parsing segmentation mask by overlaying colored regions.
 
     Args:
-        image: Input face image in BGR format with shape ``(H, W, 3)``.
-        segmentation_mask: Segmentation mask with shape ``(H, W)`` where each
+        image: Input face image in BGR format with shape `(H, W, 3)`.
+        segmentation_mask: Segmentation mask with shape `(H, W)` where each
             pixel value represents a facial component class (0-18).
         save_image: Whether to save the visualization to disk. Defaults to False.
         save_path: Path to save the visualization if *save_image* is True.
