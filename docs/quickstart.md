@@ -504,9 +504,9 @@ For detailed model comparisons and benchmarks, see the [Model Zoo](models.md).
 
 | Task | Available Models |
 |------|------------------|
-| Detection | `RetinaFace`, `SCRFD`, `CenterFace`, `YOLOv5Face`, `YOLOv8Face` |
+| Detection | `RetinaFace`, `SCRFD`, `CenterFace`, `YOLOv5Face`, `YOLOv8Face`, `BlazeFace` (short-range, 6 keypoints) |
 | Recognition | `ArcFace`, `AdaFace`, `EdgeFace`, `MobileFace`, `SphereFace` |
-| Landmarks | `Landmark106` (106 pts), `PIPNet` (98 / 68 pts) |
+| Landmarks | `Landmark106` (106 pts), `PIPNet` (98 / 68 pts), `FaceMesh` (468 pts, 3D) |
 | Tracking | `BYTETracker` |
 | Gaze | `MobileGaze` (ResNet18/34/50, MobileNetV2, MobileOneS0) |
 | Head Pose | `HeadPose` (ResNet18/34/50, MobileNetV2/V3) |

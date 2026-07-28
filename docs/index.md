@@ -26,7 +26,7 @@ template: home.html
 
 <div class="feature-card" markdown>
 ### :material-face-recognition: Face Detection
-RetinaFace, SCRFD, CenterFace, and YOLO detectors with 5-point landmarks.
+RetinaFace, SCRFD, CenterFace, and YOLO detectors with 5-point landmarks, plus BlazeFace for short-range MediaPipe parity.
 <a class="feature-card-link" href="modules/detection/" aria-label="Face Detection"></a>
 </div>
 
@@ -38,7 +38,7 @@ AdaFace, ArcFace, EdgeFace, MobileFace, and SphereFace embeddings for identity v
 
 <div class="feature-card" markdown>
 ### :material-map-marker: Landmarks
-Dense facial landmark localization — 106-point (2d106det) and 98 / 68-point (PIPNet) variants.
+Dense facial landmark localization — 106-point (2d106det), 98 / 68-point (PIPNet), and 468-point 3D mesh (Face Mesh) variants.
 <a class="feature-card-link" href="modules/landmarks/" aria-label="Landmarks"></a>
 </div>
 

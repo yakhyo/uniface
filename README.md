@@ -218,6 +218,7 @@ cv2.imwrite("green_screen.jpg", result)
 | [12_face_recognition.ipynb](examples/12_face_recognition.ipynb)         |   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/12_face_recognition.ipynb)   | Standalone face recognition pipeline    |
 | [13_portrait_matting.ipynb](examples/13_portrait_matting.ipynb)         |   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/13_portrait_matting.ipynb)   | Portrait matting with MODNet            |
 | [14_face_attributes.ipynb](examples/14_face_attributes.ipynb)           |   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/14_face_attributes.ipynb)   | Face states (eyes, glasses, mask)       |
+| [15_face_mesh.ipynb](examples/15_face_mesh.ipynb)                       |        [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/15_face_mesh.ipynb)        | 468-point dense 3D face mesh            |
 
 ## Documentation
 
@@ -253,6 +254,8 @@ https://yakhyo.github.io/uniface/concepts/execution-providers/
 | Recognition | WebFace600K                 | ArcFace                                     |
 | Recognition | WebFace4M / 12M             | AdaFace, EdgeFace                           |
 | Landmarks   | WFLW, 300W+CelebA           | PIPNet (98 / 68 pts)                        |
+| Detection   | Proprietary (Google)        | BlazeFace (short-range)                     |
+| Landmarks   | Proprietary (Google)        | Face Mesh (468 pts)                         |
 | Gaze        | Gaze360                     | MobileGaze                                  |
 | Head Pose   | 300W-LP                     | HeadPose (ResNet, MobileNet)                |
 | Parsing     | CelebAMask-HQ               | BiSeNet                                     |
