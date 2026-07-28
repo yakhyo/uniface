@@ -43,7 +43,7 @@ class FairFace(BaseAttribute):
     Args:
         model_name (FairFaceWeights): The enum specifying the model weights to load.
             Defaults to `FairFaceWeights.DEFAULT`.
-        input_size (Optional[Tuple[int, int]]): Input size (height, width).
+        input_size (tuple[int, int] | None): Input size (height, width).
             If None, defaults to (224, 224). Defaults to None.
         providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
             the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
@@ -60,7 +60,7 @@ class FairFace(BaseAttribute):
 
         Args:
             model_name (FairFaceWeights): The enum specifying the model weights to load.
-            input_size (Optional[Tuple[int, int]]): Input size (height, width).
+            input_size (tuple[int, int] | None): Input size (height, width).
                 If None, defaults to (224, 224).
             providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
                 the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
@@ -95,7 +95,7 @@ class FairFace(BaseAttribute):
 
         Args:
             image (np.ndarray): The input image in BGR format.
-            bbox (Optional[Union[List, np.ndarray]]): Face bounding box [x1, y1, x2, y2].
+            bbox (list | np.ndarray | None): Face bounding box [x1, y1, x2, y2].
                 If None, uses the entire image.
 
         Returns:
@@ -142,7 +142,7 @@ class FairFace(BaseAttribute):
         Processes the raw model output to extract race, gender, and age.
 
         Args:
-            prediction (Tuple[np.ndarray, np.ndarray, np.ndarray]): Raw outputs from model
+            prediction (tuple[np.ndarray, np.ndarray, np.ndarray]): Raw outputs from model
                 (race_logits, gender_logits, age_logits).
 
         Returns:
@@ -174,10 +174,10 @@ class FairFace(BaseAttribute):
 
         Args:
             image: The full input image in BGR format.
-            face: Detected face; ``face.bbox`` is used for cropping.
+            face: Detected face; `face.bbox` is used for cropping.
 
         Returns:
-            ``DemographyResult`` with gender, age_group, and race.
+            `DemographyResult` with gender, age_group, and race.
         """
         input_blob = self.preprocess(image, face.bbox)
         outputs = self.session.run(self.output_names, {self.input_name: input_blob})

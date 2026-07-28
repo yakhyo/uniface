@@ -22,7 +22,7 @@ class MobileFace(BaseRecognizer):
     Args:
         model_name (MobileFaceWeights): The specific MobileFaceNet model variant to use.
             Defaults to `MobileFaceWeights.MNET_V2`.
-        preprocessing (Optional[PreprocessConfig]): An optional custom preprocessing
+        preprocessing (PreprocessConfig | None): An optional custom preprocessing
             configuration. If None, a default config for MobileFaceNet is used.
         providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
             the best available provider. Example: ['CPUExecutionProvider'] to force CPU.

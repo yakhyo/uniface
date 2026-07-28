@@ -29,7 +29,7 @@ class Landmark106(BaseLandmarker):
     Args:
         model_name (LandmarkWeights): The enum specifying the landmark model to load.
             Defaults to `LandmarkWeights.DEFAULT`.
-        input_size (Tuple[int, int]): The resolution (width, height) for the model's
+        input_size (tuple[int, int]): The resolution (width, height) for the model's
             input. Defaults to (192, 192).
         providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
             the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
@@ -100,7 +100,7 @@ class Landmark106(BaseLandmarker):
             bbox (np.ndarray): The bounding box of the face [x1, y1, x2, y2].
 
         Returns:
-            Tuple[np.ndarray, np.ndarray]: A tuple containing:
+            tuple[np.ndarray, np.ndarray]: A tuple containing:
                 - The preprocessed image blob ready for inference.
                 - The affine transformation matrix used for alignment.
         """

@@ -1,4 +1,4 @@
-# Copyright 2026 Yakhyokhuja Valikhujaev
+# Copyright 2025-2026 Yakhyokhuja Valikhujaev
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
@@ -38,7 +38,7 @@ class FaceAttribNet(BaseAttribute):
     Args:
         model_name (FaceAttribNetWeights): The enum specifying the model weights to load.
             Defaults to `FaceAttribNetWeights.DEFAULT`.
-        input_size (Optional[Tuple[int, int]]): Input size (height, width).
+        input_size (tuple[int, int] | None): Input size (height, width).
             If None, defaults to (128, 128). Defaults to None.
         margin (float): Fraction of box size to expand the face crop by on each
             side before inference. Defaults to 0.0.
@@ -58,7 +58,7 @@ class FaceAttribNet(BaseAttribute):
 
         Args:
             model_name (FaceAttribNetWeights): The enum specifying the model weights to load.
-            input_size (Optional[Tuple[int, int]]): Input size (height, width).
+            input_size (tuple[int, int] | None): Input size (height, width).
                 If None, defaults to (128, 128).
             margin (float): Fraction of box size to expand the face crop by on each side.
             providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
@@ -92,14 +92,14 @@ class FaceAttribNet(BaseAttribute):
         """
         Preprocesses the face image for inference.
 
-        Crops the face (optionally expanded by ``margin``), letterboxes it to
+        Crops the face (optionally expanded by `margin`), letterboxes it to
         the model input size with centered zero padding, and scales pixel
         values to [0, 1]. No mean/std normalization is applied here: it is
         baked into the model graph.
 
         Args:
             image (np.ndarray): The input image in BGR format.
-            bbox (Optional[Union[List, np.ndarray]]): Face bounding box [x1, y1, x2, y2].
+            bbox (list | np.ndarray | None): Face bounding box [x1, y1, x2, y2].
                 If None, uses the entire image.
 
         Returns:
@@ -151,10 +151,10 @@ class FaceAttribNet(BaseAttribute):
 
         Args:
             image: The full input image in BGR format.
-            face: Detected face; ``face.bbox`` is used for cropping.
+            face: Detected face; `face.bbox` is used for cropping.
 
         Returns:
-            ``FaceStateResult`` with the five attribute probabilities.
+            `FaceStateResult` with the five attribute probabilities.
         """
         input_blob = self.preprocess(image, face.bbox)
         outputs = self.session.run(self.output_names, {self.input_name: input_blob})

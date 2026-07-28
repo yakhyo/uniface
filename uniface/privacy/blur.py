@@ -95,7 +95,7 @@ class BlurFace:
             Defaults to 'pixelate'.
         blur_strength (float): Intensity for gaussian/elliptical/median. Defaults to 3.0.
         pixel_blocks (int): Block count for pixelate. Defaults to 10.
-        color (Tuple[int, int, int]): Fill color (BGR) for blackout. Defaults to (0, 0, 0).
+        color (tuple[int, int, int]): Fill color (BGR) for blackout. Defaults to (0, 0, 0).
         margin (int): Edge margin for elliptical. Defaults to 20.
 
     Example:
@@ -147,7 +147,7 @@ class BlurFace:
 
         Args:
             image (np.ndarray): Input image (BGR format).
-            faces (List[Dict]): Face detections with 'bbox' key containing [x1, y1, x2, y2].
+            faces (list[Face]): Face detections with 'bbox' key containing [x1, y1, x2, y2].
             inplace (bool): Modify image in-place if True. Defaults to False.
 
         Returns:

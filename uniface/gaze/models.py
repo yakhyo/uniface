@@ -37,13 +37,13 @@ class MobileGaze(BaseGazeEstimator):
         model_name (GazeWeights): The enum specifying the gaze model backbone to load.
             Options: RESNET18, RESNET34, RESNET50, MOBILENET_V2, MOBILEONE_S0.
             Defaults to `GazeWeights.RESNET18`.
-        input_size (Tuple[int, int]): The resolution (width, height) for the model's
+        input_size (tuple[int, int]): The resolution (width, height) for the model's
             input. Defaults to (448, 448).
         providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
             the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
 
     Attributes:
-        input_size (Tuple[int, int]): Model input dimensions.
+        input_size (tuple[int, int]): Model input dimensions.
         input_mean (list): Per-channel mean values for normalization (ImageNet).
         input_std (list): Per-channel std values for normalization (ImageNet).
 
@@ -184,8 +184,8 @@ class MobileGaze(BaseGazeEstimator):
             face_image (np.ndarray): A cropped face image in BGR format with shape (H, W, 3).
 
         Returns:
-            GazeResult: Estimated gaze direction containing ``pitch`` (vertical) and
-                ``yaw`` (horizontal) angles in radians.
+            GazeResult: Estimated gaze direction containing `pitch` (vertical) and
+                `yaw` (horizontal) angles in radians.
         """
         input_tensor = self.preprocess(face_image)
         outputs = self.session.run(self.output_names, {self.input_name: input_tensor})

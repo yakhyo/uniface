@@ -34,10 +34,8 @@ class BaseHeadPoseEstimator(ABC):
 
         This method should handle loading model weights, creating the
         inference session (e.g., ONNX Runtime), and any necessary
-        setup procedures to prepare the model for prediction.
-
-        Raises:
-            RuntimeError: If the model fails to load or initialize.
+        setup procedures to prepare the model for prediction. Implementations
+        raise RuntimeError if the model fails to load or initialize.
         """
         raise NotImplementedError('Subclasses must implement the _initialize_model method.')
 

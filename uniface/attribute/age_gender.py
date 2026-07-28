@@ -28,7 +28,7 @@ class AgeGender(BaseAttribute):
     Args:
         model_name (AgeGenderWeights): The enum specifying the model weights to load.
             Defaults to `AgeGenderWeights.DEFAULT`.
-        input_size (Optional[Tuple[int, int]]): Input size (height, width).
+        input_size (tuple[int, int] | None): Input size (height, width).
             If None, automatically detected from model metadata. Defaults to None.
         providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
             the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
@@ -45,7 +45,7 @@ class AgeGender(BaseAttribute):
 
         Args:
             model_name (AgeGenderWeights): The enum specifying the model weights to load.
-            input_size (Optional[Tuple[int, int]]): Input size (height, width).
+            input_size (tuple[int, int] | None): Input size (height, width).
                 If None, automatically detected from model metadata. Defaults to None.
             providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
                 the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
@@ -93,7 +93,7 @@ class AgeGender(BaseAttribute):
 
         Args:
             image (np.ndarray): The full input image in BGR format.
-            bbox (Union[List, np.ndarray]): The face bounding box coordinates [x1, y1, x2, y2].
+            bbox (list | np.ndarray): The face bounding box coordinates [x1, y1, x2, y2].
 
         Returns:
             np.ndarray: The preprocessed image blob ready for inference.
@@ -138,10 +138,10 @@ class AgeGender(BaseAttribute):
 
         Args:
             image: The full input image in BGR format.
-            face: Detected face; ``face.bbox`` is used for alignment.
+            face: Detected face; `face.bbox` is used for alignment.
 
         Returns:
-            ``DemographyResult`` with gender (0=Female, 1=Male) and age (years).
+            `DemographyResult` with gender (0=Female, 1=Male) and age (years).
         """
         face_blob = self.preprocess(image, face.bbox)
         prediction = self.session.run(self.output_names, {self.input_name: face_blob})[0][0]

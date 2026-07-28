@@ -29,10 +29,8 @@ class BaseSpoofer(ABC):
 
         This method should handle loading model weights, creating the
         inference session (e.g., ONNX Runtime), and any necessary
-        setup procedures to prepare the model for prediction.
-
-        Raises:
-            RuntimeError: If the model fails to load or initialize.
+        setup procedures to prepare the model for prediction. Implementations
+        raise RuntimeError if the model fails to load or initialize.
         """
         raise NotImplementedError('Subclasses must implement the _initialize_model method.')
 
@@ -47,7 +45,7 @@ class BaseSpoofer(ABC):
 
         Args:
             image (np.ndarray): Input image in BGR format with shape (H, W, C).
-            bbox (Union[List, np.ndarray]): Face bounding box in [x1, y1, x2, y2] format.
+            bbox (list | np.ndarray): Face bounding box in [x1, y1, x2, y2] format.
 
         Returns:
             np.ndarray: The preprocessed image tensor ready for inference,
@@ -81,7 +79,7 @@ class BaseSpoofer(ABC):
 
         Args:
             image (np.ndarray): Input image in BGR format containing the face.
-            bbox (Union[List, np.ndarray]): Face bounding box in [x1, y1, x2, y2] format.
+            bbox (list | np.ndarray): Face bounding box in [x1, y1, x2, y2] format.
                 This is typically obtained from a face detector.
 
         Returns:
@@ -104,7 +102,7 @@ class BaseSpoofer(ABC):
 
         Args:
             image (np.ndarray): Input image in BGR format.
-            bbox (Union[List, np.ndarray]): Face bounding box in [x1, y1, x2, y2] format.
+            bbox (list | np.ndarray): Face bounding box in [x1, y1, x2, y2] format.
 
         Returns:
             SpoofingResult: Result containing is_real flag and confidence score.

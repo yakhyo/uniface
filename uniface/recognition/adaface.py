@@ -29,7 +29,7 @@ class AdaFace(BaseRecognizer):
             - IR_18: Smaller model trained on WebFace4M (92 MB)
             - IR_101: Larger model trained on WebFace12M (249 MB)
             Defaults to `AdaFaceWeights.IR_18`.
-        preprocessing (Optional[PreprocessConfig]): An optional custom preprocessing
+        preprocessing (PreprocessConfig | None): An optional custom preprocessing
             configuration. If None, a default config for AdaFace is used.
         providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
             the best available provider. Example: ['CPUExecutionProvider'] to force CPU.

@@ -29,7 +29,7 @@ class EdgeFace(BaseRecognizer):
             - S_GAMMA_05: Small with LoRA (3.65M params, ~14 MB)
             - BASE: Full-size model (18.2M params, ~70 MB)
             Defaults to `EdgeFaceWeights.XXS`.
-        preprocessing (Optional[PreprocessConfig]): An optional custom preprocessing
+        preprocessing (PreprocessConfig | None): An optional custom preprocessing
             configuration. If None, a default config for EdgeFace is used.
         providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
             the best available provider. Example: ['CPUExecutionProvider'] to force CPU.

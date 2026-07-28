@@ -36,7 +36,7 @@ class Emotion(BaseAttribute):
 
         Args:
             model_name (EmotionWeights): The enum for the model weights to load.
-            input_size (Tuple[int, int]): The expected input size for the model.
+            input_size (tuple[int, int]): The expected input size for the model.
         """
         Logger.info(f'Initializing Emotion with model={model_name.name}')
 
@@ -87,7 +87,7 @@ class Emotion(BaseAttribute):
 
         Args:
             image (np.ndarray): The full input image in BGR format.
-            landmark (Union[List, np.ndarray]): The 5-point facial landmarks.
+            landmark (list | np.ndarray): The 5-point facial landmarks.
 
         Returns:
             torch.Tensor: The preprocessed image tensor ready for inference.
@@ -121,10 +121,10 @@ class Emotion(BaseAttribute):
 
         Args:
             image: The full input image in BGR format.
-            face: Detected face; ``face.landmarks`` is used for alignment.
+            face: Detected face; `face.landmarks` is used for alignment.
 
         Returns:
-            ``EmotionResult`` with emotion label and confidence score.
+            `EmotionResult` with emotion label and confidence score.
         """
         input_tensor = self.preprocess(image, face.landmarks)
         with torch.no_grad():

@@ -27,8 +27,8 @@ def get_cache_dir() -> str:
     """Get the current model cache directory path.
 
     Resolution order:
-        1. ``UNIFACE_CACHE_DIR`` environment variable (set via :func:`set_cache_dir` or directly).
-        2. Default: ``~/.uniface/models``.
+        1. `UNIFACE_CACHE_DIR` environment variable (set via `set_cache_dir` or directly).
+        2. Default: `~/.uniface/models`.
 
     Returns:
         Absolute, expanded path to the cache directory.
@@ -44,7 +44,7 @@ def get_cache_dir() -> str:
 def set_cache_dir(path: str) -> None:
     """Set the model cache directory.
 
-    This sets the ``UNIFACE_CACHE_DIR`` environment variable so that all
+    This sets the `UNIFACE_CACHE_DIR` environment variable so that all
     subsequent model downloads and lookups use the new path.
 
     Args:
@@ -76,7 +76,7 @@ def verify_model_weights(
     Args:
         model_name: Model weight identifier enum (e.g., `RetinaFaceWeights.MNET_V2`).
         root: Directory to store or locate the model weights.
-            If None, uses the cache directory from :func:`get_cache_dir`.
+            If None, uses the cache directory from `get_cache_dir`.
         timeout: Connection timeout in seconds. Defaults to 60.
         max_retries: Maximum number of download attempts. Defaults to 3.
 
@@ -137,7 +137,7 @@ def download_file(
     """Download a file with retries, streaming to a temp file and committing atomically.
 
     Bytes are written to a temp file, optionally hash-verified, then moved into
-    place with :func:`os.replace`, so ``dest_path`` is never left partial or corrupted.
+    place with `os.replace`, so `dest_path` is never left partial or corrupted.
 
     Args:
         url: URL to download from.
@@ -145,6 +145,11 @@ def download_file(
         expected_hash: Expected SHA-256 hash; if set, a mismatch triggers a retry.
         timeout: Connection timeout in seconds. Defaults to 60.
         max_retries: Maximum number of attempts. Defaults to 3.
+
+    Raises:
+        ConnectionError: If every attempt fails.
+        ValueError: If the downloaded bytes do not match `expected_hash`. Caught
+            internally and retried; it only escapes on the final attempt.
     """
     last_error = None
     dest_dir = os.path.dirname(dest_path) or '.'
@@ -213,8 +218,8 @@ def download_models(
     Args:
         model_names: List of model weight enum identifiers to download.
         max_workers: Maximum number of concurrent download threads. Defaults to
-            ``min(os.cpu_count() or 1, 8)`` (auto mode). Passing ``None`` or a
-            value ``< 1`` also selects auto mode and emits an info log line.
+            `min(os.cpu_count() or 1, 8)` (auto mode). Passing `None` or a
+            value `< 1` also selects auto mode and emits an info log line.
         timeout: Connection timeout in seconds. Defaults to 60.
         max_retries: Maximum number of attempts per model. Defaults to 3.
 
@@ -222,11 +227,11 @@ def download_models(
         Mapping of each model enum to its local file path.
 
     Raises:
-        TypeError: If ``max_workers`` is a ``bool`` or a non-int / non-None
+        TypeError: If `max_workers` is a `bool` or a non-int / non-None
             value.
         RuntimeError: If any model download or verification fails. The error
             message aggregates every failure into a single multi-line message
-            of the form ``"Failed to download N model(s):\\n<name>: <err>\\n..."``.
+            of the form `"Failed to download N model(s):\\n<name>: <err>\\n..."`.
 
     Example:
         >>> from uniface import download_models

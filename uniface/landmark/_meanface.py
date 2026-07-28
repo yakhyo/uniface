@@ -142,10 +142,10 @@ def get_meanface_info(num_lms: int, num_nb: int = 10) -> tuple[np.ndarray, np.nd
         num_nb: Neighbor count used at training time.
 
     Returns:
-        ``(reverse_index1, reverse_index2, max_len)``.
+        `(reverse_index1, reverse_index2, max_len)`.
 
     Raises:
-        ValueError: If ``num_lms`` does not match a shipped meanface table.
+        ValueError: If `num_lms` does not match a shipped meanface table.
     """
     if num_lms == 68:
         flat = MEANFACE_300W_68

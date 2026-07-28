@@ -18,9 +18,9 @@ class BaseAttribute(ABC):
     """Abstract base class for face attribute models.
 
     All attribute models (age-gender, emotion, FairFace, etc.) implement this
-    interface so they can be used interchangeably inside ``FaceAnalyzer``.
+    interface so they can be used interchangeably inside `FaceAnalyzer`.
 
-    The ``predict`` method accepts an image and a :class:`Face` object.  Each
+    The `predict` method accepts an image and a `Face` object.  Each
     subclass extracts what it needs (bbox, landmarks) from the Face, runs
     inference, writes the results back to the Face **and** returns a typed
     result dataclass.
@@ -52,7 +52,7 @@ class BaseAttribute(ABC):
             prediction: Raw output from the model.
 
         Returns:
-            An ``DemographyResult``, ``EmotionResult``, or ``FaceStateResult``.
+            An `DemographyResult`, `EmotionResult`, or `FaceStateResult`.
         """
         raise NotImplementedError('Subclasses must implement the postprocess method.')
 
@@ -60,8 +60,8 @@ class BaseAttribute(ABC):
     def predict(self, image: np.ndarray, face: Face) -> DemographyResult | EmotionResult | FaceStateResult:
         """Run end-to-end prediction and enrich the Face in-place.
 
-        Each subclass extracts what it needs from *face* (e.g. ``face.bbox``
-        or ``face.landmarks``), runs the full preprocess-infer-postprocess
+        Each subclass extracts what it needs from *face* (e.g. `face.bbox`
+        or `face.landmarks`), runs the full preprocess-infer-postprocess
         pipeline, writes relevant fields back to *face*, and returns the
         result dataclass.
 
@@ -70,10 +70,10 @@ class BaseAttribute(ABC):
             face: Detected face whose attribute fields will be populated.
 
         Returns:
-            The prediction result (``DemographyResult``, ``EmotionResult``, or ``FaceStateResult``).
+            The prediction result (`DemographyResult`, `EmotionResult`, or `FaceStateResult`).
         """
         raise NotImplementedError('Subclasses must implement the predict method.')
 
     def __call__(self, image: np.ndarray, face: Face) -> DemographyResult | EmotionResult | FaceStateResult:
-        """Callable shortcut for :meth:`predict`."""
+        """Callable shortcut for `predict`."""
         return self.predict(image, face)

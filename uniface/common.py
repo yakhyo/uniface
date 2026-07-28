@@ -65,14 +65,14 @@ def resize_image(
 
 
 def softmax(x: np.ndarray, axis: int = -1) -> np.ndarray:
-    """Compute the numerically stable softmax of an array along ``axis``.
+    """Compute the numerically stable softmax of an array along `axis`.
 
     Args:
         x: Input array.
         axis: Axis along which softmax is computed. Defaults to the last axis.
 
     Returns:
-        Array of the same shape as *x* with values in ``[0, 1]`` summing to 1
+        Array of the same shape as *x* with values in `[0, 1]` summing to 1
         along *axis*.
     """
     exp_x = np.exp(x - np.max(x, axis=axis, keepdims=True))
@@ -80,13 +80,13 @@ def softmax(x: np.ndarray, axis: int = -1) -> np.ndarray:
 
 
 def xyxy_to_cxcywh(bboxes: np.ndarray) -> np.ndarray:
-    """Convert bounding boxes from ``[x1, y1, x2, y2]`` to ``[cx, cy, w, h]``.
+    """Convert bounding boxes from `[x1, y1, x2, y2]` to `[cx, cy, w, h]`.
 
     Args:
-        bboxes: Array of shape (N, 4) or (4,) with ``[x1, y1, x2, y2]`` coordinates.
+        bboxes: Array of shape (N, 4) or (4,) with `[x1, y1, x2, y2]` coordinates.
 
     Returns:
-        Array of the same shape with ``[cx, cy, w, h]`` coordinates.
+        Array of the same shape with `[cx, cy, w, h]` coordinates.
     """
     out = np.empty_like(bboxes)
     out[..., 0] = (bboxes[..., 0] + bboxes[..., 2]) / 2  # cx

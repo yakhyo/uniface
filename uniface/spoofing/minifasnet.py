@@ -42,7 +42,7 @@ class MiniFASNet(BaseSpoofer):
         model_name (MiniFASNetWeights): The enum specifying the model variant to load.
             Options: V1SE (scale=4.0), V2 (scale=2.7).
             Defaults to `MiniFASNetWeights.V2`.
-        scale (Optional[float]): Custom crop scale factor for face region.
+        scale (float | None): Custom crop scale factor for face region.
             If None, uses the default scale for the selected model variant.
             V1SE uses 4.0, V2 uses 2.7.
         providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
@@ -50,7 +50,7 @@ class MiniFASNet(BaseSpoofer):
 
     Attributes:
         scale (float): Crop scale factor for face region extraction.
-        input_size (Tuple[int, int]): Model input dimensions (width, height).
+        input_size (tuple[int, int]): Model input dimensions (width, height).
 
     Example:
         >>> from uniface.spoofing import MiniFASNet
@@ -210,7 +210,6 @@ class MiniFASNet(BaseSpoofer):
         Returns:
             SpoofingResult: Result containing is_real flag and confidence score.
         """
-        # Preprocess
         input_tensor = self.preprocess(image, bbox)
 
         # Run inference

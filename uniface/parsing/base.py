@@ -16,10 +16,10 @@ class BaseFaceParser(ABC):
     ensuring consistency across different parsing methods. Face parsing segments a face
     image into semantic regions such as skin, eyes, nose, mouth, hair, etc.
 
-    Subclasses must define a ``mask_type`` class attribute to indicate output format:
+    Subclasses must define a `mask_type` class attribute to indicate output format:
 
-    - ``"class_ids"``: uint8 mask with discrete class labels (e.g. BiSeNet: 0-18)
-    - ``"probability"``: float32 mask with continuous values in [0, 1] (e.g. XSeg)
+    - `"class_ids"`: uint8 mask with discrete class labels (e.g. BiSeNet: 0-18)
+    - `"probability"`: float32 mask with continuous values in [0, 1] (e.g. XSeg)
 
     Attributes:
         mask_type (str): Output format identifier. Must be set by subclasses.
@@ -34,10 +34,8 @@ class BaseFaceParser(ABC):
 
         This method should handle loading model weights, creating the
         inference session (e.g., ONNX Runtime), and any necessary
-        setup procedures to prepare the model for prediction.
-
-        Raises:
-            RuntimeError: If the model fails to load or initialize.
+        setup procedures to prepare the model for prediction. Implementations
+        raise RuntimeError if the model fails to load or initialize.
         """
         raise NotImplementedError('Subclasses must implement the _initialize_model method.')
 
@@ -69,7 +67,7 @@ class BaseFaceParser(ABC):
 
         Args:
             outputs (np.ndarray): Raw outputs from the model inference.
-            original_size (Tuple[int, int]): Original image size (width, height).
+            original_size (tuple[int, int]): Original image size (width, height).
 
         Returns:
             np.ndarray: Segmentation mask with the same size as the original image.
@@ -93,10 +91,10 @@ class BaseFaceParser(ABC):
 
         Returns:
             np.ndarray: Segmentation mask with the same size as input image.
-                Format depends on ``mask_type``:
+                Format depends on `mask_type`:
 
-                - ``"class_ids"``: uint8 with discrete class labels
-                - ``"probability"``: float32 with values in [0, 1]
+                - `"class_ids"`: uint8 with discrete class labels
+                - `"probability"`: float32 with values in [0, 1]
 
         Example:
             >>> parser = BiSeNet()

@@ -159,7 +159,7 @@ class XSeg(BaseFaceParser):
         Perform face segmentation using 5-point landmarks.
 
         XSeg requires landmarks for face alignment. Unlike BiSeNet, calling
-        this method without landmarks will raise a :class:`ValueError`.
+        this method without landmarks will raise a `ValueError`.
 
         Args:
             image (np.ndarray): Input image in BGR format.
@@ -187,7 +187,6 @@ class XSeg(BaseFaceParser):
         input_tensor = self.preprocess(face_crop)
         outputs = self.session.run(self.output_names, {self.input_name: input_tensor})
 
-        # Postprocess mask
         mask = self.postprocess(outputs[0], crop_size)
 
         # Warp mask back to original image space
@@ -235,6 +234,9 @@ class XSeg(BaseFaceParser):
 
         Returns:
             Tuple of (mask, face_crop, inverse_matrix).
+
+        Raises:
+            ValueError: If `landmarks` does not have shape (5, 2).
         """
         if landmarks.shape != (5, 2):
             raise ValueError(f'Landmarks must have shape (5, 2), got {landmarks.shape}')

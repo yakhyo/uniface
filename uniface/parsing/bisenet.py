@@ -35,13 +35,13 @@ class BiSeNet(BaseFaceParser):
         model_name (ParsingWeights): The enum specifying the parsing model to load.
             Options: RESNET18, RESNET34.
             Defaults to `ParsingWeights.RESNET18`.
-        input_size (Tuple[int, int]): The resolution (width, height) for the model's
+        input_size (tuple[int, int]): The resolution (width, height) for the model's
             input. Defaults to (512, 512).
         providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
             the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
 
     Attributes:
-        input_size (Tuple[int, int]): Model input dimensions.
+        input_size (tuple[int, int]): Model input dimensions.
         input_mean (np.ndarray): Per-channel mean values for normalization (ImageNet).
         input_std (np.ndarray): Per-channel std values for normalization (ImageNet).
         mask_type (str): Output type identifier - "class_ids" for BiSeNet.
@@ -140,7 +140,7 @@ class BiSeNet(BaseFaceParser):
 
         Args:
             outputs (np.ndarray): Raw model output.
-            original_size (Tuple[int, int]): Original image size (width, height).
+            original_size (tuple[int, int]): Original image size (width, height).
 
         Returns:
             np.ndarray: Segmentation mask resized to original dimensions.
@@ -161,12 +161,12 @@ class BiSeNet(BaseFaceParser):
         running inference, and postprocessing to return the segmentation mask.
 
         BiSeNet operates on face crops and does not require landmarks.
-        The ``landmarks`` parameter is accepted for API compatibility but ignored.
+        The `landmarks` parameter is accepted for API compatibility but ignored.
 
         Args:
             image (np.ndarray): A face image in BGR format.
             landmarks (np.ndarray | None): Ignored. Accepted for interface
-                compatibility with :class:`BaseFaceParser`.
+                compatibility with `BaseFaceParser`.
 
         Returns:
             np.ndarray: Segmentation mask with the same size as input image.
