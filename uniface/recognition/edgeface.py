@@ -34,6 +34,10 @@ class EdgeFace(BaseRecognizer):
         providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
             the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
 
+    Raises:
+        ValueError: If the model weights are invalid or not found.
+        RuntimeError: If the ONNX model fails to load or initialize.
+
     Example:
         >>> from uniface.recognition import EdgeFace
         >>> recognizer = EdgeFace()

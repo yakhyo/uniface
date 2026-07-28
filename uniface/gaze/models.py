@@ -30,6 +30,10 @@ class MobileGaze(BaseGazeEstimator):
     The model outputs gaze direction as pitch (vertical) and yaw (horizontal) angles
     in radians.
 
+    Raises:
+        ValueError: If the model weights are invalid or not found.
+        RuntimeError: If the ONNX model fails to load or initialize.
+
     Reference:
         https://github.com/yakhyo/gaze-estimation
 

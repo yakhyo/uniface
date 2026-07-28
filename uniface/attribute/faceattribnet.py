@@ -44,6 +44,10 @@ class FaceAttribNet(BaseAttribute):
             side before inference. Defaults to 0.0.
         providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
             the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
+
+    Raises:
+        ValueError: If the model weights are invalid or not found.
+        RuntimeError: If the ONNX model fails to load or initialize.
     """
 
     def __init__(

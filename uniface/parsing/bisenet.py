@@ -28,6 +28,10 @@ class BiSeNet(BaseFaceParser):
     The model supports 19 facial component classes including:
     - Background, skin, eyebrows, eyes, nose, mouth, lips, ears, hair, etc.
 
+    Raises:
+        ValueError: If the model weights are invalid or not found.
+        RuntimeError: If the ONNX model fails to load or initialize.
+
     Reference:
         https://github.com/yakhyo/face-parsing
 

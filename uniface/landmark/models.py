@@ -34,6 +34,10 @@ class Landmark106(BaseLandmarker):
         providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
             the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
 
+    Raises:
+        ValueError: If the model weights are invalid or not found.
+        RuntimeError: If the ONNX model fails to load or initialize.
+
     Example:
         >>> # Assume 'image' is a loaded image and 'bbox' is a face bounding box
         >>> # bbox = [x1, y1, x2, y2]

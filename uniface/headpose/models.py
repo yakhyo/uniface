@@ -27,6 +27,10 @@ class HeadPose(BaseHeadPoseEstimator):
     Supports multiple backbone architectures: ResNet-18/34/50, MobileNetV2,
     and MobileNetV3 (small/large).
 
+    Raises:
+        ValueError: If the model weights are invalid or not found.
+        RuntimeError: If the ONNX model fails to load or initialize.
+
     Reference:
         https://github.com/yakhyo/head-pose-estimation
 

@@ -32,6 +32,10 @@ class AgeGender(BaseAttribute):
             If None, automatically detected from model metadata. Defaults to None.
         providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
             the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
+
+    Raises:
+        ValueError: If the model weights are invalid or not found.
+        RuntimeError: If the ONNX model fails to load or initialize.
     """
 
     def __init__(

@@ -41,6 +41,10 @@ class EDifFIQA(BaseQualityEstimator):
         providers: ONNX Runtime execution providers. If None, auto-detects
             the best available provider.
 
+    Raises:
+        ValueError: If the model weights are invalid or not found.
+        RuntimeError: If the ONNX model fails to load or initialize.
+
     Example:
         >>> from uniface.detection import SCRFD
         >>> from uniface.quality import EDifFIQA

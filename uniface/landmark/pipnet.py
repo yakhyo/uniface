@@ -43,6 +43,10 @@ class PIPNet(BaseLandmarker):
         providers (list[str] | None): ONNX Runtime execution providers. If None,
             auto-detects the best available provider.
 
+    Raises:
+        ValueError: If the model weights are invalid or not found.
+        RuntimeError: If the ONNX model fails to load or initialize.
+
     Example:
         >>> from uniface.landmark import PIPNet
         >>> from uniface.constants import PIPNetWeights

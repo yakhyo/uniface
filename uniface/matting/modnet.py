@@ -31,6 +31,10 @@ class MODNet(BaseMatting):
     - `PHOTOGRAPHIC`: optimized for high-quality portrait photos.
     - `WEBCAM`: optimized for real-time webcam feeds.
 
+    Raises:
+        ValueError: If the model weights are invalid or not found.
+        RuntimeError: If the ONNX model fails to load or initialize.
+
     Reference:
         Ke et al., "MODNet: Real-Time Trimap-Free Portrait Matting via
         Objective Decomposition", AAAI 2022.

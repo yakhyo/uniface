@@ -24,6 +24,10 @@ class Emotion(BaseAttribute):
     This class inherits from the `BaseAttribute` base class and implements the
     functionality for predicting one of several emotion categories from a face
     image. It requires 5-point facial landmarks for alignment.
+
+    Raises:
+        ValueError: If the model weights are invalid or not found.
+        RuntimeError: If the ONNX model fails to load or initialize.
     """
 
     def __init__(

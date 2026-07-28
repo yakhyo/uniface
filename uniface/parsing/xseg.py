@@ -25,6 +25,10 @@ class XSeg(BaseFaceParser):
     on bbox crops, XSeg requires 5-point landmarks for face alignment. The model
     uses NHWC input format and outputs values in [0, 1] range.
 
+    Raises:
+        ValueError: If the model weights are invalid or not found.
+        RuntimeError: If the ONNX model fails to load or initialize.
+
     Reference:
         https://github.com/iperov/DeepFaceLab
 

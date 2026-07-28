@@ -35,6 +35,10 @@ class MiniFASNet(BaseSpoofer):
     The model takes a face region cropped from the image using a bounding box
     and predicts whether it's a real or spoofed face.
 
+    Raises:
+        ValueError: If the model weights are invalid or not found.
+        RuntimeError: If the ONNX model fails to load or initialize.
+
     Reference:
         https://github.com/yakhyo/face-anti-spoofing
 
