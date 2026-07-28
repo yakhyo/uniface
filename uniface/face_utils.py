@@ -46,10 +46,11 @@ def estimate_norm(
             - The 2x3 inverse transformation matrix.
 
     Raises:
-        AssertionError: If the input landmark array does not have the shape (5, 2)
+        ValueError: If the input landmark array does not have the shape (5, 2),
             or if image_size is not a multiple of 112 or 128.
     """
-    assert landmark.shape == (5, 2), 'Landmark array must have shape (5, 2).'
+    if landmark.shape != (5, 2):
+        raise ValueError(f'Landmark array must have shape (5, 2), got {landmark.shape}')
 
     # Handle both int and tuple inputs
     if isinstance(image_size, tuple):
@@ -57,7 +58,8 @@ def estimate_norm(
     else:
         size = image_size
 
-    assert size % 112 == 0 or size % 128 == 0, 'Image size must be a multiple of 112 or 128.'
+    if size % 112 != 0 and size % 128 != 0:
+        raise ValueError(f'image_size must be a multiple of 112 or 128, got {size}')
 
     if size % 112 == 0:
         ratio = float(size) / 112.0
