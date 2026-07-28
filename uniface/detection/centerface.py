@@ -43,7 +43,7 @@ class CenterFace(BaseDetector):
         model_name (CenterFaceWeights): Predefined model enum. Defaults to CenterFaceWeights.DEFAULT.
         confidence_threshold (float): Confidence threshold for filtering detections. Defaults to 0.35.
         nms_threshold (float): Non-Maximum Suppression threshold. Defaults to 0.3.
-        input_size (Tuple[int, int]): Input image size (width, height). Both must be multiples of 32.
+        input_size (tuple[int, int]): Input image size (width, height). Both must be multiples of 32.
             Defaults to (640, 640).
         providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
             the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
@@ -53,7 +53,7 @@ class CenterFace(BaseDetector):
         model_name (CenterFaceWeights): Selected model variant.
         confidence_threshold (float): Threshold used to filter low-confidence detections.
         nms_threshold (float): Threshold used during NMS to suppress overlapping boxes.
-        input_size (Tuple[int, int]): Image size to which inputs are resized before inference.
+        input_size (tuple[int, int]): Image size to which inputs are resized before inference.
         _model_path (str): Absolute path to the downloaded/verified model weights.
 
     Raises:
@@ -82,8 +82,6 @@ class CenterFace(BaseDetector):
         if input_size[0] % 32 != 0 or input_size[1] % 32 != 0:
             raise ValueError(f'input_size must be a multiple of 32, got {input_size}')
 
-        self._supports_landmarks = True  # CenterFace supports landmarks
-
         self.model_name = model_name
         self.confidence_threshold = confidence_threshold
         self.nms_threshold = nms_threshold
@@ -96,11 +94,9 @@ class CenterFace(BaseDetector):
             f'nms_threshold={self.nms_threshold}, input_size={self.input_size}'
         )
 
-        # Get path to model weights
         self._model_path = verify_model_weights(self.model_name)
         Logger.info(f'Verified model weights located at: {self._model_path}')
 
-        # Initialize model
         self._initialize_model(self._model_path)
 
     def _initialize_model(self, model_path: str) -> None:
@@ -214,7 +210,7 @@ class CenterFace(BaseDetector):
                 when using the "default" metric. Defaults to 2.0.
 
         Returns:
-            List[Face]: List of Face objects, each containing:
+            list[Face]: List of Face objects, each containing:
                 - bbox (np.ndarray): Bounding box coordinates with shape (4,) as [x1, y1, x2, y2]
                 - confidence (float): Detection confidence score (0.0 to 1.0)
                 - landmarks (np.ndarray): 5-point facial landmarks with shape (5, 2)
@@ -233,7 +229,6 @@ class CenterFace(BaseDetector):
 
         image_tensor = self.preprocess(image)
 
-        # Inference
         outputs = self.inference(image_tensor)
 
         # Postprocessing

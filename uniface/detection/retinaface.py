@@ -36,7 +36,7 @@ class RetinaFace(BaseDetector):
         model_name (RetinaFaceWeights): Model weights to use. Defaults to `RetinaFaceWeights.MNET_V2`.
         confidence_threshold (float): Confidence threshold for filtering detections. Defaults to 0.5.
         nms_threshold (float): Non-maximum suppression (NMS) IoU threshold. Defaults to 0.4.
-        input_size (Tuple[int, int]): Fixed input size (width, height) if `dynamic_size=False`.
+        input_size (tuple[int, int]): Fixed input size (width, height) if `dynamic_size=False`.
             Defaults to (640, 640).
             Note: Non-default sizes may cause slower inference and CoreML compatibility issues.
         providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
@@ -53,10 +53,9 @@ class RetinaFace(BaseDetector):
         pre_nms_topk (int): Limit on proposals before applying NMS.
         post_nms_topk (int): Limit on retained detections after NMS.
         dynamic_size (bool): Flag indicating dynamic or static input sizing.
-        input_size (Tuple[int, int]): Static input size if `dynamic_size=False`.
+        input_size (tuple[int, int]): Static input size if `dynamic_size=False`.
         _model_path (str): Absolute path to the verified model weights.
         _priors (np.ndarray): Precomputed anchor boxes (if static size).
-        _supports_landmarks (bool): Indicates landmark prediction support.
 
     Raises:
         ValueError: If the model weights are invalid or not found.
@@ -81,7 +80,6 @@ class RetinaFace(BaseDetector):
             providers=providers,
             **kwargs,
         )
-        self._supports_landmarks = True  # RetinaFace supports landmarks
 
         self.model_name = model_name
         self.confidence_threshold = confidence_threshold
@@ -99,7 +97,6 @@ class RetinaFace(BaseDetector):
             f'nms_threshold={self.nms_threshold}, input_size={self.input_size}'
         )
 
-        # Get path to model weights
         self._model_path = verify_model_weights(self.model_name)
         Logger.info(f'Verified model weights located at: {self._model_path}')
 
@@ -108,7 +105,6 @@ class RetinaFace(BaseDetector):
             self._priors = generate_anchors(image_size=self.input_size)
             Logger.debug('Generated anchors for static input size.')
 
-        # Initialize model
         self._initialize_model(self._model_path)
 
     def _initialize_model(self, model_path: str) -> None:
@@ -175,7 +171,7 @@ class RetinaFace(BaseDetector):
                 when using the "default" metric. Defaults to 2.0.
 
         Returns:
-            List[Face]: List of Face objects, each containing:
+            list[Face]: List of Face objects, each containing:
                 - bbox (np.ndarray): Bounding box coordinates with shape (4,) as [x1, y1, x2, y2]
                 - confidence (float): Detection confidence score (0.0 to 1.0)
                 - landmarks (np.ndarray): 5-point facial landmarks with shape (5, 2)
@@ -202,7 +198,6 @@ class RetinaFace(BaseDetector):
         height, width, _ = image.shape
         image_tensor = self.preprocess(image)
 
-        # Inference
         outputs = self.inference(image_tensor)
 
         # Postprocessing

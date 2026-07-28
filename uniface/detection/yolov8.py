@@ -84,7 +84,6 @@ class YOLOv8Face(BaseDetector):
             providers=providers,
             **kwargs,
         )
-        self._supports_landmarks = True  # YOLOv8-Face supports landmarks
 
         # Validate input size
         if input_size != 640:
@@ -116,11 +115,9 @@ class YOLOv8Face(BaseDetector):
             f'nms_threshold={self.nms_threshold}, input_size={self.input_size}, nms_mode={self.nms_mode}'
         )
 
-        # Get path to model weights
         self._model_path = verify_model_weights(self.model_name)
         Logger.info(f'Verified model weights located at: {self._model_path}')
 
-        # Initialize model
         self._initialize_model(self._model_path)
 
     def _initialize_model(self, model_path: str) -> None:
@@ -160,7 +157,7 @@ class YOLOv8Face(BaseDetector):
             input_tensor (np.ndarray): Preprocessed input tensor.
 
         Returns:
-            List[np.ndarray]: Raw model outputs (3 feature maps).
+            list[np.ndarray]: Raw model outputs (3 feature maps).
         """
         return self.session.run(self.output_names, {self.input_names: input_tensor})
 
@@ -175,13 +172,13 @@ class YOLOv8Face(BaseDetector):
         Postprocess model predictions with DFL decoding and coordinate scaling.
 
         Args:
-            predictions (List[np.ndarray]): Raw model outputs (3 feature maps)
+            predictions (list[np.ndarray]): Raw model outputs (3 feature maps)
             scale (float): Scale ratio used in preprocessing
-            padding (Tuple[int, int]): Padding (pad_w, pad_h) used in preprocessing
-            original_shape (Tuple[int, int]): Original image shape (height, width)
+            padding (tuple[int, int]): Padding (pad_w, pad_h) used in preprocessing
+            original_shape (tuple[int, int]): Original image shape (height, width)
 
         Returns:
-            Tuple[np.ndarray, np.ndarray]: Filtered detections and landmarks
+            tuple[np.ndarray, np.ndarray]: Filtered detections and landmarks
                 - detections: [N, 5] as [x1, y1, x2, y2, conf]
                 - landmarks: [N, 5, 2] for each detection
         """
@@ -314,7 +311,7 @@ class YOLOv8Face(BaseDetector):
                 when using the "default" metric. Defaults to 2.0.
 
         Returns:
-            List[Face]: List of Face objects, each containing:
+            list[Face]: List of Face objects, each containing:
                 - bbox (np.ndarray): Bounding box coordinates with shape (4,) as [x1, y1, x2, y2]
                 - confidence (float): Detection confidence score (0.0 to 1.0)
                 - landmarks (np.ndarray): 5-point facial landmarks with shape (5, 2)
@@ -328,7 +325,6 @@ class YOLOv8Face(BaseDetector):
         """
         original_height, original_width = image.shape[:2]
 
-        # Preprocess
         image_tensor, scale, padding = self.preprocess(image)
 
         # ONNXRuntime inference
