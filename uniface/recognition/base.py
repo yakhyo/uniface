@@ -87,7 +87,9 @@ class BaseRecognizer(ABC):
             self.output_names = [output.name for output in self.session.get_outputs()]
             self.output_shape = self.session.get_outputs()[0].shape
 
-            assert len(self.output_names) == 1, 'Expected only one output node.'
+            if len(self.output_names) != 1:
+                raise ValueError(f'Expected exactly one output node, got {len(self.output_names)}: {self.output_names}')
+
             Logger.info(f'Successfully initialized face encoder from {self.model_path}')
 
         except Exception as e:
