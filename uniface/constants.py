@@ -23,16 +23,16 @@ class ModelInfo:
 
 # fmt: off
 class SphereFaceWeights(str, Enum):
-    """
-    Trained on MS1M V2 dataset with 5.8 million images of 85k identities.
+    """Trained on MS1M V2 dataset with 5.8 million images of 85k identities.
+
     https://github.com/yakhyo/face-recognition
     """
     SPHERE20      = "sphere20"
     SPHERE36      = "sphere36"
 
 class MobileFaceWeights(str, Enum):
-    """
-    Trained on MS1M V2 dataset with 5.8 million images of 85k identities.
+    """Trained on MS1M V2 dataset with 5.8 million images of 85k identities.
+
     https://github.com/yakhyo/face-recognition
     """
     MNET_025      = "mobilenetv1_025"
@@ -41,8 +41,8 @@ class MobileFaceWeights(str, Enum):
     MNET_V3_LARGE = "mobilenetv3_large"
 
 class ArcFaceWeights(str, Enum):
-    """
-    Pretrained weights from ArcFace model (insightface).
+    """Pretrained weights from ArcFace model (insightface).
+
     https://github.com/deepinsight/insightface
     """
     MNET   = "arcface_mnet"
@@ -50,16 +50,16 @@ class ArcFaceWeights(str, Enum):
 
 
 class AdaFaceWeights(str, Enum):
-    """
-    AdaFace model weights trained on WebFace datasets.
+    """AdaFace model weights trained on WebFace datasets.
+
     https://github.com/yakhyo/adaface-onnx
     """
     IR_18  = "adaface_ir_18"
     IR_101 = "adaface_ir_101"
 
 class EdgeFaceWeights(str, Enum):
-    """
-    EdgeFace: Efficient Face Recognition Model for Edge Devices.
+    """EdgeFace: Efficient Face Recognition Model for Edge Devices.
+
     Based on EdgeNeXt backbone with optional LoRA low-rank compression.
     All models output 512-D embeddings from 112x112 aligned face crops.
     https://github.com/yakhyo/edgeface-onnx
@@ -70,8 +70,8 @@ class EdgeFaceWeights(str, Enum):
     BASE        = "edgeface_base"
 
 class RetinaFaceWeights(str, Enum):
-    """
-    Trained on WIDER FACE dataset.
+    """Trained on WIDER FACE dataset.
+
     https://github.com/yakhyo/retinaface-pytorch
     """
     MNET_025 =  "retinaface_mnet025"
@@ -84,8 +84,8 @@ class RetinaFaceWeights(str, Enum):
 
 
 class SCRFDWeights(str, Enum):
-    """
-    Trained on WIDER FACE dataset.
+    """Trained on WIDER FACE dataset.
+
     https://github.com/deepinsight/insightface
     """
     SCRFD_10G_KPS  = "scrfd_10g"
@@ -93,8 +93,8 @@ class SCRFDWeights(str, Enum):
 
 
 class CenterFaceWeights(str, Enum):
-    """
-    CenterFace: Joint Face Detection and Alignment Using Face as Point.
+    """CenterFace: Joint Face Detection and Alignment Using Face as Point.
+
     Anchor-free detector (MobileNetV2 + FPN) with 5-point landmarks, trained on WIDER FACE.
     Paper: https://arxiv.org/abs/1911.03599
     Original weights: https://github.com/Star-Clouds/CenterFace
@@ -109,8 +109,8 @@ class CenterFaceWeights(str, Enum):
 
 
 class YOLOv5FaceWeights(str, Enum):
-    """
-    Trained on WIDER FACE dataset.
+    """Trained on WIDER FACE dataset.
+
     Original implementation: https://github.com/deepcam-cn/yolov5-face
     Exported to ONNX from: https://github.com/yakhyo/yolov5-face-onnx-inference
 
@@ -125,8 +125,8 @@ class YOLOv5FaceWeights(str, Enum):
 
 
 class YOLOv8FaceWeights(str, Enum):
-    """
-    YOLOv8-Face models trained on WIDER FACE dataset.
+    """YOLOv8-Face models trained on WIDER FACE dataset.
+
     Uses anchor-free design with DFL (Distribution Focal Loss) for bbox regression.
     Exported to ONNX from: https://github.com/yakhyo/yolov8-face-onnx-inference
 
@@ -139,8 +139,8 @@ class YOLOv8FaceWeights(str, Enum):
 
 
 class EmotionWeights(str, Enum):
-    """
-    DDAMFN emotion recognition models trained on AffectNet dataset.
+    """DDAMFN emotion recognition models trained on AffectNet dataset.
+
     https://github.com/SainingZhang/DDAMFN/tree/main/DDAMFN
     """
     AFFECNET7 = "affecnet7"
@@ -148,16 +148,16 @@ class EmotionWeights(str, Enum):
 
 
 class AgeGenderWeights(str, Enum):
-    """
-    Trained on CelebA dataset.
+    """Trained on CelebA dataset.
+
     https://github.com/deepinsight/insightface
     """
     DEFAULT = "age_gender"
 
 
 class FairFaceWeights(str, Enum):
-    """
-    FairFace attribute prediction (race, gender, age).
+    """FairFace attribute prediction (race, gender, age).
+
     Trained on FairFace dataset with balanced demographics.
     https://github.com/yakhyo/fairface-onnx
     """
@@ -165,8 +165,8 @@ class FairFaceWeights(str, Enum):
 
 
 class FaceAttribNetWeights(str, Enum):
-    """
-    FaceAttribNet (Qualcomm "Facial-Attribute-Detection").
+    """FaceAttribNet (Qualcomm "Facial-Attribute-Detection").
+
     Predicts five independent binary face attributes from a 128x128 face crop:
     left/right eye openness, eyeglasses, sunglasses, and face mask.
     Trained by Qualcomm on a proprietary face dataset.
@@ -177,16 +177,16 @@ class FaceAttribNetWeights(str, Enum):
 
 
 class LandmarkWeights(str, Enum):
-    """
-    MobileNet 0.5 from Insightface
+    """MobileNet 0.5 from Insightface
+
     https://github.com/deepinsight/insightface/tree/master/alignment/coordinate_reg
     """
     DEFAULT = "2d_106"
 
 
 class PIPNetWeights(str, Enum):
-    """
-    PIPNet: Pixel-in-Pixel Net for facial landmark detection.
+    """PIPNet: Pixel-in-Pixel Net for facial landmark detection.
+
     ResNet-18 backbone, 256x256 input.
     https://github.com/yakhyo/pipnet-onnx
     """
@@ -195,8 +195,8 @@ class PIPNetWeights(str, Enum):
 
 
 class GazeWeights(str, Enum):
-    """
-    MobileGaze: Real-Time Gaze Estimation models.
+    """MobileGaze: Real-Time Gaze Estimation models.
+
     Trained on Gaze360 dataset.
     https://github.com/yakhyo/gaze-estimation
     """
@@ -208,8 +208,8 @@ class GazeWeights(str, Enum):
 
 
 class HeadPoseWeights(str, Enum):
-    """
-    Head pose estimation models using 6D rotation representation.
+    """Head pose estimation models using 6D rotation representation.
+
     Trained on 300W-LP dataset, evaluated on AFLW2000.
     https://github.com/yakhyo/head-pose-estimation
     """
@@ -222,8 +222,8 @@ class HeadPoseWeights(str, Enum):
 
 
 class ParsingWeights(str, Enum):
-    """
-    Face Parsing: Semantic Segmentation of Facial Components.
+    """Face Parsing: Semantic Segmentation of Facial Components.
+
     Trained on CelebAMask-HQ dataset.
     https://github.com/yakhyo/face-parsing
     """
@@ -232,8 +232,8 @@ class ParsingWeights(str, Enum):
 
 
 class XSegWeights(str, Enum):
-    """
-    XSeg face segmentation model from DeepFaceLab.
+    """XSeg face segmentation model from DeepFaceLab.
+
     Outputs mask for face region.
     https://github.com/iperov/DeepFaceLab
     """
@@ -241,8 +241,8 @@ class XSegWeights(str, Enum):
 
 
 class MODNetWeights(str, Enum):
-    """
-    MODNet: Real-Time Trimap-Free Portrait Matting via Objective Decomposition.
+    """MODNet: Real-Time Trimap-Free Portrait Matting via Objective Decomposition.
+
     https://github.com/yakhyo/modnet
     """
     PHOTOGRAPHIC = "modnet_photographic"
@@ -250,8 +250,8 @@ class MODNetWeights(str, Enum):
 
 
 class MiniFASNetWeights(str, Enum):
-    """
-    MiniFASNet: Lightweight Face Anti-Spoofing models.
+    """MiniFASNet: Lightweight Face Anti-Spoofing models.
+
     Trained on face anti-spoofing datasets.
     https://github.com/yakhyo/face-anti-spoofing
 
@@ -264,8 +264,8 @@ class MiniFASNetWeights(str, Enum):
 
 
 class EDifFIQAWeights(str, Enum):
-    """
-    eDifFIQA: Face Image Quality Assessment.
+    """eDifFIQA: Face Image Quality Assessment.
+
     Predicts a single quality score from an aligned 112x112 face.
     Higher score = better quality.
 
