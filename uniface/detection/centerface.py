@@ -24,8 +24,7 @@ _STRIDE = 4
 
 
 class CenterFace(BaseDetector):
-    """
-    Anchor-free face detector based on the CenterFace architecture.
+    """Anchor-free face detector based on the CenterFace architecture.
 
     Title: "CenterFace: Joint Face Detection and Alignment Using Face as Point"
     Paper: https://arxiv.org/abs/1911.03599
@@ -197,8 +196,7 @@ class CenterFace(BaseDetector):
         metric: Literal['default', 'max'] = 'max',
         center_weight: float = 2.0,
     ) -> list[Face]:
-        """
-        Perform face detection on an input image and return bounding boxes and facial landmarks.
+        """Perform face detection on an input image and return bounding boxes and facial landmarks.
 
         Args:
             image (np.ndarray): Input image as a NumPy array of shape (H, W, C).

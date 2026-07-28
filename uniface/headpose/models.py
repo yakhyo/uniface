@@ -17,8 +17,7 @@ __all__ = ['HeadPose']
 
 
 class HeadPose(BaseHeadPoseEstimator):
-    """
-    Head Pose Estimation with ONNX Runtime using 6D Rotation Representation.
+    """Head Pose Estimation with ONNX Runtime using 6D Rotation Representation.
 
     This model estimates head orientation from a single face image by predicting
     a 3x3 rotation matrix (via continuous 6D representation) and converting it to
@@ -81,8 +80,7 @@ class HeadPose(BaseHeadPoseEstimator):
         self._initialize_model()
 
     def _initialize_model(self) -> None:
-        """
-        Initialize the ONNX model from the stored model path.
+        """Initialize the ONNX model from the stored model path.
 
         Raises:
             RuntimeError: If the model fails to load or initialize.
@@ -108,8 +106,7 @@ class HeadPose(BaseHeadPoseEstimator):
             raise RuntimeError(f'Failed to initialize head pose model: {e}') from e
 
     def preprocess(self, face_image: np.ndarray) -> np.ndarray:
-        """
-        Preprocess a face crop for head pose estimation.
+        """Preprocess a face crop for head pose estimation.
 
         Args:
             face_image (np.ndarray): A cropped face image in BGR format.
@@ -152,8 +149,7 @@ class HeadPose(BaseHeadPoseEstimator):
         return np.degrees(np.stack([x, y, z], axis=1))
 
     def postprocess(self, rotation_matrix: np.ndarray) -> HeadPoseResult:
-        """
-        Convert a rotation matrix into Euler angles.
+        """Convert a rotation matrix into Euler angles.
 
         Args:
             rotation_matrix: Rotation matrix with shape (B, 3, 3).
@@ -169,8 +165,7 @@ class HeadPose(BaseHeadPoseEstimator):
         )
 
     def estimate(self, face_image: np.ndarray) -> HeadPoseResult:
-        """
-        Perform end-to-end head pose estimation on a face image.
+        """Perform end-to-end head pose estimation on a face image.
 
         This method orchestrates the full pipeline: preprocessing the input,
         running inference, and postprocessing to return the head orientation.

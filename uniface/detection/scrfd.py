@@ -21,8 +21,7 @@ __all__ = ['SCRFD']
 
 
 class SCRFD(BaseDetector):
-    """
-    Face detector based on the SCRFD architecture.
+    """Face detector based on the SCRFD architecture.
 
     Title: "Sample and Computation Redistribution for Efficient Face Detection"
     Paper: https://arxiv.org/abs/2105.04714
@@ -210,8 +209,7 @@ class SCRFD(BaseDetector):
         metric: Literal['default', 'max'] = 'max',
         center_weight: float = 2.0,
     ) -> list[Face]:
-        """
-        Perform face detection on an input image and return bounding boxes and facial landmarks.
+        """Perform face detection on an input image and return bounding boxes and facial landmarks.
 
         Args:
             image (np.ndarray): Input image as a NumPy array of shape (H, W, C).

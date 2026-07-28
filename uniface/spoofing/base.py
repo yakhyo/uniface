@@ -14,8 +14,7 @@ __all__ = ['BaseSpoofer', 'SpoofingResult']
 
 
 class BaseSpoofer(ABC):
-    """
-    Abstract base class for all face anti-spoofing models.
+    """Abstract base class for all face anti-spoofing models.
 
     This class defines the common interface that all anti-spoofing models must implement,
     ensuring consistency across different spoofing detection methods. Anti-spoofing models
@@ -24,8 +23,7 @@ class BaseSpoofer(ABC):
 
     @abstractmethod
     def _initialize_model(self) -> None:
-        """
-        Initialize the underlying model for inference.
+        """Initialize the underlying model for inference.
 
         This method should handle loading model weights, creating the
         inference session (e.g., ONNX Runtime), and any necessary
@@ -36,8 +34,7 @@ class BaseSpoofer(ABC):
 
     @abstractmethod
     def preprocess(self, image: np.ndarray, bbox: list | np.ndarray) -> np.ndarray:
-        """
-        Preprocess the input image for model inference.
+        """Preprocess the input image for model inference.
 
         This method should crop the face region using the bounding box,
         resize it to the model's expected input size, and normalize
@@ -55,8 +52,7 @@ class BaseSpoofer(ABC):
 
     @abstractmethod
     def postprocess(self, outputs: np.ndarray) -> SpoofingResult:
-        """
-        Postprocess raw model outputs into prediction result.
+        """Postprocess raw model outputs into prediction result.
 
         This method takes the raw output from the model's inference and
         converts it into a SpoofingResult.
@@ -71,8 +67,7 @@ class BaseSpoofer(ABC):
 
     @abstractmethod
     def predict(self, image: np.ndarray, bbox: list | np.ndarray) -> SpoofingResult:
-        """
-        Perform end-to-end anti-spoofing prediction on a face.
+        """Perform end-to-end anti-spoofing prediction on a face.
 
         This method orchestrates the full pipeline: preprocessing the input,
         running inference, and postprocessing to return the prediction.
@@ -97,8 +92,7 @@ class BaseSpoofer(ABC):
         raise NotImplementedError('Subclasses must implement the predict method.')
 
     def __call__(self, image: np.ndarray, bbox: list | np.ndarray) -> SpoofingResult:
-        """
-        Provides a convenient, callable shortcut for the `predict` method.
+        """Provides a convenient, callable shortcut for the `predict` method.
 
         Args:
             image (np.ndarray): Input image in BGR format.

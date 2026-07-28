@@ -82,8 +82,7 @@ class XSeg(BaseFaceParser):
         self._initialize_model()
 
     def _initialize_model(self) -> None:
-        """
-        Initialize the ONNX model from the stored model path.
+        """Initialize the ONNX model from the stored model path.
 
         Raises:
             RuntimeError: If the model fails to load or initialize.
@@ -114,8 +113,7 @@ class XSeg(BaseFaceParser):
             raise RuntimeError(f'Failed to initialize XSeg model: {e}') from e
 
     def preprocess(self, face_crop: np.ndarray) -> np.ndarray:
-        """
-        Preprocess an aligned face crop for inference.
+        """Preprocess an aligned face crop for inference.
 
         Args:
             face_crop (np.ndarray): An aligned face crop in BGR format.
@@ -135,8 +133,7 @@ class XSeg(BaseFaceParser):
         return image
 
     def postprocess(self, outputs: np.ndarray, crop_size: tuple[int, int]) -> np.ndarray:
-        """
-        Postprocess model output to segmentation mask.
+        """Postprocess model output to segmentation mask.
 
         Args:
             outputs (np.ndarray): Raw model output.
@@ -159,8 +156,7 @@ class XSeg(BaseFaceParser):
         return mask
 
     def parse(self, image: np.ndarray, *, landmarks: np.ndarray | None = None) -> np.ndarray:
-        """
-        Perform face segmentation using 5-point landmarks.
+        """Perform face segmentation using 5-point landmarks.
 
         XSeg requires landmarks for face alignment. Unlike BiSeNet, calling
         this method without landmarks will raise a `ValueError`.
@@ -207,8 +203,7 @@ class XSeg(BaseFaceParser):
         return warped_mask
 
     def parse_aligned(self, face_crop: np.ndarray) -> np.ndarray:
-        """
-        Perform segmentation on an already aligned face crop.
+        """Perform segmentation on an already aligned face crop.
 
         Args:
             face_crop (np.ndarray): An aligned face crop in BGR format.
@@ -229,8 +224,7 @@ class XSeg(BaseFaceParser):
         image: np.ndarray,
         landmarks: np.ndarray,
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-        """
-        Parse face and return mask with inverse matrix for custom warping.
+        """Parse face and return mask with inverse matrix for custom warping.
 
         Args:
             image (np.ndarray): Input image in BGR format.

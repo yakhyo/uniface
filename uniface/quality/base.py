@@ -14,8 +14,7 @@ __all__ = ['BaseQualityEstimator', 'QualityResult']
 
 
 class BaseQualityEstimator(ABC):
-    """
-    Abstract base class for face image quality assessment models.
+    """Abstract base class for face image quality assessment models.
 
     Quality estimators predict a single scalar score from an aligned face crop,
     where higher values indicate better quality (sharpness, frontalness,
@@ -25,8 +24,7 @@ class BaseQualityEstimator(ABC):
 
     @abstractmethod
     def _initialize_model(self) -> None:
-        """
-        Initialize the underlying model for inference.
+        """Initialize the underlying model for inference.
 
         This method should handle loading model weights, creating the
         inference session (e.g., ONNX Runtime), and any necessary
@@ -37,8 +35,7 @@ class BaseQualityEstimator(ABC):
 
     @abstractmethod
     def preprocess(self, aligned_face: np.ndarray) -> np.ndarray:
-        """
-        Preprocess an aligned face crop for model inference.
+        """Preprocess an aligned face crop for model inference.
 
         Args:
             aligned_face: An aligned face crop in BGR format, sized to the
@@ -52,8 +49,7 @@ class BaseQualityEstimator(ABC):
 
     @abstractmethod
     def score_aligned(self, aligned_face: np.ndarray) -> QualityResult:
-        """
-        Score a pre-aligned face crop.
+        """Score a pre-aligned face crop.
 
         Use this when the input is already aligned to the model's expected
         layout (e.g., from `uniface.face_alignment`).
@@ -68,8 +64,7 @@ class BaseQualityEstimator(ABC):
 
     @abstractmethod
     def predict(self, image: np.ndarray, landmarks: np.ndarray) -> QualityResult:
-        """
-        Perform end-to-end quality estimation from a full image and landmarks.
+        """Perform end-to-end quality estimation from a full image and landmarks.
 
         Aligns the face using the provided 5-point landmarks, then scores it.
 

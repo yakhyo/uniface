@@ -8,14 +8,11 @@ import numpy as np
 
 
 class BaseLandmarker(ABC):
-    """
-    Abstract Base Class for all facial landmark models.
-    """
+    """Abstract Base Class for all facial landmark models."""
 
     @abstractmethod
     def get_landmarks(self, image: np.ndarray, bbox: np.ndarray) -> np.ndarray:
-        """
-        Predicts facial landmarks for a given face bounding box.
+        """Predicts facial landmarks for a given face bounding box.
 
         This method defines the standard interface for all landmark predictors.
         It takes a full image and a bounding box for a single face and returns

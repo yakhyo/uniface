@@ -14,8 +14,7 @@ __all__ = ['BaseGazeEstimator', 'GazeResult']
 
 
 class BaseGazeEstimator(ABC):
-    """
-    Abstract base class for all gaze estimation models.
+    """Abstract base class for all gaze estimation models.
 
     This class defines the common interface that all gaze estimators must implement,
     ensuring consistency across different gaze estimation methods. Gaze estimation
@@ -28,8 +27,7 @@ class BaseGazeEstimator(ABC):
 
     @abstractmethod
     def _initialize_model(self) -> None:
-        """
-        Initialize the underlying model for inference.
+        """Initialize the underlying model for inference.
 
         This method should handle loading model weights, creating the
         inference session (e.g., ONNX Runtime), and any necessary
@@ -40,8 +38,7 @@ class BaseGazeEstimator(ABC):
 
     @abstractmethod
     def preprocess(self, face_image: np.ndarray) -> np.ndarray:
-        """
-        Preprocess the input face image for model inference.
+        """Preprocess the input face image for model inference.
 
         This method should take a raw face crop and convert it into the format
         expected by the model's inference engine (e.g., normalized tensor).
@@ -58,8 +55,7 @@ class BaseGazeEstimator(ABC):
 
     @abstractmethod
     def postprocess(self, outputs: tuple[np.ndarray, np.ndarray]) -> GazeResult:
-        """
-        Postprocess raw model outputs into gaze angles.
+        """Postprocess raw model outputs into gaze angles.
 
         This method takes the raw output from the model's inference and
         converts it into pitch and yaw angles in radians.
@@ -75,8 +71,7 @@ class BaseGazeEstimator(ABC):
 
     @abstractmethod
     def estimate(self, face_image: np.ndarray) -> GazeResult:
-        """
-        Perform end-to-end gaze estimation on a face image.
+        """Perform end-to-end gaze estimation on a face image.
 
         This method orchestrates the full pipeline: preprocessing the input,
         running inference, and postprocessing to return the gaze direction.
@@ -99,8 +94,7 @@ class BaseGazeEstimator(ABC):
         raise NotImplementedError('Subclasses must implement the estimate method.')
 
     def __call__(self, face_image: np.ndarray) -> GazeResult:
-        """
-        Provides a convenient, callable shortcut for the `estimate` method.
+        """Provides a convenient, callable shortcut for the `estimate` method.
 
         Args:
             face_image (np.ndarray): A cropped face image in BGR format.

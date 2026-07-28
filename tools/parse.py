@@ -32,8 +32,7 @@ def expand_bbox(
     expand_ratio: float = 0.2,
     expand_top_ratio: float = 0.4,
 ) -> tuple[int, int, int, int]:
-    """
-    Expand bounding box to include full head region for face parsing.
+    """Expand bounding box to include full head region for face parsing.
 
     Face detection typically returns tight face boxes, but face parsing
     requires the full head including hair, ears, and neck.

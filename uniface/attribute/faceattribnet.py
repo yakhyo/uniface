@@ -17,8 +17,7 @@ __all__ = ['FaceAttribNet']
 
 
 class FaceAttribNet(BaseAttribute):
-    """
-    FaceAttribNet face state prediction model using ONNX Runtime.
+    """FaceAttribNet face state prediction model using ONNX Runtime.
 
     This class inherits from the `BaseAttribute` base class and implements the
     functionality for predicting five independent binary face attributes from
@@ -57,8 +56,7 @@ class FaceAttribNet(BaseAttribute):
         margin: float = 0.0,
         providers: list[str] | None = None,
     ) -> None:
-        """
-        Initializes the FaceAttribNet prediction model.
+        """Initializes the FaceAttribNet prediction model.
 
         Args:
             model_name (FaceAttribNetWeights): The enum specifying the model weights to load.
@@ -76,9 +74,7 @@ class FaceAttribNet(BaseAttribute):
         self._initialize_model()
 
     def _initialize_model(self) -> None:
-        """
-        Initializes the ONNX model and creates an inference session.
-        """
+        """Initializes the ONNX model and creates an inference session."""
         try:
             self.session = create_onnx_session(self.model_path, providers=self.providers)
             input_meta = self.session.get_inputs()[0]
@@ -93,8 +89,7 @@ class FaceAttribNet(BaseAttribute):
             raise RuntimeError(f'Failed to initialize FaceAttribNet model: {e}') from e
 
     def preprocess(self, image: np.ndarray, bbox: list | np.ndarray | None = None) -> np.ndarray:
-        """
-        Preprocesses the face image for inference.
+        """Preprocesses the face image for inference.
 
         Crops the face (optionally expanded by `margin`), letterboxes it to
         the model input size with centered zero padding, and scales pixel
@@ -132,8 +127,7 @@ class FaceAttribNet(BaseAttribute):
         return blob
 
     def postprocess(self, prediction: np.ndarray) -> FaceStateResult:
-        """
-        Processes the raw model output into per-attribute probabilities.
+        """Processes the raw model output into per-attribute probabilities.
 
         Args:
             prediction (np.ndarray): Raw model output with shape (1, 5).

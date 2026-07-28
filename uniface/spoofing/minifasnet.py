@@ -25,8 +25,7 @@ DEFAULT_SCALES = {
 
 
 class MiniFASNet(BaseSpoofer):
-    """
-    MiniFASNet: Lightweight Face Anti-Spoofing with ONNX Runtime.
+    """MiniFASNet: Lightweight Face Anti-Spoofing with ONNX Runtime.
 
     MiniFASNet is a face anti-spoofing model that detects whether a face is real
     (live person) or fake (photo, video replay, mask, etc.). It supports two model
@@ -87,8 +86,7 @@ class MiniFASNet(BaseSpoofer):
         self._initialize_model()
 
     def _initialize_model(self) -> None:
-        """
-        Initialize the ONNX model from the stored model path.
+        """Initialize the ONNX model from the stored model path.
 
         Raises:
             RuntimeError: If the model fails to load or initialize.
@@ -118,8 +116,7 @@ class MiniFASNet(BaseSpoofer):
         return [int(x1), int(y1), int(x2 - x1), int(y2 - y1)]
 
     def _crop_face(self, image: np.ndarray, bbox_xywh: list[int]) -> np.ndarray:
-        """
-        Crop and resize face region from image using scale factor.
+        """Crop and resize face region from image using scale factor.
 
         The crop is centered on the face bounding box and scaled to capture
         more context around the face, which is important for anti-spoofing.
@@ -156,8 +153,7 @@ class MiniFASNet(BaseSpoofer):
         return resized
 
     def preprocess(self, image: np.ndarray, bbox: list | np.ndarray) -> np.ndarray:
-        """
-        Preprocess the input image for model inference.
+        """Preprocess the input image for model inference.
 
         Crops the face region, converts to float32, and arranges
         dimensions for the model (NCHW format).
@@ -185,8 +181,7 @@ class MiniFASNet(BaseSpoofer):
         return face
 
     def postprocess(self, outputs: np.ndarray) -> SpoofingResult:
-        """
-        Postprocess raw model outputs into prediction result.
+        """Postprocess raw model outputs into prediction result.
 
         Applies softmax to convert logits to probabilities and
         returns the SpoofingResult with is_real flag and confidence score.
@@ -204,8 +199,7 @@ class MiniFASNet(BaseSpoofer):
         return SpoofingResult(is_real=(label_idx == 1), confidence=confidence)
 
     def predict(self, image: np.ndarray, bbox: list | np.ndarray) -> SpoofingResult:
-        """
-        Perform end-to-end anti-spoofing prediction on a face.
+        """Perform end-to-end anti-spoofing prediction on a face.
 
         Args:
             image: Input image in BGR format containing the face.

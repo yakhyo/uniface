@@ -29,8 +29,7 @@ class BaseFaceParser(ABC):
 
     @abstractmethod
     def _initialize_model(self) -> None:
-        """
-        Initialize the underlying model for inference.
+        """Initialize the underlying model for inference.
 
         This method should handle loading model weights, creating the
         inference session (e.g., ONNX Runtime), and any necessary
@@ -41,8 +40,7 @@ class BaseFaceParser(ABC):
 
     @abstractmethod
     def preprocess(self, face_image: np.ndarray) -> np.ndarray:
-        """
-        Preprocess the input face image for model inference.
+        """Preprocess the input face image for model inference.
 
         This method should take a raw face crop and convert it into the format
         expected by the model's inference engine (e.g., normalized tensor).
@@ -59,8 +57,7 @@ class BaseFaceParser(ABC):
 
     @abstractmethod
     def postprocess(self, outputs: np.ndarray, original_size: tuple[int, int]) -> np.ndarray:
-        """
-        Postprocess raw model outputs into a segmentation mask.
+        """Postprocess raw model outputs into a segmentation mask.
 
         This method takes the raw output from the model's inference and
         converts it into a segmentation mask at the original image size.
@@ -76,8 +73,7 @@ class BaseFaceParser(ABC):
 
     @abstractmethod
     def parse(self, image: np.ndarray, *, landmarks: np.ndarray | None = None) -> np.ndarray:
-        """
-        Perform end-to-end face parsing on a face image.
+        """Perform end-to-end face parsing on a face image.
 
         This method orchestrates the full pipeline: preprocessing the input,
         running inference, and postprocessing to return the segmentation mask.
@@ -105,8 +101,7 @@ class BaseFaceParser(ABC):
         raise NotImplementedError('Subclasses must implement the parse method.')
 
     def __call__(self, image: np.ndarray, *, landmarks: np.ndarray | None = None) -> np.ndarray:
-        """
-        Provides a convenient, callable shortcut for the `parse` method.
+        """Provides a convenient, callable shortcut for the `parse` method.
 
         Args:
             image (np.ndarray): A face image in BGR format.

@@ -19,8 +19,7 @@ __all__ = ['MobileGaze']
 
 
 class MobileGaze(BaseGazeEstimator):
-    """
-    MobileGaze: Real-Time Gaze Estimation with ONNX Runtime.
+    """MobileGaze: Real-Time Gaze Estimation with ONNX Runtime.
 
     MobileGaze is a gaze estimation model that predicts gaze direction from a single
     face image. It supports multiple backbone architectures including ResNet 18/34/50,
@@ -91,8 +90,7 @@ class MobileGaze(BaseGazeEstimator):
         self._initialize_model()
 
     def _initialize_model(self) -> None:
-        """
-        Initialize the ONNX model from the stored model path.
+        """Initialize the ONNX model from the stored model path.
 
         Raises:
             RuntimeError: If the model fails to load or initialize.
@@ -120,8 +118,7 @@ class MobileGaze(BaseGazeEstimator):
             raise RuntimeError(f'Failed to initialize gaze model: {e}') from e
 
     def preprocess(self, face_image: np.ndarray) -> np.ndarray:
-        """
-        Preprocess a face crop for gaze estimation.
+        """Preprocess a face crop for gaze estimation.
 
         Args:
             face_image (np.ndarray): A cropped face image in BGR format.
@@ -148,8 +145,7 @@ class MobileGaze(BaseGazeEstimator):
         return image
 
     def postprocess(self, outputs: tuple[np.ndarray, np.ndarray]) -> GazeResult:
-        """
-        Postprocess raw model outputs into gaze angles.
+        """Postprocess raw model outputs into gaze angles.
 
         This method takes the raw output from the model's inference and
         converts it into pitch and yaw angles in radians.
@@ -178,8 +174,7 @@ class MobileGaze(BaseGazeEstimator):
         return GazeResult(pitch=pitch, yaw=yaw)
 
     def estimate(self, face_image: np.ndarray) -> GazeResult:
-        """
-        Perform end-to-end gaze estimation on a face image.
+        """Perform end-to-end gaze estimation on a face image.
 
         This method orchestrates the full pipeline: preprocessing the input,
         running inference, and postprocessing to return the gaze direction.

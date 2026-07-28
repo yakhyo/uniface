@@ -30,8 +30,7 @@ AGE_LABELS = ['0-2', '3-9', '10-19', '20-29', '30-39', '40-49', '50-59', '60-69'
 
 
 class FairFace(BaseAttribute):
-    """
-    FairFace attribute prediction model using ONNX Runtime.
+    """FairFace attribute prediction model using ONNX Runtime.
 
     This class inherits from the `BaseAttribute` base class and implements the
     functionality for predicting race (7 categories), gender (2 categories),
@@ -59,8 +58,7 @@ class FairFace(BaseAttribute):
         input_size: tuple[int, int] | None = None,
         providers: list[str] | None = None,
     ) -> None:
-        """
-        Initializes the FairFace prediction model.
+        """Initializes the FairFace prediction model.
 
         Args:
             model_name (FairFaceWeights): The enum specifying the model weights to load.
@@ -76,9 +74,7 @@ class FairFace(BaseAttribute):
         self._initialize_model()
 
     def _initialize_model(self) -> None:
-        """
-        Initializes the ONNX model and creates an inference session.
-        """
+        """Initializes the ONNX model and creates an inference session."""
         try:
             self.session = create_onnx_session(self.model_path, providers=self.providers)
             # Get model input details from the loaded model
@@ -94,8 +90,7 @@ class FairFace(BaseAttribute):
             raise RuntimeError(f'Failed to initialize FairFace model: {e}') from e
 
     def preprocess(self, image: np.ndarray, bbox: list | np.ndarray | None = None) -> np.ndarray:
-        """
-        Preprocesses the face image for inference.
+        """Preprocesses the face image for inference.
 
         Args:
             image (np.ndarray): The input image in BGR format.
@@ -142,8 +137,7 @@ class FairFace(BaseAttribute):
         return image
 
     def postprocess(self, prediction: tuple[np.ndarray, np.ndarray, np.ndarray]) -> DemographyResult:
-        """
-        Processes the raw model output to extract race, gender, and age.
+        """Processes the raw model output to extract race, gender, and age.
 
         Args:
             prediction (tuple[np.ndarray, np.ndarray, np.ndarray]): Raw outputs from model

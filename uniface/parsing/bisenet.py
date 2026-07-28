@@ -87,8 +87,7 @@ class BiSeNet(BaseFaceParser):
         self._initialize_model()
 
     def _initialize_model(self) -> None:
-        """
-        Initialize the ONNX model from the stored model path.
+        """Initialize the ONNX model from the stored model path.
 
         Raises:
             RuntimeError: If the model fails to load or initialize.
@@ -113,8 +112,7 @@ class BiSeNet(BaseFaceParser):
             raise RuntimeError(f'Failed to initialize parsing model: {e}') from e
 
     def preprocess(self, face_image: np.ndarray) -> np.ndarray:
-        """
-        Preprocess a face image for parsing.
+        """Preprocess a face image for parsing.
 
         Args:
             face_image (np.ndarray): A face image in BGR format.
@@ -139,8 +137,7 @@ class BiSeNet(BaseFaceParser):
         return image
 
     def postprocess(self, outputs: np.ndarray, original_size: tuple[int, int]) -> np.ndarray:
-        """
-        Postprocess model output to segmentation mask.
+        """Postprocess model output to segmentation mask.
 
         Args:
             outputs (np.ndarray): Raw model output.
@@ -158,8 +155,7 @@ class BiSeNet(BaseFaceParser):
         return restored_mask
 
     def parse(self, image: np.ndarray, *, landmarks: np.ndarray | None = None) -> np.ndarray:
-        """
-        Perform end-to-end face parsing on a face image.
+        """Perform end-to-end face parsing on a face image.
 
         This method orchestrates the full pipeline: preprocessing the input,
         running inference, and postprocessing to return the segmentation mask.

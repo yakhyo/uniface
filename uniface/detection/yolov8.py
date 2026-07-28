@@ -28,8 +28,7 @@ __all__ = ['YOLOv8Face']
 
 
 class YOLOv8Face(BaseDetector):
-    """
-    Face detector based on the YOLOv8-Face architecture.
+    """Face detector based on the YOLOv8-Face architecture.
 
     Uses anchor-free design with DFL (Distribution Focal Loss) for bbox regression.
     Outputs 3 feature maps at different scales for multi-scale detection.
@@ -121,8 +120,7 @@ class YOLOv8Face(BaseDetector):
         self._initialize_model(self._model_path)
 
     def _initialize_model(self, model_path: str) -> None:
-        """
-        Initializes an ONNX model session from the given path.
+        """Initializes an ONNX model session from the given path.
 
         Args:
             model_path (str): The file path to the ONNX model.
@@ -168,8 +166,7 @@ class YOLOv8Face(BaseDetector):
         padding: tuple[int, int],
         original_shape: tuple[int, int],
     ) -> tuple[np.ndarray, np.ndarray]:
-        """
-        Postprocess model predictions with DFL decoding and coordinate scaling.
+        """Postprocess model predictions with DFL decoding and coordinate scaling.
 
         Args:
             predictions (list[np.ndarray]): Raw model outputs (3 feature maps)
@@ -298,8 +295,7 @@ class YOLOv8Face(BaseDetector):
         metric: Literal['default', 'max'] = 'max',
         center_weight: float = 2.0,
     ) -> list[Face]:
-        """
-        Perform face detection on an input image and return bounding boxes and facial landmarks.
+        """Perform face detection on an input image and return bounding boxes and facial landmarks.
 
         Args:
             image (np.ndarray): Input image as a NumPy array of shape (H, W, C) in BGR format.

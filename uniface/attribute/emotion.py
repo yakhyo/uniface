@@ -18,8 +18,7 @@ __all__ = ['Emotion']
 
 
 class Emotion(BaseAttribute):
-    """
-    Emotion recognition model using a TorchScript model.
+    """Emotion recognition model using a TorchScript model.
 
     This class inherits from the `BaseAttribute` base class and implements the
     functionality for predicting one of several emotion categories from a face
@@ -35,8 +34,7 @@ class Emotion(BaseAttribute):
         model_name: EmotionWeights = EmotionWeights.AFFECNET7,
         input_size: tuple[int, int] = (112, 112),
     ) -> None:
-        """
-        Initializes the emotion recognition model.
+        """Initializes the emotion recognition model.
 
         Args:
             model_name (EmotionWeights): The enum for the model weights to load.
@@ -70,9 +68,7 @@ class Emotion(BaseAttribute):
         self._initialize_model()
 
     def _initialize_model(self) -> None:
-        """
-        Loads and initializes the TorchScript model for inference.
-        """
+        """Loads and initializes the TorchScript model for inference."""
         try:
             self.model = torch.jit.load(self.model_path, map_location=self.device)
             self.model.eval()
@@ -86,8 +82,7 @@ class Emotion(BaseAttribute):
             raise RuntimeError(f'Failed to initialize Emotion model: {e}') from e
 
     def preprocess(self, image: np.ndarray, landmark: list | np.ndarray) -> torch.Tensor:
-        """
-        Aligns the face using landmarks and preprocesses it into a tensor.
+        """Aligns the face using landmarks and preprocesses it into a tensor.
 
         Args:
             image (np.ndarray): The full input image in BGR format.
@@ -111,9 +106,7 @@ class Emotion(BaseAttribute):
         return torch.from_numpy(transposed_image).unsqueeze(0).to(self.device)
 
     def postprocess(self, prediction: torch.Tensor) -> EmotionResult:
-        """
-        Processes the raw model output to get the emotion label and confidence score.
-        """
+        """Processes the raw model output to get the emotion label and confidence score."""
         probabilities = torch.nn.functional.softmax(prediction, dim=1).squeeze().cpu().numpy()
         pred_index = np.argmax(probabilities)
         emotion_label = self.emotion_labels[pred_index]

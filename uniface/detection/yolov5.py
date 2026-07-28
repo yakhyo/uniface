@@ -28,8 +28,7 @@ __all__ = ['YOLOv5Face']
 
 
 class YOLOv5Face(BaseDetector):
-    """
-    Face detector based on the YOLOv5-Face architecture.
+    """Face detector based on the YOLOv5-Face architecture.
 
     Title: "YOLO5Face: Why Reinventing a Face Detector"
     Paper: https://arxiv.org/abs/2105.12931
@@ -117,8 +116,7 @@ class YOLOv5Face(BaseDetector):
         self._initialize_model(self._model_path)
 
     def _initialize_model(self, model_path: str) -> None:
-        """
-        Initializes an ONNX model session from the given path.
+        """Initializes an ONNX model session from the given path.
 
         Args:
             model_path (str): The file path to the ONNX model.
@@ -163,8 +161,7 @@ class YOLOv5Face(BaseDetector):
         scale: float,
         padding: tuple[int, int],
     ) -> tuple[np.ndarray, np.ndarray]:
-        """
-        Postprocess model predictions.
+        """Postprocess model predictions.
 
         Args:
             predictions (np.ndarray): Raw model output
@@ -236,8 +233,7 @@ class YOLOv5Face(BaseDetector):
         return detections, landmarks
 
     def _xywh2xyxy(self, x: np.ndarray) -> np.ndarray:
-        """
-        Convert bounding box format from xywh to xyxy.
+        """Convert bounding box format from xywh to xyxy.
 
         Args:
             x (np.ndarray): Boxes in [x, y, w, h] format
@@ -260,8 +256,7 @@ class YOLOv5Face(BaseDetector):
         metric: Literal['default', 'max'] = 'max',
         center_weight: float = 2.0,
     ) -> list[Face]:
-        """
-        Perform face detection on an input image and return bounding boxes and facial landmarks.
+        """Perform face detection on an input image and return bounding boxes and facial landmarks.
 
         Args:
             image (np.ndarray): Input image as a NumPy array of shape (H, W, C).

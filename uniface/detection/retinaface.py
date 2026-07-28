@@ -25,8 +25,7 @@ from .base import BaseDetector
 
 
 class RetinaFace(BaseDetector):
-    """
-    Face detector based on the RetinaFace architecture.
+    """Face detector based on the RetinaFace architecture.
 
     Title: "RetinaFace: Single-stage Dense Face Localisation in the Wild"
     Paper: https://arxiv.org/abs/1905.00641
@@ -158,8 +157,7 @@ class RetinaFace(BaseDetector):
         metric: Literal['default', 'max'] = 'max',
         center_weight: float = 2.0,
     ) -> list[Face]:
-        """
-        Perform face detection on an input image and return bounding boxes and facial landmarks.
+        """Perform face detection on an input image and return bounding boxes and facial landmarks.
 
         Args:
             image (np.ndarray): Input image as a NumPy array of shape (H, W, C).

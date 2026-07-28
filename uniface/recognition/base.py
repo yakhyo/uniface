@@ -33,8 +33,8 @@ class PreprocessConfig:
 
 
 class BaseRecognizer(ABC):
-    """
-    Abstract Base Class for all face recognition models.
+    """Abstract Base Class for all face recognition models.
+
     It provides the core functionality for preprocessing, inference, and embedding extraction.
     """
 
@@ -45,8 +45,7 @@ class BaseRecognizer(ABC):
         preprocessing: PreprocessConfig,
         providers: list[str] | None = None,
     ) -> None:
-        """
-        Initializes the model. Subclasses must call this.
+        """Initializes the model. Subclasses must call this.
 
         Args:
             model_path (str): The direct path to the verified ONNX model.
@@ -63,8 +62,7 @@ class BaseRecognizer(ABC):
         self._initialize_model()
 
     def _initialize_model(self) -> None:
-        """
-        Loads the ONNX model and prepares it for inference.
+        """Loads the ONNX model and prepares it for inference.
 
         Raises:
             RuntimeError: If the model fails to load or initialize.
@@ -100,8 +98,7 @@ class BaseRecognizer(ABC):
             raise RuntimeError(f"Failed to initialize model session for '{self.model_path}'") from e
 
     def preprocess(self, face_img: np.ndarray) -> np.ndarray:
-        """
-        Preprocess the image: resize, normalize, and convert it to a blob.
+        """Preprocess the image: resize, normalize, and convert it to a blob.
 
         Args:
             face_img: Input image in BGR format.

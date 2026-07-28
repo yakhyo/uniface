@@ -18,8 +18,7 @@ __all__ = ['AgeGender']
 
 
 class AgeGender(BaseAttribute):
-    """
-    Age and gender prediction model using ONNX Runtime.
+    """Age and gender prediction model using ONNX Runtime.
 
     This class inherits from the `BaseAttribute` base class and implements the
     functionality for predicting age (in years) and gender ID (0 for Female,
@@ -44,8 +43,7 @@ class AgeGender(BaseAttribute):
         input_size: tuple[int, int] | None = None,
         providers: list[str] | None = None,
     ) -> None:
-        """
-        Initializes the AgeGender prediction model.
+        """Initializes the AgeGender prediction model.
 
         Args:
             model_name (AgeGenderWeights): The enum specifying the model weights to load.
@@ -61,9 +59,7 @@ class AgeGender(BaseAttribute):
         self._initialize_model()
 
     def _initialize_model(self) -> None:
-        """
-        Initializes the ONNX model and creates an inference session.
-        """
+        """Initializes the ONNX model and creates an inference session."""
         try:
             self.session = create_onnx_session(self.model_path, providers=self.providers)
             # Get model input details from the loaded model
@@ -92,8 +88,7 @@ class AgeGender(BaseAttribute):
             raise RuntimeError(f'Failed to initialize AgeGender model: {e}') from e
 
     def preprocess(self, image: np.ndarray, bbox: list | np.ndarray) -> np.ndarray:
-        """
-        Aligns the face based on the bounding box and preprocesses it for inference.
+        """Aligns the face based on the bounding box and preprocesses it for inference.
 
         Args:
             image (np.ndarray): The full input image in BGR format.
@@ -122,8 +117,7 @@ class AgeGender(BaseAttribute):
         return blob
 
     def postprocess(self, prediction: np.ndarray) -> DemographyResult:
-        """
-        Processes the raw model output to extract gender and age.
+        """Processes the raw model output to extract gender and age.
 
         Args:
             prediction (np.ndarray): The raw output from the model inference.
