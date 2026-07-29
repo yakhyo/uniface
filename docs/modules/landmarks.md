@@ -17,7 +17,8 @@ Facial landmark detection provides precise localization of facial features.
 | **Landmark106** | 106 | 14 MB |
 | **PIPNet (WFLW-98)** | 98 | 47 MB |
 | **PIPNet (300W+CelebA-68)** | 68 | 46 MB |
-| **FaceMesh** | 468 (3D) | 2.4 MB |
+| **FaceMesh** (`V1_468`) | 468 (3D) | 2.4 MB |
+| **FaceMesh** (`V2_478`) | 478 (3D, with irises) | 4.6 MB |
 
 !!! info "5-Point Landmarks"
     Basic 5-point landmarks are included with all detection models (RetinaFace, SCRFD, YOLOv5-Face, YOLOv8-Face).
@@ -126,7 +127,7 @@ print(landmarks.shape)  # (68, 2)
 
 ---
 
-## Face Mesh (468 points, 3D)
+## Face Mesh (468 or 478 points, 3D)
 
 Google MediaPipe's dense mesh. Unlike the other landmarkers it returns **3D** points
 and a face-presence score, and it processes every face in an image in a single batched
@@ -157,6 +158,40 @@ results = mesher.predict(image, bboxes=[[x1, y1, x2, y2]])
 ```
 
 ### Drop-in Use
+
+### Iris landmarks
+
+`V2_478` is MediaPipe's Face Landmarker: the same 468 mesh points in the same order,
+plus ten iris points. Everything else — the detector, the ROI, the drawing edges — is
+unchanged, so switching is a one-word change.
+
+Following MediaPipe, the result stays a flat array and region membership lives in
+named constants:
+
+```python
+from uniface import SCRFD, FaceMesh
+from uniface.constants import FaceMeshWeights
+from uniface.landmark import IRIS_LEFT, IRIS_RIGHT, NUM_MESH_LANDMARKS
+
+mesher = FaceMesh(FaceMeshWeights.V2_478)
+result = mesher.predict(image, SCRFD().detect(image))[0]
+
+result.landmarks.shape                  # (478, 3)
+result.landmarks[:NUM_MESH_LANDMARKS]   # the 468 mesh points, as V1_468 returns them
+result.landmarks[IRIS_LEFT]             # (5, 3) — center, right, top, left, bottom
+result.landmarks[IRIS_RIGHT]            # (5, 3)
+
+left_pupil = result.landmarks[IRIS_LEFT][0, :2]
+```
+
+Each iris is ordered center-first, so the mean distance from point 0 to the other four
+gives the iris radius. A human iris is close to 11.7 mm across regardless of the
+person, which makes that radius usable as a scale reference for real-world distance.
+
+`V2_478` runs at 256×256 against `V1_468`'s 192×192 — 113 against 35 MMac. The
+wall-clock gap is narrower than that ratio since neither model saturates a modern CPU,
+so benchmark your own target. It is an addition, not a replacement: stay on `V1_468`
+unless you need the irises.
 
 `FaceMesh` implements the same interface as `Landmark106` and `PIPNet`, so it can be
 swapped into existing code that expects 2D points:
@@ -367,7 +402,7 @@ def estimate_head_pose(landmarks, image_shape):
 ## Available Landmarkers
 
 ```python
-from uniface.constants import PIPNetWeights
+from uniface.constants import FaceMeshWeights, PIPNetWeights
 from uniface.landmark import FaceMesh, Landmark106, PIPNet
 
 # Default: 106-point InsightFace model
@@ -379,8 +414,11 @@ landmarker = PIPNet()
 # 68-point PIPNet (300W+CelebA)
 landmarker = PIPNet(model_name=PIPNetWeights.DW300_CELEBA_68)
 
-# 468-point dense 3D mesh (MediaPipe)
+# 468-point dense 3D mesh (MediaPipe Face Mesh)
 landmarker = FaceMesh()
+
+# 478-point dense 3D mesh with irises (MediaPipe Face Landmarker)
+landmarker = FaceMesh(model_name=FaceMeshWeights.V2_478)
 ```
 
 ---

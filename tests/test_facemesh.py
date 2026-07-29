@@ -8,13 +8,19 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from uniface.landmark import FaceMesh, roi_from_box
+from uniface.constants import FaceMeshWeights
+from uniface.landmark import IRIS_LEFT, IRIS_RIGHT, NUM_MESH_LANDMARKS, FaceMesh, roi_from_box
 from uniface.types import FaceMeshResult
 
 
-@pytest.fixture(scope='module')
-def mesher():
-    return FaceMesh()
+@pytest.fixture(scope='module', params=list(FaceMeshWeights), ids=lambda w: w.name)
+def mesher(request):
+    """Every shared test runs against both generations.
+
+    Assertions here go through `num_landmarks` rather than a literal, so the suite
+    covers 468 and 478 with one body and a third model would need no new tests.
+    """
+    return FaceMesh(request.param)
 
 
 @pytest.fixture
@@ -36,16 +42,23 @@ def mock_keypoints():
     )
 
 
-def test_model_initialization(mesher):
-    assert mesher.num_landmarks == 468
-    assert mesher.input_size == 192
+@pytest.mark.parametrize(
+    ('weights', 'num_landmarks', 'input_size'),
+    [(FaceMeshWeights.V1_468, 468, 192), (FaceMeshWeights.V2_478, 478, 256)],
+)
+def test_model_geometry(weights, num_landmarks, input_size):
+    """Both are read from the ONNX graph, never hardcoded in the class."""
+    mesher = FaceMesh(weights)
+
+    assert mesher.num_landmarks == num_landmarks
+    assert mesher.input_size == input_size
 
 
 def test_get_landmarks_shape(mesher, mock_image, mock_bbox):
     """The BaseLandmarker contract: 2D only, one face."""
     landmarks = mesher.get_landmarks(mock_image, mock_bbox)
 
-    assert landmarks.shape == (468, 2)
+    assert landmarks.shape == (mesher.num_landmarks, 2)
     assert landmarks.dtype == np.float32
 
 
@@ -62,10 +75,10 @@ def test_predict_returns_results(mesher, mock_image, mock_bbox):
 
     assert len(results) == 1
     assert isinstance(results[0], FaceMeshResult)
-    assert results[0].landmarks.shape == (468, 3)
+    assert results[0].landmarks.shape == (mesher.num_landmarks, 3)
     assert results[0].landmarks.dtype == np.float32
     assert 0.0 <= results[0].score <= 1.0
-    assert results[0].points_2d.shape == (468, 2)
+    assert results[0].points_2d.shape == (mesher.num_landmarks, 2)
 
 
 def test_predict_batches_multiple_faces(mesher, mock_image, mock_bbox):
@@ -74,7 +87,7 @@ def test_predict_batches_multiple_faces(mesher, mock_image, mock_bbox):
     results = mesher.predict(mock_image, bboxes=boxes)
 
     assert len(results) == 3
-    assert all(r.landmarks.shape == (468, 3) for r in results)
+    assert all(r.landmarks.shape == (mesher.num_landmarks, 3) for r in results)
 
 
 def test_predict_input_validation(mesher, mock_image, mock_bbox, mock_keypoints):
@@ -127,7 +140,7 @@ def test_works_with_any_detector(mesher, mock_image):
     results = mesher.predict(mock_image, faces)
 
     assert len(results) == len(faces)
-    assert all(r.landmarks.shape == (468, 3) for r in results)
+    assert all(r.landmarks.shape == (mesher.num_landmarks, 3) for r in results)
 
 
 # roi_from_box — MediaPipe's detection_to_roi rule
@@ -161,3 +174,36 @@ def test_result_equality_does_not_raise():
     assert a == a
     assert a != b  # identity, not value semantics
     assert hash(a) is not None
+
+
+# Iris landmarks — indexed through the shared constants, MediaPipe's own convention
+def test_iris_slices_cover_the_extra_points(mesher, mock_image, mock_bbox):
+    """The 478-point model appends exactly the two irises after the mesh."""
+    result = mesher.predict(mock_image, bboxes=[mock_bbox])[0]
+
+    if mesher.num_landmarks == NUM_MESH_LANDMARKS:
+        assert result.landmarks[IRIS_LEFT].shape == (0, 3)  # nothing past the mesh
+        return
+
+    assert result.landmarks[IRIS_LEFT].shape == (5, 3)
+    assert result.landmarks[IRIS_RIGHT].shape == (5, 3)
+    assert len(result.landmarks) == NUM_MESH_LANDMARKS + 10
+
+
+def test_iris_constants_are_contiguous_and_ordered():
+    """468-472 then 473-477, with no gap and no overlap."""
+    assert (IRIS_LEFT.start, IRIS_LEFT.stop) == (NUM_MESH_LANDMARKS, NUM_MESH_LANDMARKS + 5)
+    assert (IRIS_RIGHT.start, IRIS_RIGHT.stop) == (NUM_MESH_LANDMARKS + 5, NUM_MESH_LANDMARKS + 10)
+
+
+def test_irises_sit_inside_the_face(mesher, mock_image, mock_bbox, mock_keypoints):
+    """Catches an off-by-one in the slice or a bad inverse transform."""
+    if mesher.num_landmarks == NUM_MESH_LANDMARKS:
+        pytest.skip('468-point model has no irises')
+
+    result = mesher.predict(mock_image, bboxes=[mock_bbox], keypoints=[mock_keypoints])[0]
+    mesh = result.landmarks[:NUM_MESH_LANDMARKS, :2]
+
+    for iris in (result.landmarks[IRIS_LEFT], result.landmarks[IRIS_RIGHT]):
+        assert np.all(iris[:, 0] > mesh[:, 0].min()) and np.all(iris[:, 0] < mesh[:, 0].max())
+        assert np.all(iris[:, 1] > mesh[:, 1].min()) and np.all(iris[:, 1] < mesh[:, 1].max())

@@ -72,7 +72,7 @@ CenterFace is an anchor-free detector (MobileNetV2 + FPN) that treats faces as c
 ### BlazeFace
 
 Google MediaPipe's short-range SSD detector — the one `mp.solutions.face_mesh` runs
-internally. Pairing it with [Face Mesh](#face-mesh-468-points) reproduces MediaPipe's own output.
+internally. Pairing it with [Face Mesh](#face-mesh-468-or-478-points) reproduces MediaPipe's own output.
 
 | Model Name | Input | Keypoints | Size |
 | ---------- | ----- | --------- | ---- |
@@ -270,7 +270,7 @@ PIPNet (Pixel-in-Pixel Net) facial landmark detector. ResNet-18 backbone, 256×2
 
 ---
 
-### Face Mesh (468 points)
+### Face Mesh (468 or 478 points)
 
 Google MediaPipe's dense mesh. The only UniFace landmarker that returns 3D points and a
 face-presence score, and the only model that batches every face of an image into one
@@ -278,12 +278,13 @@ inference call.
 
 | Model Name | Points | Input | Size |
 | ---------- | ------ | ----- | ---- |
-| `DEFAULT` :material-check-circle: | 468 (3D) | 192×192 | 2.4MB |
+| `V1_468` :material-check-circle: | 468 (3D) | 192×192 | 2.4MB |
+| `V2_478` | 478 (3D, with irises) | 256×256 | 4.6MB |
 
 !!! info "Reference"
     **Paper**: [Real-time Facial Surface Geometry from Monocular Video on Mobile GPUs](https://arxiv.org/abs/1907.06724)
 
-    **Source**: [yakhyo/mediapipe-face-mesh-onnx](https://github.com/yakhyo/mediapipe-face-mesh-onnx) — architecture recovered from Google [MediaPipe](https://github.com/google-ai-edge/mediapipe), weights via [PINTO0309's conversion](https://github.com/PINTO0309/facemesh_onnx_tensorrt)
+    **Source**: [yakhyo/mediapipe-face-mesh-onnx](https://github.com/yakhyo/mediapipe-face-mesh-onnx) — architectures recovered from Google [MediaPipe](https://github.com/google-ai-edge/mediapipe). `V1_468`'s weights came via [PINTO0309's conversion](https://github.com/PINTO0309/facemesh_onnx_tensorrt); `V2_478`'s were read directly from the `.tflite` in Google's `face_landmarker.task` bundle
 
 !!! note "Works with any detector"
     Face Mesh needs a bounding box plus the first two landmarks (the eyes) to align its

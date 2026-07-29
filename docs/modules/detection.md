@@ -300,7 +300,7 @@ detector = YOLOv8Face(
 ## BlazeFace
 
 Google MediaPipe's short-range SSD detector — the one `mp.solutions.face_mesh` runs
-internally. Pair it with [FaceMesh](landmarks.md#face-mesh-468-points-3d) to reproduce MediaPipe's
+internally. Pair it with [FaceMesh](landmarks.md#face-mesh-468-or-478-points-3d) to reproduce MediaPipe's
 own output exactly.
 
 At 0.5 MB it is by far the smallest detector here, but it is tuned for faces within

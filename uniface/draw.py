@@ -88,6 +88,9 @@ _LANDMARK_COLORS = (
     (255, 0, 0),
 )
 
+#: Iris points of a 478-point mesh, drawn red so they read against the mesh points.
+_IRIS_COLOR = (60, 60, 255)
+
 
 def _get_color(idx: int) -> tuple[int, int, int]:
     """Get a visually distinct BGR color for a given index.
@@ -319,15 +322,16 @@ def draw_mesh(
 
     Args:
         image: Image to draw on, modified in place.
-        landmarks: Dense landmarks with shape (468, 2) or (468, 3); the depth
-            component is ignored. Typically `FaceMeshResult.landmarks`.
+        landmarks: Dense landmarks with shape (N, 2) or (N, 3), where N is 468 or 478;
+            the depth component is ignored. Typically `FaceMeshResult.landmarks`.
         mode: What to render.
             - `'partial'`: sparse contour edges plus every landmark point (default).
             - `'full'`: the dense tessellation, 2556 edges. Detailed but heavy —
               prefer `'partial'` or `'points'` for video.
             - `'points'`: landmark points only, no edges.
         color: Edge color in BGR.
-        point_color: Landmark point color in BGR.
+        point_color: Landmark point color in BGR. A 478-point mesh draws its ten iris
+            points separately, in red with a circle fitted to each, so they stand out.
 
     Returns:
         The annotated image (the same array that was passed in).
@@ -345,9 +349,21 @@ def draw_mesh(
     # Imported lazily: a module-level import would pull in uniface.landmark and
     # therefore onnxruntime, which is an optional extra. draw_mesh stays usable
     # in a numpy/OpenCV-only environment.
-    from uniface.landmark._tessellation import FACEMESH_TESSELATION_FULL, FACEMESH_TESSELATION_PARTIAL
+    from uniface.landmark._tessellation import (
+        FACEMESH_TESSELATION_FULL,
+        FACEMESH_TESSELATION_PARTIAL,
+        IRIS_LEFT,
+        IRIS_RIGHT,
+        NUM_MESH_LANDMARKS,
+    )
 
     points = np.rint(np.asarray(landmarks)[:, :2]).astype(np.int32)
+    # The tessellation only indexes the mesh and the irises are drawn separately, so
+    # keep the two sets apart from here on.
+    mesh = points[:NUM_MESH_LANDMARKS]
+
+    face_height = mesh[:, 1].max() - mesh[:, 1].min()
+    radius = max(1, round(face_height / 120))
 
     if mode in ('full', 'partial'):
         edges = FACEMESH_TESSELATION_FULL if mode == 'full' else FACEMESH_TESSELATION_PARTIAL
@@ -355,10 +371,20 @@ def draw_mesh(
             cv2.line(image, points[start_idx], points[end_idx], color, 1, cv2.LINE_AA)
 
     if mode in ('partial', 'points'):
-        face_height = points[:, 1].max() - points[:, 1].min()
-        radius = max(1, round(face_height / 120))
-        for x, y in points:
+        for x, y in mesh:
             cv2.circle(image, (x, y), radius, point_color, -1, cv2.LINE_AA)
+
+    # Circle each iris and mark its five points. Slicing past a 468-point mesh yields
+    # an empty array, so this is a no-op there rather than a branch. Drawn in every
+    # mode, since the irises are the whole reason to pick the 478-point model.
+    for iris in (points[IRIS_LEFT], points[IRIS_RIGHT]):
+        if len(iris) == 0:
+            continue
+        center = iris[0]
+        iris_radius = round(float(np.linalg.norm(iris[1:] - center, axis=1).mean()))
+        cv2.circle(image, center, max(iris_radius, 1), _IRIS_COLOR, 1, cv2.LINE_AA)
+        for x, y in iris:
+            cv2.circle(image, (x, y), max(radius, 2), _IRIS_COLOR, -1, cv2.LINE_AA)
 
     return image
 

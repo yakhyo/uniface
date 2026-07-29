@@ -17,7 +17,7 @@ This library provides unified APIs for:
 - Face detection (BlazeFace, CenterFace, RetinaFace, SCRFD, YOLOv5Face, YOLOv8Face)
 - Face recognition (AdaFace, ArcFace, EdgeFace, MobileFace, SphereFace)
 - Face tracking (ByteTrack with Kalman filtering)
-- Facial landmarks (106 / 98 / 68-point: 2d106det, PIPNet; 468-point dense: FaceMesh)
+- Facial landmarks (106 / 98 / 68-point: 2d106det, PIPNet; 468/478-point dense: FaceMesh)
 - Face parsing (semantic segmentation)
 - Portrait matting (trimap-free alpha matte)
 - Gaze estimation

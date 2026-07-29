@@ -211,9 +211,14 @@ class FaceMeshResult:
     directly with `np.allclose` if you need value semantics.
 
     Attributes:
-        landmarks: Dense landmarks with shape (468, 3), float32. `x`/`y` are
-            in full-image pixel coordinates; `z` is relative depth on the same
-            pixel scale (smaller is closer to the camera).
+        landmarks: Dense landmarks with shape (468, 3) or (478, 3), float32, depending
+            on which `FaceMeshWeights` model produced them. `x`/`y` are in full-image
+            pixel coordinates; `z` is relative depth on the same pixel scale (smaller is
+            closer to the camera). Google trains `z` on synthetic data and excludes it
+            from their own accuracy evaluation, so treat it as weaker than `x`/`y`.
+
+            With the 478-point model the first 468 are the mesh, in the same order the
+            468-point model produces, and 468-477 are the irises.
         score: Face-presence score in [0, 1].
 
             This value saturates. The network emits a raw logit that is typically
@@ -227,7 +232,7 @@ class FaceMeshResult:
 
     @property
     def points_2d(self) -> np.ndarray:
-        """Get the landmarks without the depth component, shape (468, 2)."""
+        """Get the landmarks without the depth component, shape (N, 2)."""
         return self.landmarks[:, :2]
 
     def __repr__(self) -> str:

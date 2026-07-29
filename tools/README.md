@@ -14,7 +14,7 @@ CLI utilities for testing and running UniFace features.
 | `gaze.py` | Gaze direction estimation |
 | `headpose.py` | Head pose estimation (pitch, yaw, roll) |
 | `landmarks.py` | 106-point facial landmark detection |
-| `facemesh.py` | 468-point dense 3D face mesh (MediaPipe Face Mesh) |
+| `facemesh.py` | 468 / 478-point dense 3D face mesh (MediaPipe), irises with `--model v2_478` |
 | `recognize.py` | Face embedding extraction and comparison |
 | `search.py` | Real-time face matching against reference |
 | `faiss_search.py` | FAISS index build and multi-identity face search |
@@ -80,10 +80,11 @@ python tools/headpose.py --source 0 --draw-type axis
 python tools/landmarks.py --source assets/test.jpg
 python tools/landmarks.py --source 0
 
-# Face mesh (468-point dense 3D)
+# Face mesh (468 / 478-point dense 3D)
 python tools/facemesh.py --source assets/test.jpg
 python tools/facemesh.py --source 0 --mode points
 python tools/facemesh.py --source assets/test.jpg --detector blazeface  # MediaPipe parity
+python tools/facemesh.py --source 0 --model v2_478 --mode points        # with irises
 
 # FairFace attributes
 python tools/fairface.py --source assets/test.jpg

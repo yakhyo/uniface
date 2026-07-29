@@ -97,7 +97,7 @@ def warp_roi(image: np.ndarray, roi: Roi, size: int) -> tuple[np.ndarray, np.nda
 
 
 class FaceMesh(BaseLandmarker):
-    """MediaPipe Face Mesh: 468 dense 3D landmarks from a face crop.
+    """MediaPipe dense 3D face landmarks: 468 points, or 478 with irises.
 
     Paper: https://arxiv.org/abs/1907.06724
     Code: https://github.com/google-ai-edge/mediapipe
@@ -109,8 +109,10 @@ class FaceMesh(BaseLandmarker):
     are public so it can be built on top.
 
     Args:
-        model_name (FaceMeshWeights): Which Face Mesh ONNX model to load.
-            Defaults to `FaceMeshWeights.DEFAULT`.
+        model_name (FaceMeshWeights): Which model to load. `V1_468` (the default) is the
+            classic 468-point Face Mesh at 192x192; `V2_478` is MediaPipe's Face
+            Landmarker at 256x256, which appends ten iris points to the same mesh for
+            roughly 3x the compute.
         providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
             the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
 
@@ -120,6 +122,7 @@ class FaceMesh(BaseLandmarker):
 
     Example:
         >>> from uniface import SCRFD, FaceMesh
+        >>> from uniface.constants import FaceMeshWeights
         >>>
         >>> detector, mesher = SCRFD(), FaceMesh()
         >>> faces = detector.detect(image)
@@ -130,11 +133,17 @@ class FaceMesh(BaseLandmarker):
         >>> # Or one face at a time, 2D only, like any other landmarker
         >>> mesher.get_landmarks(image, faces[0].bbox).shape
         (468, 2)
+        >>>
+        >>> # The 478-point model appends irises; everything else is unchanged
+        >>> from uniface.landmark import IRIS_LEFT
+        >>> iris_mesher = FaceMesh(FaceMeshWeights.V2_478)
+        >>> iris_mesher.predict(image, faces)[0].landmarks[IRIS_LEFT].shape
+        (5, 3)
     """
 
     def __init__(
         self,
-        model_name: FaceMeshWeights = FaceMeshWeights.DEFAULT,
+        model_name: FaceMeshWeights = FaceMeshWeights.V1_468,
         providers: list[str] | None = None,
     ) -> None:
         Logger.info(f'Initializing FaceMesh with model={model_name}')

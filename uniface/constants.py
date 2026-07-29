@@ -211,13 +211,27 @@ class PIPNetWeights(str, Enum):
 
 
 class FaceMeshWeights(str, Enum):
-    """MediaPipe Face Mesh: 468 dense 3D landmarks from a 192x192 face crop.
+    """MediaPipe dense face landmarks, in two generations.
 
-    Architecture recovered from Google's MediaPipe; weights sourced through
-    PINTO0309's ONNX conversion. Dynamic batch dimension.
+    V1 is the classic Face Mesh: 468 landmarks from a 192x192 crop.
+    V2 is MediaPipe's Face Landmarker, the model its current Tasks API ships: 478
+    landmarks from a 256x256 crop — the same 468 points in the same order, plus ten
+    iris points (468-472 left, 473-477 right, each ordered center, right, top, left,
+    bottom). Its z is predicted rather than derived, but Google trains z on synthetic
+    data and excludes it from their own accuracy evaluation, so treat it as a weaker
+    signal than x/y in both models.
+
+    Both are detector-agnostic, take the same ROI, and have a dynamic batch dimension,
+    so they are interchangeable apart from the point count. V2 costs roughly 3x the
+    multiply-accumulates; prefer V1 unless you need the irises.
+
+    Architectures recovered from Google's MediaPipe. V1's weights were sourced through
+    PINTO0309's ONNX conversion; V2's were read directly from the .tflite in Google's
+    face_landmarker.task bundle.
     https://github.com/yakhyo/mediapipe-face-mesh-onnx
     """
-    DEFAULT = "face_mesh"
+    V1_468 = "face_mesh"
+    V2_478 = "face_landmarker"
 
 
 class GazeWeights(str, Enum):
@@ -497,10 +511,14 @@ MODEL_REGISTRY: dict[Enum, ModelInfo] = {
         sha256='63fa56fd4b8f6ccc4b88f2b36e00fa3d8c21a2c4244ab9381e8b432cef35197b'
     ),
 
-    # Face Mesh (468 dense 3D landmarks)
-    FaceMeshWeights.DEFAULT: ModelInfo(
+    # Face Mesh (468 dense 3D landmarks) and Face Landmarker (478, with irises)
+    FaceMeshWeights.V1_468: ModelInfo(
         url='https://github.com/yakhyo/uniface/releases/download/weights/face_mesh_Nx3x192x192.onnx',
         sha256='3ca77cf59c18e4da0eccb46695bf604683fa564253e3385892981a5c274fb10f'
+    ),
+    FaceMeshWeights.V2_478: ModelInfo(
+        url='https://github.com/yakhyo/uniface/releases/download/weights/face_landmarker_Nx3x256x256.onnx',
+        sha256='111795f8703cdeb6d0c68a9f3cc966a0f23f8786bb00f4577a11f461fc4276ac'
     ),
 
     # Gaze (MobileGaze)

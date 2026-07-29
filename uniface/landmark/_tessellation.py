@@ -13,6 +13,15 @@
 
 from __future__ import annotations
 
+#: Landmarks both FaceMesh models produce. `V2_478` appends the irises after these.
+NUM_MESH_LANDMARKS = 468
+
+#: Left iris in a 478-point result, ordered center, right, top, left, bottom.
+IRIS_LEFT = slice(468, 473)
+
+#: Right iris in a 478-point result, ordered center, right, top, left, bottom.
+IRIS_RIGHT = slice(473, 478)
+
 # fmt: off
 FACEMESH_TESSELATION_PARTIAL: list[list[int]] = [
     [0, 267], [7, 163], [10, 338], [13, 312], [14, 317],

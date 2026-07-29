@@ -2,13 +2,14 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-"""468-point dense 3D face mesh (MediaPipe Face Mesh).
+"""Dense 3D face mesh (MediaPipe): 468 landmarks, or 478 with irises.
 
 Usage:
     python tools/facemesh.py --source path/to/image.jpg
     python tools/facemesh.py --source path/to/video.mp4 --mode points
     python tools/facemesh.py --source 0  # webcam
     python tools/facemesh.py --source image.jpg --detector blazeface  # MediaPipe parity
+    python tools/facemesh.py --source 0 --model v2_478  # with iris landmarks
 """
 
 from __future__ import annotations
@@ -20,11 +21,13 @@ from pathlib import Path
 from _common import get_source_type
 import cv2
 
+from uniface.constants import FaceMeshWeights
 from uniface.detection import SCRFD, BlazeFace, RetinaFace
 from uniface.draw import draw_mesh
 from uniface.landmark import FaceMesh
 
 DETECTORS = {'scrfd': SCRFD, 'retinaface': RetinaFace, 'blazeface': BlazeFace}
+MODELS = {w.name.lower(): w for w in FaceMeshWeights}
 
 
 def annotate(image, detector, mesher, mode: str) -> int:
@@ -119,7 +122,7 @@ def run_camera(detector, mesher, mode: str, camera_id: int = 0):
         num_faces = annotate(frame, detector, mesher, mode)
 
         cv2.putText(frame, f'Faces: {num_faces}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-        cv2.imshow('Face Mesh (468 points)', frame)
+        cv2.imshow(f'Face Mesh ({mesher.num_landmarks} points)', frame)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
@@ -129,7 +132,7 @@ def run_camera(detector, mesher, mode: str, camera_id: int = 0):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Run 468-point dense face mesh')
+    parser = argparse.ArgumentParser(description='Run dense 3D face mesh (468 or 478 landmarks)')
     parser.add_argument('--source', type=str, required=True, help='Image/video path or camera ID (0, 1, ...)')
     parser.add_argument(
         '--detector',
@@ -145,11 +148,18 @@ def main():
         choices=['full', 'partial', 'points'],
         help="Render style. 'full' is the dense tessellation and is slow for video.",
     )
+    parser.add_argument(
+        '--model',
+        type=str,
+        default='v1_468',
+        choices=list(MODELS),
+        help="'v1_468' is the classic mesh; 'v2_478' adds iris landmarks at ~3x the compute.",
+    )
     parser.add_argument('--save-dir', type=str, default='outputs', help='Output directory')
     args = parser.parse_args()
 
     detector = DETECTORS[args.detector]()
-    mesher = FaceMesh()
+    mesher = FaceMesh(MODELS[args.model])
 
     source_type = get_source_type(args.source)
 

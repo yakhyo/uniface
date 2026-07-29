@@ -38,7 +38,7 @@ AdaFace, ArcFace, EdgeFace, MobileFace, and SphereFace embeddings for identity v
 
 <div class="feature-card" markdown>
 ### :material-map-marker: Landmarks
-Dense facial landmark localization — 106-point (2d106det), 98 / 68-point (PIPNet), and 468-point 3D mesh (Face Mesh) variants.
+Dense facial landmark localization — 106-point (2d106det), 98 / 68-point (PIPNet), and 468/478-point 3D mesh (Face Mesh, the 478 variant adding irises) variants.
 <a class="feature-card-link" href="modules/landmarks/" aria-label="Landmarks"></a>
 </div>
 

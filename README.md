@@ -290,6 +290,7 @@ If you plan commercial use, verify model license compatibility.
 | Recognition   | [face-recognition](https://github.com/yakhyo/face-recognition)                           |    ✓    | MobileFace, SphereFace Training      |
 | Recognition   | [edgeface-onnx](https://github.com/yakhyo/edgeface-onnx)                                 |    -    | EdgeFace Inference                   |
 | Landmarks     | [pipnet-onnx](https://github.com/yakhyo/pipnet-onnx)                                     |    -    | PIPNet 98 / 68-point Inference       |
+| Landmarks     | [mediapipe-face-mesh-onnx](https://github.com/yakhyo/mediapipe-face-mesh-onnx)           |    -    | Face Mesh 468 / 478-point Inference  |
 | Parsing       | [face-parsing](https://github.com/yakhyo/face-parsing)                                   |    ✓    | BiSeNet Face Parsing                 |
 | Parsing       | [face-segmentation](https://github.com/yakhyo/face-segmentation)                         |    -    | XSeg Face Segmentation               |
 | Gaze          | [gaze-estimation](https://github.com/yakhyo/gaze-estimation)                             |    ✓    | MobileGaze Training                  |
