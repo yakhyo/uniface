@@ -16,10 +16,7 @@ from uniface.types import DemographyResult, EmotionResult, Face, FaceStateResult
 
 try:
     from uniface.attribute.emotion import Emotion
-
-    _EMOTION_AVAILABLE = True
 except ImportError:
-    _EMOTION_AVAILABLE = False
 
     class Emotion(BaseAttribute):  # type: ignore[no-redef]
         """Stub for Emotion when PyTorch is not installed."""

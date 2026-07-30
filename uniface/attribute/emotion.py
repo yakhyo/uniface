@@ -26,7 +26,7 @@ class Emotion(BaseAttribute):
 
     Raises:
         ValueError: If the model weights are invalid or not found.
-        RuntimeError: If the ONNX model fails to load or initialize.
+        RuntimeError: If the TorchScript model fails to load or initialize.
     """
 
     def __init__(

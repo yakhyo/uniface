@@ -463,10 +463,10 @@ def draw_gaze(
 
 def draw_head_pose_cube(
     image: np.ndarray,
-    yaw: float,
-    pitch: float,
-    roll: float,
     bbox: list[int] | np.ndarray,
+    pitch: float,
+    yaw: float,
+    roll: float,
     size: int | None = None,
 ) -> None:
     """Draw a 3D wireframe cube representing head orientation on an image.
@@ -478,15 +478,15 @@ def draw_head_pose_cube(
 
     Args:
         image: Input image to draw on (modified in-place).
-        yaw: Yaw angle in degrees.
-        pitch: Pitch angle in degrees.
-        roll: Roll angle in degrees.
         bbox: Bounding box as `[x_min, y_min, x_max, y_max]`.
+        pitch: Pitch angle in degrees.
+        yaw: Yaw angle in degrees.
+        roll: Roll angle in degrees.
         size: Cube size in pixels. If None, uses the bounding box width.
 
     Example:
         >>> from uniface.draw import draw_head_pose_cube
-        >>> draw_head_pose_cube(image, yaw=10.0, pitch=-5.0, roll=2.0, bbox=[100, 100, 250, 280])
+        >>> draw_head_pose_cube(image, [100, 100, 250, 280], pitch=-5.0, yaw=10.0, roll=2.0)
     """
     x_min, y_min, x_max, y_max = map(int, bbox[:4])
     if size is None:
@@ -545,10 +545,10 @@ def draw_head_pose_cube(
 
 def draw_head_pose_axis(
     image: np.ndarray,
-    yaw: float,
-    pitch: float,
-    roll: float,
     bbox: list[int] | np.ndarray,
+    pitch: float,
+    yaw: float,
+    roll: float,
     size_ratio: float = 0.5,
 ) -> None:
     """Draw 3D coordinate axes representing head orientation on an image.
@@ -560,15 +560,15 @@ def draw_head_pose_axis(
 
     Args:
         image: Input image to draw on (modified in-place).
-        yaw: Yaw angle in degrees.
-        pitch: Pitch angle in degrees.
-        roll: Roll angle in degrees.
         bbox: Bounding box as `[x_min, y_min, x_max, y_max]`.
+        pitch: Pitch angle in degrees.
+        yaw: Yaw angle in degrees.
+        roll: Roll angle in degrees.
         size_ratio: Axis length as a fraction of bbox size. Defaults to 0.5.
 
     Example:
         >>> from uniface.draw import draw_head_pose_axis
-        >>> draw_head_pose_axis(image, yaw=10.0, pitch=-5.0, roll=2.0, bbox=[100, 100, 250, 280])
+        >>> draw_head_pose_axis(image, [100, 100, 250, 280], pitch=-5.0, yaw=10.0, roll=2.0)
     """
     x_min, y_min, x_max, y_max = map(int, bbox[:4])
     yaw_r, pitch_r, roll_r = np.radians([-yaw, pitch, roll])
@@ -650,9 +650,9 @@ def draw_head_pose(
 
     bbox_list = [x_min, y_min, x_max, y_max]
     if draw_type == 'axis':
-        draw_head_pose_axis(image, yaw, pitch, roll, bbox_list)
+        draw_head_pose_axis(image, bbox_list, pitch, yaw, roll)
     else:
-        draw_head_pose_cube(image, yaw, pitch, roll, bbox_list)
+        draw_head_pose_cube(image, bbox_list, pitch, yaw, roll)
 
     if draw_angles:
         font_scale = max(0.4, min(0.7, (y_max - y_min) / 200))

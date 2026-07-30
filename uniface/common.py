@@ -24,6 +24,22 @@ __all__ = [
 ]
 
 
+def _validate_image(image: np.ndarray) -> None:
+    """Reject images the resize canvases below would silently corrupt.
+
+    Both resize helpers paste the input onto a `uint8` canvas: a float image
+    would be truncated to zeros (detectors then return no faces with no error),
+    and a grayscale or BGRA image would fail to broadcast into the 3-channel
+    canvas. Failing loudly here turns silent corruption into actionable errors.
+    """
+    if not isinstance(image, np.ndarray) or image.size == 0:
+        raise ValueError('Input image must be a non-empty numpy array.')
+    if image.ndim != 3 or image.shape[2] != 3:
+        raise ValueError(f'Expected a BGR image of shape (H, W, 3), got {image.shape}. Convert with cv2.cvtColor.')
+    if image.dtype != np.uint8:
+        raise ValueError(f'Expected dtype uint8, got {image.dtype}. Scale to [0, 255] and cast with .astype(np.uint8).')
+
+
 def resize_image(
     frame: np.ndarray,
     target_shape: tuple[int, int] = (640, 640),
@@ -41,7 +57,11 @@ def resize_image(
         A tuple containing:
             - Resized image on a blank canvas with shape (height, width, 3).
             - The resize factor as a float.
+
+    Raises:
+        ValueError: If the image is empty, not 3-channel BGR, or not uint8.
     """
+    _validate_image(frame)
     width, height = target_shape
 
     # Aspect-ratio preserving resize
@@ -330,7 +350,12 @@ def letterbox_resize(
         >>> # To transform coordinates back to original:
         >>> x_orig = (x_detected - pad_w) / scale
         >>> y_orig = (y_detected - pad_h) / scale
+
+    Raises:
+        ValueError: If the image is empty, not 3-channel BGR, or not uint8.
     """
+    _validate_image(image)
+
     # Get original image shape
     img_h, img_w = image.shape[:2]
 

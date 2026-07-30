@@ -139,10 +139,10 @@ draw_head_pose(image, face.bbox, result.pitch, result.yaw, result.roll, draw_typ
 from uniface.draw import draw_head_pose_cube, draw_head_pose_axis
 
 # Draw cube directly
-draw_head_pose_cube(image, yaw=10.0, pitch=-5.0, roll=2.0, bbox=[100, 100, 250, 280])
+draw_head_pose_cube(image, [100, 100, 250, 280], pitch=-5.0, yaw=10.0, roll=2.0)
 
 # Draw axes directly
-draw_head_pose_axis(image, yaw=10.0, pitch=-5.0, roll=2.0, bbox=[100, 100, 250, 280])
+draw_head_pose_axis(image, [100, 100, 250, 280], pitch=-5.0, yaw=10.0, roll=2.0)
 ```
 
 ---

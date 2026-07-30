@@ -160,8 +160,6 @@ class SCRFD(BaseDetector):
         bboxes_list = []
         kpss_list = []
 
-        image_size = image_size
-
         num_feature_maps = self._num_feature_maps
         for idx, stride in enumerate(self._feat_stride_fpn):
             scores = outputs[idx]

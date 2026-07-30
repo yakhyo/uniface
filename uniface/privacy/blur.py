@@ -94,7 +94,7 @@ class BlurFace:
         method (str): Blur method - 'gaussian', 'pixelate', 'blackout', 'elliptical', or 'median'.
             Defaults to 'pixelate'.
         blur_strength (float): Intensity for gaussian/elliptical/median. Defaults to 3.0.
-        pixel_blocks (int): Block count for pixelate. Defaults to 10.
+        pixel_blocks (int): Block count for pixelate. Defaults to 15.
         color (tuple[int, int, int]): Fill color (BGR) for blackout. Defaults to (0, 0, 0).
         margin (int): Edge margin for elliptical. Defaults to 20.
 

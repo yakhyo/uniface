@@ -4,12 +4,6 @@
 # You may obtain a copy of the License at
 #
 #     https://opensource.org/licenses/MIT
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 
 """UniFace: A comprehensive library for face analysis.
 
@@ -34,8 +28,6 @@ __license__ = 'MIT'
 __author__ = 'Yakhyokhuja Valikhujaev'
 __version__ = '3.7.1'
 
-import contextlib
-
 from uniface.face_utils import compute_similarity, face_alignment
 from uniface.log import Logger, enable_logging
 from uniface.model_store import download_models, get_cache_dir, set_cache_dir, verify_model_weights
@@ -52,6 +44,10 @@ from .privacy import BlurFace
 from .quality import EDifFIQA
 from .recognition import AdaFace, ArcFace, EdgeFace, MobileFace, SphereFace
 from .spoofing import MiniFASNet
+
+# The faiss dependency is imported lazily at FAISS(...) construction, so this
+# import succeeds even without faiss-cpu installed.
+from .stores import FAISS
 from .tracking import BYTETracker
 from .types import (
     DemographyResult,
@@ -64,10 +60,6 @@ from .types import (
     QualityResult,
     SpoofingResult,
 )
-
-# Optional: FAISS vector store (requires `pip install faiss-cpu`)
-with contextlib.suppress(ImportError):
-    from .stores import FAISS
 
 __all__ = [
     # Metadata

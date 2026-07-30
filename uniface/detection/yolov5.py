@@ -174,7 +174,7 @@ class YOLOv5Face(BaseDetector):
                 - landmarks: [5, 2] for each detection
         """
         # predictions shape: (1, 25200, 16)
-        # 16 = [x, y, w, h, obj_conf, cls_conf, 10 landmarks (5 points * 2 coords)]
+        # 16 = [x, y, w, h, obj_conf, 10 landmark coords (5 points * 2), cls_conf]
 
         predictions = predictions[0]  # Remove batch dimension
 

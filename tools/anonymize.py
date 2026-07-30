@@ -219,11 +219,11 @@ Examples:
 
     args = parser.parse_args()
 
-    # Parse color
+    # The CLI takes R,G,B but BlurFace expects BGR
     color_values = [int(x) for x in args.color.split(',')]
     if len(color_values) != 3:
         parser.error('--color must be in format R,G,B (e.g., 0,0,0)')
-    color = tuple(color_values)
+    color = tuple(reversed(color_values))
 
     # Initialize detector
     print(f'Initializing face detector (confidence_threshold={args.confidence_threshold})...')

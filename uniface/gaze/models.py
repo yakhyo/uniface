@@ -39,7 +39,7 @@ class MobileGaze(BaseGazeEstimator):
     Args:
         model_name (GazeWeights): The enum specifying the gaze model backbone to load.
             Options: RESNET18, RESNET34, RESNET50, MOBILENET_V2, MOBILEONE_S0.
-            Defaults to `GazeWeights.RESNET18`.
+            Defaults to `GazeWeights.RESNET34`.
         input_size (tuple[int, int]): The resolution (width, height) for the model's
             input. Defaults to (448, 448).
         providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
