@@ -60,6 +60,22 @@ def set_cache_dir(path: str) -> None:
     Logger.info(f'Cache directory set to: {path}')
 
 
+def _mirror_url(model_name: Enum, url: str) -> str:
+    """Build the Hugging Face mirror URL for a model.
+
+    Mirror files are keyed on the enum value, like the local cache, rather than on
+    the primary URL's basename -- five basenames collide across the source repos.
+
+    Args:
+        model_name: Model weight identifier enum.
+        url: Registered primary URL from `MODEL_REGISTRY`, used only for its extension.
+
+    Returns:
+        Download URL for the same weights on the Hugging Face mirror.
+    """
+    return f'{const.HF_MIRROR_URL}/{model_name.value}{os.path.splitext(url)[1]}'
+
+
 def verify_model_weights(
     model_name: Enum,
     root: str | None = None,
@@ -70,8 +86,10 @@ def verify_model_weights(
 
     Given a model identifier from an Enum class (e.g., `RetinaFaceWeights.MNET_V2`),
     this function checks if the corresponding weight file exists locally. If not,
-    it downloads the file from a predefined URL and verifies its integrity using
-    a SHA-256 hash.
+    it downloads the file and verifies its integrity using a SHA-256 hash.
+
+    Downloads try the registered GitHub Releases URL first, then the Hugging Face
+    mirror, so a single unreachable host does not break model loading.
 
     Args:
         model_name: Model weight identifier enum (e.g., `RetinaFaceWeights.MNET_V2`).
@@ -84,8 +102,9 @@ def verify_model_weights(
         Absolute path to the verified model weights file.
 
     Raises:
-        ValueError: If the model is unknown or SHA-256 verification fails.
-        ConnectionError: If downloading the file fails.
+        ValueError: If the model is not present in `MODEL_REGISTRY`.
+        ConnectionError: If every source fails, whether by network error or by
+            SHA-256 mismatch.
 
     Example:
         >>> from uniface.constants import RetinaFaceWeights
@@ -116,13 +135,32 @@ def verify_model_weights(
         os.remove(model_path)
 
     if not os.path.exists(model_path):
-        Logger.info(f"Downloading model '{model_name.value}' from {url}")
-        try:
-            download_file(url, model_path, expected_hash=expected_hash, timeout=timeout, max_retries=max_retries)
+        sources = (('GH Releases', url), ('HF Mirror', _mirror_url(model_name, url)))
+        last_error: Exception | None = None
+
+        for index, (origin, source) in enumerate(sources):
+            Logger.info(f"Downloading model '{model_name.value}' from {origin}: {source}")
+            try:
+                download_file(source, model_path, expected_hash=expected_hash, timeout=timeout, max_retries=max_retries)
+            except ConnectionError as e:
+                # Raised for hash mismatches too, so a corrupted source falls through.
+                last_error = e
+                if index + 1 < len(sources):
+                    Logger.warning(f"{origin} failed for '{model_name.value}' ({e}); trying {sources[index + 1][0]}.")
+                continue
+
+            if index:
+                # The failure was reported at WARNING, so report the recovery there too --
+                # otherwise the user is left looking at an unresolved warning.
+                Logger.warning(f"Recovered '{model_name.value}' from {origin}.")
             Logger.info(f"Successfully downloaded '{model_name.value}' to {model_path}")
-        except Exception as e:
-            Logger.error(f"Failed to download model '{model_name.value}': {e}")
-            raise ConnectionError(f"Download failed for '{model_name.value}' after {max_retries} attempts") from e
+            return model_path
+
+        tried = ' and '.join(origin for origin, _ in sources)
+        Logger.error(f"Failed to download '{model_name.value}' from {tried}: {last_error}")
+        raise ConnectionError(
+            f"Download failed for '{model_name.value}' from {tried}, {max_retries} attempts each"
+        ) from last_error
 
     return model_path
 
@@ -147,9 +185,9 @@ def download_file(
         max_retries: Maximum number of attempts. Defaults to 3.
 
     Raises:
-        ConnectionError: If every attempt fails.
-        ValueError: If the downloaded bytes do not match `expected_hash`. Caught
-            internally and retried; it only escapes on the final attempt.
+        ConnectionError: If every attempt fails. A final-attempt hash mismatch is
+            reported through this error too, as the underlying `ValueError` is
+            retried internally and never propagates.
     """
     last_error = None
     dest_dir = os.path.dirname(dest_path) or '.'
@@ -184,9 +222,11 @@ def download_file(
             os.replace(tmp_path, dest_path)  # Atomic commit
             return  # Success
         except (OSError, requests.RequestException, ValueError) as e:
+            # Recoverable until the attempts run out, so this stays at INFO; the caller
+            # decides how loudly to report the ConnectionError raised below.
             last_error = e
-            Logger.warning(f'Download attempt {attempt + 1} failed: {e}. Retrying...')
             if attempt < max_retries - 1:
+                Logger.info(f'Attempt {attempt + 1}/{max_retries} failed for {url}: {e}. Retrying...')
                 time.sleep(2**attempt)  # Exponential backoff
         finally:
             if tmp_path and os.path.exists(tmp_path):

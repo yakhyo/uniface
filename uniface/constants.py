@@ -21,6 +21,14 @@ class ModelInfo:
     sha256: str
 
 
+DOWNLOAD_CHUNK_SIZE = 256 * 1024  # 256 KiB
+HASH_CHUNK_SIZE = 1024 * 1024  # 1 MiB
+
+# Fallback source when a primary (GitHub Releases) URL is unreachable. Swap `main`
+# for a commit SHA to pin the mirror to immutable bytes.
+HF_MIRROR_URL = 'https://huggingface.co/yakhyo/uniface-weights/resolve/main'
+
+
 # fmt: off
 class SphereFaceWeights(str, Enum):
     """Trained on MS1M V2 dataset with 5.8 million images of 85k identities.
@@ -623,7 +631,3 @@ MODEL_REGISTRY: dict[Enum, ModelInfo] = {
         sha256='72238239298cf645d3f5954d657b4aca7b64fd25bc808c0260778386da9b00a1'
     ),
 }
-
-
-DOWNLOAD_CHUNK_SIZE = 256 * 1024  # 256 KiB
-HASH_CHUNK_SIZE = 1024 * 1024  # 1 MiB
