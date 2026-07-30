@@ -563,9 +563,10 @@ Face image quality assessment. Predicts a single scalar score from an aligned 11
 
 Models are automatically downloaded and cached on first use.
 
+- **Sources**: GitHub Releases, falling back automatically to a [Hugging Face mirror](https://huggingface.co/yakhyo/uniface-weights) when GitHub is unreachable
 - **Cache location**: `~/.uniface/models/` (configurable via `set_cache_dir()` or `UNIFACE_CACHE_DIR` env var)
 - **Inspect cache path**: `get_cache_dir()` returns the resolved active path
-- **Verification**: Models are verified with SHA-256 checksums
+- **Verification**: Models are verified with SHA-256 checksums, whichever source served them
 - **Concurrent download**: `download_models([...])` fetches multiple models in parallel
 - **Manual download**: Use `python tools/download_model.py` to pre-download models
 
