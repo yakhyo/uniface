@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import threading
 
 import cv2
 import numpy as np
@@ -112,6 +113,46 @@ def test_weighted_nms_keeps_disjoint_boxes():
     rows[1, :5] = [0.8, 0.80, 0.80, 0.10, 0.10]
 
     assert len(_weighted_nms(rows, iou_threshold=0.3)) == 2
+
+
+def _nms_within(rows: np.ndarray, iou_threshold: float, seconds: float = 5.0) -> np.ndarray:
+    """Run `_weighted_nms` on a worker thread so a non-terminating loop fails instead of hanging."""
+    result: list[np.ndarray] = []
+    worker = threading.Thread(target=lambda: result.append(_weighted_nms(rows, iou_threshold)), daemon=True)
+    worker.start()
+    worker.join(seconds)
+
+    assert not worker.is_alive(), f'_weighted_nms did not terminate within {seconds}s'
+    return result[0]
+
+
+def test_weighted_nms_terminates_when_threshold_excludes_self_overlap():
+    """iou_threshold=1.0 fails the strict `>` even for the winner's self-IoU of 1.0."""
+    columns = 5 + 2 * 6
+    rows = np.zeros((2, columns))
+    rows[0, :5] = [0.9, 0.50, 0.50, 0.20, 0.20]
+    rows[1, :5] = [0.3, 0.52, 0.52, 0.20, 0.20]
+
+    with np.errstate(all='raise'):
+        merged = _nms_within(rows, iou_threshold=1.0)
+
+    # Nothing overlaps enough to blend, so both survive untouched.
+    assert len(merged) == 2
+    assert merged[0, 1] == pytest.approx(0.50)
+    assert merged[1, 1] == pytest.approx(0.52)
+
+
+def test_weighted_nms_terminates_on_zero_area_box():
+    """A degenerate box scores an IoU of 0 against itself."""
+    columns = 5 + 2 * 6
+    rows = np.zeros((1, columns))
+    rows[0, :5] = [0.9, 0.50, 0.50, 0.0, 0.0]
+
+    with np.errstate(all='raise'):
+        merged = _nms_within(rows, iou_threshold=0.3)
+
+    assert len(merged) == 1
+    assert merged[0, :5] == pytest.approx([0.9, 0.50, 0.50, 0.0, 0.0])
 
 
 def test_analyzer_disables_recognition(blazeface_model, face_image):

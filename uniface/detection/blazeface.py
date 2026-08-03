@@ -96,12 +96,20 @@ def _weighted_nms(detections: np.ndarray, iou_threshold: float) -> np.ndarray:
         union = (x2 - x1) * (y2 - y1) + (tx2 - tx1) * (ty2 - ty1) - inter
         iou = inter / np.maximum(union, 1e-9)
 
-        overlapping = remaining[iou > iou_threshold]
+        # The winner joins its own blend unconditionally. Relying on its self-IoU clearing
+        # the threshold loops forever when it cannot: iou_threshold=1.0 fails the strict
+        # `>`, and a zero-area box scores an IoU of 0 against itself.
+        merge = iou > iou_threshold
+        merge[0] = True
+
+        overlapping = remaining[merge]
         weights = overlapping[:, :1]
         blended = top.copy()
-        blended[1:] = (overlapping[:, 1:] * weights).sum(axis=0) / weights.sum()
+        total_weight = weights.sum()
+        if total_weight > 0:
+            blended[1:] = (overlapping[:, 1:] * weights).sum(axis=0) / total_weight
         output.append(blended)
-        remaining = remaining[iou <= iou_threshold]
+        remaining = remaining[~merge]
 
     return np.array(output)
 
