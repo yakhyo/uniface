@@ -24,9 +24,10 @@ class ModelInfo:
 DOWNLOAD_CHUNK_SIZE = 256 * 1024  # 256 KiB
 HASH_CHUNK_SIZE = 1024 * 1024  # 1 MiB
 
-# Fallback source when a primary (GitHub Releases) URL is unreachable. Swap `main`
-# for a commit SHA to pin the mirror to immutable bytes.
-HF_MIRROR_URL = 'https://huggingface.co/yakhyo/uniface-weights/resolve/main'
+# Fallback source when a primary (GitHub Releases) URL is unreachable. Pinned to a
+# commit SHA so the fallback serves immutable bytes, matching the SHA-256 guarantee
+# of the primary path. Bump the SHA whenever new weights land in the mirror repo.
+HF_MIRROR_URL = 'https://huggingface.co/yakhyo/uniface-weights/resolve/4c7ed723a20deb7ff154b1ba7d6e73747d954016'
 
 
 # fmt: off

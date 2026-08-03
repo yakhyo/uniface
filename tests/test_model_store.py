@@ -27,7 +27,8 @@ class TestMirrorUrl:
     def test_mirror_url_shape(self, model):
         """Assert the literal URL, so a wrong repo id or revision fails the test."""
         assert _mirror_url(model, const.MODEL_REGISTRY[model].url) == (
-            'https://huggingface.co/yakhyo/uniface-weights/resolve/main/blazeface.onnx'
+            'https://huggingface.co/yakhyo/uniface-weights/resolve/'
+            '4c7ed723a20deb7ff154b1ba7d6e73747d954016/blazeface.onnx'
         )
 
     def test_extension_follows_primary_url(self, model):
