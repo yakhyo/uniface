@@ -37,13 +37,11 @@ class HeadPose(BaseHeadPoseEstimator):
         model_name (HeadPoseWeights): The enum specifying the head pose model to load.
             Options: RESNET18, RESNET34, RESNET50, MOBILENET_V2, MOBILENET_V3_SMALL,
             MOBILENET_V3_LARGE. Defaults to `HeadPoseWeights.RESNET18`.
-        input_size (tuple[int, int]): The resolution (width, height) for the model's
-            input. Defaults to (224, 224).
         providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
             the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
 
     Attributes:
-        input_size (tuple[int, int]): Model input dimensions.
+        input_size (tuple[int, int]): Model input dimensions (width, height), read from the ONNX model.
         input_mean (np.ndarray): Per-channel mean values for normalization (ImageNet).
         input_std (np.ndarray): Per-channel std values for normalization (ImageNet).
 
@@ -65,13 +63,12 @@ class HeadPose(BaseHeadPoseEstimator):
 
     def __init__(
         self,
+        *,
         model_name: HeadPoseWeights = HeadPoseWeights.RESNET18,
-        input_size: tuple[int, int] = (224, 224),
         providers: list[str] | None = None,
     ) -> None:
-        Logger.info(f'Initializing HeadPose with model={model_name}, input_size={input_size}')
+        Logger.info(f'Initializing HeadPose with model={model_name}')
 
-        self.input_size = input_size
         self.input_mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
         self.input_std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
         self.providers = providers

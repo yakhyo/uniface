@@ -29,8 +29,6 @@ class Landmark106(BaseLandmarker):
     Args:
         model_name (LandmarkWeights): The enum specifying the landmark model to load.
             Defaults to `LandmarkWeights.DEFAULT`.
-        input_size (tuple[int, int]): The resolution (width, height) for the model's
-            input. Defaults to (192, 192).
         providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
             the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
 
@@ -50,12 +48,11 @@ class Landmark106(BaseLandmarker):
 
     def __init__(
         self,
+        *,
         model_name: LandmarkWeights = LandmarkWeights.DEFAULT,
-        input_size: tuple[int, int] = (192, 192),
         providers: list[str] | None = None,
     ) -> None:
-        Logger.info(f'Initializing Facial Landmark with model={model_name}, input_size={input_size}')
-        self.input_size = input_size
+        Logger.info(f'Initializing Facial Landmark with model={model_name}')
         self.input_std = 1.0
         self.input_mean = 0.0
         self.providers = providers
