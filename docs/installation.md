@@ -200,7 +200,7 @@ pip install uniface[gpu]   # install the one you want
 
 ## Pre-release Versions
 
-UniFace ships release candidates and betas to PyPI ahead of stable releases (versions like `0.7.0rc1`, `0.7.0b1`, `0.7.0a1`). These let you try upcoming features before they're finalized.
+UniFace ships release candidates and betas to PyPI ahead of stable releases (versions like `4.0.0rc1`, `4.0.0b1`, `4.0.0a1`). These let you try upcoming features before they're finalized.
 
 `pip install uniface` always installs the latest **stable** release. To opt in to pre-releases:
 
@@ -209,7 +209,7 @@ UniFace ships release candidates and betas to PyPI ahead of stable releases (ver
 pip install uniface[cpu] --pre
 
 # A specific pre-release
-pip install uniface[cpu]==0.7.0rc1
+pip install uniface[cpu]==4.0.0rc1
 ```
 
 Pre-releases are not recommended for production — APIs may still change before the stable release.

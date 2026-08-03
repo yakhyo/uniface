@@ -21,7 +21,7 @@ Facial landmark detection provides precise localization of facial features.
 | **FaceMesh** (`V2_478`) | 478 (3D, with irises) | 4.6 MB |
 
 !!! info "5-Point Landmarks"
-    Basic 5-point landmarks are included with all detection models (RetinaFace, SCRFD, YOLOv5-Face, YOLOv8-Face).
+    Basic 5-point landmarks are included with all detection models (RetinaFace, SCRFD, CenterFace, YOLOv5-Face, YOLOv8-Face).
     BlazeFace is the exception — it returns 6 MediaPipe keypoints instead; see [Detection](detection.md#blazeface).
 
 ---
@@ -157,8 +157,6 @@ Without a detector, pass boxes directly:
 results = mesher.predict(image, bboxes=[[x1, y1, x2, y2]])
 ```
 
-### Drop-in Use
-
 ### Iris landmarks
 
 `V2_478` is MediaPipe's Face Landmarker: the same 468 mesh points in the same order,
@@ -173,7 +171,7 @@ from uniface import SCRFD, FaceMesh
 from uniface.constants import FaceMeshWeights
 from uniface.landmark import IRIS_LEFT, IRIS_RIGHT, NUM_MESH_LANDMARKS
 
-mesher = FaceMesh(FaceMeshWeights.V2_478)
+mesher = FaceMesh(model_name=FaceMeshWeights.V2_478)
 result = mesher.predict(image, SCRFD().detect(image))[0]
 
 result.landmarks.shape                  # (478, 3)
@@ -193,11 +191,13 @@ wall-clock gap is narrower than that ratio since neither model saturates a moder
 so benchmark your own target. It is an addition, not a replacement: stay on `V1_468`
 unless you need the irises.
 
+### Drop-in Use
+
 `FaceMesh` implements the same interface as `Landmark106` and `PIPNet`, so it can be
 swapped into existing code that expects 2D points:
 
 ```python
-landmarks = mesher.get_landmarks(image, face.bbox)   # (468, 2)
+landmarks = mesher.get_landmarks(image, face.bbox)   # (478, 2) for the V2_478 mesher above
 ```
 
 ### MediaPipe Parity
@@ -241,7 +241,9 @@ draw_mesh(image, results[0].landmarks, mode='points')  # points only
 
 ## 5-Point Landmarks (Detection)
 
-All detection models provide 5-point landmarks:
+All detection models except BlazeFace provide 5-point landmarks. BlazeFace returns 6
+MediaPipe keypoints instead, so its `supports_alignment` is `False`; see
+[Detection](detection.md#blazeface).
 
 ```python
 from uniface.detection import RetinaFace

@@ -303,7 +303,7 @@ inference call.
 
 | Model Name  | Attributes  | Params | Size |
 | ----------- | ----------- | ------ | ---- |
-| `AgeGender` | Age, Gender | 2.1M   | 8MB  |
+| `DEFAULT`   | Age, Gender | 2.1M   | 8MB  |
 
 !!! info "Training Data"
     **Dataset**: Trained on [CelebA](datasets.md#celeba)
@@ -317,7 +317,7 @@ inference call.
 
 | Model Name  | Attributes            | Params | Size  |
 | ----------- | --------------------- | ------ | ----- |
-| `FairFace` | Race, Gender, Age Group | -      | 44MB  |
+| `DEFAULT`   | Race, Gender, Age Group | -      | 44MB  |
 
 !!! info "Training Data"
     **Dataset**: Trained on [FairFace](datasets.md#fairface) dataset with balanced demographics
@@ -354,7 +354,7 @@ inference call.
 
 | Model Name      | Attributes                                              | Params | Size |
 | --------------- | ------------------------------------------------------- | ------ | ---- |
-| `FaceAttribNet` | Eye openness (L/R), Eyeglasses, Mask, Sunglasses        | 10.8M  | 41MB |
+| `DEFAULT`       | Eye openness (L/R), Eyeglasses, Mask, Sunglasses        | 10.8M  | 41MB |
 
 Qualcomm's [Facial-Attribute-Detection](https://github.com/qualcomm/ai-hub-models/tree/main/src/qai_hub_models/models/face_attrib_net) model. Outputs five independent binary probabilities from a 128x128 face crop.
 

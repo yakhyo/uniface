@@ -44,14 +44,20 @@ Dense facial landmark localization — 106-point (2d106det), 98 / 68-point (PIPN
 
 <div class="feature-card" markdown>
 ### :material-account-details: Attributes
-Age, gender, race (FairFace), and emotion detection from faces.
+Age, gender, race (FairFace), emotion, and face states (FaceAttribNet) from faces.
 <a class="feature-card-link" href="modules/attributes/" aria-label="Attributes"></a>
 </div>
 
 <div class="feature-card" markdown>
 ### :material-face-man-shimmer: Face Parsing
-BiSeNet semantic segmentation with 19 facial component classes.
+BiSeNet semantic segmentation with 19 facial component classes, plus XSeg face masking.
 <a class="feature-card-link" href="modules/parsing/" aria-label="Face Parsing"></a>
+</div>
+
+<div class="feature-card" markdown>
+### :material-image-off: Portrait Matting
+Trimap-free alpha matte with MODNet for background removal and compositing.
+<a class="feature-card-link" href="modules/matting/" aria-label="Portrait Matting"></a>
 </div>
 
 <div class="feature-card" markdown>

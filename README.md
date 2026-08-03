@@ -26,12 +26,12 @@
 | **Face Detection**          | RetinaFace, SCRFD, CenterFace, YOLOv5-Face, and YOLOv8-Face with 5-point landmarks; BlazeFace (MediaPipe, 6 keypoints) |
 | **Face Recognition**        | AdaFace, ArcFace, EdgeFace, MobileFace, and SphereFace embeddings                                |
 | **Face Tracking**           | Multi-object tracking with [BYTETracker](https://github.com/yakhyo/bytetrack-tracker) for persistent IDs across video frames |
-| **Facial Landmarks**        | 106-point (2d106det), 98 / 68-point (PIPNet), and 468-point dense 3D mesh (MediaPipe Face Mesh) — separate from the 5-point detector landmarks |
+| **Facial Landmarks**        | 106-point (2d106det), 98 / 68-point (PIPNet), and 468 / 478-point dense 3D mesh (MediaPipe Face Mesh, the 478 variant adding irises) — separate from the 5-point detector landmarks |
 | **Face Parsing**            | BiSeNet semantic segmentation (19 classes), XSeg face masking                                    |
 | **Portrait Matting**        | Trimap-free alpha matte with MODNet (background removal, green screen, compositing)              |
 | **Gaze Estimation**         | Real-time gaze direction with MobileGaze                                                         |
 | **Head Pose Estimation**    | 3D head orientation (pitch, yaw, roll) with 6D rotation representation                           |
-| **Attribute Analysis**      | Age, gender, race (FairFace), emotion, and face states (eye openness, glasses, mask with FaceAttribNet) |
+| **Attribute Analysis**      | Age, gender, race (FairFace), emotion, and face states (eye openness, glasses, sunglasses, mask with FaceAttribNet) |
 | **Vector Store**            | FAISS-backed embedding store for fast multi-identity search                                      |
 | **Anti-Spoofing**           | Face liveness detection with MiniFASNet                                                          |
 | **Face Quality Assessment** | eDifFIQA single-score quality (T/S/M/L, NIST FATE-Quality #1 with the L variant)                 |
@@ -217,8 +217,8 @@ cv2.imwrite("green_screen.jpg", result)
 | [11_head_pose_estimation.ipynb](examples/11_head_pose_estimation.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/11_head_pose_estimation.ipynb) | Head pose estimation (pitch, yaw, roll) |
 | [12_face_recognition.ipynb](examples/12_face_recognition.ipynb)         |   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/12_face_recognition.ipynb)   | Standalone face recognition pipeline    |
 | [13_portrait_matting.ipynb](examples/13_portrait_matting.ipynb)         |   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/13_portrait_matting.ipynb)   | Portrait matting with MODNet            |
-| [14_face_attributes.ipynb](examples/14_face_attributes.ipynb)           |   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/14_face_attributes.ipynb)   | Face states (eyes, glasses, mask)       |
-| [15_face_mesh.ipynb](examples/15_face_mesh.ipynb)                       |        [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/15_face_mesh.ipynb)        | 468-point dense 3D face mesh            |
+| [14_face_attributes.ipynb](examples/14_face_attributes.ipynb)           |   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/14_face_attributes.ipynb)   | Face states (eyes, glasses, sunglasses, mask)       |
+| [15_face_mesh.ipynb](examples/15_face_mesh.ipynb)                       |        [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/15_face_mesh.ipynb)        | 468 / 478-point dense 3D face mesh      |
 
 ## Documentation
 
@@ -255,7 +255,7 @@ https://yakhyo.github.io/uniface/concepts/execution-providers/
 | Recognition | WebFace4M / 12M             | AdaFace, EdgeFace                           |
 | Landmarks   | WFLW, 300W+CelebA           | PIPNet (98 / 68 pts)                        |
 | Detection   | Proprietary (Google)        | BlazeFace (short-range)                     |
-| Landmarks   | Proprietary (Google)        | Face Mesh (468 pts)                         |
+| Landmarks   | Proprietary (Google)        | Face Mesh (468 / 478 pts)                   |
 | Gaze        | Gaze360                     | MobileGaze                                  |
 | Head Pose   | 300W-LP                     | HeadPose (ResNet, MobileNet)                |
 | Parsing     | CelebAMask-HQ               | BiSeNet                                     |

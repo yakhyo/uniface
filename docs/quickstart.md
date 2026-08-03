@@ -166,9 +166,9 @@ Face 2: Female, 20-29, White
 
 ---
 
-## Facial Landmarks (106 / 98 / 68 Points)
+## Facial Landmarks (106 / 98 / 68 / 468 / 478 Points)
 
-UniFace ships two dense-landmark families. Pick whichever fits your downstream task:
+UniFace ships three dense-landmark families. Pick whichever fits your downstream task:
 
 ```python
 import cv2
@@ -205,6 +205,20 @@ landmarker_98 = PIPNet()
 landmarker_68 = PIPNet(model_name=PIPNetWeights.DW300_CELEBA_68)
 
 landmarks = landmarker_98.get_landmarks(image, faces[0].bbox)  # (98, 2)
+```
+
+**Face Mesh (468 / 478 points, 3D)** is MediaPipe's dense mesh, run over every detected face
+in a single batched call. Pass `FaceMeshWeights.V2_478` for the 478-point variant with irises:
+
+```python
+from uniface.landmark import FaceMesh
+
+mesher = FaceMesh()  # default: 468 points
+results = mesher.predict(image, faces)
+
+print(results[0].landmarks.shape)  # (468, 3), x/y in image pixels, z is relative depth
+print(results[0].points_2d.shape)  # (468, 2), depth dropped
+print(results[0].score)            # face presence, [0, 1]
 ```
 
 ---
@@ -510,10 +524,13 @@ For detailed model comparisons and benchmarks, see the [Model Zoo](models.md).
 | Tracking | `BYTETracker` |
 | Gaze | `MobileGaze` (ResNet18/34/50, MobileNetV2, MobileOneS0) |
 | Head Pose | `HeadPose` (ResNet18/34/50, MobileNetV2/V3) |
-| Parsing | `BiSeNet` (ResNet18/34) |
-| Attributes | `AgeGender`, `FairFace`, `Emotion` |
+| Parsing | `BiSeNet` (ResNet18/34), `XSeg` |
+| Matting | `MODNet` |
+| Attributes | `AgeGender`, `FairFace`, `Emotion`, `FaceAttribNet` (face states) |
 | Anti-Spoofing | `MiniFASNet` (V1SE, V2) |
 | Quality | `EDifFIQA` (T, S, M, L) |
+| Privacy | `BlurFace` (5 blur methods) |
+| Vector Store | `FAISS` |
 
 ---
 
@@ -566,12 +583,13 @@ python -c "import platform; print(platform.machine())"
 ### Import Errors
 
 ```python
-from uniface.detection import CenterFace, RetinaFace, SCRFD
+from uniface.detection import BlazeFace, CenterFace, RetinaFace, SCRFD, YOLOv5Face, YOLOv8Face
 from uniface.recognition import ArcFace, AdaFace
-from uniface.attribute import AgeGender, FairFace
-from uniface.landmark import Landmark106, PIPNet
+from uniface.attribute import AgeGender, Emotion, FaceAttribNet, FairFace
+from uniface.landmark import FaceMesh, Landmark106, PIPNet
 from uniface.gaze import MobileGaze
 from uniface.headpose import HeadPose
+from uniface.matting import MODNet
 from uniface.parsing import BiSeNet, XSeg
 from uniface.privacy import BlurFace
 from uniface.quality import EDifFIQA
