@@ -239,6 +239,29 @@ class TestFace:
         assert 'sex=Male' in repr_str
         assert 'emotion=Happy' in repr_str
 
+    _FACE_STATES = ('left_eye_open', 'right_eye_open', 'eyeglasses', 'mask', 'sunglasses')
+
+    @pytest.mark.parametrize('name', _FACE_STATES)
+    def test_repr_with_a_single_face_state(self, sample_face, name):
+        """Each of the five is optional on its own; __repr__ must never raise."""
+        setattr(sample_face, name, 0.75)
+
+        repr_str = repr(sample_face)
+
+        assert f'{name}=0.75' in repr_str
+        assert all(other not in repr_str for other in self._FACE_STATES if other != name)
+
+    def test_repr_with_all_face_states(self, sample_face):
+        for idx, name in enumerate(self._FACE_STATES):
+            setattr(sample_face, name, idx / 10)
+
+        repr_str = repr(sample_face)
+
+        assert 'left_eye_open=0.00, right_eye_open=0.10, eyeglasses=0.20, mask=0.30, sunglasses=0.40' in repr_str
+
+    def test_repr_omits_face_states_when_unset(self, sample_face):
+        assert all(name not in repr(sample_face) for name in self._FACE_STATES)
+
     def test_compute_similarity_no_embeddings(self, sample_face):
         other_face = Face(
             bbox=np.array([50, 50, 150, 150]),

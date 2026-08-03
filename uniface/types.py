@@ -366,12 +366,15 @@ class Face:
             parts.append(f'race={self.race}')
         if self.emotion is not None:
             parts.append(f'emotion={self.emotion}')
-        if self.eyeglasses is not None:
-            states = ', '.join(
-                f'{name}={getattr(self, name):.2f}'
-                for name in ('left_eye_open', 'right_eye_open', 'eyeglasses', 'mask', 'sunglasses')
-            )
-            parts.append(states)
+        # Gated per field: a predictor may fill only some of the five, and __repr__ is
+        # what you reach for when something has already gone wrong.
+        states = [
+            f'{name}={value:.2f}'
+            for name in ('left_eye_open', 'right_eye_open', 'eyeglasses', 'mask', 'sunglasses')
+            if (value := getattr(self, name)) is not None
+        ]
+        if states:
+            parts.append(', '.join(states))
         if self.quality is not None:
             parts.append(f'quality={self.quality:.4f}')
         if self.embedding is not None:
