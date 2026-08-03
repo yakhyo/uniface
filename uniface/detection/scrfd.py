@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import Literal
 
 import numpy as np
 
@@ -37,7 +37,6 @@ class SCRFD(BaseDetector):
             Note: Non-default sizes may cause slower inference and CoreML compatibility issues.
         providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
             the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
-        **kwargs: Reserved for future advanced options.
 
     Attributes:
         model_name (SCRFDWeights): Selected model variant.
@@ -63,7 +62,6 @@ class SCRFD(BaseDetector):
         nms_threshold: float = 0.4,
         input_size: tuple[int, int] = (640, 640),
         providers: list[str] | None = None,
-        **kwargs: Any,
     ) -> None:
         super().__init__(
             model_name=model_name,
@@ -71,7 +69,6 @@ class SCRFD(BaseDetector):
             nms_threshold=nms_threshold,
             input_size=input_size,
             providers=providers,
-            **kwargs,
         )
 
         self.model_name = model_name

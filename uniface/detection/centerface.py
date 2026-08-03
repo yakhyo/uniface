@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import Literal
 
 import numpy as np
 
@@ -46,7 +46,6 @@ class CenterFace(BaseDetector):
             Defaults to (640, 640).
         providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
             the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
-        **kwargs: Reserved for future advanced options.
 
     Attributes:
         model_name (CenterFaceWeights): Selected model variant.
@@ -68,7 +67,6 @@ class CenterFace(BaseDetector):
         nms_threshold: float = 0.3,
         input_size: tuple[int, int] = (640, 640),
         providers: list[str] | None = None,
-        **kwargs: Any,
     ) -> None:
         super().__init__(
             model_name=model_name,
@@ -76,7 +74,6 @@ class CenterFace(BaseDetector):
             nms_threshold=nms_threshold,
             input_size=input_size,
             providers=providers,
-            **kwargs,
         )
         if input_size[0] % 32 != 0 or input_size[1] % 32 != 0:
             raise ValueError(f'input_size must be a multiple of 32, got {input_size}')

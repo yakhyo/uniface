@@ -2,7 +2,7 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-from typing import Any, Literal
+from typing import Literal
 
 import numpy as np
 
@@ -45,8 +45,7 @@ class YOLOv5Face(BaseDetector):
             or 'numpy' (no dependencies). Defaults to 'numpy'.
         providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
             the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
-        **kwargs: Advanced options:
-            max_det (int): Maximum number of detections to return. Defaults to 750.
+        max_det (int): Maximum number of detections to return. Defaults to 750.
 
     Attributes:
         model_name (YOLOv5FaceWeights): Selected model variant.
@@ -71,7 +70,7 @@ class YOLOv5Face(BaseDetector):
         input_size: int = 640,
         nms_mode: Literal['torchvision', 'numpy'] = 'numpy',
         providers: list[str] | None = None,
-        **kwargs: Any,
+        max_det: int = 750,
     ) -> None:
         super().__init__(
             model_name=model_name,
@@ -80,7 +79,7 @@ class YOLOv5Face(BaseDetector):
             input_size=input_size,
             nms_mode=nms_mode,
             providers=providers,
-            **kwargs,
+            max_det=max_det,
         )
 
         # Validate input size
@@ -102,8 +101,8 @@ class YOLOv5Face(BaseDetector):
         else:
             self.nms_mode = nms_mode
 
-        # Advanced options from kwargs
-        self.max_det = kwargs.get('max_det', 750)
+        # Advanced options
+        self.max_det = max_det
 
         Logger.info(
             f'Initializing YOLOv5Face with model={self.model_name}, confidence_threshold={self.confidence_threshold}, '

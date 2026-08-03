@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import Literal
 
 import cv2
 import numpy as np
@@ -139,7 +139,6 @@ class BlazeFace(BaseDetector):
         nms_threshold (float): IoU above which candidates are blended. Defaults to 0.3.
         providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
             the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
-        **kwargs: Reserved for future advanced options.
 
     Attributes:
         model_name (BlazeFaceWeights): Selected model variant.
@@ -163,14 +162,12 @@ class BlazeFace(BaseDetector):
         confidence_threshold: float = 0.5,
         nms_threshold: float = 0.3,
         providers: list[str] | None = None,
-        **kwargs: Any,
     ) -> None:
         super().__init__(
             model_name=model_name,
             confidence_threshold=confidence_threshold,
             nms_threshold=nms_threshold,
             providers=providers,
-            **kwargs,
         )
 
         self.model_name = model_name

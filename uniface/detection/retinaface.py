@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import Literal
 
 import numpy as np
 
@@ -40,10 +40,9 @@ class RetinaFace(BaseDetector):
             Note: Non-default sizes may cause slower inference and CoreML compatibility issues.
         providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
             the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
-        **kwargs: Advanced options:
-            pre_nms_topk (int): Number of top-scoring boxes considered before NMS. Defaults to 5000.
-            post_nms_topk (int): Max number of detections kept after NMS. Defaults to 750.
-            dynamic_size (bool): If True, generate anchors dynamically per input image. Defaults to False.
+        pre_nms_topk (int): Number of top-scoring boxes considered before NMS. Defaults to 5000.
+        post_nms_topk (int): Max number of detections kept after NMS. Defaults to 750.
+        dynamic_size (bool): If True, generate anchors dynamically per input image. Defaults to False.
 
     Attributes:
         model_name (RetinaFaceWeights): Selected model variant.
@@ -69,7 +68,9 @@ class RetinaFace(BaseDetector):
         nms_threshold: float = 0.4,
         input_size: tuple[int, int] = (640, 640),
         providers: list[str] | None = None,
-        **kwargs: Any,
+        pre_nms_topk: int = 5000,
+        post_nms_topk: int = 750,
+        dynamic_size: bool = False,
     ) -> None:
         super().__init__(
             model_name=model_name,
@@ -77,7 +78,9 @@ class RetinaFace(BaseDetector):
             nms_threshold=nms_threshold,
             input_size=input_size,
             providers=providers,
-            **kwargs,
+            pre_nms_topk=pre_nms_topk,
+            post_nms_topk=post_nms_topk,
+            dynamic_size=dynamic_size,
         )
 
         self.model_name = model_name
@@ -86,10 +89,10 @@ class RetinaFace(BaseDetector):
         self.input_size = input_size
         self.providers = providers
 
-        # Advanced options from kwargs
-        self.pre_nms_topk = kwargs.get('pre_nms_topk', 5000)
-        self.post_nms_topk = kwargs.get('post_nms_topk', 750)
-        self.dynamic_size = kwargs.get('dynamic_size', False)
+        # Advanced options
+        self.pre_nms_topk = pre_nms_topk
+        self.post_nms_topk = post_nms_topk
+        self.dynamic_size = dynamic_size
 
         Logger.info(
             f'Initializing RetinaFace with model={self.model_name}, confidence_threshold={self.confidence_threshold}, '
