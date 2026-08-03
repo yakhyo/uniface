@@ -190,6 +190,26 @@ def test_iris_slices_cover_the_extra_points(mesher, mock_image, mock_bbox):
     assert len(result.landmarks) == NUM_MESH_LANDMARKS + 10
 
 
+@pytest.mark.parametrize(
+    ('label', 'bad_image'),
+    [
+        ('float [0, 1]', np.random.rand(640, 640, 3).astype(np.float32)),
+        ('grayscale', np.zeros((640, 640), dtype=np.uint8)),
+        ('empty', np.zeros((0, 0, 3), dtype=np.uint8)),
+    ],
+)
+def test_predict_rejects_unusable_images(mesher, mock_bbox, label, bad_image):
+    """`preprocess` divides by 255, so a float image would silently mesh garbage."""
+    with pytest.raises(ValueError):
+        mesher.predict(bad_image, bboxes=[mock_bbox])
+
+
+def test_get_landmarks_rejects_unusable_images(mesher, mock_bbox):
+    """The score that would flag the bad input is dropped on this path."""
+    with pytest.raises(ValueError, match='uint8'):
+        mesher.get_landmarks(np.random.rand(640, 640, 3).astype(np.float32), mock_bbox)
+
+
 def test_iris_constants_are_contiguous_and_ordered():
     """468-472 then 473-477, with no gap and no overlap."""
     assert (IRIS_LEFT.start, IRIS_LEFT.stop) == (NUM_MESH_LANDMARKS, NUM_MESH_LANDMARKS + 5)

@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING
 import cv2
 import numpy as np
 
+from uniface.common import validate_image
 from uniface.constants import FaceMeshWeights
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
@@ -265,13 +266,18 @@ class FaceMesh(BaseLandmarker):
             One `FaceMeshResult` per input face, in input order.
 
         Raises:
-            ValueError: If both or neither of `faces` and `bboxes` are given, or
-                if `keypoints` and `bboxes` have different lengths.
+            ValueError: If the image is empty, not 3-channel BGR, or not uint8; if
+                both or neither of `faces` and `bboxes` are given; or if `keypoints`
+                and `bboxes` have different lengths.
 
         Example:
             >>> results = mesher.predict(image, detector.detect(image))
             >>> results = mesher.predict(image, bboxes=[[10, 20, 110, 140]])
         """
+        # `preprocess` rescales by 255, so a float [0, 1] image would be divided twice
+        # and yield garbage landmarks that `get_landmarks` returns without a score.
+        validate_image(image)
+
         if (faces is None) == (bboxes is None):
             raise ValueError('Provide either faces or bboxes, not both')
 

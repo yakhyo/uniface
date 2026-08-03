@@ -9,6 +9,7 @@ from typing import Literal
 import cv2
 import numpy as np
 
+from uniface.common import validate_image
 from uniface.constants import BlazeFaceWeights
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
@@ -302,12 +303,19 @@ class BlazeFace(BaseDetector):
                 - confidence (float): Detection confidence score (0.0 to 1.0)
                 - landmarks (np.ndarray): 6-point MediaPipe keypoints, shape (6, 2)
 
+        Raises:
+            ValueError: If the image is empty, not 3-channel BGR, or not uint8.
+
         Example:
             >>> faces = detector.detect(image)
             >>> for face in faces:
             ...     bbox = face.bbox  # np.ndarray with shape (4,)
             ...     keypoints = face.landmarks  # np.ndarray with shape (6, 2)
         """
+        # This detector warps the input itself, so it never reaches the resize helpers
+        # that validate for the other detectors.
+        validate_image(image)
+
         height, width = image.shape[:2]
         size = self.input_size
 

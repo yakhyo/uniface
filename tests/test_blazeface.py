@@ -85,6 +85,24 @@ def test_no_faces_in_blank_images(blazeface_model):
         assert blazeface_model.detect(np.zeros(shape, dtype=np.uint8)) == []
 
 
+@pytest.mark.parametrize(
+    ('label', 'bad_image'),
+    [
+        ('float [0, 1]', np.random.rand(480, 640, 3).astype(np.float32)),
+        ('grayscale', np.zeros((480, 640), dtype=np.uint8)),
+        ('empty', np.zeros((0, 0, 3), dtype=np.uint8)),
+    ],
+)
+def test_detect_rejects_unusable_images(blazeface_model, label, bad_image):
+    """This detector warps its own input, bypassing the shared resize helpers.
+
+    A float image used to return zero faces silently and a grayscale one raised
+    an opaque IndexError, both unlike every other detector.
+    """
+    with pytest.raises(ValueError):
+        blazeface_model.detect(bad_image)
+
+
 def test_no_overflow_warning_on_extreme_logits(blazeface_model, face_image):
     """Anchor logits are clipped before the sigmoid; numpy must not warn."""
     with np.errstate(all='raise'):
