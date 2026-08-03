@@ -31,13 +31,19 @@ Face detection is the first step in any face analysis pipeline. UniFace provides
     [parsing](parsing.md) all consume.
 
     BlazeFace returns **6** MediaPipe keypoints whose fourth point is a mouth
-    *center*, not corners, so they cannot be fitted to that template. It declares
-    this with `supports_alignment = False`, and `FaceAnalyzer` disables recognition
+    *center*, not corners, so they cannot be fitted to that template. It leaves
+    `supports_alignment = False`, and `FaceAnalyzer` disables recognition
     with a warning rather than producing broken embeddings.
 
     ```python
     detector.supports_alignment  # False for BlazeFace, True for every other detector
+    detector.supports_landmarks  # True for every built-in detector
     ```
+
+    `supports_landmarks` answers the earlier question: does the detector fill
+    `Face.landmarks` at all? Every built-in detector does. Both flags are opt-in on
+    `BaseDetector`, so a custom boxes-only detector reports `False` for both without
+    declaring anything — see [Custom Models](../recipes/custom-models.md).
 
 ---
 

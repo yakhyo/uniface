@@ -54,6 +54,9 @@ class SCRFD(BaseDetector):
         RuntimeError: If the ONNX model fails to load or initialize.
     """
 
+    supports_landmarks = True
+    supports_alignment = True
+
     def __init__(
         self,
         *,

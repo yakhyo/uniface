@@ -26,9 +26,15 @@ from uniface.types import Face
 import numpy as np
 
 class MyDetector(BaseDetector):
-    # Set False if your landmarks are NOT the 5-point alignment template
+    # Both flags default to False, so a boxes-only detector declares neither.
+
+    # Opt in if your detector fills Face.landmarks.
+    supports_landmarks = True
+
+    # Opt in only if those landmarks ARE the 5-point alignment template
     # (left eye, right eye, nose, left mouth corner, right mouth corner).
-    # FaceAnalyzer then disables recognition instead of producing broken embeddings.
+    # Left False, FaceAnalyzer disables recognition instead of producing
+    # broken embeddings.
     supports_alignment = True
 
     def __init__(self, model_path: str, confidence_threshold: float = 0.5):

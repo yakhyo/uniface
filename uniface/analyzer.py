@@ -64,7 +64,7 @@ class FaceAnalyzer:
             detector = SCRFD(model_name=SCRFDWeights.SCRFD_500M_KPS)
 
         # Checked before the _UNSET branch below so an unusable recognizer is never loaded.
-        if not getattr(detector, 'supports_alignment', True):
+        if not getattr(detector, 'supports_alignment', False):
             if recognizer is _UNSET or recognizer is not None:
                 Logger.warning(
                     f'{detector.__class__.__name__} does not produce alignment landmarks; '

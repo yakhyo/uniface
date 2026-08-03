@@ -154,6 +154,7 @@ class BlazeFace(BaseDetector):
         RuntimeError: If the ONNX model fails to load or initialize.
     """
 
+    supports_landmarks = True
     supports_alignment = False
 
     def __init__(

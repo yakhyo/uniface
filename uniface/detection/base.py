@@ -23,15 +23,19 @@ class BaseDetector(ABC):
     Attributes:
         config: Dictionary containing detector configuration parameters.
         supports_landmarks: Whether the detector emits facial landmarks alongside boxes.
-            False means `Face.landmarks` is empty and landmark-driven stages are unavailable.
+            Opt-in: defaults to False so a subclass that only produces boxes is never
+            mistaken for a landmark detector. False means `Face.landmarks` is empty and
+            landmark-driven stages are unavailable.
         supports_alignment: Whether those landmarks fit the 5-point alignment template
             (left eye, right eye, nose, left mouth corner, right mouth corner) in
             `uniface.face_utils.reference_alignment`. False means recognition, quality
-            scoring, and XSeg parsing cannot consume them.
+            scoring, and XSeg parsing cannot consume them. Also opt-in: a boxes-only
+            subclass that declares neither flag is safe by default, and setting this to
+            True without `supports_landmarks = True` is meaningless.
     """
 
-    supports_landmarks: bool = True
-    supports_alignment: bool = True
+    supports_landmarks: bool = False
+    supports_alignment: bool = False
 
     def __init__(self, **kwargs: Any) -> None:
         """Initialize the detector with configuration parameters.
