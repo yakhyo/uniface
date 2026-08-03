@@ -826,7 +826,8 @@ def vis_parsing_maps(
     image = np.array(image).copy().astype(np.uint8)
     segmentation_mask = segmentation_mask.copy().astype(np.uint8)
 
-    # Create a color mask in BGR format
+    # Create a color mask in BGR; the palette is padded to max_class + 1 so class ids
+    # beyond the color table map to black instead of raising
     max_class = int(segmentation_mask.max())
     palette = np.zeros((max(max_class + 1, len(FACE_PARSING_COLORS)), 3), dtype=np.uint8)
     palette[: len(FACE_PARSING_COLORS)] = FACE_PARSING_COLORS

@@ -190,7 +190,7 @@ class YOLOv5Face(BaseDetector):
         # Convert from xywh to xyxy
         boxes = self._xywh2xyxy(predictions[:, :4])
 
-        # Get confidence scores
+        # Column 4 is the objectness score; the trailing cls_conf column is not used
         scores = predictions[:, 4]
 
         # Get landmarks (5 points, 10 coordinates)

@@ -135,7 +135,7 @@ class BlurFace:
             return _pixelate_blur(region, self._pixel_blocks)
         elif self.method == 'blackout':
             return _blackout_blur(region, self._color)
-        return region  # Fallback (should not reach here)
+        return region  # unreachable: blur_regions dispatches 'elliptical' before _blur_region is called
 
     def anonymize(
         self,

@@ -169,7 +169,7 @@ def bbox_center_alignment(
     # Convert rotation from degrees to radians
     rot = float(rotation) * np.pi / 180.0
 
-    # Scale the image
+    # Scaling transform
     t1 = SimilarityTransform(scale=scale)
 
     # Translate the center point to the origin (after scaling)
@@ -177,7 +177,7 @@ def bbox_center_alignment(
     cy = center[1] * scale
     t2 = SimilarityTransform(translation=(-1 * cx, -1 * cy))
 
-    # Apply rotation around origin (center of face)
+    # Rotation around the origin (the face center, after t2)
     t3 = SimilarityTransform(rotation=rot)
 
     # Translate origin to center of output image
