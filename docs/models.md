@@ -147,7 +147,7 @@ Face recognition using adaptive margin based on image quality.
 | `IR_101`  | IR-101   | WebFace12M  | 249 MB | -         | 97.66%    |
 
 !!! info "Training Data & Accuracy"
-    **Dataset**: [WebFace4M / WebFace12M](datasets.md#webface4m--webface12m) (4M / 12M images)
+    **Dataset**: [WebFace4M / WebFace12M](datasets.md#webface4m-webface12m) (4M / 12M images)
 
     **Accuracy**: IJB-B and IJB-C benchmarks, TAR@FAR=0.01%
 
