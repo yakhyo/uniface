@@ -45,12 +45,13 @@ class FaceAttribNet(BaseAttribute):
             the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
 
     Raises:
-        ValueError: If the model weights are invalid or not found.
+        ValueError: If the model weights are invalid or not found, or `input_size` is not square.
         RuntimeError: If the ONNX model fails to load or initialize.
     """
 
     def __init__(
         self,
+        *,
         model_name: FaceAttribNetWeights = FaceAttribNetWeights.DEFAULT,
         input_size: tuple[int, int] | None = None,
         margin: float = 0.0,
@@ -60,15 +61,22 @@ class FaceAttribNet(BaseAttribute):
 
         Args:
             model_name (FaceAttribNetWeights): The enum specifying the model weights to load.
-            input_size (tuple[int, int] | None): Input size (height, width).
-                If None, defaults to (128, 128).
+            input_size (tuple[int, int] | None): Input size (height, width). Must be square:
+                preprocessing letterboxes into a square canvas. If None, defaults to (128, 128).
             margin (float): Fraction of box size to expand the face crop by on each side.
             providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
                 the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
+
+        Raises:
+            ValueError: If `input_size` is not square.
         """
         Logger.info(f'Initializing FaceAttribNet with model={model_name.name}')
         self.model_path = verify_model_weights(model_name)
-        self.input_size = input_size if input_size is not None else (128, 128)
+        # Normalized to a tuple so a [128, 128] list still compares equal to the ONNX metadata.
+        self.input_size = tuple(input_size) if input_size is not None else (128, 128)
+        # letterbox_resize pads into a square canvas, so a non-square request cannot be honored.
+        if self.input_size[0] != self.input_size[1]:
+            raise ValueError(f'input_size must be square, got {self.input_size}')
         self.margin = margin
         self.providers = providers
         self._initialize_model()
@@ -79,6 +87,15 @@ class FaceAttribNet(BaseAttribute):
             self.session = create_onnx_session(self.model_path, providers=self.providers)
             input_meta = self.session.get_inputs()[0]
             self.input_name = input_meta.name
+
+            # Warn when a custom input_size disagrees with the model metadata
+            model_input_size = tuple(input_meta.shape[2:4])  # (height, width)
+            if all(isinstance(v, int) for v in model_input_size) and self.input_size != model_input_size:
+                Logger.warning(
+                    f'Using custom input_size {self.input_size}, '
+                    f'but model expects {model_input_size}. This may affect accuracy.'
+                )
+
             self.output_names = [output.name for output in self.session.get_outputs()]
             Logger.info(f'Successfully initialized FaceAttribNet model with input size {self.input_size}')
         except Exception as e:

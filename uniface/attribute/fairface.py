@@ -54,6 +54,7 @@ class FairFace(BaseAttribute):
 
     def __init__(
         self,
+        *,
         model_name: FairFaceWeights = FairFaceWeights.DEFAULT,
         input_size: tuple[int, int] | None = None,
         providers: list[str] | None = None,
@@ -69,7 +70,8 @@ class FairFace(BaseAttribute):
         """
         Logger.info(f'Initializing FairFace with model={model_name.name}')
         self.model_path = verify_model_weights(model_name)
-        self.input_size = input_size if input_size is not None else (224, 224)
+        # Normalized to a tuple so a [224, 224] list still compares equal to the ONNX metadata.
+        self.input_size = tuple(input_size) if input_size is not None else (224, 224)
         self.providers = providers
         self._initialize_model()
 
@@ -80,6 +82,15 @@ class FairFace(BaseAttribute):
             # Get model input details from the loaded model
             input_meta = self.session.get_inputs()[0]
             self.input_name = input_meta.name
+
+            # Warn when a custom input_size disagrees with the model metadata
+            model_input_size = tuple(input_meta.shape[2:4])  # (height, width)
+            if all(isinstance(v, int) for v in model_input_size) and self.input_size != model_input_size:
+                Logger.warning(
+                    f'Using custom input_size {self.input_size}, '
+                    f'but model expects {model_input_size}. This may affect accuracy.'
+                )
+
             self.output_names = [output.name for output in self.session.get_outputs()]
             Logger.info(f'Successfully initialized FairFace model with input size {self.input_size}')
         except Exception as e:

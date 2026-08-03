@@ -39,6 +39,7 @@ class AgeGender(BaseAttribute):
 
     def __init__(
         self,
+        *,
         model_name: AgeGenderWeights = AgeGenderWeights.DEFAULT,
         input_size: tuple[int, int] | None = None,
         providers: list[str] | None = None,
@@ -54,7 +55,8 @@ class AgeGender(BaseAttribute):
         """
         Logger.info(f'Initializing AgeGender with model={model_name.name}')
         self.model_path = verify_model_weights(model_name)
-        self._user_input_size = input_size  # Store user preference
+        # Normalized to a tuple so a [224, 224] list still compares equal to the ONNX metadata.
+        self.input_size = tuple(input_size) if input_size is not None else None
         self.providers = providers
         self._initialize_model()
 
@@ -68,9 +70,8 @@ class AgeGender(BaseAttribute):
 
             # Use user-provided size if given, otherwise auto-detect from model
             model_input_size = tuple(input_meta.shape[2:4])  # (height, width)
-            if self._user_input_size is not None:
-                self.input_size = self._user_input_size
-                if self._user_input_size != model_input_size:
+            if self.input_size is not None:
+                if all(isinstance(v, int) for v in model_input_size) and self.input_size != model_input_size:
                     Logger.warning(
                         f'Using custom input_size {self.input_size}, '
                         f'but model expects {model_input_size}. This may affect accuracy.'
@@ -103,7 +104,6 @@ class AgeGender(BaseAttribute):
         center = ((bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2)
         scale = self.input_size[1] / (max(width, height) * 1.5)
 
-        # **Rotation parameter restored here**
         rotation = 0.0
         aligned_face, _ = bbox_center_alignment(image, center, self.input_size[1], scale, rotation)
 
