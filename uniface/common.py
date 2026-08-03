@@ -20,17 +20,26 @@ __all__ = [
     'non_max_suppression',
     'resize_image',
     'softmax',
+    'validate_image',
     'xyxy_to_cxcywh',
 ]
 
 
-def _validate_image(image: np.ndarray) -> None:
-    """Reject images the resize canvases below would silently corrupt.
+def validate_image(image: np.ndarray) -> None:
+    """Reject images the preprocessing paths below would silently corrupt.
 
     Both resize helpers paste the input onto a `uint8` canvas: a float image
     would be truncated to zeros (detectors then return no faces with no error),
     and a grayscale or BGRA image would fail to broadcast into the 3-channel
-    canvas. Failing loudly here turns silent corruption into actionable errors.
+    canvas. Models that warp the input themselves — BlazeFace, FaceMesh — call
+    this directly for the same guarantee. Failing loudly here turns silent
+    corruption into actionable errors.
+
+    Args:
+        image: The caller-supplied image.
+
+    Raises:
+        ValueError: If the image is empty, not 3-channel BGR, or not uint8.
     """
     if not isinstance(image, np.ndarray) or image.size == 0:
         raise ValueError('Input image must be a non-empty numpy array.')
@@ -61,7 +70,7 @@ def resize_image(
     Raises:
         ValueError: If the image is empty, not 3-channel BGR, or not uint8.
     """
-    _validate_image(frame)
+    validate_image(frame)
     width, height = target_shape
 
     # Aspect-ratio preserving resize
@@ -354,7 +363,7 @@ def letterbox_resize(
     Raises:
         ValueError: If the image is empty, not 3-channel BGR, or not uint8.
     """
-    _validate_image(image)
+    validate_image(image)
 
     # Get original image shape
     img_h, img_w = image.shape[:2]
