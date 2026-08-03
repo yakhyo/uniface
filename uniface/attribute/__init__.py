@@ -32,6 +32,7 @@ except ImportError:
 
 __all__ = [
     'AgeGender',
+    'BaseAttribute',
     'DemographyResult',
     'Emotion',
     'EmotionResult',
