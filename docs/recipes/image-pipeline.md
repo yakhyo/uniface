@@ -76,7 +76,7 @@ recognizer = ArcFace()
 age_gender = AgeGender()
 
 analyzer = FaceAnalyzer(
-    detector,
+    detector=detector,
     recognizer=recognizer,
     predictors=[age_gender],
 )

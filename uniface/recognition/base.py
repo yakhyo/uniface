@@ -41,6 +41,7 @@ class BaseRecognizer(ABC):
     @abstractmethod
     def __init__(
         self,
+        *,
         model_path: str,
         preprocessing: PreprocessConfig,
         providers: list[str] | None = None,

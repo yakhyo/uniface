@@ -190,7 +190,7 @@ age_gender = AgeGender()
 fairface = FairFace()
 
 analyzer = FaceAnalyzer(
-    detector,
+    detector=detector,
     recognizer=recognizer,
     predictors=[age_gender, fairface],
 )

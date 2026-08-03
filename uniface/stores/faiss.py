@@ -59,6 +59,7 @@ class FAISS(BaseStore):
 
     def __init__(
         self,
+        *,
         embedding_size: int = 512,
         db_path: str = './vector_index',
     ) -> None:

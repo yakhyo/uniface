@@ -53,6 +53,7 @@ class FaceAnalyzer:
 
     def __init__(
         self,
+        *,
         detector: BaseDetector | None = None,
         recognizer: BaseRecognizer | None = _UNSET,
         predictors: list[BaseAttribute] | None = None,

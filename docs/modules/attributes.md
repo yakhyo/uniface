@@ -284,7 +284,7 @@ from uniface.attribute import AgeGender
 from uniface.detection import RetinaFace
 
 analyzer = FaceAnalyzer(
-    RetinaFace(),
+    detector=RetinaFace(),
     predictors=[AgeGender()],
 )
 

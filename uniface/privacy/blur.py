@@ -53,7 +53,7 @@ class EllipticalBlur:
         margin (int): Extra pixels to extend ellipse beyond bbox. Defaults to 20.
     """
 
-    def __init__(self, blur_strength: float = 3.0, margin: int = 20):
+    def __init__(self, *, blur_strength: float = 3.0, margin: int = 20):
         self.blur_strength = blur_strength
         self.margin = margin
 
@@ -107,6 +107,7 @@ class BlurFace:
 
     def __init__(
         self,
+        *,
         method: str = 'pixelate',
         blur_strength: float = 3.0,
         pixel_blocks: int = 15,
@@ -123,7 +124,7 @@ class BlurFace:
             raise ValueError(f"Invalid blur method: '{method}'. Choose from: {sorted(self.VALID_METHODS)}")
 
         if self.method == 'elliptical':
-            self._elliptical = EllipticalBlur(blur_strength, margin)
+            self._elliptical = EllipticalBlur(blur_strength=blur_strength, margin=margin)
 
     def _blur_region(self, region: np.ndarray) -> np.ndarray:
         """Apply blur to a single region based on the configured method."""
