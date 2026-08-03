@@ -20,7 +20,7 @@ def mesher(request):
     Assertions here go through `num_landmarks` rather than a literal, so the suite
     covers 468 and 478 with one body and a third model would need no new tests.
     """
-    return FaceMesh(request.param)
+    return FaceMesh(model_name=request.param)
 
 
 @pytest.fixture
@@ -48,7 +48,7 @@ def mock_keypoints():
 )
 def test_model_geometry(weights, num_landmarks, input_size):
     """Both are read from the ONNX graph, never hardcoded in the class."""
-    mesher = FaceMesh(weights)
+    mesher = FaceMesh(model_name=weights)
 
     assert mesher.num_landmarks == num_landmarks
     assert mesher.input_size == input_size

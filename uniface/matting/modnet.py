@@ -68,6 +68,7 @@ class MODNet(BaseMatting):
 
     def __init__(
         self,
+        *,
         model_name: MODNetWeights = MODNetWeights.PHOTOGRAPHIC,
         input_size: int = 512,
         providers: list[str] | None = None,

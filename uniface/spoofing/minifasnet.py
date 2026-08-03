@@ -72,6 +72,7 @@ class MiniFASNet(BaseSpoofer):
 
     def __init__(
         self,
+        *,
         model_name: MiniFASNetWeights = MiniFASNetWeights.V2,
         scale: float | None = None,
         providers: list[str] | None = None,

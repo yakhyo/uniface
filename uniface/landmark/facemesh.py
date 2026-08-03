@@ -136,13 +136,14 @@ class FaceMesh(BaseLandmarker):
         >>>
         >>> # The 478-point model appends irises; everything else is unchanged
         >>> from uniface.landmark import IRIS_LEFT
-        >>> iris_mesher = FaceMesh(FaceMeshWeights.V2_478)
+        >>> iris_mesher = FaceMesh(model_name=FaceMeshWeights.V2_478)
         >>> iris_mesher.predict(image, faces)[0].landmarks[IRIS_LEFT].shape
         (5, 3)
     """
 
     def __init__(
         self,
+        *,
         model_name: FaceMeshWeights = FaceMeshWeights.V1_468,
         providers: list[str] | None = None,
     ) -> None:

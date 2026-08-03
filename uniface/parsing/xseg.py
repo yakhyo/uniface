@@ -67,6 +67,7 @@ class XSeg(BaseFaceParser):
 
     def __init__(
         self,
+        *,
         model_name: XSegWeights = XSegWeights.DEFAULT,
         align_size: int = 256,
         blur_sigma: float = 0,
@@ -148,7 +149,7 @@ class XSeg(BaseFaceParser):
         # Resize back to crop size
         mask = cv2.resize(mask, crop_size, interpolation=cv2.INTER_LINEAR)
 
-        # Apply optional blur and threshold
+        # Blur, then remap [0.5, 1] to [0, 1] so values below 0.5 drop to 0, re-sharpening the softened edge
         if self.blur_sigma > 0:
             mask = cv2.GaussianBlur(mask, (0, 0), self.blur_sigma)
             mask = (mask.clip(0.5, 1) - 0.5) * 2

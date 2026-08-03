@@ -51,6 +51,7 @@ class EdgeFace(BaseRecognizer):
 
     def __init__(
         self,
+        *,
         model_name: EdgeFaceWeights = EdgeFaceWeights.XXS,
         preprocessing: PreprocessConfig | None = None,
         providers: list[str] | None = None,

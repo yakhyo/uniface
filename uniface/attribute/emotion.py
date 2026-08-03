@@ -31,6 +31,7 @@ class Emotion(BaseAttribute):
 
     def __init__(
         self,
+        *,
         model_name: EmotionWeights = EmotionWeights.AFFECNET7,
         input_size: tuple[int, int] = (112, 112),
     ) -> None:
@@ -81,19 +82,19 @@ class Emotion(BaseAttribute):
             Logger.error(f"Failed to load Emotion model from '{self.model_path}'", exc_info=True)
             raise RuntimeError(f'Failed to initialize Emotion model: {e}') from e
 
-    def preprocess(self, image: np.ndarray, landmark: list | np.ndarray) -> torch.Tensor:
+    def preprocess(self, image: np.ndarray, landmarks: list | np.ndarray) -> torch.Tensor:
         """Aligns the face using landmarks and preprocesses it into a tensor.
 
         Args:
             image (np.ndarray): The full input image in BGR format.
-            landmark (list | np.ndarray): The 5-point facial landmarks.
+            landmarks (list | np.ndarray): The 5-point facial landmarks.
 
         Returns:
             torch.Tensor: The preprocessed image tensor ready for inference.
         """
-        landmark = np.asarray(landmark)
+        landmarks = np.asarray(landmarks)
 
-        aligned_image, _ = face_alignment(image, landmark)
+        aligned_image, _ = face_alignment(image, landmarks)
 
         # Convert BGR to RGB, resize, normalize, and convert to a CHW tensor
         rgb_image = cv2.cvtColor(aligned_image, cv2.COLOR_BGR2RGB)

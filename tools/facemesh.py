@@ -159,7 +159,7 @@ def main():
     args = parser.parse_args()
 
     detector = DETECTORS[args.detector]()
-    mesher = FaceMesh(MODELS[args.model])
+    mesher = FaceMesh(model_name=MODELS[args.model])
 
     source_type = get_source_type(args.source)
 

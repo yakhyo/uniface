@@ -43,6 +43,7 @@ class SphereFace(BaseRecognizer):
 
     def __init__(
         self,
+        *,
         model_name: SphereFaceWeights = SphereFaceWeights.SPHERE20,
         preprocessing: PreprocessConfig | None = None,
         providers: list[str] | None = None,

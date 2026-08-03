@@ -50,6 +50,7 @@ class AdaFace(BaseRecognizer):
 
     def __init__(
         self,
+        *,
         model_name: AdaFaceWeights = AdaFaceWeights.IR_18,
         preprocessing: PreprocessConfig | None = None,
         providers: list[str] | None = None,

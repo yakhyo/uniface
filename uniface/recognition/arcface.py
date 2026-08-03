@@ -43,6 +43,7 @@ class ArcFace(BaseRecognizer):
 
     def __init__(
         self,
+        *,
         model_name: ArcFaceWeights = ArcFaceWeights.MNET,
         preprocessing: PreprocessConfig | None = None,
         providers: list[str] | None = None,

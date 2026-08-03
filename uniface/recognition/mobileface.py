@@ -43,6 +43,7 @@ class MobileFace(BaseRecognizer):
 
     def __init__(
         self,
+        *,
         model_name: MobileFaceWeights = MobileFaceWeights.MNET_V2,
         preprocessing: PreprocessConfig | None = None,
         providers: list[str] | None = None,

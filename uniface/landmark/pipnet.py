@@ -64,6 +64,7 @@ class PIPNet(BaseLandmarker):
 
     def __init__(
         self,
+        *,
         model_name: PIPNetWeights = PIPNetWeights.WFLW_98,
         providers: list[str] | None = None,
     ) -> None:

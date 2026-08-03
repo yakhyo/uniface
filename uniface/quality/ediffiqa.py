@@ -59,6 +59,7 @@ class EDifFIQA(BaseQualityEstimator):
 
     def __init__(
         self,
+        *,
         model_name: EDifFIQAWeights = EDifFIQAWeights.T,
         providers: list[str] | None = None,
     ) -> None:
