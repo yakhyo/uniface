@@ -64,8 +64,17 @@ CenterFace is an anchor-free detector (MobileNetV2 + FPN) that treats faces as c
     **Speed**: Benchmark on your own hardware using `python tools/detect.py --source <image> --method centerface`
 
 !!! note "Input Size"
-    Input width and height must be multiples of 32 (default 640×640). The ONNX model
-    supports dynamic batch and spatial dimensions.
+    The ONNX model has dynamic spatial dimensions. `input_size` is an upper bound
+    (default 640×640), not a fixed shape: larger images are scaled down to fit and smaller
+    ones are left alone, preserving aspect ratio. Each side is then rounded up to a
+    multiple of 32. Pass `input_size=None` to always run at native resolution, like upstream.
+
+!!! warning "Weakest landmarks for rotated faces"
+    CenterFace decodes all five points from a single stride-4 cell, and its landmark
+    accuracy is the lowest in this library at every in-plane rotation — roughly 8.5% NME at
+    30° and 11.7% at 45°, against 5.4% / 6.2% for RetinaFace-R50. Past ~60° all WIDER
+    FACE-trained detectors here degrade sharply. Prefer `RetinaFace` or `SCRFD` when faces
+    may be tilted; this is a property of the model, not of the port.
 
 ---
 

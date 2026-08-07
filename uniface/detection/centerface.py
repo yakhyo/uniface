@@ -6,9 +6,10 @@ from __future__ import annotations
 
 from typing import Literal
 
+import cv2
 import numpy as np
 
-from uniface.common import non_max_suppression, resize_image
+from uniface.common import non_max_suppression, validate_image
 from uniface.constants import CenterFaceWeights
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
@@ -21,6 +22,9 @@ __all__ = ['CenterFace']
 
 # CenterFace predicts on a single feature map downsampled 4x from the input
 _STRIDE = 4
+
+# The FPN needs both input sides to be multiples of 32
+_SIZE_DIVISOR = 32
 
 
 class CenterFace(BaseDetector):
@@ -36,14 +40,16 @@ class CenterFace(BaseDetector):
     Note:
         Landmarks are decoded from a single coarse feature-map cell per face and are less
         precise than SCRFD/RetinaFace; accuracy also degrades faster for in-plane rotated
-        faces (beyond ~20-30 degrees). Best suited for roughly upright faces.
+        faces (beyond ~20-30 degrees), upstream included. Best suited for upright faces.
 
     Args:
         model_name (CenterFaceWeights): Predefined model enum. Defaults to CenterFaceWeights.DEFAULT.
         confidence_threshold (float): Confidence threshold for filtering detections. Defaults to 0.35.
         nms_threshold (float): Non-Maximum Suppression threshold. Defaults to 0.3.
-        input_size (tuple[int, int]): Input image size (width, height). Both must be multiples of 32.
-            Defaults to (640, 640).
+        input_size (tuple[int, int] | None): Upper bound on the inference resolution as
+            (width, height), not a fixed shape: larger images are scaled down to fit and
+            smaller ones are left alone, preserving aspect ratio. Defaults to (640, 640).
+            Pass None to always run at native resolution, like upstream.
         providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
             the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
 
@@ -51,11 +57,11 @@ class CenterFace(BaseDetector):
         model_name (CenterFaceWeights): Selected model variant.
         confidence_threshold (float): Threshold used to filter low-confidence detections.
         nms_threshold (float): Threshold used during NMS to suppress overlapping boxes.
-        input_size (tuple[int, int]): Image size to which inputs are resized before inference.
+        input_size (tuple[int, int] | None): Maximum inference resolution, or None for native.
         _model_path (str): Absolute path to the downloaded/verified model weights.
 
     Raises:
-        ValueError: If `input_size` is not a multiple of 32, or the model weights are invalid.
+        ValueError: If `input_size` is not strictly positive, or the model weights are invalid.
         RuntimeError: If the ONNX model fails to load or initialize.
     """
 
@@ -68,7 +74,7 @@ class CenterFace(BaseDetector):
         model_name: CenterFaceWeights = CenterFaceWeights.DEFAULT,
         confidence_threshold: float = 0.35,
         nms_threshold: float = 0.3,
-        input_size: tuple[int, int] = (640, 640),
+        input_size: tuple[int, int] | None = (640, 640),
         providers: list[str] | None = None,
     ) -> None:
         super().__init__(
@@ -78,8 +84,8 @@ class CenterFace(BaseDetector):
             input_size=input_size,
             providers=providers,
         )
-        if input_size[0] % 32 != 0 or input_size[1] % 32 != 0:
-            raise ValueError(f'input_size must be a multiple of 32, got {input_size}')
+        if input_size is not None and (input_size[0] <= 0 or input_size[1] <= 0):
+            raise ValueError(f'input_size must be strictly positive, got {input_size}')
 
         self.model_name = model_name
         self.confidence_threshold = confidence_threshold
@@ -116,18 +122,43 @@ class CenterFace(BaseDetector):
             Logger.error(f"Failed to load model from '{model_path}': {e}", exc_info=True)
             raise RuntimeError(f"Failed to initialize model session for '{model_path}'") from e
 
-    def preprocess(self, image: np.ndarray) -> np.ndarray:
-        """Preprocess image for inference.
-
-        CenterFace consumes raw pixel values (no mean subtraction or scaling).
+    def _resize(self, image: np.ndarray) -> tuple[np.ndarray, float, float]:
+        """Resize an image to a network-compatible shape, preserving aspect ratio.
 
         Args:
             image: Input image with shape (H, W, C).
 
         Returns:
+            A tuple of (resized image, width scale factor, height scale factor), where each
+            scale factor maps original coordinates to resized ones.
+        """
+        height, width = image.shape[:2]
+
+        ratio = 1.0
+        if self.input_size is not None:
+            max_width, max_height = self.input_size
+            ratio = min(1.0, max_width / width, max_height / height)
+
+        # Round up independently per axis, so the two scale factors need not match
+        new_width = max(_SIZE_DIVISOR, int(np.ceil(width * ratio / _SIZE_DIVISOR) * _SIZE_DIVISOR))
+        new_height = max(_SIZE_DIVISOR, int(np.ceil(height * ratio / _SIZE_DIVISOR) * _SIZE_DIVISOR))
+
+        resized = cv2.resize(image, (new_width, new_height))
+
+        return resized, new_width / width, new_height / height
+
+    def preprocess(self, image: np.ndarray) -> np.ndarray:
+        """Preprocess image for inference.
+
+        CenterFace consumes raw RGB pixel values (no mean subtraction or scaling).
+
+        Args:
+            image: Input image with shape (H, W, C) in BGR order.
+
+        Returns:
             Preprocessed image tensor with shape (1, C, H, W).
         """
-        image = image.astype(np.float32)
+        image = image[:, :, ::-1].astype(np.float32)  # BGR to RGB
         image = image.transpose(2, 0, 1)  # HWC to CHW
         image = np.expand_dims(image, axis=0)
 
@@ -221,9 +252,10 @@ class CenterFace(BaseDetector):
             ...     landmarks = face.landmarks  # np.ndarray with shape (5, 2)
         """
 
+        validate_image(image)
         original_height, original_width = image.shape[:2]
 
-        image, resize_factor = resize_image(image, target_shape=self.input_size)
+        image, scale_w, scale_h = self._resize(image)
 
         image_tensor = self.preprocess(image)
 
@@ -236,8 +268,11 @@ class CenterFace(BaseDetector):
         if bboxes.shape[0] == 0:
             return []
 
-        bboxes = bboxes / resize_factor
-        landmarks = landmarks / resize_factor
+        # Rounding each side up to a multiple of 32 skews the axes independently
+        bboxes[:, 0::2] /= scale_w
+        bboxes[:, 1::2] /= scale_h
+        landmarks[..., 0] /= scale_w
+        landmarks[..., 1] /= scale_h
 
         order = scores.argsort()[::-1]
         pre_det = np.hstack((bboxes, scores[:, None])).astype(np.float32, copy=False)
