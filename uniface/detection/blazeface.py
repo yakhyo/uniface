@@ -333,10 +333,6 @@ class BlazeFace(BaseDetector):
         if bboxes.shape[0] == 0:
             return []
 
-        # The decoded box can extend past the frame
-        bboxes[:, 0::2] = np.clip(bboxes[:, 0::2], 0, width)
-        bboxes[:, 1::2] = np.clip(bboxes[:, 1::2], 0, height)
-
         detections = np.hstack((bboxes, scores[:, None])).astype(np.float32, copy=False)
 
         detections, keypoints = self._select_top_detections(
