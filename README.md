@@ -7,7 +7,6 @@
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Github Build Status](https://github.com/yakhyo/uniface/actions/workflows/ci.yml/badge.svg)](https://github.com/yakhyo/uniface/actions)
 [![PyPI Downloads](https://static.pepy.tech/personalized-badge/uniface?period=total&units=INTERNATIONAL_SYSTEM&left_color=GRAY&right_color=BLUE&left_text=Downloads)](https://pepy.tech/projects/uniface)
-[![UniFace Documentation](https://img.shields.io/badge/Docs-UniFace-blue.svg)](https://yakhyo.github.io/uniface/)
 [![Kaggle Badge](https://img.shields.io/badge/Notebooks-Kaggle?label=Kaggle&color=blue)](https://www.kaggle.com/yakhyokhuja/code)
 
 </div>
@@ -16,310 +15,171 @@
     <img src="https://raw.githubusercontent.com/yakhyo/uniface/main/.github/logos/uniface_rounded_q80.webp" width="90%" alt="UniFace - A Unified Face Analysis Library for Python">
 </div>
 
-> [!NOTE]
-> **UniFace** is a lightweight, production-ready Python library for face detection, recognition, tracking, landmark analysis, face parsing, gaze estimation, and face attributes.
+<p align="center">
+  UniFace is a lightweight, production-ready Python library for face detection, recognition,<br>
+  tracking, landmark analysis, face parsing, gaze estimation, and face attributes.
+</p>
 
-## Features
-
-| Feature                     | Details                                                                                          |
-| --------------------------- | ------------------------------------------------------------------------------------------------ |
-| **Face Detection**          | RetinaFace, SCRFD, CenterFace, YOLOv5-Face, and YOLOv8-Face with 5-point landmarks; BlazeFace (MediaPipe, 6 keypoints) |
-| **Face Recognition**        | AdaFace, ArcFace, EdgeFace, MobileFace, and SphereFace embeddings                                |
-| **Face Tracking**           | Multi-object tracking with [BYTETracker](https://github.com/yakhyo/bytetrack-tracker) for persistent IDs across video frames |
-| **Facial Landmarks**        | 106-point (2d106det), 98 / 68-point (PIPNet), and 468 / 478-point dense 3D mesh (MediaPipe Face Mesh, the 478 variant adding irises) — separate from the 5-point detector landmarks |
-| **Face Parsing**            | BiSeNet semantic segmentation (19 classes), XSeg face masking                                    |
-| **Portrait Matting**        | Trimap-free alpha matte with MODNet (background removal, green screen, compositing)              |
-| **Gaze Estimation**         | Real-time gaze direction with MobileGaze                                                         |
-| **Head Pose Estimation**    | 3D head orientation (pitch, yaw, roll) with 6D rotation representation                           |
-| **Attribute Analysis**      | Age, gender, race (FairFace), emotion, and face states (eye openness, glasses, sunglasses, mask with FaceAttribNet) |
-| **Vector Store**            | FAISS-backed embedding store for fast multi-identity search                                      |
-| **Anti-Spoofing**           | Face liveness detection with MiniFASNet                                                          |
-| **Face Quality Assessment** | eDifFIQA single-score quality (T/S/M/L, NIST FATE-Quality #1 with the L variant)                 |
-| **Face Anonymization**      | 5 blur methods for privacy protection                                                            |
-| **Hardware Acceleration**   | ARM64 (Apple Silicon), CUDA (NVIDIA), CPU                                                        |
-
-## Visual Examples
-
-<table>
-  <tr>
-    <td align="center"><b>Face Detection</b><br><img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/detection.jpg" width="100%"></td>
-    <td align="center"><b>Gaze Estimation</b><br><img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/gaze.jpg" width="100%"></td>
-  </tr>
-  <tr>
-    <td align="center"><b>Head Pose Estimation</b><br><img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/headpose.jpg" width="100%"></td>
-    <td align="center"><b>Age & Gender</b><br><img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/age_gender.jpg" width="100%"></td>
-  </tr>
-  <tr>
-    <td align="center" colspan="2"><b>Face Verification</b><br><img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/verification.jpg" width="80%"></td>
-  </tr>
-  <tr>
-    <td align="center"><b>106-Point Landmarks</b><br><img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/landmarks.jpg" width="70%"></td>
-    <td align="center"><b>98-Point Landmarks (PIPNet)</b><br><img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/landmarks_pipnet.jpg" width="70%"></td>
-  </tr>
-  <tr>
-    <td align="center" colspan="2"><b>Face Parsing</b><br><img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/parsing.jpg" width="80%"></td>
-  </tr>
-  <tr>
-    <td align="center" colspan="2"><b>Face Segmentation</b><br><img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/segmentation.jpg" width="80%"></td>
-  </tr>
-  <tr>
-    <td align="center" colspan="2"><b>Portrait Matting</b><br><img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/matting.jpg" width="100%"></td>
-  </tr>
-  <tr>
-    <td align="center" colspan="2"><b>Face Anonymization</b><br><img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/anonymization.jpg" width="100%"></td>
-  </tr>
-</table>
-
-## Installation
-
-**CPU / Apple Silicon**
+<p align="center">
+  <a href="https://yakhyo.github.io/uniface/quickstart/"><img src="https://img.shields.io/badge/Get%20Started-1f6feb?style=for-the-badge&logoColor=white" alt="Get Started"></a>
+  &nbsp;
+  <a href="https://yakhyo.github.io/uniface/models/"><img src="https://img.shields.io/badge/Model%20Zoo-30363d?style=for-the-badge&logoColor=white" alt="Model Zoo"></a>
+  &nbsp;
+  <a href="https://yakhyo.github.io/uniface/notebooks/"><img src="https://img.shields.io/badge/Notebooks-30363d?style=for-the-badge&logo=jupyter&logoColor=white" alt="Notebooks"></a>
+  &nbsp;
+  <a href="https://yakhyo.github.io/uniface/"><img src="https://img.shields.io/badge/Full%20Docs-30363d?style=for-the-badge&logoColor=white" alt="Full Docs"></a>
+</p>
 
 ```bash
-pip install uniface[cpu]
+pip install "uniface[cpu]"          # CPU and Apple Silicon
+pip install "uniface[gpu]"          # NVIDIA CUDA
+pip install --pre "uniface[cpu]"    # latest pre-release
 ```
 
-**GPU support (NVIDIA CUDA)**
+<details>
+<summary><b>A first script</b></summary>
 
-```bash
-pip install uniface[gpu]
-```
+<br>
 
-> **Why separate extras?** `onnxruntime` and `onnxruntime-gpu` conflict when both are installed — they own the same Python namespace. Installing only the extra you need prevents that conflict entirely.
-
-**From source (latest version)**
-
-```bash
-git clone https://github.com/yakhyo/uniface.git
-cd uniface && pip install -e ".[cpu]"   # or .[gpu] for CUDA
-```
-
-**FAISS vector store**
-
-```bash
-pip install faiss-cpu   # or faiss-gpu for CUDA
-```
-
-**Optional dependencies**
-
-- Emotion model uses TorchScript and requires `torch`:
-  `pip install torch` (choose the correct build for your OS/CUDA)
-- YOLOv5-Face and YOLOv8-Face support faster NMS with `torchvision`:
-  `pip install torch torchvision` then use `nms_mode='torchvision'`
-
-## Model Downloads and Cache
-
-Models are downloaded automatically on first use and verified via SHA-256.
-
-Default cache location: `~/.uniface/models`
-
-Override with the programmatic API or environment variable:
-
-```python
-from uniface.model_store import get_cache_dir, set_cache_dir
-
-set_cache_dir('/data/models')
-print(get_cache_dir())  # /data/models
-```
-
-```bash
-export UNIFACE_CACHE_DIR=/data/models
-```
-
-## Quick Example (Detection)
+`FaceAnalyzer` runs detection, alignment and recognition in one call. Attribute models are opt-in.
 
 ```python
 import cv2
-from uniface.detection import RetinaFace
+from uniface import FaceAnalyzer, FairFace
 
-detector = RetinaFace()
+analyzer = FaceAnalyzer(predictors=[FairFace()])
 
-image = cv2.imread("photo.jpg")
-if image is None:
-    raise ValueError("Failed to load image. Check the path to 'photo.jpg'.")
-
-faces = detector.detect(image)
-
-for face in faces:
-    print(f"Confidence: {face.confidence:.2f}")
-    print(f"BBox: {face.bbox}")
-    print(f"Landmarks: {face.landmarks.shape}")
+for face in analyzer.analyze(cv2.imread("photo.jpg")):
+    print(face.bbox, face.sex, face.age_group, face.embedding.shape)
 ```
 
-## Example (Face Analyzer)
+`bbox`, `confidence`, `landmarks` and `embedding` are always set. Age, sex, race, emotion, quality
+and the face states stay `None` until you pass the predictor that fills them.
 
-```python
-import cv2
-from uniface import FaceAnalyzer
+</details>
 
-# Zero-config: uses SCRFD (500M) + ArcFace (MobileNet) by default
-analyzer = FaceAnalyzer()
+<details>
+<summary><b>All fifteen tasks, and which model does each</b></summary>
 
-image = cv2.imread("photo.jpg")
-if image is None:
-    raise ValueError("Failed to load image. Check the path to 'photo.jpg'.")
+<br>
 
-faces = analyzer.analyze(image)
+| Task | Models |
+| --- | --- |
+| Face Detection | RetinaFace, SCRFD, CenterFace, YOLOv5-Face, YOLOv8-Face, BlazeFace |
+| Face Recognition | AdaFace, ArcFace, EdgeFace, MobileFace, SphereFace |
+| Face Tracking | BYTETracker, persistent IDs across video frames |
+| Facial Landmarks | 2d106det (106), PIPNet (98 / 68), Face Mesh (468 / 478, 3D) |
+| Face Parsing | BiSeNet (19 classes), XSeg masking |
+| Portrait Matting | MODNet, trimap-free |
+| Gaze Estimation | MobileGaze (ResNet-18 / 34 / 50, MobileNetV2) |
+| Head Pose | 6D rotation representation, pitch / yaw / roll |
+| Demographics | AgeGender, FairFace (age group, sex, race) |
+| Emotion | AffectNet-7 and AffectNet-8 |
+| Face States | FaceAttribNet: eyes, glasses, sunglasses, mask |
+| Face Quality | eDifFIQA (T / S / M / L) |
+| Anti-Spoofing | MiniFASNet liveness |
+| Anonymization | 5 blur methods |
+| Vector Store | FAISS-backed embedding search |
 
-for face in faces:
-    print(face.bbox, face.embedding.shape if face.embedding is not None else None)
-```
+Runs on CPU, Apple Silicon and CUDA. Weights download on first use, verified by SHA-256.
 
-With attributes:
+</details>
 
-```python
-from uniface import FaceAnalyzer, AgeGender
+<br>
 
-analyzer = FaceAnalyzer(predictors=[AgeGender()])
-faces = analyzer.analyze(image)
+### Find and measure faces
 
-for face in faces:
-    print(f"{face.sex}, {face.age}y, embedding={face.embedding.shape}")
-```
+**Face Detection** &nbsp;·&nbsp; [docs](https://yakhyo.github.io/uniface/modules/detection/)
 
-## Example (Portrait Matting)
+<img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/detection.jpg" width="100%">
 
-```python
-import cv2
-import numpy as np
-from uniface.matting import MODNet
+**Facial Landmarks** &nbsp;·&nbsp; [docs](https://yakhyo.github.io/uniface/modules/landmarks/)
 
-matting = MODNet()
+<img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/landmarks.jpg" width="100%">
 
-image = cv2.imread("portrait.jpg")
-matte = matting.predict(image)  # (H, W) float32 in [0, 1]
+**Face Mesh** &nbsp;·&nbsp; [docs](https://yakhyo.github.io/uniface/modules/landmarks/#face-mesh-468-or-478-points-3d)
 
-# Transparent PNG
-rgba = cv2.cvtColor(image, cv2.COLOR_BGR2BGRA)
-rgba[:, :, 3] = (matte * 255).astype(np.uint8)
-cv2.imwrite("transparent.png", rgba)
+<img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/face_mesh.jpg" width="100%">
 
-# Green screen
-matte_3ch = matte[:, :, np.newaxis]
-bg = np.full_like(image, (0, 177, 64), dtype=np.uint8)
-result = (image * matte_3ch + bg * (1 - matte_3ch)).astype(np.uint8)
-cv2.imwrite("green_screen.jpg", result)
-```
+**Face Quality** &nbsp;·&nbsp; [docs](https://yakhyo.github.io/uniface/modules/quality/)
 
-## Jupyter Notebooks
+<img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/quality.jpg" width="100%">
 
-| Example                                                                |                                                                                         Colab                                                                                         | Description                             |
-| ---------------------------------------------------------------------- | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | --------------------------------------- |
-| [01_face_detection.ipynb](examples/01_face_detection.ipynb)             |    [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/01_face_detection.ipynb)    | Face detection and landmarks            |
-| [02_face_alignment.ipynb](examples/02_face_alignment.ipynb)             |    [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/02_face_alignment.ipynb)    | Face alignment for recognition          |
-| [03_face_verification.ipynb](examples/03_face_verification.ipynb)       |  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/03_face_verification.ipynb)  | Compare faces for identity              |
-| [04_face_search.ipynb](examples/04_face_search.ipynb)                   |     [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/04_face_search.ipynb)     | Find a person in group photos           |
-| [05_face_analyzer.ipynb](examples/05_face_analyzer.ipynb)               |    [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/05_face_analyzer.ipynb)    | Unified face analysis                   |
-| [06_face_parsing.ipynb](examples/06_face_parsing.ipynb)                 |     [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/06_face_parsing.ipynb)     | Semantic face segmentation              |
-| [07_face_anonymization.ipynb](examples/07_face_anonymization.ipynb)     |  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/07_face_anonymization.ipynb)  | Privacy-preserving blur                 |
-| [08_gaze_estimation.ipynb](examples/08_gaze_estimation.ipynb)           |   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/08_gaze_estimation.ipynb)   | Gaze direction estimation               |
-| [09_face_segmentation.ipynb](examples/09_face_segmentation.ipynb)       |  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/09_face_segmentation.ipynb)  | Face segmentation with XSeg             |
-| [10_face_vector_store.ipynb](examples/10_face_vector_store.ipynb)       |  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/10_face_vector_store.ipynb)  | FAISS-backed face database              |
-| [11_head_pose_estimation.ipynb](examples/11_head_pose_estimation.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/11_head_pose_estimation.ipynb) | Head pose estimation (pitch, yaw, roll) |
-| [12_face_recognition.ipynb](examples/12_face_recognition.ipynb)         |   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/12_face_recognition.ipynb)   | Standalone face recognition pipeline    |
-| [13_portrait_matting.ipynb](examples/13_portrait_matting.ipynb)         |   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/13_portrait_matting.ipynb)   | Portrait matting with MODNet            |
-| [14_face_attributes.ipynb](examples/14_face_attributes.ipynb)           |   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/14_face_attributes.ipynb)   | Face states (eyes, glasses, sunglasses, mask)       |
-| [15_face_mesh.ipynb](examples/15_face_mesh.ipynb)                       |        [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/15_face_mesh.ipynb)        | 468 / 478-point dense 3D face mesh      |
+### Cut faces out
 
-## Documentation
+**Face Parsing** &nbsp;·&nbsp; [docs](https://yakhyo.github.io/uniface/modules/parsing/)
 
-Full documentation: https://yakhyo.github.io/uniface/
+<img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/parsing.jpg" width="100%">
 
-| Resource                                                             | Description                                 |
-| -------------------------------------------------------------------- | ------------------------------------------- |
-| [Quickstart](https://yakhyo.github.io/uniface/quickstart/)            | Get up and running in 5 minutes             |
-| [Model Zoo](https://yakhyo.github.io/uniface/models/)                 | All models, benchmarks, and selection guide |
-| [API Reference](https://yakhyo.github.io/uniface/modules/detection/)  | Detailed module documentation               |
-| [Tutorials](https://yakhyo.github.io/uniface/recipes/image-pipeline/) | Step-by-step workflow examples              |
-| [Guides](https://yakhyo.github.io/uniface/concepts/overview/)         | Architecture and design principles          |
-| [Datasets](https://yakhyo.github.io/uniface/datasets/)                | Training data and evaluation benchmarks     |
+**Face Segmentation** &nbsp;·&nbsp; [docs](https://yakhyo.github.io/uniface/modules/parsing/#xseg)
 
-## Execution Providers (ONNX Runtime)
+<img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/segmentation.jpg" width="100%">
 
-```python
-from uniface.detection import RetinaFace
+<img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/segmentation_occluded.jpg" width="100%">
 
-# Force CPU-only inference
-detector = RetinaFace(providers=["CPUExecutionProvider"])
-```
+**Portrait Matting** &nbsp;·&nbsp; [docs](https://yakhyo.github.io/uniface/modules/matting/)
 
-See more in the docs:
-https://yakhyo.github.io/uniface/concepts/execution-providers/
+<img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/matting.jpg" width="100%">
 
-## Datasets
+<img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/matting_alt.jpg" width="100%">
 
-| Task        | Training Dataset            | Models                                      |
-| ----------- | --------------------------- | ------------------------------------------- |
-| Detection   | WIDER FACE                  | RetinaFace, SCRFD, CenterFace, YOLOv5-Face, YOLOv8-Face |
-| Recognition | MS1MV2                      | MobileFace, SphereFace                      |
-| Recognition | WebFace600K                 | ArcFace                                     |
-| Recognition | WebFace4M / 12M             | AdaFace, EdgeFace                           |
-| Landmarks   | WFLW, 300W+CelebA           | PIPNet (98 / 68 pts)                        |
-| Detection   | Proprietary (Google)        | BlazeFace (short-range)                     |
-| Landmarks   | Proprietary (Google)        | Face Mesh (468 / 478 pts)                   |
-| Gaze        | Gaze360                     | MobileGaze                                  |
-| Head Pose   | 300W-LP                     | HeadPose (ResNet, MobileNet)                |
-| Parsing     | CelebAMask-HQ               | BiSeNet                                     |
-| Attributes  | CelebA, FairFace, AffectNet | AgeGender, FairFace, Emotion                |
-| Attributes  | Proprietary (Qualcomm)      | FaceAttribNet                               |
+### Read where a head is pointing
 
-> See [Datasets documentation](https://yakhyo.github.io/uniface/datasets/) for download links, benchmarks, and details.
+**Head Pose** &nbsp;·&nbsp; [docs](https://yakhyo.github.io/uniface/modules/headpose/)
 
-## Licensing and Model Usage
+<img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/headpose.jpg" width="100%">
 
-UniFace is MIT-licensed, but several pretrained models carry their own licenses.
-Review: https://yakhyo.github.io/uniface/license-attribution/
+**Gaze Estimation** &nbsp;·&nbsp; [docs](https://yakhyo.github.io/uniface/modules/gaze/)
 
-Notable examples:
+<img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/gaze.jpg" width="100%">
 
-- YOLOv5-Face and YOLOv8-Face weights are GPL-3.0
-- FairFace weights are CC BY 4.0
-- FaceAttribNet weights are BSD-3-Clause (© Qualcomm Technologies, Inc.)
-- BlazeFace and Face Mesh weights are Apache-2.0 (© Google, from MediaPipe)
+### Read a face
 
-If you plan commercial use, verify model license compatibility.
+**Age and Sex** &nbsp;·&nbsp; [docs](https://yakhyo.github.io/uniface/modules/attributes/)
 
-## References
+<img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/demography.jpg" width="100%">
 
-| Feature       | Repository                                                                              | Training | Description                          |
-| ------------- | --------------------------------------------------------------------------------------- | :------: | ------------------------------------ |
-| Detection     | [retinaface-pytorch](https://github.com/yakhyo/retinaface-pytorch)                       |    ✓    | RetinaFace PyTorch Training & Export |
-| Detection     | [yolov5-face-onnx-inference](https://github.com/yakhyo/yolov5-face-onnx-inference)       |    -    | YOLOv5-Face Inference                |
-| Detection     | [yolov8-face-onnx-inference](https://github.com/yakhyo/yolov8-face-onnx-inference)       |    -    | YOLOv8-Face Inference                |
-| Detection     | [Star-Clouds/CenterFace](https://github.com/Star-Clouds/CenterFace)                      |    -    | CenterFace Original Weights          |
-| Tracking      | [bytetrack-tracker](https://github.com/yakhyo/bytetrack-tracker)                         |    -    | BYTETracker Multi-Object Tracking    |
-| Recognition   | [face-recognition](https://github.com/yakhyo/face-recognition)                           |    ✓    | MobileFace, SphereFace Training      |
-| Recognition   | [edgeface-onnx](https://github.com/yakhyo/edgeface-onnx)                                 |    -    | EdgeFace Inference                   |
-| Landmarks     | [pipnet-onnx](https://github.com/yakhyo/pipnet-onnx)                                     |    -    | PIPNet 98 / 68-point Inference       |
-| Landmarks     | [mediapipe-face-mesh-onnx](https://github.com/yakhyo/mediapipe-face-mesh-onnx)           |    -    | Face Mesh 468 / 478-point Inference  |
-| Parsing       | [face-parsing](https://github.com/yakhyo/face-parsing)                                   |    ✓    | BiSeNet Face Parsing                 |
-| Parsing       | [face-segmentation](https://github.com/yakhyo/face-segmentation)                         |    -    | XSeg Face Segmentation               |
-| Gaze          | [gaze-estimation](https://github.com/yakhyo/gaze-estimation)                             |    ✓    | MobileGaze Training                  |
-| Head Pose     | [head-pose-estimation](https://github.com/yakhyo/head-pose-estimation)                   |    ✓    | Head Pose Training (6DRepNet-style)  |
-| Matting       | [modnet](https://github.com/yakhyo/modnet)                                               |    -    | MODNet Portrait Matting              |
-| Anti-Spoofing | [face-anti-spoofing](https://github.com/yakhyo/face-anti-spoofing)                       |    -    | MiniFASNet Inference                 |
-| Quality       | [face-image-quality-assessment](https://github.com/yakhyo/face-image-quality-assessment) |    -    | eDifFIQA Inference                   |
-| Attributes    | [fairface-onnx](https://github.com/yakhyo/fairface-onnx)                                 |    -    | FairFace Inference                   |
-| Attributes    | [face-attribute](https://github.com/yakhyo/face-attribute)                               |    -    | FaceAttribNet Inference             |
+**Emotion** &nbsp;·&nbsp; [docs](https://yakhyo.github.io/uniface/modules/attributes/#emotion)
 
-*SCRFD and ArcFace models are from [InsightFace](https://github.com/deepinsight/insightface).
+<img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/emotion.jpg" width="100%">
 
-## Contributing
+**Face States** &nbsp;·&nbsp; [docs](https://yakhyo.github.io/uniface/modules/attributes/#faceattribnet)
 
-Contributions are welcome. Please see [CONTRIBUTING.md](CONTRIBUTING.md).
+<img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/face_states.jpg" width="100%">
 
-## Support
+<img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/face_states_alt.jpg" width="100%">
 
-If you find this project useful, consider giving it a ⭐ on GitHub — it helps others discover it!
+### Tell a real face from a replay
 
-Questions or feedback:
+**Anti-Spoofing** &nbsp;·&nbsp; [docs](https://yakhyo.github.io/uniface/modules/spoofing/)
 
-- Discord: https://discord.gg/wdzrjr7R5j
-- GitHub Issues: https://github.com/yakhyo/uniface/issues
-- DeepWiki Q&A: https://deepwiki.com/yakhyo/uniface
+<img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/spoofing.jpg" width="100%">
 
-## License
+### Match a face, or hide one
 
-This project is licensed under the [MIT License](LICENSE).
+**Face Recognition** &nbsp;·&nbsp; [docs](https://yakhyo.github.io/uniface/modules/recognition/)
 
-> **Disclaimer:** This project is not affiliated with or related to
-> [Uniface](https://uniface.com/) by Rocket Software.
+<img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/verification.jpg" width="100%">
+
+**Face Anonymization** &nbsp;·&nbsp; [docs](https://yakhyo.github.io/uniface/modules/privacy/)
+
+<img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/anonymization.jpg" width="100%">
+
+<br>
+
+<div align="center">
+
+**[Get Started](https://yakhyo.github.io/uniface/quickstart/)** &nbsp;·&nbsp;
+[Model Zoo](https://yakhyo.github.io/uniface/models/) &nbsp;·&nbsp;
+[Notebooks](https://yakhyo.github.io/uniface/notebooks/) &nbsp;·&nbsp;
+[Model licences](https://yakhyo.github.io/uniface/license-attribution/) &nbsp;·&nbsp;
+[Contributing](CONTRIBUTING.md) &nbsp;·&nbsp;
+[Discord](https://discord.gg/wdzrjr7R5j) &nbsp;·&nbsp;
+[Issues](https://github.com/yakhyo/uniface/issues)
+
+Runs on CPU, Apple Silicon and CUDA. Weights download on first use, verified by SHA-256.<br>
+UniFace is [MIT](LICENSE); some pretrained weights are not, so check
+[licences](https://yakhyo.github.io/uniface/license-attribution/) before shipping commercially.<br>
+Not affiliated with [Uniface](https://uniface.com/) by Rocket Software.
+
+</div>

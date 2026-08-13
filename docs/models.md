@@ -73,8 +73,8 @@ CenterFace is an anchor-free detector (MobileNetV2 + FPN) that treats faces as c
 
 ### BlazeFace
 
-Google MediaPipe's short-range SSD detector — the one `mp.solutions.face_mesh` runs
-internally. Pairing it with [Face Mesh](#face-mesh-468-or-478-points) reproduces MediaPipe's own output.
+Google MediaPipe's short-range SSD detector, the one that runs ahead of Face Mesh in
+MediaPipe's own pipeline. Pairing it with [Face Mesh](#face-mesh-468-or-478-points) reproduces that output.
 
 | Model Name | Input | Keypoints | Size |
 | ---------- | ----- | --------- | ---- |

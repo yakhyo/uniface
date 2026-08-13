@@ -3,7 +3,7 @@
 Face recognition extracts embeddings for identity verification and face search.
 
 <figure markdown="span">
-  ![Face Verification](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/verification.jpg){ width="80%" }
+  ![Face Verification](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/verification.jpg){ width="100%" }
   <figcaption>Pairwise face verification with cosine similarity scores</figcaption>
 </figure>
 
@@ -265,6 +265,16 @@ print(f"Similarity: {similarity:.4f}")
 | > 0.6 | Same person | General verification |
 | 0.4 - 0.6 | Uncertain | Manual review needed |
 | < 0.4 | Different people | Rejection |
+
+<figure markdown="span">
+  ![Verification across long time gaps](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/verification_alt.jpg){ width="100%" }
+  <figcaption>AdaFace IR-101 on archival portraits. Genuine pairs 26 and 15 years apart score +0.583 and +0.623; impostor pairs score +0.047 and −0.031</figcaption>
+</figure>
+
+Those numbers show why the table above is a starting point, not a rule. A genuine pair 26 years
+apart lands at 0.583, below the 0.6 "same person" row, while the impostor pairs sit near zero.
+The gap between genuine and impostor stays wide, but the genuine floor drops with age gap, image
+age and scan quality. Calibrate the threshold on pairs that look like your own data.
 
 ---
 

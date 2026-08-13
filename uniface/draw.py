@@ -317,6 +317,7 @@ def draw_mesh(
     mode: str = 'partial',
     color: tuple[int, int, int] = (0, 255, 0),
     point_color: tuple[int, int, int] = (0, 220, 255),
+    point_radius: int | None = None,
 ) -> np.ndarray:
     """Draw a dense face mesh onto an image.
 
@@ -332,6 +333,9 @@ def draw_mesh(
         color: Edge color in BGR.
         point_color: Landmark point color in BGR. A 478-point mesh draws its ten iris
             points separately, in red with a circle fitted to each, so they stand out.
+        point_radius: Landmark dot radius in pixels. Defaults to the face height over 120,
+            which suits a small crop; pass a smaller value on a large one, where 468 dots
+            at the default size run together.
 
     Returns:
         The annotated image (the same array that was passed in).
@@ -363,7 +367,7 @@ def draw_mesh(
     mesh = points[:NUM_MESH_LANDMARKS]
 
     face_height = mesh[:, 1].max() - mesh[:, 1].min()
-    radius = max(1, round(face_height / 120))
+    radius = point_radius if point_radius is not None else max(1, round(face_height / 120))
 
     if mode in ('full', 'partial'):
         edges = FACEMESH_TESSELATION_FULL if mode == 'full' else FACEMESH_TESSELATION_PARTIAL

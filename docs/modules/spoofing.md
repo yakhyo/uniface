@@ -4,6 +4,19 @@ Face anti-spoofing detects whether a face is real (live) or fake (photo, video r
 
 ---
 
+<figure markdown="span">
+  ![Anti-spoofing on a live capture and two replays](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/spoofing.jpg){ width="100%" }
+  <figcaption>MiniFASNet: the same setup captured live, then re-presented as a printed photo and on a tablet screen</figcaption>
+</figure>
+
+!!! info "Frames must come from the same setup"
+
+    MiniFASNet judges presentation, not identity: it asks whether the camera saw a face or a
+    picture of one. A photograph found online is a replay by definition, so it is out of domain.
+    The figure above uses a live capture and two deliberate replays of it.
+
+---
+
 ## Available Models
 
 | Model | Size |

@@ -15,7 +15,7 @@ from uniface.constants import BlazeFaceWeights
 from uniface.detection import BlazeFace
 from uniface.detection.blazeface import _weighted_nms
 
-TEST_IMAGE = Path(__file__).resolve().parent.parent / 'assets' / 'einstein.png'
+TEST_IMAGE = Path(__file__).resolve().parent.parent / 'assets' / 'source' / 'verify_einstein_1947.jpg'
 
 
 @pytest.fixture(scope='module')
@@ -82,8 +82,20 @@ def test_bbox_stays_square_when_the_face_runs_off_frame(blazeface_model, face_im
     frame breaks the squareness and shifts the centre, which drags the mesh off the
     mouth on webcam close-ups — the exact case where the box overflows.
     """
-    # Crop tight around the face so the decoded box overflows the frame.
-    frame = cv2.resize(face_image[400:870, 380:850], (640, 480))
+    # Crop just around the detected face, so the decoded box overflows the frame. Derived
+    # from the detection rather than hardcoded, so replacing the test image cannot quietly
+    # turn this into a crop of the background.
+    detected = blazeface_model.detect(face_image)
+    assert detected, 'expected a detection on the full frame'
+    x1, y1, x2, y2 = (int(v) for v in detected[0].bbox)
+    pad_x, pad_y = round((x2 - x1) * 0.05), round((y2 - y1) * 0.05)
+    frame_height, frame_width = face_image.shape[:2]
+    frame = cv2.resize(
+        face_image[
+            max(0, y1 - pad_y) : min(frame_height, y2 + pad_y), max(0, x1 - pad_x) : min(frame_width, x2 + pad_x)
+        ],
+        (640, 480),
+    )
     height, width = frame.shape[:2]
 
     faces = blazeface_model.detect(frame)

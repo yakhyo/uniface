@@ -4,6 +4,40 @@ Get up and running with UniFace in 5 minutes. This guide covers the most common 
 
 ---
 
+## Everything at Once: FaceAnalyzer
+
+`FaceAnalyzer` runs detection, alignment and recognition in a single call, and any attribute
+models you hand it. Start here if you want a whole pipeline rather than one model.
+
+```python
+import cv2
+from uniface import FaceAnalyzer
+
+analyzer = FaceAnalyzer()          # SCRFD + ArcFace by default, no arguments needed
+faces = analyzer.analyze(cv2.imread("photo.jpg"))
+
+for face in faces:
+    print(face.bbox, face.confidence, face.embedding.shape)
+```
+
+Attribute models are opt-in. Pass them as `predictors=` and their fields appear on every face:
+
+```python
+from uniface import FaceAnalyzer, FairFace
+
+analyzer = FaceAnalyzer(predictors=[FairFace()])
+
+for face in analyzer.analyze(image):
+    print(f"{face.sex}, {face.age_group}, embedding {face.embedding.shape}")
+```
+
+!!! info "Which fields are populated"
+    `bbox`, `confidence`, `landmarks` and `embedding` are always set. Everything else
+    (`age`, `age_group`, `gender`, `race`, `emotion`, `quality`, the face states) stays `None`
+    until you pass the predictor that fills it, so a bare `FaceAnalyzer()` returns `age=None`.
+
+---
+
 ## Face Detection
 
 Detect faces in an image:

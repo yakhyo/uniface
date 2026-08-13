@@ -19,6 +19,11 @@ All variants take an aligned 112x112 face crop and output a scalar score in roug
 
 ---
 
+<figure markdown="span">
+  ![Face quality ranking](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/quality.jpg){ width="100%" }
+  <figcaption>eDifFIQA(L): faces from one photograph, ranked worst to best</figcaption>
+</figure>
+
 ## Basic Usage
 
 ```python

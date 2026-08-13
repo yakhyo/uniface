@@ -112,12 +112,12 @@ UniFace runs out of the box on macOS, Linux, and Windows, with automatic hardwar
 
 **CPU / Apple Silicon**
 ```bash
-pip install uniface[cpu]
+pip install "uniface[cpu]"
 ```
 
 **GPU (NVIDIA CUDA)**
 ```bash
-pip install uniface[gpu]
+pip install "uniface[gpu]"
 ```
 
 **From Source**

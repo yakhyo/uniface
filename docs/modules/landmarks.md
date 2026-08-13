@@ -3,9 +3,8 @@
 Facial landmark detection provides precise localization of facial features.
 
 <figure markdown="span">
-  ![106-Point Landmarks](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/landmarks.jpg){ width="40%" }
-  ![98-Point Landmarks (PIPNet)](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/landmarks_pipnet.jpg){ width="40%" }
-  <figcaption>106-point (left) and PIPNet 98-point (right) facial landmark localization</figcaption>
+  ![106-Point Landmarks](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/landmarks.jpg){ width="100%" }
+  <figcaption>106-point (2d106det), 98-point and 68-point (PIPNet) on the same face</figcaption>
 </figure>
 
 ---
@@ -117,6 +116,10 @@ landmarks = landmarker.get_landmarks(image, face.bbox)
 print(landmarks.shape)  # (68, 2)
 ```
 
+The 68-point 300W variant places its jaw contour more loosely than the other two, with outline
+points that can drift off the silhouette. If you need a tight face boundary, prefer the 98-point
+WFLW variant or the 106-point model.
+
 ### Notes
 
 - The number of landmarks is read from the ONNX output and the matching meanface
@@ -128,6 +131,11 @@ print(landmarks.shape)  # (68, 2)
 ---
 
 ## Face Mesh (468 or 478 points, 3D)
+
+<figure markdown="span">
+  ![Face mesh](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/face_mesh.jpg){ width="100%" }
+  <figcaption>468 beside 478 points, as landmarks above and as the full tessellation below. The 478 variant adds the iris points, in red</figcaption>
+</figure>
 
 Google MediaPipe's dense mesh. Unlike the other landmarkers it returns **3D** points
 and a face-presence score, and it processes every face in an image in a single batched

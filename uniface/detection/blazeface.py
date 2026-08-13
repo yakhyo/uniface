@@ -124,8 +124,8 @@ class BlazeFace(BaseDetector):
 
     An SSD detector over two anchor grids on a 128x128 letterboxed image, decoded with
     MediaPipe's *weighted* NMS: overlapping candidates are score-averaged, not discarded.
-    This is the detector `mp.solutions.face_mesh` runs internally, so pairing it with
-    `FaceMesh` reproduces MediaPipe's own output.
+    MediaPipe runs this detector ahead of its face mesh model, so feeding `BlazeFace`
+    boxes to `FaceMesh` reproduces MediaPipe's own output.
 
     Note:
         Emits 6 MediaPipe keypoints rather than the 5-point alignment template, so

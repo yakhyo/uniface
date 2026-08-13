@@ -24,13 +24,13 @@ UniFace exposes them as separate, mutually exclusive extras so you install exact
 === "CPU / Apple Silicon"
 
     ```bash
-    pip install uniface[cpu]
+    pip install "uniface[cpu]"
     ```
 
 === "NVIDIA GPU (CUDA)"
 
     ```bash
-    pip install uniface[gpu]
+    pip install "uniface[gpu]"
     ```
 
 ---
@@ -43,7 +43,7 @@ The `[cpu]` extra pulls in the standard `onnxruntime` package, which has native 
 built in since version 1.13. No additional setup is needed for CoreML acceleration.
 
 ```bash
-pip install uniface[cpu]
+pip install "uniface[cpu]"
 ```
 
 !!! tip "Native Performance"
@@ -62,7 +62,7 @@ python -c "import platform; print(platform.machine())"
 ### Linux/Windows with NVIDIA GPU
 
 ```bash
-pip install uniface[gpu]
+pip install "uniface[gpu]"
 ```
 
 This installs `onnxruntime-gpu`, which includes both `CUDAExecutionProvider` and
@@ -91,7 +91,7 @@ print("Available providers:", ort.get_available_providers())
 ### CPU-Only (All Platforms)
 
 ```bash
-pip install uniface[cpu]
+pip install "uniface[cpu]"
 ```
 
 Works on all platforms with automatic CPU fallback.
@@ -186,14 +186,14 @@ print("Installation successful!")
 When upgrading UniFace, stay consistent with your runtime extra:
 
 ```bash
-pip install --upgrade uniface[cpu]   # or uniface[gpu]
+pip install --upgrade "uniface[cpu]"   # or uniface[gpu]
 ```
 
 If you are switching from CPU to GPU (or vice versa):
 
 ```bash
 pip uninstall onnxruntime onnxruntime-gpu -y
-pip install uniface[gpu]   # install the one you want
+pip install "uniface[gpu]"   # install the one you want
 ```
 
 ---
@@ -206,10 +206,10 @@ UniFace ships release candidates and betas to PyPI ahead of stable releases (ver
 
 ```bash
 # Latest pre-release (if newer than latest stable)
-pip install uniface[cpu] --pre
+pip install "uniface[cpu]" --pre
 
 # A specific pre-release
-pip install uniface[cpu]==4.0.0rc1
+pip install "uniface[cpu]==4.0.0rc1"
 ```
 
 Pre-releases are not recommended for production — APIs may still change before the stable release.
@@ -224,8 +224,8 @@ If you see:
 
 ```
 ImportError: onnxruntime is not installed. Install it with one of:
-  pip install uniface[cpu]   # CPU / Apple Silicon
-  pip install uniface[gpu]   # NVIDIA GPU (CUDA)
+  pip install "uniface[cpu]"   # CPU / Apple Silicon
+  pip install "uniface[gpu]"   # NVIDIA GPU (CUDA)
 ```
 
 You installed uniface without an extra. Run the appropriate command above.
@@ -234,13 +234,13 @@ You installed uniface without an extra. Run the appropriate command above.
 
 ### Both onnxruntime and onnxruntime-gpu Installed
 
-If you previously ran `pip install uniface[gpu]` on top of a `pip install uniface[cpu]`
+If you previously ran `pip install "uniface[gpu]"` on top of a `pip install "uniface[cpu]"`
 (or vice versa), you may have both packages installed simultaneously, which causes conflicts.
 Fix it with:
 
 ```bash
 pip uninstall onnxruntime onnxruntime-gpu -y
-pip install uniface[gpu]   # or uniface[cpu]
+pip install "uniface[gpu]"   # or uniface[cpu]
 ```
 
 ---
@@ -283,7 +283,7 @@ print(f"Model downloaded to: {model_path}")
 3. Reinstall the GPU extra cleanly:
    ```bash
    pip uninstall onnxruntime onnxruntime-gpu -y
-   pip install uniface[gpu]
+   pip install "uniface[gpu]"
    ```
 
 ---

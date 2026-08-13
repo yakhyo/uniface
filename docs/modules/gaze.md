@@ -3,7 +3,7 @@
 Gaze estimation predicts where a person is looking (pitch and yaw angles).
 
 <figure markdown="span">
-  ![Gaze Estimation](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/gaze.jpg){ width="100%" }
+  ![Gaze Estimation](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/gaze.jpg){ width="100%" }
   <figcaption>Gaze direction arrows with pitch/yaw angle labels</figcaption>
 </figure>
 
@@ -20,6 +20,14 @@ Gaze estimation predicts where a person is looking (pitch and yaw angles).
 | MobileOne-S0 | MobileOne | 4.8 MB | 12.58° |
 
 *MAE = Mean Absolute Error on Gaze360 test set (lower is better)
+
+!!! note "The default is ResNet-34"
+
+    `MobileGaze()` loads ResNet-34. On three subjects looking left, part-left and right,
+    ResNet-18 was the only backbone that returned a positive yaw on the third face; the others
+    read all three as leftward. Backbone choice changes the sign, not just the error, so test
+    yours on faces like your own.
+
 
 ---
 

@@ -3,8 +3,8 @@
 Facial attribute analysis for age, gender, race, emotion, and face state detection (eye openness, glasses, mask).
 
 <figure markdown="span">
-  ![Age & Gender Prediction](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/age_gender.jpg){ width="100%" }
-  <figcaption>Age and gender prediction with detection bounding boxes</figcaption>
+  ![Predicted age group and sex](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/demography.jpg){ width="100%" }
+  <figcaption>FairFace: predicted age group and sex, ordered youngest to oldest</figcaption>
 </figure>
 
 ---
@@ -101,6 +101,12 @@ result.race       # Race/ethnicity label
 | Indian |
 | Middle Eastern |
 
+!!! note "FairFace orders ages more reliably than AgeGender"
+
+    On four subjects spanning child to elderly, `AgeGender` put the child at 30 and returned Male
+    for the elderly woman. FairFace's buckets ordered correctly on the same photographs. Prefer
+    FairFace when the relative order matters more than an exact number.
+
 ### Age Groups
 
 | Group |
@@ -118,6 +124,11 @@ result.race       # Race/ethnicity label
 ---
 
 ## Emotion
+
+<figure markdown="span">
+  ![Emotion classes](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/emotion.jpg){ width="100%" }
+  <figcaption>AffectNet-8: one subject per predicted class</figcaption>
+</figure>
 
 Predicts facial emotions. Requires PyTorch.
 
@@ -192,7 +203,7 @@ emotion = Emotion(model_name=EmotionWeights.AFFECNET8)
 Predicts five independent binary face states from a face crop: left/right eye openness, eyeglasses, face mask, and sunglasses. Based on Qualcomm's [Facial-Attribute-Detection](https://github.com/qualcomm/ai-hub-models/tree/main/src/qai_hub_models/models/face_attrib_net) model.
 
 <figure markdown="span">
-  ![Face Attribute Detection](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/face_attributes.png){ width="100%" }
+  ![Face Attribute Detection](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/face_states.jpg){ width="100%" }
   <figcaption>Face state prediction: per-attribute True/False with probabilities</figcaption>
 </figure>
 
@@ -233,6 +244,14 @@ result.sunglasses      # Probability sunglasses are present
 result.as_dict()            # name -> probability mapping
 result.labels(threshold)    # names of attributes above the threshold
 ```
+
+<figure markdown="span">
+  ![Five face states across five subjects](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/face_states_alt.jpg){ width="100%" }
+  <figcaption>The five heads are independent, so more than one can fire. The sunglasses face reads <code>sunglasses</code> True with both eyes False, because the lenses hide the eyes</figcaption>
+</figure>
+
+The heads do not compete: nothing stops `eyeglasses` and `mask` from both clearing 0.5 on the
+same face. Read each probability on its own rather than picking a single winning label.
 
 ---
 

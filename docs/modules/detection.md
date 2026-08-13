@@ -3,7 +3,7 @@
 Face detection is the first step in any face analysis pipeline. UniFace provides six detection models.
 
 <figure markdown="span">
-  ![Face Detection](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/detection.jpg){ width="100%" }
+  ![Face Detection](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/detection.jpg){ width="100%" }
   <figcaption>SCRFD detection with corner-style bounding boxes and 5-point landmarks</figcaption>
 </figure>
 
@@ -139,6 +139,15 @@ detector = SCRFD(model_name=SCRFDWeights.SCRFD_10G_KPS)
 |---------|--------|------|------|--------|------|
 | SCRFD_500M_KPS | 0.6M | 2.5 MB | 90.6% | 88.1% | 68.5% |
 | **SCRFD_10G_KPS** :material-check-circle: | 4.2M | 17 MB | 95.2% | 93.9% | 83.1% |
+
+<figure markdown="span">
+  ![SCRFD on a crowd](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/detection_alt.jpg){ width="100%" }
+  <figcaption>SCRFD_10G_KPS on a 1500×1086 frame: 29 faces, each 37–46px wide (median 41px)</figcaption>
+</figure>
+
+Every face in the photograph above is found, and the same 29 come back at the default
+640×640 `input_size`, where the letterboxed faces are only about 18px across.
+`confidence_threshold=0.35` was used here, but the weakest of the 29 still scores 0.73.
 
 ### Configuration
 
@@ -305,9 +314,9 @@ detector = YOLOv8Face(
 
 ## BlazeFace
 
-Google MediaPipe's short-range SSD detector — the one `mp.solutions.face_mesh` runs
-internally. Pair it with [FaceMesh](landmarks.md#face-mesh-468-or-478-points-3d) to reproduce MediaPipe's
-own output exactly.
+Google MediaPipe's short-range SSD detector, the one that runs ahead of Face Mesh in
+MediaPipe's own pipeline. Pair it with [FaceMesh](landmarks.md#face-mesh-468-or-478-points-3d) to
+reproduce that output exactly.
 
 At 0.5 MB it is by far the smallest detector here, but it is tuned for faces within
 roughly 2 m and is less accurate than SCRFD or YOLOv8 on small or distant faces.

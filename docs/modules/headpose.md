@@ -3,7 +3,7 @@
 Head pose estimation predicts the 3D orientation of a person's head (pitch, yaw, and roll angles).
 
 <figure markdown="span">
-  ![Head Pose Estimation](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/headpose.jpg){ width="100%" }
+  ![Head Pose Estimation](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/headpose.jpg){ width="100%" }
   <figcaption>3D head pose visualization with pitch, yaw, and roll angles</figcaption>
 </figure>
 
@@ -97,6 +97,12 @@ roll < 0 = counter-clockwise tilt
 - **Pitch**: Rotation around X-axis (positive = looking down)
 - **Yaw**: Rotation around Y-axis (positive = looking right)
 - **Roll**: Rotation around Z-axis (positive = tilting clockwise)
+
+!!! warning "Pitch and roll degrade past roughly 60° of yaw"
+
+    Measured on five profile photographs of level heads, this model returned 35–82° of pitch and
+    roll while yaw stayed believable. Treat all three angles as reliable only near frontal poses,
+    and yaw alone beyond that.
 
 ---
 
