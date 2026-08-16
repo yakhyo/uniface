@@ -1105,7 +1105,7 @@ def build_app() -> gr.Blocks:
             '<h1 style="margin: 0;">UniFace</h1>'
             '<h3 style="margin: 4px 0 0;">All-in-One Face Analysis Library</h3>'
             f'<p style="margin: 4px 0 8px;">v{uniface.__version__} &nbsp;·&nbsp; '
-            'Built on ONNX Runtime &nbsp;·&nbsp; Fast, lightweight, production-ready</p>'
+            'Fast, lightweight, production-ready</p>'
             '<p style="margin: 0;">'
             'Face Detection · Recognition · Landmarks · Face Mesh · Parsing · '
             'Gaze · Head Pose · Portrait Matting · Tracking · Demography · '
