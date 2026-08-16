@@ -123,7 +123,16 @@ EXAMPLE_EMOTION = [
     _ex('emotion', f'{e}.jpg') for e in ('happy', 'sad', 'angry', 'surprise', 'neutral', 'fear', 'disgust', 'contempt')
 ]
 EXAMPLE_STATES = [
-    _ex('states', n) for n in ('glasses.jpg', 'sunglasses.jpg', 'mask.jpg', 'eyes_closed.jpg', 'glasses_alt.jpg')
+    _ex('states', n)
+    for n in (
+        'glasses.jpg',
+        'sunglasses.jpg',
+        'mask.jpg',
+        'eyes_closed.jpg',
+        'glasses_alt.jpg',
+        'sunglasses_alt.jpg',
+        'mask_alt.jpg',
+    )
 ]
 EXAMPLE_QUALITY = [_ex('quality', n) for n in ('group.jpg', 'vintage.jpg', 'screen.jpg')]
 EXAMPLE_ANONYMIZE = _ex('anonymize', 'group.jpg')
