@@ -7,8 +7,8 @@ import cv2
 import numpy as np
 import torch
 
-from uniface.attribute.base import Attribute
-from uniface.constants import DDAMFNWeights
+from uniface.attribute.base import BaseAttribute
+from uniface.constants import EmotionWeights
 from uniface.face_utils import face_alignment
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
@@ -17,26 +17,29 @@ from uniface.types import EmotionResult, Face
 __all__ = ['Emotion']
 
 
-class Emotion(Attribute):
-    """
-    Emotion recognition model using a TorchScript model.
+class Emotion(BaseAttribute):
+    """Emotion recognition model using a TorchScript model.
 
-    This class inherits from the base `Attribute` class and implements the
+    This class inherits from the `BaseAttribute` base class and implements the
     functionality for predicting one of several emotion categories from a face
     image. It requires 5-point facial landmarks for alignment.
+
+    Raises:
+        ValueError: If the model weights are invalid or not found.
+        RuntimeError: If the TorchScript model fails to load or initialize.
     """
 
     def __init__(
         self,
-        model_name: DDAMFNWeights = DDAMFNWeights.AFFECNET7,
+        *,
+        model_name: EmotionWeights = EmotionWeights.AFFECNET7,
         input_size: tuple[int, int] = (112, 112),
     ) -> None:
-        """
-        Initializes the emotion recognition model.
+        """Initializes the emotion recognition model.
 
         Args:
-            model_name (DDAMFNWeights): The enum for the model weights to load.
-            input_size (Tuple[int, int]): The expected input size for the model.
+            model_name (EmotionWeights): The enum for the model weights to load.
+            input_size (tuple[int, int]): The expected input size for the model.
         """
         Logger.info(f'Initializing Emotion with model={model_name.name}')
 
@@ -60,15 +63,13 @@ class Emotion(Attribute):
             'Disgust',
             'Angry',
         ]
-        if model_name == DDAMFNWeights.AFFECNET8:
+        if model_name == EmotionWeights.AFFECNET8:
             self.emotion_labels.append('Contempt')
 
         self._initialize_model()
 
     def _initialize_model(self) -> None:
-        """
-        Loads and initializes the TorchScript model for inference.
-        """
+        """Loads and initializes the TorchScript model for inference."""
         try:
             self.model = torch.jit.load(self.model_path, map_location=self.device)
             self.model.eval()
@@ -81,20 +82,19 @@ class Emotion(Attribute):
             Logger.error(f"Failed to load Emotion model from '{self.model_path}'", exc_info=True)
             raise RuntimeError(f'Failed to initialize Emotion model: {e}') from e
 
-    def preprocess(self, image: np.ndarray, landmark: list | np.ndarray) -> torch.Tensor:
-        """
-        Aligns the face using landmarks and preprocesses it into a tensor.
+    def preprocess(self, image: np.ndarray, landmarks: list | np.ndarray) -> torch.Tensor:
+        """Aligns the face using landmarks and preprocesses it into a tensor.
 
         Args:
             image (np.ndarray): The full input image in BGR format.
-            landmark (Union[List, np.ndarray]): The 5-point facial landmarks.
+            landmarks (list | np.ndarray): The 5-point facial landmarks.
 
         Returns:
             torch.Tensor: The preprocessed image tensor ready for inference.
         """
-        landmark = np.asarray(landmark)
+        landmarks = np.asarray(landmarks)
 
-        aligned_image, _ = face_alignment(image, landmark)
+        aligned_image, _ = face_alignment(image, landmarks)
 
         # Convert BGR to RGB, resize, normalize, and convert to a CHW tensor
         rgb_image = cv2.cvtColor(aligned_image, cv2.COLOR_BGR2RGB)
@@ -107,9 +107,7 @@ class Emotion(Attribute):
         return torch.from_numpy(transposed_image).unsqueeze(0).to(self.device)
 
     def postprocess(self, prediction: torch.Tensor) -> EmotionResult:
-        """
-        Processes the raw model output to get the emotion label and confidence score.
-        """
+        """Processes the raw model output to get the emotion label and confidence score."""
         probabilities = torch.nn.functional.softmax(prediction, dim=1).squeeze().cpu().numpy()
         pred_index = np.argmax(probabilities)
         emotion_label = self.emotion_labels[pred_index]
@@ -121,10 +119,10 @@ class Emotion(Attribute):
 
         Args:
             image: The full input image in BGR format.
-            face: Detected face; ``face.landmarks`` is used for alignment.
+            face: Detected face; `face.landmarks` is used for alignment.
 
         Returns:
-            ``EmotionResult`` with emotion label and confidence score.
+            `EmotionResult` with emotion label and confidence score.
         """
         input_tensor = self.preprocess(image, face.landmarks)
         with torch.no_grad():

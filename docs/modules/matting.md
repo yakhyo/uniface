@@ -3,7 +3,7 @@
 Portrait matting produces a soft alpha matte separating the foreground (person) from the background — no trimap needed.
 
 <figure markdown="span">
-  ![Portrait Matting](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/matting.jpg){ width="100%" }
+  ![Portrait Matting](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/matting.jpg){ width="100%" }
   <figcaption>MODNet: Input → Matte → Green Screen</figcaption>
 </figure>
 
@@ -87,6 +87,15 @@ bg = np.full_like(image, (0, 177, 64), dtype=np.uint8)
 green = (image * matte_3ch + bg * (1 - matte_3ch)).astype(np.uint8)
 cv2.imwrite("green_screen.jpg", green)
 ```
+
+<figure markdown="span">
+  ![Matting on flyaway hair](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/matting_alt.jpg){ width="100%" }
+  <figcaption>A plain, low-contrast background: individual flyaway strands survive into the composite</figcaption>
+</figure>
+
+MODNet is trimap-free, so a background that competes with the subject in sharpness and contrast
+is where the alpha edge softens. Compositing onto a blurred or plain background hides most of it;
+if you need a clean cut, shoot against a plain wall.
 
 ### Custom Background
 

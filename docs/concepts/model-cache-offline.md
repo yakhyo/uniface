@@ -18,6 +18,10 @@ detector = RetinaFace()  # ~3.5 MB download
 detector = RetinaFace()  # Instant
 ```
 
+Weights come from GitHub Releases, with a [Hugging Face mirror](https://huggingface.co/yakhyo/uniface-weights)
+as an automatic fallback when GitHub is unreachable. There is nothing to configure, and no
+Hugging Face token is needed.
+
 ---
 
 ## Cache Location
@@ -152,14 +156,16 @@ detector = RetinaFace()  # No network required
 Models are verified with SHA-256 checksums:
 
 ```python
-from uniface.constants import MODEL_SHA256, RetinaFaceWeights
+from uniface.constants import MODEL_REGISTRY, RetinaFaceWeights
 
 # Check expected checksum
-expected = MODEL_SHA256[RetinaFaceWeights.MNET_V2]
+expected = MODEL_REGISTRY[RetinaFaceWeights.MNET_V2].sha256
 print(f"Expected SHA256: {expected}")
 ```
 
-If a model fails verification, it's re-downloaded automatically.
+If a model fails verification, it's re-downloaded automatically. The same checksum is enforced
+whichever source served the file, so a corrupted or stale mirror falls through to the other
+source instead of being cached.
 
 ---
 

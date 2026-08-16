@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import Literal
 
 import numpy as np
 
@@ -25,8 +25,7 @@ from .base import BaseDetector
 
 
 class RetinaFace(BaseDetector):
-    """
-    Face detector based on the RetinaFace architecture.
+    """Face detector based on the RetinaFace architecture.
 
     Title: "RetinaFace: Single-stage Dense Face Localisation in the Wild"
     Paper: https://arxiv.org/abs/1905.00641
@@ -36,15 +35,14 @@ class RetinaFace(BaseDetector):
         model_name (RetinaFaceWeights): Model weights to use. Defaults to `RetinaFaceWeights.MNET_V2`.
         confidence_threshold (float): Confidence threshold for filtering detections. Defaults to 0.5.
         nms_threshold (float): Non-maximum suppression (NMS) IoU threshold. Defaults to 0.4.
-        input_size (Tuple[int, int]): Fixed input size (width, height) if `dynamic_size=False`.
+        input_size (tuple[int, int]): Fixed input size (width, height) if `dynamic_size=False`.
             Defaults to (640, 640).
             Note: Non-default sizes may cause slower inference and CoreML compatibility issues.
         providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
             the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
-        **kwargs: Advanced options:
-            pre_nms_topk (int): Number of top-scoring boxes considered before NMS. Defaults to 5000.
-            post_nms_topk (int): Max number of detections kept after NMS. Defaults to 750.
-            dynamic_size (bool): If True, generate anchors dynamically per input image. Defaults to False.
+        pre_nms_topk (int): Number of top-scoring boxes considered before NMS. Defaults to 5000.
+        post_nms_topk (int): Max number of detections kept after NMS. Defaults to 750.
+        dynamic_size (bool): If True, generate anchors dynamically per input image. Defaults to False.
 
     Attributes:
         model_name (RetinaFaceWeights): Selected model variant.
@@ -53,15 +51,17 @@ class RetinaFace(BaseDetector):
         pre_nms_topk (int): Limit on proposals before applying NMS.
         post_nms_topk (int): Limit on retained detections after NMS.
         dynamic_size (bool): Flag indicating dynamic or static input sizing.
-        input_size (Tuple[int, int]): Static input size if `dynamic_size=False`.
+        input_size (tuple[int, int]): Static input size if `dynamic_size=False`.
         _model_path (str): Absolute path to the verified model weights.
         _priors (np.ndarray): Precomputed anchor boxes (if static size).
-        _supports_landmarks (bool): Indicates landmark prediction support.
 
     Raises:
         ValueError: If the model weights are invalid or not found.
         RuntimeError: If the ONNX model fails to load or initialize.
     """
+
+    supports_landmarks = True
+    supports_alignment = True
 
     def __init__(
         self,
@@ -71,7 +71,9 @@ class RetinaFace(BaseDetector):
         nms_threshold: float = 0.4,
         input_size: tuple[int, int] = (640, 640),
         providers: list[str] | None = None,
-        **kwargs: Any,
+        pre_nms_topk: int = 5000,
+        post_nms_topk: int = 750,
+        dynamic_size: bool = False,
     ) -> None:
         super().__init__(
             model_name=model_name,
@@ -79,9 +81,10 @@ class RetinaFace(BaseDetector):
             nms_threshold=nms_threshold,
             input_size=input_size,
             providers=providers,
-            **kwargs,
+            pre_nms_topk=pre_nms_topk,
+            post_nms_topk=post_nms_topk,
+            dynamic_size=dynamic_size,
         )
-        self._supports_landmarks = True  # RetinaFace supports landmarks
 
         self.model_name = model_name
         self.confidence_threshold = confidence_threshold
@@ -89,17 +92,16 @@ class RetinaFace(BaseDetector):
         self.input_size = input_size
         self.providers = providers
 
-        # Advanced options from kwargs
-        self.pre_nms_topk = kwargs.get('pre_nms_topk', 5000)
-        self.post_nms_topk = kwargs.get('post_nms_topk', 750)
-        self.dynamic_size = kwargs.get('dynamic_size', False)
+        # Advanced options
+        self.pre_nms_topk = pre_nms_topk
+        self.post_nms_topk = post_nms_topk
+        self.dynamic_size = dynamic_size
 
         Logger.info(
             f'Initializing RetinaFace with model={self.model_name}, confidence_threshold={self.confidence_threshold}, '
             f'nms_threshold={self.nms_threshold}, input_size={self.input_size}'
         )
 
-        # Get path to model weights
         self._model_path = verify_model_weights(self.model_name)
         Logger.info(f'Verified model weights located at: {self._model_path}')
 
@@ -108,7 +110,6 @@ class RetinaFace(BaseDetector):
             self._priors = generate_anchors(image_size=self.input_size)
             Logger.debug('Generated anchors for static input size.')
 
-        # Initialize model
         self._initialize_model(self._model_path)
 
     def _initialize_model(self, model_path: str) -> None:
@@ -162,8 +163,7 @@ class RetinaFace(BaseDetector):
         metric: Literal['default', 'max'] = 'max',
         center_weight: float = 2.0,
     ) -> list[Face]:
-        """
-        Perform face detection on an input image and return bounding boxes and facial landmarks.
+        """Perform face detection on an input image and return bounding boxes and facial landmarks.
 
         Args:
             image (np.ndarray): Input image as a NumPy array of shape (H, W, C).
@@ -175,7 +175,7 @@ class RetinaFace(BaseDetector):
                 when using the "default" metric. Defaults to 2.0.
 
         Returns:
-            List[Face]: List of Face objects, each containing:
+            list[Face]: List of Face objects, each containing:
                 - bbox (np.ndarray): Bounding box coordinates with shape (4,) as [x1, y1, x2, y2]
                 - confidence (float): Detection confidence score (0.0 to 1.0)
                 - landmarks (np.ndarray): 5-point facial landmarks with shape (5, 2)
@@ -202,7 +202,6 @@ class RetinaFace(BaseDetector):
         height, width, _ = image.shape
         image_tensor = self.preprocess(image)
 
-        # Inference
         outputs = self.inference(image_tensor)
 
         # Postprocessing

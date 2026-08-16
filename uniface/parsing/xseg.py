@@ -25,6 +25,10 @@ class XSeg(BaseFaceParser):
     on bbox crops, XSeg requires 5-point landmarks for face alignment. The model
     uses NHWC input format and outputs values in [0, 1] range.
 
+    Raises:
+        ValueError: If the model weights are invalid or not found.
+        RuntimeError: If the ONNX model fails to load or initialize.
+
     Reference:
         https://github.com/iperov/DeepFaceLab
 
@@ -63,6 +67,7 @@ class XSeg(BaseFaceParser):
 
     def __init__(
         self,
+        *,
         model_name: XSegWeights = XSegWeights.DEFAULT,
         align_size: int = 256,
         blur_sigma: float = 0,
@@ -78,8 +83,7 @@ class XSeg(BaseFaceParser):
         self._initialize_model()
 
     def _initialize_model(self) -> None:
-        """
-        Initialize the ONNX model from the stored model path.
+        """Initialize the ONNX model from the stored model path.
 
         Raises:
             RuntimeError: If the model fails to load or initialize.
@@ -110,8 +114,7 @@ class XSeg(BaseFaceParser):
             raise RuntimeError(f'Failed to initialize XSeg model: {e}') from e
 
     def preprocess(self, face_crop: np.ndarray) -> np.ndarray:
-        """
-        Preprocess an aligned face crop for inference.
+        """Preprocess an aligned face crop for inference.
 
         Args:
             face_crop (np.ndarray): An aligned face crop in BGR format.
@@ -131,8 +134,7 @@ class XSeg(BaseFaceParser):
         return image
 
     def postprocess(self, outputs: np.ndarray, crop_size: tuple[int, int]) -> np.ndarray:
-        """
-        Postprocess model output to segmentation mask.
+        """Postprocess model output to segmentation mask.
 
         Args:
             outputs (np.ndarray): Raw model output.
@@ -147,7 +149,7 @@ class XSeg(BaseFaceParser):
         # Resize back to crop size
         mask = cv2.resize(mask, crop_size, interpolation=cv2.INTER_LINEAR)
 
-        # Apply optional blur and threshold
+        # Blur, then remap [0.5, 1] to [0, 1] so values below 0.5 drop to 0, re-sharpening the softened edge
         if self.blur_sigma > 0:
             mask = cv2.GaussianBlur(mask, (0, 0), self.blur_sigma)
             mask = (mask.clip(0.5, 1) - 0.5) * 2
@@ -155,11 +157,10 @@ class XSeg(BaseFaceParser):
         return mask
 
     def parse(self, image: np.ndarray, *, landmarks: np.ndarray | None = None) -> np.ndarray:
-        """
-        Perform face segmentation using 5-point landmarks.
+        """Perform face segmentation using 5-point landmarks.
 
         XSeg requires landmarks for face alignment. Unlike BiSeNet, calling
-        this method without landmarks will raise a :class:`ValueError`.
+        this method without landmarks will raise a `ValueError`.
 
         Args:
             image (np.ndarray): Input image in BGR format.
@@ -187,7 +188,6 @@ class XSeg(BaseFaceParser):
         input_tensor = self.preprocess(face_crop)
         outputs = self.session.run(self.output_names, {self.input_name: input_tensor})
 
-        # Postprocess mask
         mask = self.postprocess(outputs[0], crop_size)
 
         # Warp mask back to original image space
@@ -204,8 +204,7 @@ class XSeg(BaseFaceParser):
         return warped_mask
 
     def parse_aligned(self, face_crop: np.ndarray) -> np.ndarray:
-        """
-        Perform segmentation on an already aligned face crop.
+        """Perform segmentation on an already aligned face crop.
 
         Args:
             face_crop (np.ndarray): An aligned face crop in BGR format.
@@ -226,8 +225,7 @@ class XSeg(BaseFaceParser):
         image: np.ndarray,
         landmarks: np.ndarray,
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-        """
-        Parse face and return mask with inverse matrix for custom warping.
+        """Parse face and return mask with inverse matrix for custom warping.
 
         Args:
             image (np.ndarray): Input image in BGR format.
@@ -235,6 +233,9 @@ class XSeg(BaseFaceParser):
 
         Returns:
             Tuple of (mask, face_crop, inverse_matrix).
+
+        Raises:
+            ValueError: If `landmarks` does not have shape (5, 2).
         """
         if landmarks.shape != (5, 2):
             raise ValueError(f'Landmarks must have shape (5, 2), got {landmarks.shape}')

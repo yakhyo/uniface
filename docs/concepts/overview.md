@@ -94,11 +94,13 @@ ONNX Runtime is installed separately via the `uniface[cpu]` or `uniface[gpu]` ex
 Direct class instantiation:
 
 ```python
-from uniface.detection import RetinaFace, SCRFD
+from uniface.detection import CenterFace, RetinaFace, SCRFD
 
 detector = RetinaFace()
 # or
 detector = SCRFD()
+# or
+detector = CenterFace()
 ```
 
 ### 4. Type Safety
@@ -116,11 +118,11 @@ def detect(self, image: np.ndarray) -> list[Face]:
 
 ```
 uniface/
-├── detection/      # Face detection (RetinaFace, SCRFD, YOLOv5Face, YOLOv8Face)
+├── detection/      # Face detection (BlazeFace, CenterFace, RetinaFace, SCRFD, YOLOv5Face, YOLOv8Face)
 ├── recognition/    # Face recognition (AdaFace, ArcFace, EdgeFace, MobileFace, SphereFace)
 ├── tracking/       # Multi-object tracking (BYTETracker)
-├── landmark/       # Dense landmarks (Landmark106 = 106 pts, PIPNet = 98 / 68 pts)
-├── attribute/      # Age, gender, emotion, race
+├── landmark/       # Dense landmarks (Landmark106 = 106 pts, PIPNet = 98 / 68 pts, FaceMesh = 468 / 478 pts)
+├── attribute/      # Age, gender, emotion, race, face states
 ├── parsing/        # Face semantic segmentation
 ├── matting/        # Portrait matting (MODNet)
 ├── gaze/           # Gaze estimation
@@ -188,9 +190,9 @@ age_gender = AgeGender()
 fairface = FairFace()
 
 analyzer = FaceAnalyzer(
-    detector,
+    detector=detector,
     recognizer=recognizer,
-    attributes=[age_gender, fairface],
+    predictors=[age_gender, fairface],
 )
 
 faces = analyzer.analyze(image)
@@ -203,7 +205,7 @@ for face in faces:
 
 ## Model Lifecycle
 
-1. **First use**: Model is downloaded from GitHub releases
+1. **First use**: Model is downloaded from GitHub Releases, with a [Hugging Face mirror](https://huggingface.co/yakhyo/uniface-weights) as an automatic fallback when GitHub is unreachable
 2. **Cached**: Stored in `~/.uniface/models/` (configurable via `set_cache_dir()` or `UNIFACE_CACHE_DIR`)
 3. **Verified**: SHA-256 checksum validation
 4. **Loaded**: ONNX Runtime session created

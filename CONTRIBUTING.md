@@ -88,22 +88,22 @@ def process(items: List[str], config: Optional[Dict[str, int]] = None) -> Tuple[
 Use [Google-style docstrings](https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings) for all public APIs:
 
 ```python
-def create_detector(method: str = 'retinaface', **kwargs: Any) -> BaseDetector:
-    """Factory function to create face detectors.
+def detect(self, image: np.ndarray, **kwargs: Any) -> list[Face]:
+    """Detect faces in an image.
 
     Args:
-        method: Detection method. Options: 'retinaface', 'scrfd', 'yolov5face', 'yolov8face'.
-        **kwargs: Detector-specific parameters.
+        image: Input image as numpy array with shape (H, W, C) in BGR format.
+        **kwargs: Additional detection parameters.
 
     Returns:
-        Initialized detector instance.
+        List of detected Face objects.
 
     Raises:
-        ValueError: If method is not supported.
+        ValueError: If the image is empty, not 3-channel BGR, or not uint8.
 
     Example:
-        >>> from uniface import create_detector
-        >>> detector = create_detector('retinaface', confidence_threshold=0.8)
+        >>> from uniface import RetinaFace
+        >>> detector = RetinaFace(confidence_threshold=0.8)
         >>> faces = detector.detect(image)
         >>> print(f"Found {len(faces)} faces")
     """
@@ -159,7 +159,7 @@ pytest tests/
 pytest tests/ -v
 
 # Run specific test file
-pytest tests/test_factory.py
+pytest tests/test_scrfd.py
 
 # Run with coverage
 pytest tests/ --cov=uniface --cov-report=html
@@ -193,6 +193,10 @@ Example notebooks demonstrating library usage:
 | Face Segmentation  | [09_face_segmentation.ipynb](examples/09_face_segmentation.ipynb)   |
 | Face Vector Store  | [10_face_vector_store.ipynb](examples/10_face_vector_store.ipynb)   |
 | Head Pose Estimation | [11_head_pose_estimation.ipynb](examples/11_head_pose_estimation.ipynb) |
+| Face Recognition   | [12_face_recognition.ipynb](examples/12_face_recognition.ipynb)     |
+| Portrait Matting   | [13_portrait_matting.ipynb](examples/13_portrait_matting.ipynb)     |
+| Face Attributes    | [14_face_attributes.ipynb](examples/14_face_attributes.ipynb)       |
+| Face Mesh          | [15_face_mesh.ipynb](examples/15_face_mesh.ipynb)                   |
 
 ## Release Process
 

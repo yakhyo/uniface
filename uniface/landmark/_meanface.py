@@ -142,10 +142,10 @@ def get_meanface_info(num_lms: int, num_nb: int = 10) -> tuple[np.ndarray, np.nd
         num_nb: Neighbor count used at training time.
 
     Returns:
-        ``(reverse_index1, reverse_index2, max_len)``.
+        `(reverse_index1, reverse_index2, max_len)`.
 
     Raises:
-        ValueError: If ``num_lms`` does not match a shipped meanface table.
+        ValueError: If `num_lms` does not match a shipped meanface table.
     """
     if num_lms == 68:
         flat = MEANFACE_300W_68
@@ -155,7 +155,8 @@ def get_meanface_info(num_lms: int, num_nb: int = 10) -> tuple[np.ndarray, np.nd
         raise ValueError(f'No meanface table available for num_lms={num_lms}; expected 68 or 98.')
 
     meanface = np.asarray(flat, dtype=np.float32).reshape(-1, 2)
-    assert meanface.shape[0] == num_lms, f'meanface mismatch: expected {num_lms} points, got {meanface.shape[0]}'
+    if meanface.shape[0] != num_lms:
+        raise ValueError(f'meanface table for num_lms={num_lms} holds {meanface.shape[0]} points')
 
     r1, r2, max_len = _build_neighbor_indices(meanface, num_nb)
     return np.asarray(r1, dtype=np.int64), np.asarray(r2, dtype=np.int64), max_len

@@ -22,10 +22,14 @@ class ArcFace(BaseRecognizer):
     Args:
         model_name (ArcFaceWeights): The specific ArcFace model variant to use.
             Defaults to `ArcFaceWeights.MNET`.
-        preprocessing (Optional[PreprocessConfig]): An optional custom preprocessing
+        preprocessing (PreprocessConfig | None): An optional custom preprocessing
             configuration. If None, a default config for ArcFace is used.
         providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
             the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
+
+    Raises:
+        ValueError: If the model weights are invalid or not found.
+        RuntimeError: If the ONNX model fails to load or initialize.
 
     Example:
         >>> from uniface.recognition import ArcFace
@@ -39,6 +43,7 @@ class ArcFace(BaseRecognizer):
 
     def __init__(
         self,
+        *,
         model_name: ArcFaceWeights = ArcFaceWeights.MNET,
         preprocessing: PreprocessConfig | None = None,
         providers: list[str] | None = None,

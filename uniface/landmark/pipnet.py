@@ -39,9 +39,13 @@ class PIPNet(BaseLandmarker):
 
     Args:
         model_name (PIPNetWeights): Which PIPNet ONNX model to load.
-            Defaults to ``PIPNetWeights.WFLW_98``.
+            Defaults to `PIPNetWeights.WFLW_98`.
         providers (list[str] | None): ONNX Runtime execution providers. If None,
             auto-detects the best available provider.
+
+    Raises:
+        ValueError: If the model weights are invalid or not found.
+        RuntimeError: If the ONNX model fails to load or initialize.
 
     Example:
         >>> from uniface.landmark import PIPNet
@@ -60,6 +64,7 @@ class PIPNet(BaseLandmarker):
 
     def __init__(
         self,
+        *,
         model_name: PIPNetWeights = PIPNetWeights.WFLW_98,
         providers: list[str] | None = None,
     ) -> None:
@@ -114,19 +119,19 @@ class PIPNet(BaseLandmarker):
     def preprocess(self, image: np.ndarray, bbox: np.ndarray) -> tuple[np.ndarray, tuple[int, int, int, int]]:
         """Crop the face region and produce the network input blob.
 
-        The crop follows the upstream PIPNet convention: pad ``+10%`` on the
-        left, right, and bottom of the bbox and ``-10%`` on the top, then
+        The crop follows the upstream PIPNet convention: pad `+10%` on the
+        left, right, and bottom of the bbox and `-10%` on the top, then
         clamp to the image bounds. The crop is resized to the model's input
         resolution, BGR->RGB converted, and ImageNet-normalized.
 
         Args:
-            image (np.ndarray): Full source image in BGR format, ``(H, W, 3)``.
-            bbox (np.ndarray): Face bounding box ``[x1, y1, x2, y2]``.
+            image (np.ndarray): Full source image in BGR format, `(H, W, 3)`.
+            bbox (np.ndarray): Face bounding box `[x1, y1, x2, y2]`.
 
         Returns:
             Tuple of:
-                - The preprocessed ``(1, 3, H, W)`` float32 blob.
-                - The crop metadata ``(x1, y1, crop_w, crop_h)`` used to
+                - The preprocessed `(1, 3, H, W)` float32 blob.
+                - The crop metadata `(x1, y1, crop_w, crop_h)` used to
                   rescale predictions back to original image coordinates.
         """
         crop, crop_meta = self._crop_face(image, bbox)
@@ -166,18 +171,18 @@ class PIPNet(BaseLandmarker):
         """Decode raw network outputs into original-image landmark coordinates.
 
         Combines each landmark's own (cls, offset) prediction with the
-        predictions made about it by its ``num_nb`` nearest meanface neighbors,
+        predictions made about it by its `num_nb` nearest meanface neighbors,
         then maps the normalized result back to the original image using the
         crop metadata.
 
         Args:
             outputs (tuple): The five raw ONNX outputs in order
-                ``(cls_map, offset_x, offset_y, nb_x, nb_y)``.
-            crop_meta (tuple): The ``(x1, y1, crop_w, crop_h)`` returned by
-                :meth:`preprocess`.
+                `(cls_map, offset_x, offset_y, nb_x, nb_y)`.
+            crop_meta (tuple): The `(x1, y1, crop_w, crop_h)` returned by
+                `preprocess`.
 
         Returns:
-            np.ndarray: ``(num_lms, 2)`` float32 landmarks in original image space.
+            np.ndarray: `(num_lms, 2)` float32 landmarks in original image space.
         """
         cls_map, offset_x, offset_y, nb_x, nb_y = outputs
         n = self.num_lms
@@ -229,10 +234,10 @@ class PIPNet(BaseLandmarker):
 
         Args:
             image (np.ndarray): Full source image in BGR format.
-            bbox (np.ndarray): Face bounding box ``[x1, y1, x2, y2]``.
+            bbox (np.ndarray): Face bounding box `[x1, y1, x2, y2]`.
 
         Returns:
-            np.ndarray: Landmark points as a ``(num_lms, 2)`` float32 array
+            np.ndarray: Landmark points as a `(num_lms, 2)` float32 array
                 in the original image's pixel coordinates.
         """
         blob, crop_meta = self.preprocess(image, bbox)

@@ -197,7 +197,7 @@ def main():
     detector = RetinaFace()
     recognizer = ArcFace()
     age_gender = AgeGender()
-    analyzer = FaceAnalyzer(detector, recognizer=recognizer, attributes=[age_gender])
+    analyzer = FaceAnalyzer(detector=detector, recognizer=recognizer, predictors=[age_gender])
 
     source_type = get_source_type(args.source)
 

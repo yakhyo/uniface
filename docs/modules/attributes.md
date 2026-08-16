@@ -1,10 +1,10 @@
 # Attributes
 
-Facial attribute analysis for age, gender, race, and emotion detection.
+Facial attribute analysis for age, gender, race, emotion, and face state detection (eye openness, glasses, mask).
 
 <figure markdown="span">
-  ![Age & Gender Prediction](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/age_gender.jpg){ width="100%" }
-  <figcaption>Age and gender prediction with detection bounding boxes</figcaption>
+  ![Predicted age group and sex](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/demography.jpg){ width="100%" }
+  <figcaption>FairFace: predicted age group and sex, ordered youngest to oldest</figcaption>
 </figure>
 
 ---
@@ -16,6 +16,7 @@ Facial attribute analysis for age, gender, race, and emotion detection.
 | **AgeGender** | Age, Gender | 8 MB | Exact age prediction |
 | **FairFace** | Gender, Age Group, Race | 44 MB | Balanced demographics |
 | **Emotion** | 7-8 emotions | 2 MB | Requires PyTorch |
+| **FaceAttribNet** | Eye openness, Eyeglasses, Mask, Sunglasses | 41 MB | Multi-label (independent probabilities) |
 
 ---
 
@@ -44,7 +45,7 @@ for face in faces:
 ### Output
 
 ```python
-# AttributeResult fields
+# DemographyResult fields
 result.gender     # 0=Female, 1=Male
 result.sex        # "Female" or "Male" (property)
 result.age        # int, age in years
@@ -80,7 +81,7 @@ for face in faces:
 ### Output
 
 ```python
-# AttributeResult fields
+# DemographyResult fields
 result.gender     # 0=Female, 1=Male
 result.sex        # "Female" or "Male"
 result.age        # None (not provided by this model)
@@ -100,6 +101,12 @@ result.race       # Race/ethnicity label
 | Indian |
 | Middle Eastern |
 
+!!! note "FairFace orders ages more reliably than AgeGender"
+
+    On four subjects spanning child to elderly, `AgeGender` put the child at 30 and returned Male
+    for the elderly woman. FairFace's buckets ordered correctly on the same photographs. Prefer
+    FairFace when the relative order matters more than an exact number.
+
 ### Age Groups
 
 | Group |
@@ -118,6 +125,11 @@ result.race       # Race/ethnicity label
 
 ## Emotion
 
+<figure markdown="span">
+  ![Emotion classes](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/emotion.jpg){ width="100%" }
+  <figcaption>AffectNet-8: one subject per predicted class</figcaption>
+</figure>
+
 Predicts facial emotions. Requires PyTorch.
 
 !!! warning "Optional Dependency"
@@ -131,10 +143,10 @@ Predicts facial emotions. Requires PyTorch.
 ```python
 from uniface.detection import RetinaFace
 from uniface.attribute import Emotion
-from uniface.constants import DDAMFNWeights
+from uniface.constants import EmotionWeights
 
 detector = RetinaFace()
-emotion = Emotion(model_name=DDAMFNWeights.AFFECNET7)
+emotion = Emotion(model_name=EmotionWeights.AFFECNET7)
 
 faces = detector.detect(image)
 
@@ -175,25 +187,83 @@ for face in faces:
 
 ```python
 from uniface.attribute import Emotion
-from uniface.constants import DDAMFNWeights
+from uniface.constants import EmotionWeights
 
 # 7-class emotion
-emotion = Emotion(model_name=DDAMFNWeights.AFFECNET7)
+emotion = Emotion(model_name=EmotionWeights.AFFECNET7)
 
 # 8-class emotion
-emotion = Emotion(model_name=DDAMFNWeights.AFFECNET8)
+emotion = Emotion(model_name=EmotionWeights.AFFECNET8)
 ```
+
+---
+
+## FaceAttribNet
+
+Predicts five independent binary face states from a face crop: left/right eye openness, eyeglasses, face mask, and sunglasses. Based on Qualcomm's [Facial-Attribute-Detection](https://github.com/qualcomm/ai-hub-models/tree/main/src/qai_hub_models/models/face_attrib_net) model.
+
+<figure markdown="span">
+  ![Face Attribute Detection](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/face_states.jpg){ width="100%" }
+  <figcaption>Face state prediction: per-attribute True/False with probabilities</figcaption>
+</figure>
+
+!!! warning "Multi-label output"
+    The five values come from independent binary heads: they do not sum to 1 and
+    several can be high at once (a face can wear both sunglasses and a mask).
+    Threshold each attribute separately; never `argmax`.
+
+### Basic Usage
+
+```python
+from uniface.attribute import FaceAttribNet
+from uniface.detection import RetinaFace
+
+detector = RetinaFace()
+face_attrib = FaceAttribNet()
+
+faces = detector.detect(image)
+
+for face in faces:
+    result = face_attrib.predict(image, face)
+    print(result.as_dict())              # {'left_eye_open': 0.99, 'right_eye_open': 0.98, ...}
+    print(result.labels(threshold=0.5))  # e.g. ['left_eye_open', 'right_eye_open', 'eyeglasses']
+    # face.left_eye_open, face.right_eye_open, face.eyeglasses,
+    # face.mask, face.sunglasses are also set automatically
+```
+
+### Output
+
+```python
+# FaceStateResult fields (all probabilities in [0, 1])
+result.left_eye_open   # Probability the left eye is open
+result.right_eye_open  # Probability the right eye is open
+result.eyeglasses      # Probability eyeglasses are present
+result.mask            # Probability a face mask is present
+result.sunglasses      # Probability sunglasses are present
+
+result.as_dict()            # name -> probability mapping
+result.labels(threshold)    # names of attributes above the threshold
+```
+
+<figure markdown="span">
+  ![Five face states across five subjects](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/face_states_alt.jpg){ width="100%" }
+  <figcaption>The five heads are independent, so more than one can fire. The sunglasses face reads <code>sunglasses</code> True with both eyes False, because the lenses hide the eyes</figcaption>
+</figure>
+
+The heads do not compete: nothing stops `eyeglasses` and `mask` from both clearing 0.5 on the
+same face. Read each probability on its own rather than picking a single winning label.
 
 ---
 
 ## Available Attribute Models
 
 ```python
-from uniface.attribute import AgeGender, Emotion, FairFace
+from uniface.attribute import AgeGender, Emotion, FaceAttribNet, FairFace
 
 age_gender = AgeGender()
 fairface = FairFace()
 emotion = Emotion()  # requires the optional `torch` dependency
+face_attrib = FaceAttribNet()
 ```
 
 ---
@@ -233,8 +303,8 @@ from uniface.attribute import AgeGender
 from uniface.detection import RetinaFace
 
 analyzer = FaceAnalyzer(
-    RetinaFace(),
-    attributes=[AgeGender()],
+    detector=RetinaFace(),
+    predictors=[AgeGender()],
 )
 
 faces = analyzer.analyze(image)
@@ -290,6 +360,7 @@ cv2.imwrite("attributes.jpg", image)
     - **AgeGender**: Trained on CelebA; accuracy varies by demographic
     - **FairFace**: Trained for balanced demographics; better cross-racial accuracy
     - **Emotion**: Accuracy depends on facial expression clarity
+    - **FaceAttribNet**: Trained by Qualcomm on a proprietary dataset; tinted eyeglasses may register as sunglasses
 
     Always test on your specific use case and consider cultural context.
 

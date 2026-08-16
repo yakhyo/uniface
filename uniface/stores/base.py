@@ -48,13 +48,13 @@ class BaseStore(ABC):
             threshold: Minimum similarity to accept a match.
 
         Returns:
-            ``(metadata, similarity)`` for the best match, or
-            ``(None, similarity)`` when below *threshold* or empty.
+            `(metadata, similarity)` for the best match, or
+            `(None, similarity)` when below *threshold* or empty.
         """
 
     @abstractmethod
     def remove(self, key: str, value: Any) -> int:
-        """Remove all entries where ``metadata[key] == value``.
+        """Remove all entries where `metadata[key] == value`.
 
         Args:
             key: Metadata key to match against.

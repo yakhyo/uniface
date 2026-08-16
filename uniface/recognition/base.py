@@ -33,20 +33,20 @@ class PreprocessConfig:
 
 
 class BaseRecognizer(ABC):
-    """
-    Abstract Base Class for all face recognition models.
+    """Abstract Base Class for all face recognition models.
+
     It provides the core functionality for preprocessing, inference, and embedding extraction.
     """
 
     @abstractmethod
     def __init__(
         self,
+        *,
         model_path: str,
         preprocessing: PreprocessConfig,
         providers: list[str] | None = None,
     ) -> None:
-        """
-        Initializes the model. Subclasses must call this.
+        """Initializes the model. Subclasses must call this.
 
         Args:
             model_path (str): The direct path to the verified ONNX model.
@@ -63,8 +63,7 @@ class BaseRecognizer(ABC):
         self._initialize_model()
 
     def _initialize_model(self) -> None:
-        """
-        Loads the ONNX model and prepares it for inference.
+        """Loads the ONNX model and prepares it for inference.
 
         Raises:
             RuntimeError: If the model fails to load or initialize.
@@ -87,7 +86,9 @@ class BaseRecognizer(ABC):
             self.output_names = [output.name for output in self.session.get_outputs()]
             self.output_shape = self.session.get_outputs()[0].shape
 
-            assert len(self.output_names) == 1, 'Expected only one output node.'
+            if len(self.output_names) != 1:
+                raise ValueError(f'Expected exactly one output node, got {len(self.output_names)}: {self.output_names}')
+
             Logger.info(f'Successfully initialized face encoder from {self.model_path}')
 
         except Exception as e:
@@ -98,8 +99,7 @@ class BaseRecognizer(ABC):
             raise RuntimeError(f"Failed to initialize model session for '{self.model_path}'") from e
 
     def preprocess(self, face_img: np.ndarray) -> np.ndarray:
-        """
-        Preprocess the image: resize, normalize, and convert it to a blob.
+        """Preprocess the image: resize, normalize, and convert it to a blob.
 
         Args:
             face_img: Input image in BGR format.

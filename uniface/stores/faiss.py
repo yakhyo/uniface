@@ -59,6 +59,7 @@ class FAISS(BaseStore):
 
     def __init__(
         self,
+        *,
         embedding_size: int = 512,
         db_path: str = './vector_index',
     ) -> None:
@@ -97,8 +98,8 @@ class FAISS(BaseStore):
             threshold: Minimum cosine similarity to accept a match.
 
         Returns:
-            ``(metadata, similarity)`` for the best match, or
-            ``(None, similarity)`` when below *threshold* or the
+            `(metadata, similarity)` for the best match, or
+            `(None, similarity)` when below *threshold* or the
             index is empty.
         """
         if self.index.ntotal == 0:
@@ -115,7 +116,7 @@ class FAISS(BaseStore):
         return None, similarity
 
     def remove(self, key: str, value: Any) -> int:
-        """Remove all entries where ``metadata[key] == value``.
+        """Remove all entries where `metadata[key] == value`.
 
         Args:
             key: Metadata key to match against.
@@ -155,7 +156,7 @@ class FAISS(BaseStore):
         """Load a previously saved index and metadata from disk.
 
         Returns:
-            ``True`` if loaded successfully, ``False`` if files are missing.
+            `True` if loaded successfully, `False` if files are missing.
 
         Raises:
             RuntimeError: If files exist but cannot be read.

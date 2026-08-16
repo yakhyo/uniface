@@ -4,6 +4,40 @@ Get up and running with UniFace in 5 minutes. This guide covers the most common 
 
 ---
 
+## Everything at Once: FaceAnalyzer
+
+`FaceAnalyzer` runs detection, alignment and recognition in a single call, and any attribute
+models you hand it. Start here if you want a whole pipeline rather than one model.
+
+```python
+import cv2
+from uniface import FaceAnalyzer
+
+analyzer = FaceAnalyzer()          # SCRFD + ArcFace by default, no arguments needed
+faces = analyzer.analyze(cv2.imread("photo.jpg"))
+
+for face in faces:
+    print(face.bbox, face.confidence, face.embedding.shape)
+```
+
+Attribute models are opt-in. Pass them as `predictors=` and their fields appear on every face:
+
+```python
+from uniface import FaceAnalyzer, FairFace
+
+analyzer = FaceAnalyzer(predictors=[FairFace()])
+
+for face in analyzer.analyze(image):
+    print(f"{face.sex}, {face.age_group}, embedding {face.embedding.shape}")
+```
+
+!!! info "Which fields are populated"
+    `bbox`, `confidence`, `landmarks` and `embedding` are always set. Everything else
+    (`age`, `age_group`, `gender`, `race`, `emotion`, `quality`, the face states) stays `None`
+    until you pass the predictor that fills it, so a bare `FaceAnalyzer()` returns `age=None`.
+
+---
+
 ## Face Detection
 
 Detect faces in an image:
@@ -166,9 +200,9 @@ Face 2: Female, 20-29, White
 
 ---
 
-## Facial Landmarks (106 / 98 / 68 Points)
+## Facial Landmarks (106 / 98 / 68 / 468 / 478 Points)
 
-UniFace ships two dense-landmark families. Pick whichever fits your downstream task:
+UniFace ships three dense-landmark families. Pick whichever fits your downstream task:
 
 ```python
 import cv2
@@ -205,6 +239,20 @@ landmarker_98 = PIPNet()
 landmarker_68 = PIPNet(model_name=PIPNetWeights.DW300_CELEBA_68)
 
 landmarks = landmarker_98.get_landmarks(image, faces[0].bbox)  # (98, 2)
+```
+
+**Face Mesh (468 / 478 points, 3D)** is MediaPipe's dense mesh, run over every detected face
+in a single batched call. Pass `FaceMeshWeights.V2_478` for the 478-point variant with irises:
+
+```python
+from uniface.landmark import FaceMesh
+
+mesher = FaceMesh()  # default: 468 points
+results = mesher.predict(image, faces)
+
+print(results[0].landmarks.shape)  # (468, 3), x/y in image pixels, z is relative depth
+print(results[0].points_2d.shape)  # (468, 2), depth dropped
+print(results[0].score)            # face presence, [0, 1]
 ```
 
 ---
@@ -504,16 +552,33 @@ For detailed model comparisons and benchmarks, see the [Model Zoo](models.md).
 
 | Task | Available Models |
 |------|------------------|
-| Detection | `RetinaFace`, `SCRFD`, `YOLOv5Face`, `YOLOv8Face` |
+| Detection | `RetinaFace`, `SCRFD`, `CenterFace`, `YOLOv5Face`, `YOLOv8Face`, `BlazeFace` (short-range, 6 keypoints) |
 | Recognition | `ArcFace`, `AdaFace`, `EdgeFace`, `MobileFace`, `SphereFace` |
-| Landmarks | `Landmark106` (106 pts), `PIPNet` (98 / 68 pts) |
+| Landmarks | `Landmark106` (106 pts), `PIPNet` (98 / 68 pts), `FaceMesh` (468 or 478 pts, 3D) |
 | Tracking | `BYTETracker` |
 | Gaze | `MobileGaze` (ResNet18/34/50, MobileNetV2, MobileOneS0) |
 | Head Pose | `HeadPose` (ResNet18/34/50, MobileNetV2/V3) |
-| Parsing | `BiSeNet` (ResNet18/34) |
-| Attributes | `AgeGender`, `FairFace`, `Emotion` |
+| Parsing | `BiSeNet` (ResNet18/34), `XSeg` |
+| Matting | `MODNet` |
+| Attributes | `AgeGender`, `FairFace`, `Emotion`, `FaceAttribNet` (face states) |
 | Anti-Spoofing | `MiniFASNet` (V1SE, V2) |
 | Quality | `EDifFIQA` (T, S, M, L) |
+| Privacy | `BlurFace` (5 blur methods) |
+| Vector Store | `FAISS` |
+
+---
+
+## Verbose Logging
+
+Enable logging to see what happens during model loading and inference (useful for debugging):
+
+```python
+import logging
+from uniface import enable_logging
+
+enable_logging()                     # INFO level
+enable_logging(level=logging.DEBUG)  # DEBUG level
+```
 
 ---
 
@@ -552,12 +617,13 @@ python -c "import platform; print(platform.machine())"
 ### Import Errors
 
 ```python
-from uniface.detection import RetinaFace, SCRFD
+from uniface.detection import BlazeFace, CenterFace, RetinaFace, SCRFD, YOLOv5Face, YOLOv8Face
 from uniface.recognition import ArcFace, AdaFace
-from uniface.attribute import AgeGender, FairFace
-from uniface.landmark import Landmark106, PIPNet
+from uniface.attribute import AgeGender, Emotion, FaceAttribNet, FairFace
+from uniface.landmark import FaceMesh, Landmark106, PIPNet
 from uniface.gaze import MobileGaze
 from uniface.headpose import HeadPose
+from uniface.matting import MODNet
 from uniface.parsing import BiSeNet, XSeg
 from uniface.privacy import BlurFace
 from uniface.quality import EDifFIQA

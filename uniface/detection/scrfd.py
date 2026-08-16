@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import Literal
 
 import numpy as np
 
@@ -21,8 +21,7 @@ __all__ = ['SCRFD']
 
 
 class SCRFD(BaseDetector):
-    """
-    Face detector based on the SCRFD architecture.
+    """Face detector based on the SCRFD architecture.
 
     Title: "Sample and Computation Redistribution for Efficient Face Detection"
     Paper: https://arxiv.org/abs/2105.04714
@@ -33,20 +32,19 @@ class SCRFD(BaseDetector):
             Specifies the SCRFD variant to load. Defaults to SCRFD_10G_KPS.
         confidence_threshold (float): Confidence threshold for filtering detections. Defaults to 0.5.
         nms_threshold (float): Non-Maximum Suppression threshold. Defaults to 0.4.
-        input_size (Tuple[int, int]): Input image size (width, height).
+        input_size (tuple[int, int]): Input image size (width, height).
             Defaults to (640, 640).
             Note: Non-default sizes may cause slower inference and CoreML compatibility issues.
         providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
             the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
-        **kwargs: Reserved for future advanced options.
 
     Attributes:
         model_name (SCRFDWeights): Selected model variant.
         confidence_threshold (float): Threshold used to filter low-confidence detections.
         nms_threshold (float): Threshold used during NMS to suppress overlapping boxes.
-        input_size (Tuple[int, int]): Image size to which inputs are resized before inference.
+        input_size (tuple[int, int]): Image size to which inputs are resized before inference.
         _num_feature_maps (int): Number of feature map levels used in the model.
-        _feat_stride_fpn (List[int]): Feature map strides corresponding to each detection level.
+        _feat_stride_fpn (list[int]): Feature map strides corresponding to each detection level.
         _num_anchors (int): Number of anchors per feature location.
         _center_cache (Dict): Cached anchor centers for efficient forward passes.
         _model_path (str): Absolute path to the downloaded/verified model weights.
@@ -56,6 +54,9 @@ class SCRFD(BaseDetector):
         RuntimeError: If the ONNX model fails to load or initialize.
     """
 
+    supports_landmarks = True
+    supports_alignment = True
+
     def __init__(
         self,
         *,
@@ -64,7 +65,6 @@ class SCRFD(BaseDetector):
         nms_threshold: float = 0.4,
         input_size: tuple[int, int] = (640, 640),
         providers: list[str] | None = None,
-        **kwargs: Any,
     ) -> None:
         super().__init__(
             model_name=model_name,
@@ -72,9 +72,7 @@ class SCRFD(BaseDetector):
             nms_threshold=nms_threshold,
             input_size=input_size,
             providers=providers,
-            **kwargs,
         )
-        self._supports_landmarks = True  # SCRFD supports landmarks
 
         self.model_name = model_name
         self.confidence_threshold = confidence_threshold
@@ -94,11 +92,9 @@ class SCRFD(BaseDetector):
             f'nms_threshold={self.nms_threshold}, input_size={self.input_size}'
         )
 
-        # Get path to model weights
         self._model_path = verify_model_weights(self.model_name)
         Logger.info(f'Verified model weights located at: {self._model_path}')
 
-        # Initialize model
         self._initialize_model(self._model_path)
 
     def _initialize_model(self, model_path: str) -> None:
@@ -164,8 +160,6 @@ class SCRFD(BaseDetector):
         bboxes_list = []
         kpss_list = []
 
-        image_size = image_size
-
         num_feature_maps = self._num_feature_maps
         for idx, stride in enumerate(self._feat_stride_fpn):
             scores = outputs[idx]
@@ -213,8 +207,7 @@ class SCRFD(BaseDetector):
         metric: Literal['default', 'max'] = 'max',
         center_weight: float = 2.0,
     ) -> list[Face]:
-        """
-        Perform face detection on an input image and return bounding boxes and facial landmarks.
+        """Perform face detection on an input image and return bounding boxes and facial landmarks.
 
         Args:
             image (np.ndarray): Input image as a NumPy array of shape (H, W, C).
@@ -226,7 +219,7 @@ class SCRFD(BaseDetector):
                 when using the "default" metric. Defaults to 2.0.
 
         Returns:
-            List[Face]: List of Face objects, each containing:
+            list[Face]: List of Face objects, each containing:
                 - bbox (np.ndarray): Bounding box coordinates with shape (4,) as [x1, y1, x2, y2]
                 - confidence (float): Detection confidence score (0.0 to 1.0)
                 - landmarks (np.ndarray): 5-point facial landmarks with shape (5, 2)
@@ -247,7 +240,6 @@ class SCRFD(BaseDetector):
 
         image_tensor = self.preprocess(image)
 
-        # Inference
         outputs = self.inference(image_tensor)
 
         # Postprocessing

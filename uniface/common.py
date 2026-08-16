@@ -20,8 +20,33 @@ __all__ = [
     'non_max_suppression',
     'resize_image',
     'softmax',
+    'validate_image',
     'xyxy_to_cxcywh',
 ]
+
+
+def validate_image(image: np.ndarray) -> None:
+    """Reject images the preprocessing paths below would silently corrupt.
+
+    Both resize helpers paste the input onto a `uint8` canvas: a float image
+    would be truncated to zeros (detectors then return no faces with no error),
+    and a grayscale or BGRA image would fail to broadcast into the 3-channel
+    canvas. Models that warp the input themselves — BlazeFace, FaceMesh — call
+    this directly for the same guarantee. Failing loudly here turns silent
+    corruption into actionable errors.
+
+    Args:
+        image: The caller-supplied image.
+
+    Raises:
+        ValueError: If the image is empty, not 3-channel BGR, or not uint8.
+    """
+    if not isinstance(image, np.ndarray) or image.size == 0:
+        raise ValueError('Input image must be a non-empty numpy array.')
+    if image.ndim != 3 or image.shape[2] != 3:
+        raise ValueError(f'Expected a BGR image of shape (H, W, 3), got {image.shape}. Convert with cv2.cvtColor.')
+    if image.dtype != np.uint8:
+        raise ValueError(f'Expected dtype uint8, got {image.dtype}. Scale to [0, 255] and cast with .astype(np.uint8).')
 
 
 def resize_image(
@@ -41,7 +66,11 @@ def resize_image(
         A tuple containing:
             - Resized image on a blank canvas with shape (height, width, 3).
             - The resize factor as a float.
+
+    Raises:
+        ValueError: If the image is empty, not 3-channel BGR, or not uint8.
     """
+    validate_image(frame)
     width, height = target_shape
 
     # Aspect-ratio preserving resize
@@ -65,14 +94,14 @@ def resize_image(
 
 
 def softmax(x: np.ndarray, axis: int = -1) -> np.ndarray:
-    """Compute the numerically stable softmax of an array along ``axis``.
+    """Compute the numerically stable softmax of an array along `axis`.
 
     Args:
         x: Input array.
         axis: Axis along which softmax is computed. Defaults to the last axis.
 
     Returns:
-        Array of the same shape as *x* with values in ``[0, 1]`` summing to 1
+        Array of the same shape as *x* with values in `[0, 1]` summing to 1
         along *axis*.
     """
     exp_x = np.exp(x - np.max(x, axis=axis, keepdims=True))
@@ -80,13 +109,13 @@ def softmax(x: np.ndarray, axis: int = -1) -> np.ndarray:
 
 
 def xyxy_to_cxcywh(bboxes: np.ndarray) -> np.ndarray:
-    """Convert bounding boxes from ``[x1, y1, x2, y2]`` to ``[cx, cy, w, h]``.
+    """Convert bounding boxes from `[x1, y1, x2, y2]` to `[cx, cy, w, h]`.
 
     Args:
-        bboxes: Array of shape (N, 4) or (4,) with ``[x1, y1, x2, y2]`` coordinates.
+        bboxes: Array of shape (N, 4) or (4,) with `[x1, y1, x2, y2]` coordinates.
 
     Returns:
-        Array of the same shape with ``[cx, cy, w, h]`` coordinates.
+        Array of the same shape with `[cx, cy, w, h]` coordinates.
     """
     out = np.empty_like(bboxes)
     out[..., 0] = (bboxes[..., 0] + bboxes[..., 2]) / 2  # cx
@@ -330,7 +359,12 @@ def letterbox_resize(
         >>> # To transform coordinates back to original:
         >>> x_orig = (x_detected - pad_w) / scale
         >>> y_orig = (y_detected - pad_h) / scale
+
+    Raises:
+        ValueError: If the image is empty, not 3-channel BGR, or not uint8.
     """
+    validate_image(image)
+
     # Get original image shape
     img_h, img_w = image.shape[:2]
 

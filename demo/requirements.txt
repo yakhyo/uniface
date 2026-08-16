@@ -1,5 +1,5 @@
 gradio>=4.0.0
-uniface>=3.1.0
+uniface>=4.0.0
 numpy>=1.21.0
 opencv-python-headless>=4.5.0
 onnxruntime>=1.16.0

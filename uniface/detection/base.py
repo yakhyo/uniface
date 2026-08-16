@@ -22,8 +22,20 @@ class BaseDetector(ABC):
 
     Attributes:
         config: Dictionary containing detector configuration parameters.
-        _supports_landmarks: Flag indicating if detector supports landmark detection.
+        supports_landmarks: Whether the detector emits facial landmarks alongside boxes.
+            Opt-in: defaults to False so a subclass that only produces boxes is never
+            mistaken for a landmark detector. False means `Face.landmarks` is empty and
+            landmark-driven stages are unavailable.
+        supports_alignment: Whether those landmarks fit the 5-point alignment template
+            (left eye, right eye, nose, left mouth corner, right mouth corner) in
+            `uniface.face_utils.reference_alignment`. False means recognition, quality
+            scoring, and XSeg parsing cannot consume them. Also opt-in: a boxes-only
+            subclass that declares neither flag is safe by default, and setting this to
+            True without `supports_landmarks = True` is meaningless.
     """
+
+    supports_landmarks: bool = False
+    supports_alignment: bool = False
 
     def __init__(self, **kwargs: Any) -> None:
         """Initialize the detector with configuration parameters.
@@ -32,7 +44,6 @@ class BaseDetector(ABC):
             **kwargs: Detector-specific configuration parameters.
         """
         self.config: dict[str, Any] = kwargs
-        self._supports_landmarks: bool = False
 
     @abstractmethod
     def detect(self, image: np.ndarray, **kwargs: Any) -> list[Face]:
@@ -46,14 +57,15 @@ class BaseDetector(ABC):
             List of detected Face objects, each containing:
                 - bbox: Bounding box coordinates with shape (4,) as [x1, y1, x2, y2].
                 - confidence: Detection confidence score (0.0 to 1.0).
-                - landmarks: Facial landmarks with shape (5, 2) for 5-point landmarks.
+                - landmarks: Facial landmarks with shape (K, 2). K is 5 for detectors
+                  whose `supports_alignment` is True; BlazeFace emits 6.
 
         Example:
             >>> faces = detector.detect(image)
             >>> for face in faces:
             ...     bbox = face.bbox  # np.ndarray with shape (4,)
             ...     confidence = face.confidence  # float
-            ...     landmarks = face.landmarks  # np.ndarray with shape (5, 2)
+            ...     landmarks = face.landmarks  # np.ndarray with shape (K, 2)
         """
 
     @abstractmethod
@@ -87,24 +99,16 @@ class BaseDetector(ABC):
         """Detailed string representation."""
         return self.__str__()
 
-    @property
-    def supports_landmarks(self) -> bool:
-        """Whether this detector supports landmark detection.
-
-        Returns:
-            True if landmarks are supported, False otherwise.
-        """
-        return hasattr(self, '_supports_landmarks') and self._supports_landmarks
-
     def get_info(self) -> dict[str, Any]:
         """Get detector information and configuration.
 
         Returns:
-            Dictionary containing detector name, landmark support, and config.
+            Dictionary containing detector name, landmark support, alignment support, and config.
         """
         return {
             'name': self.__class__.__name__,
-            'supports_landmarks': self._supports_landmarks,
+            'supports_landmarks': self.supports_landmarks,
+            'supports_alignment': self.supports_alignment,
             'config': self.config,
         }
 
@@ -136,7 +140,7 @@ class BaseDetector(ABC):
 
         Args:
             detections: Array of shape (N, 5) as [x1, y1, x2, y2, confidence].
-            landmarks: Array of shape (N, 5, 2) for 5-point landmarks.
+            landmarks: Array of shape (N, K, 2). Only axis 0 is indexed, so any K works.
             max_num: Maximum number of faces to keep. If 0 or >= N, returns all.
             original_shape: Original image shape as (height, width).
             metric: Ranking metric:
@@ -179,7 +183,7 @@ class BaseDetector(ABC):
 
         Args:
             detections: Array of shape (N, 5) as [x1, y1, x2, y2, confidence].
-            landmarks: Array of shape (N, 5, 2) for 5-point landmarks.
+            landmarks: Array of shape (N, K, 2). Only axis 0 is indexed, so any K works.
 
         Returns:
             List of Face objects.

@@ -26,6 +26,17 @@ from uniface.types import Face
 import numpy as np
 
 class MyDetector(BaseDetector):
+    # Both flags default to False, so a boxes-only detector declares neither.
+
+    # Opt in if your detector fills Face.landmarks.
+    supports_landmarks = True
+
+    # Opt in only if those landmarks ARE the 5-point alignment template
+    # (left eye, right eye, nose, left mouth corner, right mouth corner).
+    # Left False, FaceAnalyzer disables recognition instead of producing
+    # broken embeddings.
+    supports_alignment = True
+
     def __init__(self, model_path: str, confidence_threshold: float = 0.5):
         super().__init__(confidence_threshold=confidence_threshold)
         self.session = create_onnx_session(model_path)
@@ -62,9 +73,43 @@ from uniface.recognition.base import BaseRecognizer, PreprocessConfig
 class MyRecognizer(BaseRecognizer):
     def __init__(self, model_path: str, providers=None):
         preprocessing = PreprocessConfig(input_mean=127.5, input_std=127.5, input_size=(112, 112))
-        super().__init__(model_path, preprocessing, providers=providers)
+        super().__init__(model_path=model_path, preprocessing=preprocessing, providers=providers)
 
     # Optional: override preprocess() if your model expects custom normalization.
+```
+
+---
+
+## Add Custom Per-Face Predictor
+
+`FaceAnalyzer` runs any `BaseAttribute` subclass on each detected face via the
+`predictors=` list. Implement `predict(image, face)` to read what you need from
+the `Face` (bbox, landmarks), run inference, and write results back:
+
+```python
+from uniface.attribute import BaseAttribute
+
+class MyPredictor(BaseAttribute):
+    def _initialize_model(self):
+        ...  # load your model
+
+    def preprocess(self, image, *args):
+        ...  # crop and normalize
+
+    def postprocess(self, prediction):
+        ...  # raw output to a result object
+
+    def predict(self, image, face):
+        result = self.postprocess(self._run(self.preprocess(image, face.bbox)))
+        face.age = result.age  # enrich the Face in-place
+        return result
+```
+
+```python
+from uniface import FaceAnalyzer
+
+analyzer = FaceAnalyzer(predictors=[MyPredictor()])
+faces = analyzer.analyze(image)
 ```
 
 ---

@@ -13,6 +13,29 @@ import gradio_client.utils as _gc_utils
 import numpy as np
 
 import uniface
+from uniface import (
+    SCRFD,
+    AdaFace,
+    AgeGender,
+    ArcFace,
+    BiSeNet,
+    BlurFace,
+    BYTETracker,
+    EdgeFace,
+    FaceAnalyzer,
+    FairFace,
+    HeadPose,
+    Landmark106,
+    MiniFASNet,
+    MobileFace,
+    MobileGaze,
+    MODNet,
+    RetinaFace,
+    SphereFace,
+    XSeg,
+    YOLOv5Face,
+    YOLOv8Face,
+)
 from uniface.constants import (
     AdaFaceWeights,
     ArcFaceWeights,
@@ -93,6 +116,11 @@ def _get_model(key: str, factory, *args, **kwargs):
     return _model_cache[key]
 
 
+def _default_detector() -> RetinaFace:
+    """Shared lightweight detector used by every tab that needs face boxes."""
+    return _get_model('det_retina_default', RetinaFace)
+
+
 # ---------------------------------------------------------------------------
 # Detector family -> variant mappings
 # ---------------------------------------------------------------------------
@@ -103,11 +131,11 @@ DETECTOR_VARIANTS: dict[str, list[str]] = {
     'YOLOv8-Face': [w.value for w in YOLOv8FaceWeights],
 }
 
-DETECTOR_METHOD_MAP: dict[str, str] = {
-    'RetinaFace': 'retinaface',
-    'SCRFD': 'scrfd',
-    'YOLOv5-Face': 'yolov5face',
-    'YOLOv8-Face': 'yolov8face',
+DETECTOR_CLASS_MAP: dict[str, type] = {
+    'RetinaFace': RetinaFace,
+    'SCRFD': SCRFD,
+    'YOLOv5-Face': YOLOv5Face,
+    'YOLOv8-Face': YOLOv8Face,
 }
 
 RECOGNIZER_VARIANTS: dict[str, list[str]] = {
@@ -118,12 +146,12 @@ RECOGNIZER_VARIANTS: dict[str, list[str]] = {
     'SphereFace': [w.value for w in SphereFaceWeights],
 }
 
-RECOGNIZER_METHOD_MAP: dict[str, str] = {
-    'ArcFace': 'arcface',
-    'AdaFace': 'adaface',
-    'EdgeFace': 'edgeface',
-    'MobileFace': 'mobileface',
-    'SphereFace': 'sphereface',
+RECOGNIZER_CLASS_MAP: dict[str, type] = {
+    'ArcFace': ArcFace,
+    'AdaFace': AdaFace,
+    'EdgeFace': EdgeFace,
+    'MobileFace': MobileFace,
+    'SphereFace': SphereFace,
 }
 
 GAZE_VARIANT_MAP: dict[str, GazeWeights] = {
@@ -230,13 +258,12 @@ def detect_faces_fn(
         return None, ''
 
     bgr = _rgb_to_bgr(image)
-    method = DETECTOR_METHOD_MAP[detector_family]
+    detector_cls = DETECTOR_CLASS_MAP[detector_family]
     model_enum = _STR_TO_ENUM[detector_variant]
-    cache_key = f'det_{method}_{detector_variant}_{confidence}_{nms_threshold}'
+    cache_key = f'det_{detector_family}_{detector_variant}_{confidence}_{nms_threshold}'
     detector = _get_model(
         cache_key,
-        uniface.create_detector,
-        method,
+        detector_cls,
         model_name=model_enum,
         confidence_threshold=confidence,
         nms_threshold=nms_threshold,
@@ -291,12 +318,12 @@ def verify_faces_fn(
     bgr_b = _rgb_to_bgr(image_b)
 
     # Detector (shared lightweight)
-    det = _get_model('det_retina_default', uniface.create_detector, 'retinaface')
+    det = _default_detector()
 
-    method = RECOGNIZER_METHOD_MAP[recognizer_family]
+    recognizer_cls = RECOGNIZER_CLASS_MAP[recognizer_family]
     rec_enum = _STR_TO_ENUM[recognizer_variant]
-    rec_key = f'rec_{method}_{recognizer_variant}'
-    rec = _get_model(rec_key, uniface.create_recognizer, method, model_name=rec_enum)
+    rec_key = f'rec_{recognizer_family}_{recognizer_variant}'
+    rec = _get_model(rec_key, recognizer_cls, model_name=rec_enum)
 
     faces_a = det.detect(bgr_a)
     faces_b = det.detect(bgr_b)
@@ -345,14 +372,14 @@ def analyze_faces_fn(
 
     bgr = _rgb_to_bgr(image)
 
-    det = _get_model('det_retina_default', uniface.create_detector, 'retinaface')
+    det = _default_detector()
 
     if attr_model == 'AgeGender':
-        ag = _get_model('agegender', uniface.AgeGender)
-        analyzer = uniface.FaceAnalyzer(detector=det, recognizer=None, attributes=[ag])
+        ag = _get_model('agegender', AgeGender)
+        analyzer = FaceAnalyzer(detector=det, recognizer=None, predictors=[ag])
     else:
-        ff = _get_model('fairface', uniface.FairFace)
-        analyzer = uniface.FaceAnalyzer(detector=det, recognizer=None, attributes=[ff])
+        ff = _get_model('fairface', FairFace)
+        analyzer = FaceAnalyzer(detector=det, recognizer=None, predictors=[ff])
 
     faces = analyzer.analyze(bgr)
     result = bgr.copy()
@@ -405,8 +432,8 @@ def landmarks_fn(image: np.ndarray) -> tuple[np.ndarray, str]:
         return None, ''
 
     bgr = _rgb_to_bgr(image)
-    det = _get_model('det_retina_default', uniface.create_detector, 'retinaface')
-    landmarker = _get_model('landmarker_106', uniface.create_landmarker, '2d106det')
+    det = _default_detector()
+    landmarker = _get_model('landmarker_106', Landmark106)
 
     faces = det.detect(bgr)
     result = bgr.copy()
@@ -455,10 +482,11 @@ def parsing_fn(
         return None, ''
 
     bgr = _rgb_to_bgr(image)
-    det = _get_model('det_retina_default', uniface.create_detector, 'retinaface')
+    det = _default_detector()
 
     weights = PARSING_VARIANT_MAP[model_variant]
-    parser = _get_model(f'parser_{weights.value}', uniface.create_face_parser, weights)
+    parser_cls = XSeg if isinstance(weights, XSegWeights) else BiSeNet
+    parser = _get_model(f'parser_{weights.value}', parser_cls, model_name=weights)
 
     faces = det.detect(bgr)
     result = bgr.copy()
@@ -528,10 +556,10 @@ def gaze_fn(
         return None, ''
 
     bgr = _rgb_to_bgr(image)
-    det = _get_model('det_retina_default', uniface.create_detector, 'retinaface')
+    det = _default_detector()
 
     weights = GAZE_VARIANT_MAP[backbone]
-    gaze = _get_model(f'gaze_{weights.value}', uniface.create_gaze_estimator, model_name=weights)
+    gaze = _get_model(f'gaze_{weights.value}', MobileGaze, model_name=weights)
 
     faces = det.detect(bgr)
     result = bgr.copy()
@@ -571,10 +599,10 @@ def spoofing_fn(
         return None, ''
 
     bgr = _rgb_to_bgr(image)
-    det = _get_model('det_retina_default', uniface.create_detector, 'retinaface')
+    det = _default_detector()
 
     weights = SPOOFING_VARIANT_MAP[model_variant]
-    spoofer = _get_model(f'spoof_{weights.value}', uniface.create_spoofer, weights)
+    spoofer = _get_model(f'spoof_{weights.value}', MiniFASNet, model_name=weights)
 
     faces = det.detect(bgr)
     result = bgr.copy()
@@ -621,12 +649,12 @@ def headpose_fn(
         return None, ''
 
     bgr = _rgb_to_bgr(image)
-    det = _get_model('det_retina_default', uniface.create_detector, 'retinaface')
+    det = _default_detector()
 
     weights = HEADPOSE_VARIANT_MAP[backbone]
     estimator = _get_model(
         f'headpose_{weights.value}',
-        uniface.create_head_pose_estimator,
+        HeadPose,
         model_name=weights,
     )
 
@@ -681,7 +709,7 @@ def matting_fn(
 
     bgr = _rgb_to_bgr(image)
     weights = MATTING_VARIANT_MAP[model_variant]
-    matting = _get_model(f'modnet_{weights.value}', uniface.create_matting_model, weights)
+    matting = _get_model(f'modnet_{weights.value}', MODNet, model_name=weights)
 
     matte = matting.predict(bgr)  # float32 (H, W) in [0, 1]
     alpha = (matte * 255.0).clip(0, 255).astype(np.uint8)
@@ -762,9 +790,9 @@ def tracking_fn(
         cap.release()
         return None, json.dumps({'error': 'Could not initialise video writer.'}, indent=2)
 
-    detector = _get_model('det_retina_default', uniface.create_detector, 'retinaface')
+    detector = _default_detector()
     # Always use a fresh tracker so IDs restart each run
-    tracker = uniface.BYTETracker(track_thresh=confidence, track_buffer=track_buffer)
+    tracker = BYTETracker(track_thresh=confidence, track_buffer=track_buffer)
 
     seen_ids: set[int] = set()
     processed = 0
@@ -826,8 +854,8 @@ def anonymize_fn(
         return None, ''
 
     bgr = _rgb_to_bgr(image)
-    det = _get_model('det_retina_default', uniface.create_detector, 'retinaface')
-    blurrer = _get_model(f'blur_{blur_method}', uniface.BlurFace, method=blur_method)
+    det = _default_detector()
+    blurrer = _get_model(f'blur_{blur_method}', BlurFace, method=blur_method)
     faces = det.detect(bgr)
     result = blurrer.anonymize(bgr, faces)
 

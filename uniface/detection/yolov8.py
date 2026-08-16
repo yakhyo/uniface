@@ -2,7 +2,7 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-from typing import Any, Literal
+from typing import Literal
 
 import numpy as np
 
@@ -28,8 +28,7 @@ __all__ = ['YOLOv8Face']
 
 
 class YOLOv8Face(BaseDetector):
-    """
-    Face detector based on the YOLOv8-Face architecture.
+    """Face detector based on the YOLOv8-Face architecture.
 
     Uses anchor-free design with DFL (Distribution Focal Loss) for bbox regression.
     Outputs 3 feature maps at different scales for multi-scale detection.
@@ -47,8 +46,7 @@ class YOLOv8Face(BaseDetector):
             or 'numpy' (no dependencies). Defaults to 'numpy'.
         providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
             the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
-        **kwargs: Advanced options:
-            max_det (int): Maximum number of detections to return. Defaults to 750.
+        max_det (int): Maximum number of detections to return. Defaults to 750.
 
     Attributes:
         model_name (YOLOv8FaceWeights): Selected model variant.
@@ -64,6 +62,9 @@ class YOLOv8Face(BaseDetector):
         RuntimeError: If the ONNX model fails to load or initialize.
     """
 
+    supports_landmarks = True
+    supports_alignment = True
+
     def __init__(
         self,
         *,
@@ -73,7 +74,7 @@ class YOLOv8Face(BaseDetector):
         input_size: int = 640,
         nms_mode: Literal['torchvision', 'numpy'] = 'numpy',
         providers: list[str] | None = None,
-        **kwargs: Any,
+        max_det: int = 750,
     ) -> None:
         super().__init__(
             model_name=model_name,
@@ -82,9 +83,8 @@ class YOLOv8Face(BaseDetector):
             input_size=input_size,
             nms_mode=nms_mode,
             providers=providers,
-            **kwargs,
+            max_det=max_det,
         )
-        self._supports_landmarks = True  # YOLOv8-Face supports landmarks
 
         # Validate input size
         if input_size != 640:
@@ -105,8 +105,8 @@ class YOLOv8Face(BaseDetector):
         else:
             self.nms_mode = nms_mode
 
-        # Advanced options from kwargs
-        self.max_det = kwargs.get('max_det', 750)
+        # Advanced options
+        self.max_det = max_det
 
         # YOLOv8 strides for 640x640 input (3 feature maps: 80x80, 40x40, 20x20)
         self.strides = [8, 16, 32]
@@ -116,16 +116,13 @@ class YOLOv8Face(BaseDetector):
             f'nms_threshold={self.nms_threshold}, input_size={self.input_size}, nms_mode={self.nms_mode}'
         )
 
-        # Get path to model weights
         self._model_path = verify_model_weights(self.model_name)
         Logger.info(f'Verified model weights located at: {self._model_path}')
 
-        # Initialize model
         self._initialize_model(self._model_path)
 
     def _initialize_model(self, model_path: str) -> None:
-        """
-        Initializes an ONNX model session from the given path.
+        """Initializes an ONNX model session from the given path.
 
         Args:
             model_path (str): The file path to the ONNX model.
@@ -160,7 +157,7 @@ class YOLOv8Face(BaseDetector):
             input_tensor (np.ndarray): Preprocessed input tensor.
 
         Returns:
-            List[np.ndarray]: Raw model outputs (3 feature maps).
+            list[np.ndarray]: Raw model outputs (3 feature maps).
         """
         return self.session.run(self.output_names, {self.input_names: input_tensor})
 
@@ -171,17 +168,16 @@ class YOLOv8Face(BaseDetector):
         padding: tuple[int, int],
         original_shape: tuple[int, int],
     ) -> tuple[np.ndarray, np.ndarray]:
-        """
-        Postprocess model predictions with DFL decoding and coordinate scaling.
+        """Postprocess model predictions with DFL decoding and coordinate scaling.
 
         Args:
-            predictions (List[np.ndarray]): Raw model outputs (3 feature maps)
+            predictions (list[np.ndarray]): Raw model outputs (3 feature maps)
             scale (float): Scale ratio used in preprocessing
-            padding (Tuple[int, int]): Padding (pad_w, pad_h) used in preprocessing
-            original_shape (Tuple[int, int]): Original image shape (height, width)
+            padding (tuple[int, int]): Padding (pad_w, pad_h) used in preprocessing
+            original_shape (tuple[int, int]): Original image shape (height, width)
 
         Returns:
-            Tuple[np.ndarray, np.ndarray]: Filtered detections and landmarks
+            tuple[np.ndarray, np.ndarray]: Filtered detections and landmarks
                 - detections: [N, 5] as [x1, y1, x2, y2, conf]
                 - landmarks: [N, 5, 2] for each detection
         """
@@ -301,8 +297,7 @@ class YOLOv8Face(BaseDetector):
         metric: Literal['default', 'max'] = 'max',
         center_weight: float = 2.0,
     ) -> list[Face]:
-        """
-        Perform face detection on an input image and return bounding boxes and facial landmarks.
+        """Perform face detection on an input image and return bounding boxes and facial landmarks.
 
         Args:
             image (np.ndarray): Input image as a NumPy array of shape (H, W, C) in BGR format.
@@ -314,7 +309,7 @@ class YOLOv8Face(BaseDetector):
                 when using the "default" metric. Defaults to 2.0.
 
         Returns:
-            List[Face]: List of Face objects, each containing:
+            list[Face]: List of Face objects, each containing:
                 - bbox (np.ndarray): Bounding box coordinates with shape (4,) as [x1, y1, x2, y2]
                 - confidence (float): Detection confidence score (0.0 to 1.0)
                 - landmarks (np.ndarray): 5-point facial landmarks with shape (5, 2)
@@ -328,7 +323,6 @@ class YOLOv8Face(BaseDetector):
         """
         original_height, original_width = image.shape[:2]
 
-        # Preprocess
         image_tensor, scale, padding = self.preprocess(image)
 
         # ONNXRuntime inference

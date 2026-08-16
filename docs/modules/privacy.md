@@ -3,7 +3,7 @@
 Face anonymization protects privacy by blurring or obscuring faces in images and videos.
 
 <figure markdown="span">
-  ![Face Anonymization](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/anonymization.jpg){ width="100%" }
+  ![Face Anonymization](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/anonymization.jpg){ width="100%" }
   <figcaption>Five anonymization methods: pixelate, gaussian, blackout, elliptical, and median</figcaption>
 </figure>
 
@@ -90,6 +90,15 @@ blurrer = BlurFace(method='elliptical', blur_strength=3.0, margin=20)
 |-----------|---------|-------------|
 | `blur_strength` | 3.0 | Blur intensity |
 | `margin` | 20 | Margin around face |
+
+The elliptical blur is also available as a standalone class for direct use on bounding boxes:
+
+```python
+from uniface.privacy import EllipticalBlur
+
+blur = EllipticalBlur(blur_strength=3.0, margin=20)
+result = blur(image, bboxes=[face.bbox for face in faces])
+```
 
 ### Median
 

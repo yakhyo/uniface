@@ -22,10 +22,14 @@ class SphereFace(BaseRecognizer):
     Args:
         model_name (SphereFaceWeights): The specific SphereFace model variant to use.
             Defaults to `SphereFaceWeights.SPHERE20`.
-        preprocessing (Optional[PreprocessConfig]): An optional custom preprocessing
+        preprocessing (PreprocessConfig | None): An optional custom preprocessing
             configuration. If None, a default config for SphereFace is used.
         providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
             the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
+
+    Raises:
+        ValueError: If the model weights are invalid or not found.
+        RuntimeError: If the ONNX model fails to load or initialize.
 
     Example:
         >>> from uniface.recognition import SphereFace
@@ -39,6 +43,7 @@ class SphereFace(BaseRecognizer):
 
     def __init__(
         self,
+        *,
         model_name: SphereFaceWeights = SphereFaceWeights.SPHERE20,
         preprocessing: PreprocessConfig | None = None,
         providers: list[str] | None = None,

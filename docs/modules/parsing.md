@@ -3,12 +3,12 @@
 Face parsing segments faces into semantic components or face regions.
 
 <figure markdown="span">
-  ![Face Parsing](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/parsing.jpg){ width="80%" }
+  ![Face Parsing](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/parsing.jpg){ width="100%" }
   <figcaption>BiSeNet face parsing with 19 semantic component classes</figcaption>
 </figure>
 
 <figure markdown="span">
-  ![Face Segmentation](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demos/segmentation.jpg){ width="80%" }
+  ![Face Segmentation](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/segmentation.jpg){ width="100%" }
   <figcaption>XSeg face region segmentation mask</figcaption>
 </figure>
 
@@ -252,6 +252,11 @@ vis_result = vis_parsing_maps(
 ---
 
 ## XSeg
+
+<figure markdown="span">
+  ![XSeg on an occluded face](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/segmentation_occluded.jpg){ width="100%" }
+  <figcaption>An occluded face: only the exposed region is masked</figcaption>
+</figure>
 
 XSeg outputs a mask for face regions. Unlike BiSeNet which works on bbox crops, XSeg requires 5-point landmarks for face alignment.
 

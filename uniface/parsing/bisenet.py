@@ -28,6 +28,10 @@ class BiSeNet(BaseFaceParser):
     The model supports 19 facial component classes including:
     - Background, skin, eyebrows, eyes, nose, mouth, lips, ears, hair, etc.
 
+    Raises:
+        ValueError: If the model weights are invalid or not found.
+        RuntimeError: If the ONNX model fails to load or initialize.
+
     Reference:
         https://github.com/yakhyo/face-parsing
 
@@ -35,13 +39,11 @@ class BiSeNet(BaseFaceParser):
         model_name (ParsingWeights): The enum specifying the parsing model to load.
             Options: RESNET18, RESNET34.
             Defaults to `ParsingWeights.RESNET18`.
-        input_size (Tuple[int, int]): The resolution (width, height) for the model's
-            input. Defaults to (512, 512).
         providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
             the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
 
     Attributes:
-        input_size (Tuple[int, int]): Model input dimensions.
+        input_size (tuple[int, int]): Model input dimensions (width, height), read from the ONNX model.
         input_mean (np.ndarray): Per-channel mean values for normalization (ImageNet).
         input_std (np.ndarray): Per-channel std values for normalization (ImageNet).
         mask_type (str): Output type identifier - "class_ids" for BiSeNet.
@@ -68,13 +70,12 @@ class BiSeNet(BaseFaceParser):
 
     def __init__(
         self,
+        *,
         model_name: ParsingWeights = ParsingWeights.RESNET18,
-        input_size: tuple[int, int] = (512, 512),
         providers: list[str] | None = None,
     ) -> None:
-        Logger.info(f'Initializing BiSeNet with model={model_name}, input_size={input_size}')
+        Logger.info(f'Initializing BiSeNet with model={model_name}')
 
-        self.input_size = input_size
         self.input_mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
         self.input_std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
         self.providers = providers
@@ -83,8 +84,7 @@ class BiSeNet(BaseFaceParser):
         self._initialize_model()
 
     def _initialize_model(self) -> None:
-        """
-        Initialize the ONNX model from the stored model path.
+        """Initialize the ONNX model from the stored model path.
 
         Raises:
             RuntimeError: If the model fails to load or initialize.
@@ -109,8 +109,7 @@ class BiSeNet(BaseFaceParser):
             raise RuntimeError(f'Failed to initialize parsing model: {e}') from e
 
     def preprocess(self, face_image: np.ndarray) -> np.ndarray:
-        """
-        Preprocess a face image for parsing.
+        """Preprocess a face image for parsing.
 
         Args:
             face_image (np.ndarray): A face image in BGR format.
@@ -135,12 +134,11 @@ class BiSeNet(BaseFaceParser):
         return image
 
     def postprocess(self, outputs: np.ndarray, original_size: tuple[int, int]) -> np.ndarray:
-        """
-        Postprocess model output to segmentation mask.
+        """Postprocess model output to segmentation mask.
 
         Args:
             outputs (np.ndarray): Raw model output.
-            original_size (Tuple[int, int]): Original image size (width, height).
+            original_size (tuple[int, int]): Original image size (width, height).
 
         Returns:
             np.ndarray: Segmentation mask resized to original dimensions.
@@ -154,19 +152,18 @@ class BiSeNet(BaseFaceParser):
         return restored_mask
 
     def parse(self, image: np.ndarray, *, landmarks: np.ndarray | None = None) -> np.ndarray:
-        """
-        Perform end-to-end face parsing on a face image.
+        """Perform end-to-end face parsing on a face image.
 
         This method orchestrates the full pipeline: preprocessing the input,
         running inference, and postprocessing to return the segmentation mask.
 
         BiSeNet operates on face crops and does not require landmarks.
-        The ``landmarks`` parameter is accepted for API compatibility but ignored.
+        The `landmarks` parameter is accepted for API compatibility but ignored.
 
         Args:
             image (np.ndarray): A face image in BGR format.
             landmarks (np.ndarray | None): Ignored. Accepted for interface
-                compatibility with :class:`BaseFaceParser`.
+                compatibility with `BaseFaceParser`.
 
         Returns:
             np.ndarray: Segmentation mask with the same size as input image.

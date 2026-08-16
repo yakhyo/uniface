@@ -20,8 +20,7 @@ __all__ = ['EDifFIQA']
 
 
 class EDifFIQA(BaseQualityEstimator):
-    """
-    eDifFIQA: Face Image Quality Assessment with ONNX Runtime.
+    """eDifFIQA: Face Image Quality Assessment with ONNX Runtime.
 
     Predicts a single scalar quality score from an aligned 112x112 face crop.
     Higher score = better quality. Supports four backbones via the
@@ -41,6 +40,10 @@ class EDifFIQA(BaseQualityEstimator):
         providers: ONNX Runtime execution providers. If None, auto-detects
             the best available provider.
 
+    Raises:
+        ValueError: If the model weights are invalid or not found.
+        RuntimeError: If the ONNX model fails to load or initialize.
+
     Example:
         >>> from uniface.detection import SCRFD
         >>> from uniface.quality import EDifFIQA
@@ -56,6 +59,7 @@ class EDifFIQA(BaseQualityEstimator):
 
     def __init__(
         self,
+        *,
         model_name: EDifFIQAWeights = EDifFIQAWeights.T,
         providers: list[str] | None = None,
     ) -> None:
@@ -71,8 +75,7 @@ class EDifFIQA(BaseQualityEstimator):
         self._initialize_model()
 
     def _initialize_model(self) -> None:
-        """
-        Initialize the ONNX model from the stored model path.
+        """Initialize the ONNX model from the stored model path.
 
         Raises:
             RuntimeError: If the model fails to load or initialize.
@@ -94,8 +97,7 @@ class EDifFIQA(BaseQualityEstimator):
             raise RuntimeError(f'Failed to initialize EDifFIQA model: {e}') from e
 
     def preprocess(self, aligned_face: np.ndarray) -> np.ndarray:
-        """
-        Preprocess an aligned face crop for model inference.
+        """Preprocess an aligned face crop for model inference.
 
         Converts BGR -> RGB, normalizes with mean=127.5/std=127.5, and
         reshapes to NCHW.
@@ -115,8 +117,7 @@ class EDifFIQA(BaseQualityEstimator):
         )
 
     def score_aligned(self, aligned_face: np.ndarray) -> QualityResult:
-        """
-        Score a pre-aligned face crop.
+        """Score a pre-aligned face crop.
 
         Args:
             aligned_face: Aligned face crop in BGR format.
@@ -129,8 +130,7 @@ class EDifFIQA(BaseQualityEstimator):
         return QualityResult(score=float(np.squeeze(output)))
 
     def predict(self, image: np.ndarray, landmarks: np.ndarray) -> QualityResult:
-        """
-        Align the face using 5-point landmarks, then score it.
+        """Align the face using 5-point landmarks, then score it.
 
         Args:
             image: Input image in BGR format containing the face.

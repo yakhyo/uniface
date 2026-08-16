@@ -28,6 +28,20 @@ print(f"Dtype: {image.dtype}")  # uint8
     bgr_image = np.array(pil_image)[:, :, ::-1]  # RGB → BGR
     ```
 
+!!! warning "Dtype"
+    Images must be `uint8` in `[0, 255]`, three-channel. A float `[0, 1]` array or a
+    grayscale frame raises `ValueError` rather than returning quietly wrong results:
+
+    ```python
+    detector.detect(image.astype(np.float32) / 255.0)
+    # ValueError: Expected dtype uint8, got float32. Scale to [0, 255] and cast with .astype(np.uint8).
+
+    detector.detect(cv2.cvtColor(image, cv2.COLOR_BGR2GRAY))
+    # ValueError: Expected a BGR image of shape (H, W, 3), got (480, 640). Convert with cv2.cvtColor.
+    ```
+
+    Normalization is each model's job — pass the raw `cv2.imread` array through.
+
 ---
 
 ## Output: Face Dataclass
@@ -43,7 +57,8 @@ class Face:
     # Required (from detection)
     bbox: np.ndarray        # [x1, y1, x2, y2]
     confidence: float       # 0.0 to 1.0
-    landmarks: np.ndarray   # (5, 2) from detectors. Dense landmarkers return (106, 2), (98, 2), or (68, 2).
+    landmarks: np.ndarray   # (5, 2) from detectors — except BlazeFace, which returns (6, 2).
+                            # Dense landmarkers return (106, 2), (98, 2), (68, 2), (468, 3), or (478, 3).
 
     # Optional (enriched by analyzers)
     embedding: np.ndarray | None = None
@@ -53,6 +68,12 @@ class Face:
     race: str | None = None             # "East Asian", etc.
     emotion: str | None = None          # "Happy", etc.
     emotion_confidence: float | None = None
+    left_eye_open: float | None = None   # [0, 1] probability, from FaceAttribNet
+    right_eye_open: float | None = None  # [0, 1] probability, from FaceAttribNet
+    eyeglasses: float | None = None      # [0, 1] probability, from FaceAttribNet
+    mask: float | None = None            # [0, 1] probability, from FaceAttribNet
+    sunglasses: float | None = None      # [0, 1] probability, from FaceAttribNet
+    quality: float | None = None        # [0, 1] quality score from eDifFIQA
     track_id: int | None = None         # Persistent ID from tracker
 ```
 
@@ -77,6 +98,9 @@ similarity = face1.compute_similarity(face2)
 
 # Convert to dictionary
 face_dict = face.to_dict()
+
+# Convert to JSON string
+face_json = face.to_json(indent=2)
 ```
 
 ---
@@ -146,11 +170,11 @@ print(f"{label}: {result.confidence:.1%}")
 
 ---
 
-### AttributeResult
+### DemographyResult
 
 ```python
 @dataclass(frozen=True)
-class AttributeResult:
+class DemographyResult:
     gender: int              # 0=Female, 1=Male
     age: int | None          # Years (AgeGender model)
     age_group: str | None    # "20-29" (FairFace model)
@@ -183,6 +207,59 @@ class EmotionResult:
     emotion: str       # "Happy", "Sad", etc.
     confidence: float  # 0.0 to 1.0
 ```
+
+---
+
+### QualityResult
+
+```python
+@dataclass(frozen=True)
+class QualityResult:
+    score: float  # 0.0 to 1.0, higher = better quality
+```
+
+---
+
+### FaceStateResult
+
+```python
+@dataclass(frozen=True)
+class FaceStateResult:
+    left_eye_open: float   # Probability the left eye is open
+    right_eye_open: float  # Probability the right eye is open
+    eyeglasses: float      # Probability eyeglasses are present
+    mask: float            # Probability a face mask is present
+    sunglasses: float      # Probability sunglasses are present
+```
+
+The five values come from independent binary heads: they do not sum to 1 and several can
+be high at once. Threshold each attribute separately; never `argmax`.
+
+**Usage:**
+
+```python
+result = face_attrib_net.predict(image, face)
+print(result.as_dict())          # {'left_eye_open': 0.98, ...}
+print(result.labels(0.5))        # ['left_eye_open', 'right_eye_open', 'eyeglasses']
+```
+
+---
+
+### FaceMeshResult
+
+```python
+@dataclass(frozen=True)
+class FaceMeshResult:
+    landmarks: np.ndarray  # (468, 3) or (478, 3); x, y in image pixels, z is relative depth
+    score: float           # Face presence, 0.0 to 1.0
+
+    @property
+    def points_2d(self) -> np.ndarray:
+        return self.landmarks[:, :2]  # (N, 2), depth dropped
+```
+
+`score` saturates near 1.0 for anything plausible. It confirms the model ran; it is not a
+discriminative confidence, so do not threshold on it.
 
 ---
 

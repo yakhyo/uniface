@@ -102,7 +102,7 @@ def create_onnx_session(
         active_provider = session.get_providers()[0]
         Logger.debug(f'Session created with provider: {active_provider}')
 
-        # Show user-friendly message about which provider is being used
+        # DEBUG level: only visible when the user opts in via enable_logging(logging.DEBUG)
         provider_names = {
             'CoreMLExecutionProvider': 'CoreML (Apple Silicon)',
             'CUDAExecutionProvider': 'CUDA (NVIDIA GPU)',

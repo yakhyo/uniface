@@ -14,8 +14,7 @@ __all__ = ['BaseHeadPoseEstimator', 'HeadPoseResult']
 
 
 class BaseHeadPoseEstimator(ABC):
-    """
-    Abstract base class for all head pose estimation models.
+    """Abstract base class for all head pose estimation models.
 
     This class defines the common interface that all head pose estimators must implement,
     ensuring consistency across different head pose estimation methods. Head pose estimation
@@ -29,22 +28,18 @@ class BaseHeadPoseEstimator(ABC):
 
     @abstractmethod
     def _initialize_model(self) -> None:
-        """
-        Initialize the underlying model for inference.
+        """Initialize the underlying model for inference.
 
         This method should handle loading model weights, creating the
         inference session (e.g., ONNX Runtime), and any necessary
-        setup procedures to prepare the model for prediction.
-
-        Raises:
-            RuntimeError: If the model fails to load or initialize.
+        setup procedures to prepare the model for prediction. Implementations
+        raise RuntimeError if the model fails to load or initialize.
         """
         raise NotImplementedError('Subclasses must implement the _initialize_model method.')
 
     @abstractmethod
     def preprocess(self, face_image: np.ndarray) -> np.ndarray:
-        """
-        Preprocess the input face image for model inference.
+        """Preprocess the input face image for model inference.
 
         This method should take a raw face crop and convert it into the format
         expected by the model's inference engine (e.g., normalized tensor).
@@ -61,8 +56,7 @@ class BaseHeadPoseEstimator(ABC):
 
     @abstractmethod
     def postprocess(self, rotation_matrix: np.ndarray) -> HeadPoseResult:
-        """
-        Postprocess a rotation matrix into Euler angles.
+        """Postprocess a rotation matrix into Euler angles.
 
         This method takes the raw rotation matrix output from the model's
         inference and converts it into pitch, yaw, and roll angles in degrees.
@@ -78,8 +72,7 @@ class BaseHeadPoseEstimator(ABC):
 
     @abstractmethod
     def estimate(self, face_image: np.ndarray) -> HeadPoseResult:
-        """
-        Perform end-to-end head pose estimation on a face image.
+        """Perform end-to-end head pose estimation on a face image.
 
         This method orchestrates the full pipeline: preprocessing the input,
         running inference, and postprocessing to return the head orientation.
@@ -96,15 +89,14 @@ class BaseHeadPoseEstimator(ABC):
                 - roll: Rotation around Z-axis (positive = clockwise)
 
         Example:
-            >>> estimator = create_head_pose_estimator()
+            >>> estimator = HeadPose()
             >>> result = estimator.estimate(face_crop)
             >>> print(f'Pose: pitch={result.pitch:.1f}°, yaw={result.yaw:.1f}°, roll={result.roll:.1f}°')
         """
         raise NotImplementedError('Subclasses must implement the estimate method.')
 
     def __call__(self, face_image: np.ndarray) -> HeadPoseResult:
-        """
-        Provides a convenient, callable shortcut for the `estimate` method.
+        """Provides a convenient, callable shortcut for the `estimate` method.
 
         Args:
             face_image (np.ndarray): A cropped face image in BGR format.

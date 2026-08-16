@@ -21,6 +21,8 @@ Run UniFace examples directly in your browser with Google Colab, or download and
 | [Head Pose Estimation](https://github.com/yakhyo/uniface/blob/main/examples/11_head_pose_estimation.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/11_head_pose_estimation.ipynb) | 3D head orientation estimation |
 | [Face Recognition](https://github.com/yakhyo/uniface/blob/main/examples/12_face_recognition.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/12_face_recognition.ipynb) | Standalone face recognition pipeline |
 | [Portrait Matting](https://github.com/yakhyo/uniface/blob/main/examples/13_portrait_matting.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/13_portrait_matting.ipynb) | Portrait matting with MODNet |
+| [Face Attributes](https://github.com/yakhyo/uniface/blob/main/examples/14_face_attributes.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/14_face_attributes.ipynb) | Face states (eyes, glasses, sunglasses, mask) |
+| [Face Mesh](https://github.com/yakhyo/uniface/blob/main/examples/15_face_mesh.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/15_face_mesh.ipynb) | 468 / 478-point dense 3D mesh |
 
 ---
 

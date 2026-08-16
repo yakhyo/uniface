@@ -7,22 +7,18 @@ from __future__ import annotations
 from typing import Any
 
 import numpy as np
-from typing_extensions import deprecated
 
 from uniface.attribute.age_gender import AgeGender
-from uniface.attribute.base import Attribute
+from uniface.attribute.base import BaseAttribute
+from uniface.attribute.faceattribnet import FaceAttribNet
 from uniface.attribute.fairface import FairFace
-from uniface.constants import AgeGenderWeights, DDAMFNWeights, FairFaceWeights
-from uniface.types import AttributeResult, EmotionResult, Face
+from uniface.types import DemographyResult, EmotionResult, Face, FaceStateResult
 
 try:
     from uniface.attribute.emotion import Emotion
-
-    _EMOTION_AVAILABLE = True
 except ImportError:
-    _EMOTION_AVAILABLE = False
 
-    class Emotion(Attribute):  # type: ignore[no-redef]
+    class Emotion(BaseAttribute):  # type: ignore[no-redef]
         """Stub for Emotion when PyTorch is not installed."""
 
         def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -36,54 +32,11 @@ except ImportError:
 
 __all__ = [
     'AgeGender',
-    'AttributeResult',
+    'BaseAttribute',
+    'DemographyResult',
     'Emotion',
     'EmotionResult',
+    'FaceAttribNet',
+    'FaceStateResult',
     'FairFace',
-    'create_attribute_predictor',
 ]
-
-_ATTRIBUTE_MODELS = {
-    **dict.fromkeys(AgeGenderWeights, AgeGender),
-    **dict.fromkeys(FairFaceWeights, FairFace),
-}
-
-if _EMOTION_AVAILABLE:
-    _ATTRIBUTE_MODELS.update(dict.fromkeys(DDAMFNWeights, Emotion))
-
-
-@deprecated(
-    'create_attribute_predictor() is deprecated and will be removed in uniface 4.0. '
-    'Instantiate the attribute class directly, e.g. '
-    '`from uniface.attribute import AgeGender; AgeGender(model_name=...)`.'
-)
-def create_attribute_predictor(
-    model_name: AgeGenderWeights | DDAMFNWeights | FairFaceWeights, **kwargs: Any
-) -> Attribute:
-    """Factory function to create an attribute predictor instance.
-
-    .. deprecated:: 3.7.0
-        Use the attribute class directly (``AgeGender``, ``FairFace``,
-        ``Emotion``). This factory will be removed in uniface 4.0.
-
-    Args:
-        model_name: The enum corresponding to the desired attribute model
-            (e.g., AgeGenderWeights.DEFAULT, DDAMFNWeights.AFFECNET7,
-            or FairFaceWeights.DEFAULT).
-        **kwargs: Additional keyword arguments passed to the model constructor.
-
-    Returns:
-        An initialized Attribute predictor (AgeGender, FairFace, or Emotion).
-
-    Raises:
-        ValueError: If the provided model_name is not a supported enum.
-    """
-    model_class = _ATTRIBUTE_MODELS.get(model_name)
-
-    if model_class is None:
-        raise ValueError(
-            f'Unsupported attribute model: {model_name}. '
-            f'Please choose from AgeGenderWeights, FairFaceWeights, or DDAMFNWeights.'
-        )
-
-    return model_class(model_name=model_name, **kwargs)

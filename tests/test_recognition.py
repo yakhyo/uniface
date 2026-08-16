@@ -13,25 +13,19 @@ from uniface.recognition import ArcFace, EdgeFace, MobileFace, SphereFace
 
 @pytest.fixture
 def arcface_model():
-    """
-    Fixture to initialize the ArcFace model for testing.
-    """
+    """Fixture to initialize the ArcFace model for testing."""
     return ArcFace()
 
 
 @pytest.fixture
 def mobileface_model():
-    """
-    Fixture to initialize the MobileFace model for testing.
-    """
+    """Fixture to initialize the MobileFace model for testing."""
     return MobileFace()
 
 
 @pytest.fixture
 def sphereface_model():
-    """
-    Fixture to initialize the SphereFace model for testing.
-    """
+    """Fixture to initialize the SphereFace model for testing."""
     return SphereFace()
 
 
@@ -43,17 +37,13 @@ def edgeface_model():
 
 @pytest.fixture
 def mock_aligned_face():
-    """
-    Create a mock 112x112 aligned face image.
-    """
+    """Create a mock 112x112 aligned face image."""
     return np.random.randint(0, 255, (112, 112, 3), dtype=np.uint8)
 
 
 @pytest.fixture
 def mock_landmarks():
-    """
-    Create mock 5-point facial landmarks.
-    """
+    """Create mock 5-point facial landmarks."""
     return np.array(
         [
             [38.2946, 51.6963],
@@ -68,16 +58,12 @@ def mock_landmarks():
 
 # ArcFace Tests
 def test_arcface_initialization(arcface_model):
-    """
-    Test that the ArcFace model initializes correctly.
-    """
+    """Test that the ArcFace model initializes correctly."""
     assert arcface_model is not None, 'ArcFace model initialization failed.'
 
 
 def test_arcface_embedding_shape(arcface_model, mock_aligned_face):
-    """
-    Test that ArcFace produces embeddings with the correct shape.
-    """
+    """Test that ArcFace produces embeddings with the correct shape."""
     embedding = arcface_model.get_embedding(mock_aligned_face)
 
     # ArcFace get_embedding returns raw ONNX output with batch dimension
@@ -86,9 +72,7 @@ def test_arcface_embedding_shape(arcface_model, mock_aligned_face):
 
 
 def test_arcface_normalized_embedding(arcface_model, mock_landmarks):
-    """
-    Test that normalized embeddings have unit length.
-    """
+    """Test that normalized embeddings have unit length."""
     # Create a larger mock image for alignment
     mock_image = np.random.randint(0, 255, (640, 640, 3), dtype=np.uint8)
 
@@ -101,17 +85,13 @@ def test_arcface_normalized_embedding(arcface_model, mock_landmarks):
 
 
 def test_arcface_embedding_dtype(arcface_model, mock_aligned_face):
-    """
-    Test that embeddings have the correct data type.
-    """
+    """Test that embeddings have the correct data type."""
     embedding = arcface_model.get_embedding(mock_aligned_face)
     assert embedding.dtype == np.float32, f'Expected float32, got {embedding.dtype}'
 
 
 def test_arcface_consistency(arcface_model, mock_aligned_face):
-    """
-    Test that the same input produces the same embedding.
-    """
+    """Test that the same input produces the same embedding."""
     embedding1 = arcface_model.get_embedding(mock_aligned_face)
     embedding2 = arcface_model.get_embedding(mock_aligned_face)
 
@@ -120,16 +100,12 @@ def test_arcface_consistency(arcface_model, mock_aligned_face):
 
 # MobileFace Tests
 def test_mobileface_initialization(mobileface_model):
-    """
-    Test that the MobileFace model initializes correctly.
-    """
+    """Test that the MobileFace model initializes correctly."""
     assert mobileface_model is not None, 'MobileFace model initialization failed.'
 
 
 def test_mobileface_embedding_shape(mobileface_model, mock_aligned_face):
-    """
-    Test that MobileFace produces embeddings with the correct shape.
-    """
+    """Test that MobileFace produces embeddings with the correct shape."""
     embedding = mobileface_model.get_embedding(mock_aligned_face)
 
     # MobileFace get_embedding returns raw ONNX output with batch dimension
@@ -138,9 +114,7 @@ def test_mobileface_embedding_shape(mobileface_model, mock_aligned_face):
 
 
 def test_mobileface_normalized_embedding(mobileface_model, mock_landmarks):
-    """
-    Test that MobileFace normalized embeddings have unit length.
-    """
+    """Test that MobileFace normalized embeddings have unit length."""
     mock_image = np.random.randint(0, 255, (640, 640, 3), dtype=np.uint8)
 
     embedding = mobileface_model.get_normalized_embedding(mock_image, mock_landmarks)
@@ -152,16 +126,12 @@ def test_mobileface_normalized_embedding(mobileface_model, mock_landmarks):
 
 # SphereFace Tests
 def test_sphereface_initialization(sphereface_model):
-    """
-    Test that the SphereFace model initializes correctly.
-    """
+    """Test that the SphereFace model initializes correctly."""
     assert sphereface_model is not None, 'SphereFace model initialization failed.'
 
 
 def test_sphereface_embedding_shape(sphereface_model, mock_aligned_face):
-    """
-    Test that SphereFace produces embeddings with the correct shape.
-    """
+    """Test that SphereFace produces embeddings with the correct shape."""
     embedding = sphereface_model.get_embedding(mock_aligned_face)
 
     # SphereFace get_embedding returns raw ONNX output with batch dimension
@@ -170,9 +140,7 @@ def test_sphereface_embedding_shape(sphereface_model, mock_aligned_face):
 
 
 def test_sphereface_normalized_embedding(sphereface_model, mock_landmarks):
-    """
-    Test that SphereFace normalized embeddings have unit length.
-    """
+    """Test that SphereFace normalized embeddings have unit length."""
     mock_image = np.random.randint(0, 255, (640, 640, 3), dtype=np.uint8)
 
     embedding = sphereface_model.get_normalized_embedding(mock_image, mock_landmarks)
@@ -223,9 +191,7 @@ def test_edgeface_consistency(edgeface_model, mock_aligned_face):
 
 # Cross-model comparison tests
 def test_different_models_different_embeddings(arcface_model, mobileface_model, mock_aligned_face):
-    """
-    Test that different models produce different embeddings for the same input.
-    """
+    """Test that different models produce different embeddings for the same input."""
     arcface_emb = arcface_model.get_embedding(mock_aligned_face)
     mobileface_emb = mobileface_model.get_embedding(mock_aligned_face)
 
@@ -235,9 +201,7 @@ def test_different_models_different_embeddings(arcface_model, mobileface_model, 
 
 
 def test_embedding_similarity_computation(arcface_model, mock_aligned_face):
-    """
-    Test computing similarity between embeddings.
-    """
+    """Test computing similarity between embeddings."""
     # Get two embeddings
     emb1 = arcface_model.get_embedding(mock_aligned_face)
 
@@ -256,9 +220,7 @@ def test_embedding_similarity_computation(arcface_model, mock_aligned_face):
 
 
 def test_same_face_high_similarity(arcface_model, mock_aligned_face):
-    """
-    Test that the same face produces high similarity.
-    """
+    """Test that the same face produces high similarity."""
     emb1 = arcface_model.get_embedding(mock_aligned_face)
     emb2 = arcface_model.get_embedding(mock_aligned_face)
 

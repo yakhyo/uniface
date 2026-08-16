@@ -6,13 +6,13 @@
 import cv2
 import numpy as np
 
-from uniface.attribute.base import Attribute
+from uniface.attribute.base import BaseAttribute
 from uniface.common import softmax
 from uniface.constants import FairFaceWeights
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
 from uniface.onnx_utils import create_onnx_session
-from uniface.types import AttributeResult, Face
+from uniface.types import DemographyResult, Face
 
 __all__ = ['AGE_LABELS', 'RACE_LABELS', 'FairFace']
 
@@ -29,11 +29,10 @@ RACE_LABELS = [
 AGE_LABELS = ['0-2', '3-9', '10-19', '20-29', '30-39', '40-49', '50-59', '60-69', '70+']
 
 
-class FairFace(Attribute):
-    """
-    FairFace attribute prediction model using ONNX Runtime.
+class FairFace(BaseAttribute):
+    """FairFace attribute prediction model using ONNX Runtime.
 
-    This class inherits from the base `Attribute` class and implements the
+    This class inherits from the `BaseAttribute` base class and implements the
     functionality for predicting race (7 categories), gender (2 categories),
     and age (9 groups) from a face image. It requires a bounding box to locate the face.
 
@@ -43,43 +42,55 @@ class FairFace(Attribute):
     Args:
         model_name (FairFaceWeights): The enum specifying the model weights to load.
             Defaults to `FairFaceWeights.DEFAULT`.
-        input_size (Optional[Tuple[int, int]]): Input size (height, width).
+        input_size (tuple[int, int] | None): Input size (height, width).
             If None, defaults to (224, 224). Defaults to None.
         providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
             the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
+
+    Raises:
+        ValueError: If the model weights are invalid or not found.
+        RuntimeError: If the ONNX model fails to load or initialize.
     """
 
     def __init__(
         self,
+        *,
         model_name: FairFaceWeights = FairFaceWeights.DEFAULT,
         input_size: tuple[int, int] | None = None,
         providers: list[str] | None = None,
     ) -> None:
-        """
-        Initializes the FairFace prediction model.
+        """Initializes the FairFace prediction model.
 
         Args:
             model_name (FairFaceWeights): The enum specifying the model weights to load.
-            input_size (Optional[Tuple[int, int]]): Input size (height, width).
+            input_size (tuple[int, int] | None): Input size (height, width).
                 If None, defaults to (224, 224).
             providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
                 the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
         """
         Logger.info(f'Initializing FairFace with model={model_name.name}')
         self.model_path = verify_model_weights(model_name)
-        self.input_size = input_size if input_size is not None else (224, 224)
+        # Normalized to a tuple so a [224, 224] list still compares equal to the ONNX metadata.
+        self.input_size = tuple(input_size) if input_size is not None else (224, 224)
         self.providers = providers
         self._initialize_model()
 
     def _initialize_model(self) -> None:
-        """
-        Initializes the ONNX model and creates an inference session.
-        """
+        """Initializes the ONNX model and creates an inference session."""
         try:
             self.session = create_onnx_session(self.model_path, providers=self.providers)
             # Get model input details from the loaded model
             input_meta = self.session.get_inputs()[0]
             self.input_name = input_meta.name
+
+            # Warn when a custom input_size disagrees with the model metadata
+            model_input_size = tuple(input_meta.shape[2:4])  # (height, width)
+            if all(isinstance(v, int) for v in model_input_size) and self.input_size != model_input_size:
+                Logger.warning(
+                    f'Using custom input_size {self.input_size}, '
+                    f'but model expects {model_input_size}. This may affect accuracy.'
+                )
+
             self.output_names = [output.name for output in self.session.get_outputs()]
             Logger.info(f'Successfully initialized FairFace model with input size {self.input_size}')
         except Exception as e:
@@ -90,12 +101,11 @@ class FairFace(Attribute):
             raise RuntimeError(f'Failed to initialize FairFace model: {e}') from e
 
     def preprocess(self, image: np.ndarray, bbox: list | np.ndarray | None = None) -> np.ndarray:
-        """
-        Preprocesses the face image for inference.
+        """Preprocesses the face image for inference.
 
         Args:
             image (np.ndarray): The input image in BGR format.
-            bbox (Optional[Union[List, np.ndarray]]): Face bounding box [x1, y1, x2, y2].
+            bbox (list | np.ndarray | None): Face bounding box [x1, y1, x2, y2].
                 If None, uses the entire image.
 
         Returns:
@@ -137,16 +147,15 @@ class FairFace(Attribute):
 
         return image
 
-    def postprocess(self, prediction: tuple[np.ndarray, np.ndarray, np.ndarray]) -> AttributeResult:
-        """
-        Processes the raw model output to extract race, gender, and age.
+    def postprocess(self, prediction: tuple[np.ndarray, np.ndarray, np.ndarray]) -> DemographyResult:
+        """Processes the raw model output to extract race, gender, and age.
 
         Args:
-            prediction (Tuple[np.ndarray, np.ndarray, np.ndarray]): Raw outputs from model
+            prediction (tuple[np.ndarray, np.ndarray, np.ndarray]): Raw outputs from model
                 (race_logits, gender_logits, age_logits).
 
         Returns:
-            AttributeResult: Result containing gender (0=Female, 1=Male), age_group, and race.
+            DemographyResult: Result containing gender (0=Female, 1=Male), age_group, and race.
         """
         race_logits, gender_logits, age_logits = prediction
 
@@ -163,21 +172,21 @@ class FairFace(Attribute):
         # Normalize gender: model outputs 0=Male, 1=Female → standard 0=Female, 1=Male
         gender = 1 - raw_gender_idx
 
-        return AttributeResult(
+        return DemographyResult(
             gender=gender,
             age_group=AGE_LABELS[age_idx],
             race=RACE_LABELS[race_idx],
         )
 
-    def predict(self, image: np.ndarray, face: Face) -> AttributeResult:
+    def predict(self, image: np.ndarray, face: Face) -> DemographyResult:
         """Predict race, gender, and age and enrich the Face in-place.
 
         Args:
             image: The full input image in BGR format.
-            face: Detected face; ``face.bbox`` is used for cropping.
+            face: Detected face; `face.bbox` is used for cropping.
 
         Returns:
-            ``AttributeResult`` with gender, age_group, and race.
+            `DemographyResult` with gender, age_group, and race.
         """
         input_blob = self.preprocess(image, face.bbox)
         outputs = self.session.run(self.output_names, {self.input_name: input_blob})

@@ -28,8 +28,12 @@ class MODNet(BaseMatting):
 
     Two pretrained variants are available:
 
-    - ``PHOTOGRAPHIC``: optimized for high-quality portrait photos.
-    - ``WEBCAM``: optimized for real-time webcam feeds.
+    - `PHOTOGRAPHIC`: optimized for high-quality portrait photos.
+    - `WEBCAM`: optimized for real-time webcam feeds.
+
+    Raises:
+        ValueError: If the model weights are invalid or not found.
+        RuntimeError: If the ONNX model fails to load or initialize.
 
     Reference:
         Ke et al., "MODNet: Real-Time Trimap-Free Portrait Matting via
@@ -38,12 +42,12 @@ class MODNet(BaseMatting):
 
     Args:
         model_name: The enum specifying the MODNet variant to load.
-            Defaults to ``MODNetWeights.PHOTOGRAPHIC``.
+            Defaults to `MODNetWeights.PHOTOGRAPHIC`.
         input_size: Target size for the shorter side during preprocessing.
             The image is resized so its shorter side equals this value
             (aspect ratio preserved), then both dimensions are floored to
             multiples of 32. Defaults to 512.
-        providers: ONNX Runtime execution providers. If ``None``, auto-detects
+        providers: ONNX Runtime execution providers. If `None`, auto-detects
             the best available provider.
 
     Attributes:
@@ -64,6 +68,7 @@ class MODNet(BaseMatting):
 
     def __init__(
         self,
+        *,
         model_name: MODNetWeights = MODNetWeights.PHOTOGRAPHIC,
         input_size: int = 512,
         providers: list[str] | None = None,
@@ -101,15 +106,15 @@ class MODNet(BaseMatting):
         """Preprocess a BGR image for MODNet inference.
 
         The image is converted to RGB, resized so its shorter side matches
-        ``input_size`` (aspect ratio preserved), floored to multiples of 32,
-        and normalized to ``[-1, 1]``.
+        `input_size` (aspect ratio preserved), floored to multiples of 32,
+        and normalized to `[-1, 1]`.
 
         Args:
-            image: Input image in BGR format with shape ``(H, W, 3)``.
+            image: Input image in BGR format with shape `(H, W, 3)`.
 
         Returns:
-            A tuple of ``(tensor, orig_h, orig_w)`` where *tensor* has shape
-            ``(1, 3, H', W')`` in float32.
+            A tuple of `(tensor, orig_h, orig_w)` where *tensor* has shape
+            `(1, 3, H', W')` in float32.
         """
         orig_h, orig_w = image.shape[:2]
         rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -138,11 +143,11 @@ class MODNet(BaseMatting):
         """Postprocess raw model output into an alpha matte.
 
         Args:
-            outputs: Raw ONNX output with shape ``(1, 1, H', W')``.
-            original_size: Target size as ``(width, height)``.
+            outputs: Raw ONNX output with shape `(1, 1, H', W')`.
+            original_size: Target size as `(width, height)`.
 
         Returns:
-            Alpha matte with shape ``(H, W)``, float32 in ``[0, 1]``.
+            Alpha matte with shape `(H, W)`, float32 in `[0, 1]`.
         """
         matte = outputs[0, 0]
         matte = cv2.resize(matte, original_size, interpolation=cv2.INTER_AREA)
@@ -152,10 +157,10 @@ class MODNet(BaseMatting):
         """Run portrait matting on a BGR image.
 
         Args:
-            image: Input image in BGR format with shape ``(H, W, 3)``.
+            image: Input image in BGR format with shape `(H, W, 3)`.
 
         Returns:
-            Alpha matte with shape ``(H, W)``, float32 in ``[0, 1]``.
+            Alpha matte with shape `(H, W)`, float32 in `[0, 1]`.
         """
         tensor, orig_h, orig_w = self.preprocess(image)
         outputs = self.session.run(self.output_names, {self.input_name: tensor})

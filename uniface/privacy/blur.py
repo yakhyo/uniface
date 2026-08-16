@@ -53,7 +53,7 @@ class EllipticalBlur:
         margin (int): Extra pixels to extend ellipse beyond bbox. Defaults to 20.
     """
 
-    def __init__(self, blur_strength: float = 3.0, margin: int = 20):
+    def __init__(self, *, blur_strength: float = 3.0, margin: int = 20):
         self.blur_strength = blur_strength
         self.margin = margin
 
@@ -94,8 +94,8 @@ class BlurFace:
         method (str): Blur method - 'gaussian', 'pixelate', 'blackout', 'elliptical', or 'median'.
             Defaults to 'pixelate'.
         blur_strength (float): Intensity for gaussian/elliptical/median. Defaults to 3.0.
-        pixel_blocks (int): Block count for pixelate. Defaults to 10.
-        color (Tuple[int, int, int]): Fill color (BGR) for blackout. Defaults to (0, 0, 0).
+        pixel_blocks (int): Block count for pixelate. Defaults to 15.
+        color (tuple[int, int, int]): Fill color (BGR) for blackout. Defaults to (0, 0, 0).
         margin (int): Edge margin for elliptical. Defaults to 20.
 
     Example:
@@ -107,6 +107,7 @@ class BlurFace:
 
     def __init__(
         self,
+        *,
         method: str = 'pixelate',
         blur_strength: float = 3.0,
         pixel_blocks: int = 15,
@@ -123,7 +124,7 @@ class BlurFace:
             raise ValueError(f"Invalid blur method: '{method}'. Choose from: {sorted(self.VALID_METHODS)}")
 
         if self.method == 'elliptical':
-            self._elliptical = EllipticalBlur(blur_strength, margin)
+            self._elliptical = EllipticalBlur(blur_strength=blur_strength, margin=margin)
 
     def _blur_region(self, region: np.ndarray) -> np.ndarray:
         """Apply blur to a single region based on the configured method."""
@@ -135,7 +136,7 @@ class BlurFace:
             return _pixelate_blur(region, self._pixel_blocks)
         elif self.method == 'blackout':
             return _blackout_blur(region, self._color)
-        return region  # Fallback (should not reach here)
+        return region  # unreachable: blur_regions dispatches 'elliptical' before _blur_region is called
 
     def anonymize(
         self,
@@ -147,7 +148,7 @@ class BlurFace:
 
         Args:
             image (np.ndarray): Input image (BGR format).
-            faces (List[Dict]): Face detections with 'bbox' key containing [x1, y1, x2, y2].
+            faces (list[Face]): Face detections with 'bbox' key containing [x1, y1, x2, y2].
             inplace (bool): Modify image in-place if True. Defaults to False.
 
         Returns:

@@ -9,20 +9,19 @@ import numpy as np
 import pytest
 
 from uniface import compute_similarity, face_alignment
+from uniface.face_utils import estimate_norm
 
 
 @pytest.fixture
 def mock_image():
-    """
-    Create a mock 640x640 BGR image.
-    """
+    """Create a mock 640x640 BGR image."""
     return np.random.randint(0, 255, (640, 640, 3), dtype=np.uint8)
 
 
 @pytest.fixture
 def mock_landmarks():
-    """
-    Create mock 5-point facial landmarks.
+    """Create mock 5-point facial landmarks.
+
     Standard positions for a face roughly centered at (112/2, 112/2).
     """
     return np.array(
@@ -39,9 +38,7 @@ def mock_landmarks():
 
 # compute_similarity tests
 def test_compute_similarity_same_embedding():
-    """
-    Test that similarity of an embedding with itself is 1.0.
-    """
+    """Test that similarity of an embedding with itself is 1.0."""
     embedding = np.random.randn(1, 512).astype(np.float32)
     embedding = embedding / np.linalg.norm(embedding)  # Normalize
 
@@ -50,9 +47,7 @@ def test_compute_similarity_same_embedding():
 
 
 def test_compute_similarity_range():
-    """
-    Test that similarity is always in the range [-1, 1].
-    """
+    """Test that similarity is always in the range [-1, 1]."""
     # Test with multiple random embeddings
     for _ in range(10):
         emb1 = np.random.randn(1, 512).astype(np.float32)
@@ -67,9 +62,7 @@ def test_compute_similarity_range():
 
 
 def test_compute_similarity_orthogonal():
-    """
-    Test that orthogonal embeddings have similarity close to 0.
-    """
+    """Test that orthogonal embeddings have similarity close to 0."""
     # Create orthogonal embeddings
     emb1 = np.zeros((1, 512), dtype=np.float32)
     emb1[0, 0] = 1.0  # [1, 0, 0, ..., 0]
@@ -82,9 +75,7 @@ def test_compute_similarity_orthogonal():
 
 
 def test_compute_similarity_opposite():
-    """
-    Test that opposite embeddings have similarity close to -1.
-    """
+    """Test that opposite embeddings have similarity close to -1."""
     emb1 = np.ones((1, 512), dtype=np.float32)
     emb1 = emb1 / np.linalg.norm(emb1)
 
@@ -95,9 +86,7 @@ def test_compute_similarity_opposite():
 
 
 def test_compute_similarity_symmetry():
-    """
-    Test that similarity(A, B) == similarity(B, A).
-    """
+    """Test that similarity(A, B) == similarity(B, A)."""
     emb1 = np.random.randn(1, 512).astype(np.float32)
     emb2 = np.random.randn(1, 512).astype(np.float32)
 
@@ -112,9 +101,7 @@ def test_compute_similarity_symmetry():
 
 
 def test_compute_similarity_dtype():
-    """
-    Test that compute_similarity returns a float.
-    """
+    """Test that compute_similarity returns a float."""
     emb1 = np.random.randn(1, 512).astype(np.float32)
     emb2 = np.random.randn(1, 512).astype(np.float32)
 
@@ -128,27 +115,21 @@ def test_compute_similarity_dtype():
 
 # face_alignment tests
 def test_face_alignment_output_shape(mock_image, mock_landmarks):
-    """
-    Test that face_alignment produces output with the correct shape.
-    """
+    """Test that face_alignment produces output with the correct shape."""
     aligned, _ = face_alignment(mock_image, mock_landmarks, image_size=(112, 112))
 
     assert aligned.shape == (112, 112, 3), f'Expected shape (112, 112, 3), got {aligned.shape}'
 
 
 def test_face_alignment_dtype(mock_image, mock_landmarks):
-    """
-    Test that aligned face has the correct data type.
-    """
+    """Test that aligned face has the correct data type."""
     aligned, _ = face_alignment(mock_image, mock_landmarks, image_size=(112, 112))
 
     assert aligned.dtype == np.uint8, f'Expected uint8, got {aligned.dtype}'
 
 
 def test_face_alignment_different_sizes(mock_image, mock_landmarks):
-    """
-    Test face alignment with different output sizes.
-    """
+    """Test face alignment with different output sizes."""
     # Only test sizes that are multiples of 112 or 128 as required by the function
     test_sizes = [(112, 112), (128, 128), (224, 224)]
 
@@ -158,9 +139,7 @@ def test_face_alignment_different_sizes(mock_image, mock_landmarks):
 
 
 def test_face_alignment_consistency(mock_image, mock_landmarks):
-    """
-    Test that the same input produces the same aligned face.
-    """
+    """Test that the same input produces the same aligned face."""
     aligned1, _ = face_alignment(mock_image, mock_landmarks, image_size=(112, 112))
     aligned2, _ = face_alignment(mock_image, mock_landmarks, image_size=(112, 112))
 
@@ -168,9 +147,7 @@ def test_face_alignment_consistency(mock_image, mock_landmarks):
 
 
 def test_face_alignment_landmarks_as_list(mock_image):
-    """
-    Test that landmarks can be passed as a list of lists (converted to array).
-    """
+    """Test that landmarks can be passed as a list of lists (converted to array)."""
     landmarks_list = [
         [38.2946, 51.6963],
         [73.5318, 51.5014],
@@ -186,9 +163,7 @@ def test_face_alignment_landmarks_as_list(mock_image):
 
 
 def test_face_alignment_value_range(mock_image, mock_landmarks):
-    """
-    Test that aligned face pixel values are in valid range [0, 255].
-    """
+    """Test that aligned face pixel values are in valid range [0, 255]."""
     aligned, _ = face_alignment(mock_image, mock_landmarks, image_size=(112, 112))
 
     assert np.all(aligned >= 0), 'Pixel values should be >= 0'
@@ -196,9 +171,7 @@ def test_face_alignment_value_range(mock_image, mock_landmarks):
 
 
 def test_face_alignment_not_all_zeros(mock_image, mock_landmarks):
-    """
-    Test that aligned face is not all zeros (actual transformation occurred).
-    """
+    """Test that aligned face is not all zeros (actual transformation occurred)."""
     aligned, _ = face_alignment(mock_image, mock_landmarks, image_size=(112, 112))
 
     # At least some pixels should be non-zero
@@ -206,9 +179,7 @@ def test_face_alignment_not_all_zeros(mock_image, mock_landmarks):
 
 
 def test_face_alignment_from_different_positions(mock_image):
-    """
-    Test alignment with landmarks at different positions in the image.
-    """
+    """Test alignment with landmarks at different positions in the image."""
     # Landmarks at different positions
     positions = [
         np.array(
@@ -231,9 +202,7 @@ def test_face_alignment_from_different_positions(mock_image):
 
 
 def test_face_alignment_landmark_count(mock_image):
-    """
-    Test that face_alignment works specifically with 5-point landmarks.
-    """
+    """Test that face_alignment works specifically with 5-point landmarks."""
     # Standard 5-point landmarks
     landmarks_5pt = np.array(
         [
@@ -251,9 +220,7 @@ def test_face_alignment_landmark_count(mock_image):
 
 
 def test_compute_similarity_with_recognition_embeddings():
-    """
-    Test compute_similarity with realistic embedding dimensions.
-    """
+    """Test compute_similarity with realistic embedding dimensions."""
     # Simulate ArcFace/MobileFace/SphereFace embeddings (512-dim)
     emb1 = np.random.randn(1, 512).astype(np.float32)
     emb2 = np.random.randn(1, 512).astype(np.float32)
@@ -267,3 +234,36 @@ def test_compute_similarity_with_recognition_embeddings():
     # Should be a valid similarity score
     assert -1.0 <= similarity <= 1.0
     assert isinstance(similarity, float | np.floating)
+
+
+# estimate_norm landmark-count validation
+def test_estimate_norm_accepts_five_points(mock_landmarks):
+    """estimate_norm should accept the 5-point alignment template."""
+    matrix, inverse_matrix = estimate_norm(mock_landmarks)
+
+    assert matrix.shape == (2, 3)
+    assert inverse_matrix.shape == (2, 3)
+
+
+def test_estimate_norm_rejects_six_points():
+    """A 6-keypoint layout (e.g. BlazeFace) cannot be fitted to the alignment template.
+
+    Must raise ValueError, not AssertionError: asserts are stripped under `python -O`,
+    which would let the mismatch fall through to an opaque scikit-image matmul error.
+    """
+    six_points = np.zeros((6, 2), dtype=np.float32)
+
+    with pytest.raises(ValueError, match='requires 5 alignment landmarks'):
+        estimate_norm(six_points)
+
+
+def test_estimate_norm_error_names_the_constraint():
+    """The error should tell the caller which detectors are unusable and why."""
+    with pytest.raises(ValueError, match='supports_alignment'):
+        estimate_norm(np.zeros((3, 2), dtype=np.float32))
+
+
+def test_face_alignment_rejects_six_points(mock_image):
+    """The rejection should propagate through face_alignment, the public entry point."""
+    with pytest.raises(ValueError, match='requires 5 alignment landmarks'):
+        face_alignment(mock_image, np.zeros((6, 2), dtype=np.float32))

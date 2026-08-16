@@ -21,18 +21,27 @@ class ModelInfo:
     sha256: str
 
 
+DOWNLOAD_CHUNK_SIZE = 256 * 1024  # 256 KiB
+HASH_CHUNK_SIZE = 1024 * 1024  # 1 MiB
+
+# Fallback source when a primary (GitHub Releases) URL is unreachable. Pinned to a
+# commit SHA so the fallback serves immutable bytes, matching the SHA-256 guarantee
+# of the primary path. Bump the SHA whenever new weights land in the mirror repo.
+HF_MIRROR_URL = 'https://huggingface.co/yakhyo/uniface-weights/resolve/4c7ed723a20deb7ff154b1ba7d6e73747d954016'
+
+
 # fmt: off
 class SphereFaceWeights(str, Enum):
-    """
-    Trained on MS1M V2 dataset with 5.8 million images of 85k identities.
+    """Trained on MS1M V2 dataset with 5.8 million images of 85k identities.
+
     https://github.com/yakhyo/face-recognition
     """
     SPHERE20      = "sphere20"
     SPHERE36      = "sphere36"
 
 class MobileFaceWeights(str, Enum):
-    """
-    Trained on MS1M V2 dataset with 5.8 million images of 85k identities.
+    """Trained on MS1M V2 dataset with 5.8 million images of 85k identities.
+
     https://github.com/yakhyo/face-recognition
     """
     MNET_025      = "mobilenetv1_025"
@@ -41,8 +50,8 @@ class MobileFaceWeights(str, Enum):
     MNET_V3_LARGE = "mobilenetv3_large"
 
 class ArcFaceWeights(str, Enum):
-    """
-    Pretrained weights from ArcFace model (insightface).
+    """Pretrained weights from ArcFace model (insightface).
+
     https://github.com/deepinsight/insightface
     """
     MNET   = "arcface_mnet"
@@ -50,16 +59,16 @@ class ArcFaceWeights(str, Enum):
 
 
 class AdaFaceWeights(str, Enum):
-    """
-    AdaFace model weights trained on WebFace datasets.
+    """AdaFace model weights trained on WebFace datasets.
+
     https://github.com/yakhyo/adaface-onnx
     """
     IR_18  = "adaface_ir_18"
     IR_101 = "adaface_ir_101"
 
 class EdgeFaceWeights(str, Enum):
-    """
-    EdgeFace: Efficient Face Recognition Model for Edge Devices.
+    """EdgeFace: Efficient Face Recognition Model for Edge Devices.
+
     Based on EdgeNeXt backbone with optional LoRA low-rank compression.
     All models output 512-D embeddings from 112x112 aligned face crops.
     https://github.com/yakhyo/edgeface-onnx
@@ -70,8 +79,8 @@ class EdgeFaceWeights(str, Enum):
     BASE        = "edgeface_base"
 
 class RetinaFaceWeights(str, Enum):
-    """
-    Trained on WIDER FACE dataset.
+    """Trained on WIDER FACE dataset.
+
     https://github.com/yakhyo/retinaface-pytorch
     """
     MNET_025 =  "retinaface_mnet025"
@@ -80,20 +89,53 @@ class RetinaFaceWeights(str, Enum):
     MNET_V2  =  "retinaface_mnet_v2"
     RESNET18 =  "retinaface_r18"
     RESNET34 =  "retinaface_r34"
+    RESNET50 =  "retinaface_r50"
 
 
 class SCRFDWeights(str, Enum):
-    """
-    Trained on WIDER FACE dataset.
+    """Trained on WIDER FACE dataset.
+
     https://github.com/deepinsight/insightface
     """
     SCRFD_10G_KPS  = "scrfd_10g"
     SCRFD_500M_KPS = "scrfd_500m"
 
 
-class YOLOv5FaceWeights(str, Enum):
+class CenterFaceWeights(str, Enum):
+    """CenterFace: Joint Face Detection and Alignment Using Face as Point.
+
+    Anchor-free detector (MobileNetV2 + FPN) with 5-point landmarks, trained on WIDER FACE.
+    Paper: https://arxiv.org/abs/1911.03599
+    Original weights: https://github.com/Star-Clouds/CenterFace
+
+    Re-exported to ONNX (opset 17, dynamic batch/height/width) from the original
+    weights; outputs verified numerically identical to the upstream model.
+
+    Model Performance (WIDER FACE val, single inference on the original image):
+    - 92.2% Easy / 91.1% Medium / 78.2% Hard
     """
-    Trained on WIDER FACE dataset.
+    DEFAULT = "centerface"
+
+
+class BlazeFaceWeights(str, Enum):
+    """BlazeFace short-range: SSD face detector on a 128x128 letterboxed image.
+
+    The detector MediaPipe's Face Mesh seeds from, reproducing its exact output.
+
+    Emits 6 keypoints (right eye, left eye, nose tip, mouth center, right ear
+    tragion, left ear tragion) rather than the 5-point alignment template, so it
+    cannot feed recognition, quality scoring, or XSeg parsing.
+
+    Short-range: tuned for faces within ~2m and weaker on WIDER FACE than
+    SCRFD/YOLOv8. Its value is 460KB and MediaPipe parity, not general detection.
+    https://github.com/yakhyo/mediapipe-face-mesh-onnx
+    """
+    DEFAULT = "blazeface"  # face_detection_short_range
+
+
+class YOLOv5FaceWeights(str, Enum):
+    """Trained on WIDER FACE dataset.
+
     Original implementation: https://github.com/deepcam-cn/yolov5-face
     Exported to ONNX from: https://github.com/yakhyo/yolov5-face-onnx-inference
 
@@ -108,8 +150,8 @@ class YOLOv5FaceWeights(str, Enum):
 
 
 class YOLOv8FaceWeights(str, Enum):
-    """
-    YOLOv8-Face models trained on WIDER FACE dataset.
+    """YOLOv8-Face models trained on WIDER FACE dataset.
+
     Uses anchor-free design with DFL (Distribution Focal Loss) for bbox regression.
     Exported to ONNX from: https://github.com/yakhyo/yolov8-face-onnx-inference
 
@@ -121,9 +163,9 @@ class YOLOv8FaceWeights(str, Enum):
     YOLOV8N       = "yolov8n_face"
 
 
-class DDAMFNWeights(str, Enum):
-    """
-    Trained on AffectNet dataset.
+class EmotionWeights(str, Enum):
+    """DDAMFN emotion recognition models trained on AffectNet dataset.
+
     https://github.com/SainingZhang/DDAMFN/tree/main/DDAMFN
     """
     AFFECNET7 = "affecnet7"
@@ -131,33 +173,45 @@ class DDAMFNWeights(str, Enum):
 
 
 class AgeGenderWeights(str, Enum):
-    """
-    Trained on CelebA dataset.
+    """Trained on CelebA dataset.
+
     https://github.com/deepinsight/insightface
     """
     DEFAULT = "age_gender"
 
 
 class FairFaceWeights(str, Enum):
-    """
-    FairFace attribute prediction (race, gender, age).
+    """FairFace attribute prediction (race, gender, age).
+
     Trained on FairFace dataset with balanced demographics.
     https://github.com/yakhyo/fairface-onnx
     """
     DEFAULT = "fairface"
 
 
-class LandmarkWeights(str, Enum):
+class FaceAttribNetWeights(str, Enum):
+    """FaceAttribNet (Qualcomm "Facial-Attribute-Detection").
+
+    Predicts five independent binary face attributes from a 128x128 face crop:
+    left/right eye openness, eyeglasses, sunglasses, and face mask.
+    Trained by Qualcomm on a proprietary face dataset.
+    https://github.com/qualcomm/ai-hub-models/tree/main/src/qai_hub_models/models/face_attrib_net
+    https://github.com/yakhyo/face-attribute
     """
-    MobileNet 0.5 from Insightface
+    DEFAULT = "face_attrib_net"
+
+
+class LandmarkWeights(str, Enum):
+    """MobileNet 0.5 from Insightface
+
     https://github.com/deepinsight/insightface/tree/master/alignment/coordinate_reg
     """
     DEFAULT = "2d_106"
 
 
 class PIPNetWeights(str, Enum):
-    """
-    PIPNet: Pixel-in-Pixel Net for facial landmark detection.
+    """PIPNet: Pixel-in-Pixel Net for facial landmark detection.
+
     ResNet-18 backbone, 256x256 input.
     https://github.com/yakhyo/pipnet-onnx
     """
@@ -165,9 +219,33 @@ class PIPNetWeights(str, Enum):
     DW300_CELEBA_68 = "pipnet_r18_300w_celeba_68"
 
 
-class GazeWeights(str, Enum):
+class FaceMeshWeights(str, Enum):
+    """MediaPipe dense face landmarks, in two generations.
+
+    V1 is the classic Face Mesh: 468 landmarks from a 192x192 crop.
+    V2 is MediaPipe's Face Landmarker, the model its current Tasks API ships: 478
+    landmarks from a 256x256 crop — the same 468 points in the same order, plus ten
+    iris points (468-472 left, 473-477 right, each ordered center, right, top, left,
+    bottom). Its z is predicted rather than derived, but Google trains z on synthetic
+    data and excludes it from their own accuracy evaluation, so treat it as a weaker
+    signal than x/y in both models.
+
+    Both are detector-agnostic, take the same ROI, and have a dynamic batch dimension,
+    so they are interchangeable apart from the point count. V2 costs roughly 3x the
+    multiply-accumulates; prefer V1 unless you need the irises.
+
+    Architectures recovered from Google's MediaPipe. V1's weights were sourced through
+    PINTO0309's ONNX conversion; V2's were read directly from the .tflite in Google's
+    face_landmarker.task bundle.
+    https://github.com/yakhyo/mediapipe-face-mesh-onnx
     """
-    MobileGaze: Real-Time Gaze Estimation models.
+    V1_468 = "face_mesh"
+    V2_478 = "face_landmarker"
+
+
+class GazeWeights(str, Enum):
+    """MobileGaze: Real-Time Gaze Estimation models.
+
     Trained on Gaze360 dataset.
     https://github.com/yakhyo/gaze-estimation
     """
@@ -179,8 +257,8 @@ class GazeWeights(str, Enum):
 
 
 class HeadPoseWeights(str, Enum):
-    """
-    Head pose estimation models using 6D rotation representation.
+    """Head pose estimation models using 6D rotation representation.
+
     Trained on 300W-LP dataset, evaluated on AFLW2000.
     https://github.com/yakhyo/head-pose-estimation
     """
@@ -193,8 +271,8 @@ class HeadPoseWeights(str, Enum):
 
 
 class ParsingWeights(str, Enum):
-    """
-    Face Parsing: Semantic Segmentation of Facial Components.
+    """Face Parsing: Semantic Segmentation of Facial Components.
+
     Trained on CelebAMask-HQ dataset.
     https://github.com/yakhyo/face-parsing
     """
@@ -203,8 +281,8 @@ class ParsingWeights(str, Enum):
 
 
 class XSegWeights(str, Enum):
-    """
-    XSeg face segmentation model from DeepFaceLab.
+    """XSeg face segmentation model from DeepFaceLab.
+
     Outputs mask for face region.
     https://github.com/iperov/DeepFaceLab
     """
@@ -212,8 +290,8 @@ class XSegWeights(str, Enum):
 
 
 class MODNetWeights(str, Enum):
-    """
-    MODNet: Real-Time Trimap-Free Portrait Matting via Objective Decomposition.
+    """MODNet: Real-Time Trimap-Free Portrait Matting via Objective Decomposition.
+
     https://github.com/yakhyo/modnet
     """
     PHOTOGRAPHIC = "modnet_photographic"
@@ -221,8 +299,8 @@ class MODNetWeights(str, Enum):
 
 
 class MiniFASNetWeights(str, Enum):
-    """
-    MiniFASNet: Lightweight Face Anti-Spoofing models.
+    """MiniFASNet: Lightweight Face Anti-Spoofing models.
+
     Trained on face anti-spoofing datasets.
     https://github.com/yakhyo/face-anti-spoofing
 
@@ -235,8 +313,8 @@ class MiniFASNetWeights(str, Enum):
 
 
 class EDifFIQAWeights(str, Enum):
-    """
-    eDifFIQA: Face Image Quality Assessment.
+    """eDifFIQA: Face Image Quality Assessment.
+
     Predicts a single quality score from an aligned 112x112 face.
     Higher score = better quality.
 
@@ -280,6 +358,10 @@ MODEL_REGISTRY: dict[Enum, ModelInfo] = {
     RetinaFaceWeights.RESNET34: ModelInfo(
         url='https://github.com/yakhyo/uniface/releases/download/weights/retinaface_r34.onnx',
         sha256='bd0263dc2a465d32859555cb1741f2d98991eb0053696e8ee33fec583d30e630'
+    ),
+    RetinaFaceWeights.RESNET50: ModelInfo(
+        url='https://github.com/yakhyo/uniface/releases/download/weights/retinaface_r50.onnx',
+        sha256='905eac744dc165dbcd62960938a191de3fecea6bef198fb1c5e13e690bc6a828'
     ),
 
     # MobileFace
@@ -358,6 +440,18 @@ MODEL_REGISTRY: dict[Enum, ModelInfo] = {
         sha256='5e4447f50245bbd7966bd6c0fa52938c61474a04ec7def48753668a9d8b4ea3a'
     ),
 
+    # CenterFace
+    CenterFaceWeights.DEFAULT: ModelInfo(
+        url='https://github.com/yakhyo/uniface/releases/download/weights/centerface.onnx',
+        sha256='f50be8b97eae35b969905619136765897e401171ab4f92aa2b8c9909292d2ba0'
+    ),
+
+    # BlazeFace (MediaPipe short-range)
+    BlazeFaceWeights.DEFAULT: ModelInfo(
+        url='https://github.com/yakhyo/uniface/releases/download/weights/face_detection_short_range.onnx',
+        sha256='2f2689b040becf555706d2cb978d2f0e3296ea82413734fba9a856c66c5f2b17'
+    ),
+
     # YOLOv5-Face
     YOLOv5FaceWeights.YOLOV5N: ModelInfo(
         url='https://github.com/yakhyo/yolov5-face-onnx-inference/releases/download/weights/yolov5n_face.onnx',
@@ -382,12 +476,12 @@ MODEL_REGISTRY: dict[Enum, ModelInfo] = {
         sha256='33f3951af7fc0c4d9b321b29cdcd8c9a59d0a29a8d4bdc01fcb5507d5c714809'
     ),
 
-    # DDAFM
-    DDAMFNWeights.AFFECNET7: ModelInfo(
+    # Emotion (DDAMFN)
+    EmotionWeights.AFFECNET7: ModelInfo(
         url='https://github.com/yakhyo/uniface/releases/download/weights/affecnet7.script',
         sha256='10535bf8b6afe8e9d6ae26cea6c3add9a93036e9addb6adebfd4a972171d015d'
     ),
-    DDAMFNWeights.AFFECNET8: ModelInfo(
+    EmotionWeights.AFFECNET8: ModelInfo(
         url='https://github.com/yakhyo/uniface/releases/download/weights/affecnet8.script',
         sha256='8c66963bc71db42796a14dfcbfcd181b268b65a3fc16e87147d6a3a3d7e0f487'
     ),
@@ -404,6 +498,12 @@ MODEL_REGISTRY: dict[Enum, ModelInfo] = {
         sha256='9c8c47d437cd310538d233f2465f9ed0524cb7fb51882a37f74e8bc22437fdbf'
     ),
 
+    # FaceAttribNet
+    FaceAttribNetWeights.DEFAULT: ModelInfo(
+        url='https://github.com/yakhyo/uniface/releases/download/weights/face_attrib_net.onnx',
+        sha256='1bf7c6453bec2fb28e0830f3a76dceb9ffd020124f87b28da5355940a7bc6e48'
+    ),
+
     # Landmarks
     LandmarkWeights.DEFAULT: ModelInfo(
         url='https://github.com/yakhyo/uniface/releases/download/weights/2d106det.onnx',
@@ -418,6 +518,16 @@ MODEL_REGISTRY: dict[Enum, ModelInfo] = {
     PIPNetWeights.DW300_CELEBA_68: ModelInfo(
         url='https://github.com/yakhyo/pipnet-onnx/releases/download/weights/pipnet_r18_300w_celeba_68.onnx',
         sha256='63fa56fd4b8f6ccc4b88f2b36e00fa3d8c21a2c4244ab9381e8b432cef35197b'
+    ),
+
+    # Face Mesh (468 dense 3D landmarks) and Face Landmarker (478, with irises)
+    FaceMeshWeights.V1_468: ModelInfo(
+        url='https://github.com/yakhyo/uniface/releases/download/weights/face_mesh_Nx3x192x192.onnx',
+        sha256='3ca77cf59c18e4da0eccb46695bf604683fa564253e3385892981a5c274fb10f'
+    ),
+    FaceMeshWeights.V2_478: ModelInfo(
+        url='https://github.com/yakhyo/uniface/releases/download/weights/face_landmarker_Nx3x256x256.onnx',
+        sha256='111795f8703cdeb6d0c68a9f3cc966a0f23f8786bb00f4577a11f461fc4276ac'
     ),
 
     # Gaze (MobileGaze)
@@ -522,11 +632,3 @@ MODEL_REGISTRY: dict[Enum, ModelInfo] = {
         sha256='72238239298cf645d3f5954d657b4aca7b64fd25bc808c0260778386da9b00a1'
     ),
 }
-
-
-# Backward compatibility (optional, can be removed if all code uses MODEL_REGISTRY)
-MODEL_URLS: dict[Enum, str] = {k: v.url for k, v in MODEL_REGISTRY.items()}
-MODEL_SHA256: dict[Enum, str] = {k: v.sha256 for k, v in MODEL_REGISTRY.items()}
-
-DOWNLOAD_CHUNK_SIZE = 256 * 1024  # 256 KiB
-HASH_CHUNK_SIZE = 1024 * 1024  # 1 MiB

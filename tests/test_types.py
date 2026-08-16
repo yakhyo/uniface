@@ -8,7 +8,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from uniface.types import AttributeResult, EmotionResult, Face, GazeResult, SpoofingResult
+from uniface.types import DemographyResult, EmotionResult, Face, GazeResult, SpoofingResult
 
 
 class TestGazeResult:
@@ -112,11 +112,11 @@ class TestEmotionResult:
         hash(result)
 
 
-class TestAttributeResult:
-    """Tests for AttributeResult dataclass."""
+class TestDemographyResult:
+    """Tests for DemographyResult dataclass."""
 
     def test_age_gender_result(self):
-        result = AttributeResult(gender=1, age=25)
+        result = DemographyResult(gender=1, age=25)
         assert result.gender == 1
         assert result.age == 25
         assert result.age_group is None
@@ -124,7 +124,7 @@ class TestAttributeResult:
         assert result.sex == 'Male'
 
     def test_fairface_result(self):
-        result = AttributeResult(gender=0, age_group='20-29', race='East Asian')
+        result = DemographyResult(gender=0, age_group='20-29', race='East Asian')
         assert result.gender == 0
         assert result.age is None
         assert result.age_group == '20-29'
@@ -132,34 +132,34 @@ class TestAttributeResult:
         assert result.sex == 'Female'
 
     def test_sex_property_female(self):
-        result = AttributeResult(gender=0)
+        result = DemographyResult(gender=0)
         assert result.sex == 'Female'
 
     def test_sex_property_male(self):
-        result = AttributeResult(gender=1)
+        result = DemographyResult(gender=1)
         assert result.sex == 'Male'
 
     def test_immutability(self):
-        result = AttributeResult(gender=1, age=30)
+        result = DemographyResult(gender=1, age=30)
         with pytest.raises(AttributeError):
             result.age = 31  # type: ignore
 
     def test_repr_age_gender(self):
-        result = AttributeResult(gender=1, age=25)
+        result = DemographyResult(gender=1, age=25)
         repr_str = repr(result)
-        assert 'AttributeResult' in repr_str
+        assert 'DemographyResult' in repr_str
         assert 'Male' in repr_str
         assert 'age=25' in repr_str
 
     def test_repr_fairface(self):
-        result = AttributeResult(gender=0, age_group='30-39', race='White')
+        result = DemographyResult(gender=0, age_group='30-39', race='White')
         repr_str = repr(result)
         assert 'Female' in repr_str
         assert 'age_group=30-39' in repr_str
         assert 'race=White' in repr_str
 
     def test_hashable(self):
-        result = AttributeResult(gender=1, age=25)
+        result = DemographyResult(gender=1, age=25)
         hash(result)
 
 
@@ -238,6 +238,29 @@ class TestFace:
         assert 'age=30' in repr_str
         assert 'sex=Male' in repr_str
         assert 'emotion=Happy' in repr_str
+
+    _FACE_STATES = ('left_eye_open', 'right_eye_open', 'eyeglasses', 'mask', 'sunglasses')
+
+    @pytest.mark.parametrize('name', _FACE_STATES)
+    def test_repr_with_a_single_face_state(self, sample_face, name):
+        """Each of the five is optional on its own; __repr__ must never raise."""
+        setattr(sample_face, name, 0.75)
+
+        repr_str = repr(sample_face)
+
+        assert f'{name}=0.75' in repr_str
+        assert all(other not in repr_str for other in self._FACE_STATES if other != name)
+
+    def test_repr_with_all_face_states(self, sample_face):
+        for idx, name in enumerate(self._FACE_STATES):
+            setattr(sample_face, name, idx / 10)
+
+        repr_str = repr(sample_face)
+
+        assert 'left_eye_open=0.00, right_eye_open=0.10, eyeglasses=0.20, mask=0.30, sunglasses=0.40' in repr_str
+
+    def test_repr_omits_face_states_when_unset(self, sample_face):
+        assert all(name not in repr(sample_face) for name in self._FACE_STATES)
 
     def test_compute_similarity_no_embeddings(self, sample_face):
         other_face = Face(

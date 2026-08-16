@@ -18,6 +18,11 @@ RetinaFace models are trained on the [WIDER FACE](datasets.md#wider-face) datase
 | `MNET_V2` :material-check-circle: | 3.2M   | 3.5MB | 91.70% | 91.03% | 86.60% |
 | `RESNET18`   | 11.7M  | 27MB  | 92.50% | 91.02% | 86.63% |
 | `RESNET34`   | 24.8M  | 56MB  | 94.16% | 93.12% | 88.90% |
+| `RESNET50`   | 27.4M  | 104MB | 94.72%* | 93.67%* | 88.82%* |
+
+*\* `RESNET50` weights come from [HivisionIDPhotos](https://huggingface.co/TheEeeeLin/HivisionIDPhotos_matting/blob/main/retinaface-resnet50.onnx);
+its scores are measured with [widerface_evaluation](https://github.com/yakhyo/widerface_evaluation) rather than quoted
+from the paper. It trails `RESNET34` on Hard despite being ~2x the size.*
 
 !!! info "Accuracy & Benchmarks"
     **Accuracy**: WIDER FACE validation set (Easy/Medium/Hard subsets) - from [RetinaFace paper](https://arxiv.org/abs/1905.00641)
@@ -39,6 +44,57 @@ SCRFD (Sample and Computation Redistribution for Efficient Face Detection) model
     **Accuracy**: WIDER FACE validation set - from [SCRFD paper](https://arxiv.org/abs/2105.04714)
 
     **Speed**: Benchmark on your own hardware using `python tools/detect.py --source <image>`
+
+---
+
+### CenterFace
+
+CenterFace is an anchor-free detector (MobileNetV2 + FPN) that treats faces as center points, with joint 5-point landmark prediction. Trained on [WIDER FACE](datasets.md#wider-face) dataset.
+
+| Model Name | Size  | Easy   | Medium | Hard   |
+| ---------- | ----- | ------ | ------ | ------ |
+| `DEFAULT` :material-check-circle: | 7.0MB | 92.2%* | 91.1%* | 78.2%* |
+
+*\* Single inference on the original image (SIO). With multi-scale and flip testing the
+[original repo](https://github.com/Star-Clouds/CenterFace) reports 93.5% / 92.4% / 87.5%.*
+
+!!! info "Accuracy & Benchmarks"
+    **Accuracy**: WIDER FACE validation set - from [CenterFace paper](https://arxiv.org/abs/1911.03599)
+
+    **Speed**: Benchmark on your own hardware using `python tools/detect.py --source <image> --method centerface`
+
+!!! note "Input Size"
+    The ONNX model has dynamic spatial dimensions. `input_size` is an upper bound
+    (default 640×640), not a fixed shape: larger images are scaled down to fit and smaller
+    ones are left alone, preserving aspect ratio. Each side is then rounded up to a
+    multiple of 32. Pass `input_size=None` to always run at native resolution, like upstream.
+
+---
+
+### BlazeFace
+
+Google MediaPipe's short-range SSD detector, the one that runs ahead of Face Mesh in
+MediaPipe's own pipeline. Pairing it with [Face Mesh](#face-mesh-468-or-478-points) reproduces that output.
+
+| Model Name | Input | Keypoints | Size |
+| ---------- | ----- | --------- | ---- |
+| `DEFAULT` :material-check-circle: | 128×128 | 6 | 0.5MB |
+
+!!! warning "Not for recognition pipelines"
+    BlazeFace emits 6 MediaPipe keypoints (right eye, left eye, nose tip, mouth **center**,
+    right/left ear tragion), not the 5-point alignment template. With no mouth corners they
+    cannot drive face alignment, so `supports_alignment` is `False` and `FaceAnalyzer`
+    disables recognition for it.
+
+!!! note "Short range"
+    Tuned for faces within roughly 2m. Not benchmarked on WIDER FACE, and less accurate
+    than SCRFD or YOLOv8 on small or distant faces. Choose it for its 0.5MB footprint or
+    for MediaPipe parity.
+
+!!! info "Reference"
+    **Paper**: [BlazeFace: Sub-millisecond Neural Face Detection on Mobile GPUs](https://arxiv.org/abs/1907.05047)
+
+    **Source**: [yakhyo/mediapipe-face-mesh-onnx](https://github.com/yakhyo/mediapipe-face-mesh-onnx) — ONNX export of Google [MediaPipe](https://github.com/google-ai-edge/mediapipe)
 
 ---
 
@@ -93,7 +149,7 @@ Face recognition using adaptive margin based on image quality.
 | `IR_101`  | IR-101   | WebFace12M  | 249 MB | -         | 97.66%    |
 
 !!! info "Training Data & Accuracy"
-    **Dataset**: [WebFace4M / WebFace12M](datasets.md#webface4m--webface12m) (4M / 12M images)
+    **Dataset**: [WebFace4M / WebFace12M](datasets.md#webface4m-webface12m) (4M / 12M images)
 
     **Accuracy**: IJB-B and IJB-C benchmarks, TAR@FAR=0.01%
 
@@ -182,7 +238,7 @@ Facial landmark localization model.
 
 | Model Name | Points | Params | Size |
 | ---------- | ------ | ------ | ---- |
-| `2D106`  | 106    | 3.7M   | 14MB |
+| `DEFAULT` (2d_106) | 106 | 3.7M | 14MB |
 
 **Landmark Groups:**
 
@@ -216,13 +272,40 @@ PIPNet (Pixel-in-Pixel Net) facial landmark detector. ResNet-18 backbone, 256×2
 
 ---
 
+### Face Mesh (468 or 478 points)
+
+Google MediaPipe's dense mesh. The only UniFace landmarker that returns 3D points and a
+face-presence score, and the only model that batches every face of an image into one
+inference call.
+
+| Model Name | Points | Input | Size |
+| ---------- | ------ | ----- | ---- |
+| `V1_468` :material-check-circle: | 468 (3D) | 192×192 | 2.4MB |
+| `V2_478` | 478 (3D, with irises) | 256×256 | 4.6MB |
+
+!!! info "Reference"
+    **Paper**: [Real-time Facial Surface Geometry from Monocular Video on Mobile GPUs](https://arxiv.org/abs/1907.06724)
+
+    **Source**: [yakhyo/mediapipe-face-mesh-onnx](https://github.com/yakhyo/mediapipe-face-mesh-onnx) — architectures recovered from Google [MediaPipe](https://github.com/google-ai-edge/mediapipe). `V1_468`'s weights came via [PINTO0309's conversion](https://github.com/PINTO0309/facemesh_onnx_tensorrt); `V2_478`'s were read directly from the `.tflite` in Google's `face_landmarker.task` bundle
+
+!!! note "Works with any detector"
+    Face Mesh needs a bounding box plus the first two landmarks (the eyes) to align its
+    crop. Rows 0/1 are the viewer-left and viewer-right eye in both the 5-point template
+    and BlazeFace's 6-point layout, so every UniFace detector can seed it.
+
+!!! note "Relative depth"
+    The `z` coordinate is relative depth on the same pixel scale as `x`/`y` (smaller is
+    closer). It has no absolute origin and is not comparable between faces or images.
+
+---
+
 ## Attribute Analysis Models
 
 ### Age & Gender Detection
 
 | Model Name  | Attributes  | Params | Size |
 | ----------- | ----------- | ------ | ---- |
-| `AgeGender` | Age, Gender | 2.1M   | 8MB  |
+| `DEFAULT`   | Age, Gender | 2.1M   | 8MB  |
 
 !!! info "Training Data"
     **Dataset**: Trained on [CelebA](datasets.md#celeba)
@@ -236,7 +319,7 @@ PIPNet (Pixel-in-Pixel Net) facial landmark detector. ResNet-18 backbone, 256×2
 
 | Model Name  | Attributes            | Params | Size  |
 | ----------- | --------------------- | ------ | ----- |
-| `FairFace` | Race, Gender, Age Group | -      | 44MB  |
+| `DEFAULT`   | Race, Gender, Age Group | -      | 44MB  |
 
 !!! info "Training Data"
     **Dataset**: Trained on [FairFace](datasets.md#fairface) dataset with balanced demographics
@@ -266,6 +349,23 @@ PIPNet (Pixel-in-Pixel Net) facial landmark detector. ResNet-18 backbone, 256×2
 
 !!! note "Accuracy Note"
     Emotion detection accuracy depends heavily on facial expression clarity and cultural context.
+
+---
+
+### Face State Detection (FaceAttribNet)
+
+| Model Name      | Attributes                                              | Params | Size |
+| --------------- | ------------------------------------------------------- | ------ | ---- |
+| `DEFAULT`       | Eye openness (L/R), Eyeglasses, Mask, Sunglasses        | 10.8M  | 41MB |
+
+Qualcomm's [Facial-Attribute-Detection](https://github.com/qualcomm/ai-hub-models/tree/main/src/qai_hub_models/models/face_attrib_net) model. Outputs five independent binary probabilities from a 128x128 face crop.
+
+!!! info "Training Data"
+    **Dataset**: Trained by Qualcomm on a proprietary face dataset
+
+!!! warning "Multi-label Output"
+    The five probabilities come from independent binary heads: they do not sum to 1
+    and several can be high at once. Threshold each attribute separately; never `argmax`.
 
 ---
 
@@ -465,9 +565,10 @@ Face image quality assessment. Predicts a single scalar score from an aligned 11
 
 Models are automatically downloaded and cached on first use.
 
+- **Sources**: GitHub Releases, falling back automatically to a [Hugging Face mirror](https://huggingface.co/yakhyo/uniface-weights) when GitHub is unreachable
 - **Cache location**: `~/.uniface/models/` (configurable via `set_cache_dir()` or `UNIFACE_CACHE_DIR` env var)
 - **Inspect cache path**: `get_cache_dir()` returns the resolved active path
-- **Verification**: Models are verified with SHA-256 checksums
+- **Verification**: Models are verified with SHA-256 checksums, whichever source served them
 - **Concurrent download**: `download_models([...])` fetches multiple models in parallel
 - **Manual download**: Use `python tools/download_model.py` to pre-download models
 
@@ -495,6 +596,7 @@ See [Model Cache & Offline Use](concepts/model-cache-offline.md) for full detail
 - **Face Anti-Spoofing**: [yakhyo/face-anti-spoofing](https://github.com/yakhyo/face-anti-spoofing) - MiniFASNet ONNX inference (weights from [minivision-ai/Silent-Face-Anti-Spoofing](https://github.com/minivision-ai/Silent-Face-Anti-Spoofing))
 - **Face Image Quality Assessment**: [yakhyo/face-image-quality-assessment](https://github.com/yakhyo/face-image-quality-assessment) - eDifFIQA PyTorch inference, ONNX export and inference
 - **FairFace**: [yakhyo/fairface-onnx](https://github.com/yakhyo/fairface-onnx) - FairFace ONNX inference for race, gender, age prediction
+- **FaceAttribNet**: [yakhyo/face-attribute](https://github.com/yakhyo/face-attribute) - FaceAttribNet ONNX export and inference (weights from [qualcomm/ai-hub-models](https://github.com/qualcomm/ai-hub-models/tree/main/src/qai_hub_models/models/face_attrib_net))
 - **PIPNet**: [yakhyo/pipnet-onnx](https://github.com/yakhyo/pipnet-onnx) - PIPNet ONNX export and inference (from [jhb86253817/PIPNet](https://github.com/jhb86253817/PIPNet))
 - **InsightFace**: [deepinsight/insightface](https://github.com/deepinsight/insightface) - Model architectures and pretrained weights
 

@@ -17,7 +17,7 @@ class BaseMatting(ABC):
     alpha matte (float32 in [0, 1]) separating foreground from background.
 
     Subclasses must implement the full pipeline: model initialization,
-    preprocessing, postprocessing, and the ``predict`` entry point.
+    preprocessing, postprocessing, and the `predict` entry point.
     """
 
     @abstractmethod
@@ -26,10 +26,8 @@ class BaseMatting(ABC):
 
         This method should handle loading model weights, creating the
         inference session (e.g., ONNX Runtime), and any necessary
-        setup procedures to prepare the model for prediction.
-
-        Raises:
-            RuntimeError: If the model fails to load or initialize.
+        setup procedures to prepare the model for prediction. Implementations
+        raise RuntimeError if the model fails to load or initialize.
         """
         raise NotImplementedError('Subclasses must implement the _initialize_model method.')
 
@@ -38,10 +36,10 @@ class BaseMatting(ABC):
         """Preprocess the input image for model inference.
 
         Args:
-            image: An image in BGR format with shape ``(H, W, 3)``.
+            image: An image in BGR format with shape `(H, W, 3)`.
 
         Returns:
-            A tuple of ``(tensor, orig_h, orig_w)`` where *tensor* is the
+            A tuple of `(tensor, orig_h, orig_w)` where *tensor* is the
             preprocessed image ready for inference.
         """
         raise NotImplementedError('Subclasses must implement the preprocess method.')
@@ -52,10 +50,10 @@ class BaseMatting(ABC):
 
         Args:
             outputs: Raw outputs from the model inference.
-            original_size: Original image size as ``(width, height)``.
+            original_size: Original image size as `(width, height)`.
 
         Returns:
-            Alpha matte with shape ``(H, W)`` and values in ``[0, 1]``.
+            Alpha matte with shape `(H, W)` and values in `[0, 1]`.
         """
         raise NotImplementedError('Subclasses must implement the postprocess method.')
 
@@ -64,25 +62,25 @@ class BaseMatting(ABC):
         """Run end-to-end matting on an image.
 
         Args:
-            image: An image in BGR format with shape ``(H, W, 3)``.
+            image: An image in BGR format with shape `(H, W, 3)`.
 
         Returns:
-            Alpha matte with shape ``(H, W)``, float32 in ``[0, 1]``.
+            Alpha matte with shape `(H, W)`, float32 in `[0, 1]`.
 
         Example:
-            >>> matting = create_matting_model()
+            >>> matting = MODNet()
             >>> matte = matting.predict(image)
             >>> print(f'Matte shape: {matte.shape}, dtype: {matte.dtype}')
         """
         raise NotImplementedError('Subclasses must implement the predict method.')
 
     def __call__(self, image: np.ndarray) -> np.ndarray:
-        """Callable shortcut for :meth:`predict`.
+        """Callable shortcut for `predict`.
 
         Args:
-            image: An image in BGR format with shape ``(H, W, 3)``.
+            image: An image in BGR format with shape `(H, W, 3)`.
 
         Returns:
-            Alpha matte with shape ``(H, W)``, float32 in ``[0, 1]``.
+            Alpha matte with shape `(H, W)`, float32 in `[0, 1]`.
         """
         return self.predict(image)

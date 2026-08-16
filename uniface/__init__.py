@@ -4,25 +4,19 @@
 # You may obtain a copy of the License at
 #
 #     https://opensource.org/licenses/MIT
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 
 """UniFace: A comprehensive library for face analysis.
 
 This library provides unified APIs for:
-- Face detection (RetinaFace, SCRFD, YOLOv5Face, YOLOv8Face)
+- Face detection (BlazeFace, CenterFace, RetinaFace, SCRFD, YOLOv5Face, YOLOv8Face)
 - Face recognition (AdaFace, ArcFace, EdgeFace, MobileFace, SphereFace)
 - Face tracking (ByteTrack with Kalman filtering)
-- Facial landmarks (106 / 98 / 68-point detection: 2d106det, PIPNet)
+- Facial landmarks (106 / 98 / 68-point: 2d106det, PIPNet; 468/478-point dense: FaceMesh)
 - Face parsing (semantic segmentation)
 - Portrait matting (trimap-free alpha matte)
 - Gaze estimation
 - Head pose estimation
-- Age, gender, and emotion prediction
+- Age, gender, emotion, and face state prediction (eyes open, glasses, mask)
 - Face anti-spoofing
 - Face image quality assessment (eDifFIQA)
 - Privacy/anonymization
@@ -32,39 +26,40 @@ from __future__ import annotations
 
 __license__ = 'MIT'
 __author__ = 'Yakhyokhuja Valikhujaev'
-__version__ = '3.7.0'
-
-import contextlib
+__version__ = '4.0.0rc3'
 
 from uniface.face_utils import compute_similarity, face_alignment
 from uniface.log import Logger, enable_logging
 from uniface.model_store import download_models, get_cache_dir, set_cache_dir, verify_model_weights
 
 from .analyzer import FaceAnalyzer
-from .attribute import AgeGender, Emotion, FairFace, create_attribute_predictor
-from .detection import (
-    SCRFD,
-    RetinaFace,
-    YOLOv5Face,
-    YOLOv8Face,
-    create_detector,
-    list_available_detectors,
-)
-from .gaze import MobileGaze, create_gaze_estimator
-from .headpose import HeadPose, create_head_pose_estimator
-from .landmark import Landmark106, PIPNet, create_landmarker
-from .matting import MODNet, create_matting_model
-from .parsing import BiSeNet, XSeg, create_face_parser
+from .attribute import AgeGender, Emotion, FaceAttribNet, FairFace
+from .detection import SCRFD, BlazeFace, CenterFace, RetinaFace, YOLOv5Face, YOLOv8Face
+from .gaze import MobileGaze
+from .headpose import HeadPose
+from .landmark import FaceMesh, Landmark106, PIPNet
+from .matting import MODNet
+from .parsing import BiSeNet, XSeg
 from .privacy import BlurFace
 from .quality import EDifFIQA
-from .recognition import AdaFace, ArcFace, EdgeFace, MobileFace, SphereFace, create_recognizer
-from .spoofing import MiniFASNet, create_spoofer
-from .tracking import BYTETracker
-from .types import AttributeResult, EmotionResult, Face, GazeResult, HeadPoseResult, QualityResult, SpoofingResult
+from .recognition import AdaFace, ArcFace, EdgeFace, MobileFace, SphereFace
+from .spoofing import MiniFASNet
 
-# Optional: FAISS vector store (requires `pip install faiss-cpu`)
-with contextlib.suppress(ImportError):
-    from .stores import FAISS
+# The faiss dependency is imported lazily at FAISS(...) construction, so this
+# import succeeds even without faiss-cpu installed.
+from .stores import FAISS
+from .tracking import BYTETracker
+from .types import (
+    DemographyResult,
+    EmotionResult,
+    Face,
+    FaceMeshResult,
+    FaceStateResult,
+    GazeResult,
+    HeadPoseResult,
+    QualityResult,
+    SpoofingResult,
+)
 
 __all__ = [
     # Metadata
@@ -74,17 +69,9 @@ __all__ = [
     # Core classes
     'Face',
     'FaceAnalyzer',
-    # Factory functions
-    'create_detector',
-    'create_face_parser',
-    'create_gaze_estimator',
-    'create_matting_model',
-    'create_head_pose_estimator',
-    'create_landmarker',
-    'create_recognizer',
-    'create_spoofer',
-    'list_available_detectors',
     # Detection models
+    'BlazeFace',
+    'CenterFace',
     'RetinaFace',
     'SCRFD',
     'YOLOv5Face',
@@ -96,6 +83,8 @@ __all__ = [
     'MobileFace',
     'SphereFace',
     # Landmark models
+    'FaceMesh',
+    'FaceMeshResult',
     'Landmark106',
     'PIPNet',
     # Gaze models
@@ -111,10 +100,11 @@ __all__ = [
     'XSeg',
     # Attribute models
     'AgeGender',
-    'AttributeResult',
-    'create_attribute_predictor',
+    'DemographyResult',
     'Emotion',
     'EmotionResult',
+    'FaceAttribNet',
+    'FaceStateResult',
     'FairFace',
     # Spoofing models
     'MiniFASNet',

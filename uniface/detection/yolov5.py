@@ -2,7 +2,7 @@
 # Author: Yakhyokhuja Valikhujaev
 # GitHub: https://github.com/yakhyo
 
-from typing import Any, Literal
+from typing import Literal
 
 import numpy as np
 
@@ -28,8 +28,7 @@ __all__ = ['YOLOv5Face']
 
 
 class YOLOv5Face(BaseDetector):
-    """
-    Face detector based on the YOLOv5-Face architecture.
+    """Face detector based on the YOLOv5-Face architecture.
 
     Title: "YOLO5Face: Why Reinventing a Face Detector"
     Paper: https://arxiv.org/abs/2105.12931
@@ -46,8 +45,7 @@ class YOLOv5Face(BaseDetector):
             or 'numpy' (no dependencies). Defaults to 'numpy'.
         providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
             the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
-        **kwargs: Advanced options:
-            max_det (int): Maximum number of detections to return. Defaults to 750.
+        max_det (int): Maximum number of detections to return. Defaults to 750.
 
     Attributes:
         model_name (YOLOv5FaceWeights): Selected model variant.
@@ -63,6 +61,9 @@ class YOLOv5Face(BaseDetector):
         RuntimeError: If the ONNX model fails to load or initialize.
     """
 
+    supports_landmarks = True
+    supports_alignment = True
+
     def __init__(
         self,
         *,
@@ -72,7 +73,7 @@ class YOLOv5Face(BaseDetector):
         input_size: int = 640,
         nms_mode: Literal['torchvision', 'numpy'] = 'numpy',
         providers: list[str] | None = None,
-        **kwargs: Any,
+        max_det: int = 750,
     ) -> None:
         super().__init__(
             model_name=model_name,
@@ -81,9 +82,8 @@ class YOLOv5Face(BaseDetector):
             input_size=input_size,
             nms_mode=nms_mode,
             providers=providers,
-            **kwargs,
+            max_det=max_det,
         )
-        self._supports_landmarks = True  # YOLOv5-Face supports landmarks
 
         # Validate input size
         if input_size != 640:
@@ -104,24 +104,21 @@ class YOLOv5Face(BaseDetector):
         else:
             self.nms_mode = nms_mode
 
-        # Advanced options from kwargs
-        self.max_det = kwargs.get('max_det', 750)
+        # Advanced options
+        self.max_det = max_det
 
         Logger.info(
             f'Initializing YOLOv5Face with model={self.model_name}, confidence_threshold={self.confidence_threshold}, '
             f'nms_threshold={self.nms_threshold}, input_size={self.input_size}, nms_mode={self.nms_mode}'
         )
 
-        # Get path to model weights
         self._model_path = verify_model_weights(self.model_name)
         Logger.info(f'Verified model weights located at: {self._model_path}')
 
-        # Initialize model
         self._initialize_model(self._model_path)
 
     def _initialize_model(self, model_path: str) -> None:
-        """
-        Initializes an ONNX model session from the given path.
+        """Initializes an ONNX model session from the given path.
 
         Args:
             model_path (str): The file path to the ONNX model.
@@ -156,7 +153,7 @@ class YOLOv5Face(BaseDetector):
             input_tensor (np.ndarray): Preprocessed input tensor.
 
         Returns:
-            List[np.ndarray]: Raw model outputs.
+            list[np.ndarray]: Raw model outputs.
         """
         return self.session.run(self.output_names, {self.input_names: input_tensor})
 
@@ -166,21 +163,20 @@ class YOLOv5Face(BaseDetector):
         scale: float,
         padding: tuple[int, int],
     ) -> tuple[np.ndarray, np.ndarray]:
-        """
-        Postprocess model predictions.
+        """Postprocess model predictions.
 
         Args:
             predictions (np.ndarray): Raw model output
             scale (float): Scale ratio used in preprocessing
-            padding (Tuple[int, int]): Padding used in preprocessing
+            padding (tuple[int, int]): Padding used in preprocessing
 
         Returns:
-            Tuple[np.ndarray, np.ndarray]: Filtered detections and landmarks
+            tuple[np.ndarray, np.ndarray]: Filtered detections and landmarks
                 - detections: [x1, y1, x2, y2, conf]
                 - landmarks: [5, 2] for each detection
         """
         # predictions shape: (1, 25200, 16)
-        # 16 = [x, y, w, h, obj_conf, cls_conf, 10 landmarks (5 points * 2 coords)]
+        # 16 = [x, y, w, h, obj_conf, 10 landmark coords (5 points * 2), cls_conf]
 
         predictions = predictions[0]  # Remove batch dimension
 
@@ -194,7 +190,7 @@ class YOLOv5Face(BaseDetector):
         # Convert from xywh to xyxy
         boxes = self._xywh2xyxy(predictions[:, :4])
 
-        # Get confidence scores
+        # Column 4 is the objectness score; the trailing cls_conf column is not used
         scores = predictions[:, 4]
 
         # Get landmarks (5 points, 10 coordinates)
@@ -239,8 +235,7 @@ class YOLOv5Face(BaseDetector):
         return detections, landmarks
 
     def _xywh2xyxy(self, x: np.ndarray) -> np.ndarray:
-        """
-        Convert bounding box format from xywh to xyxy.
+        """Convert bounding box format from xywh to xyxy.
 
         Args:
             x (np.ndarray): Boxes in [x, y, w, h] format
@@ -263,8 +258,7 @@ class YOLOv5Face(BaseDetector):
         metric: Literal['default', 'max'] = 'max',
         center_weight: float = 2.0,
     ) -> list[Face]:
-        """
-        Perform face detection on an input image and return bounding boxes and facial landmarks.
+        """Perform face detection on an input image and return bounding boxes and facial landmarks.
 
         Args:
             image (np.ndarray): Input image as a NumPy array of shape (H, W, C).
@@ -276,7 +270,7 @@ class YOLOv5Face(BaseDetector):
                 when using the "default" metric. Defaults to 2.0.
 
         Returns:
-            List[Face]: List of Face objects, each containing:
+            list[Face]: List of Face objects, each containing:
                 - bbox (np.ndarray): Bounding box coordinates with shape (4,) as [x1, y1, x2, y2]
                 - confidence (float): Detection confidence score (0.0 to 1.0)
                 - landmarks (np.ndarray): 5-point facial landmarks with shape (5, 2)
@@ -293,13 +287,11 @@ class YOLOv5Face(BaseDetector):
 
         original_height, original_width = image.shape[:2]
 
-        # Preprocess
         image_tensor, scale, padding = self.preprocess(image)
 
         # ONNXRuntime inference
         outputs = self.inference(image_tensor)
 
-        # Postprocess
         detections, landmarks = self.postprocess(outputs[0], scale, padding)
 
         # Handle case when no faces are detected

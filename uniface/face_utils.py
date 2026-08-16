@@ -36,7 +36,8 @@ def estimate_norm(
     """Estimate the normalization transformation matrix for facial landmarks.
 
     Args:
-        landmark: Array of shape (5, 2) representing the coordinates of the facial landmarks.
+        landmark: Array of shape (5, 2) holding the alignment landmarks in the order
+            left eye, right eye, nose, left mouth corner, right mouth corner.
         image_size: The size of the output image. Can be an integer (for square images)
             or a tuple (width, height). Default is 112.
 
@@ -46,10 +47,15 @@ def estimate_norm(
             - The 2x3 inverse transformation matrix.
 
     Raises:
-        AssertionError: If the input landmark array does not have the shape (5, 2)
+        ValueError: If the input landmark array does not have the shape (5, 2),
             or if image_size is not a multiple of 112 or 128.
     """
-    assert landmark.shape == (5, 2), 'Landmark array must have shape (5, 2).'
+    if landmark.shape != (5, 2):
+        raise ValueError(
+            f'estimate_norm requires 5 alignment landmarks, got shape {landmark.shape}. '
+            'Detectors whose supports_alignment is False (e.g. BlazeFace) cannot be used '
+            'for alignment, recognition, quality scoring, or XSeg parsing.'
+        )
 
     # Handle both int and tuple inputs
     if isinstance(image_size, tuple):
@@ -57,7 +63,8 @@ def estimate_norm(
     else:
         size = image_size
 
-    assert size % 112 == 0 or size % 128 == 0, 'Image size must be a multiple of 112 or 128.'
+    if size % 112 != 0 and size % 128 != 0:
+        raise ValueError(f'image_size must be a multiple of 112 or 128, got {size}')
 
     if size % 112 == 0:
         ratio = float(size) / 112.0
@@ -162,7 +169,7 @@ def bbox_center_alignment(
     # Convert rotation from degrees to radians
     rot = float(rotation) * np.pi / 180.0
 
-    # Scale the image
+    # Scaling transform
     t1 = SimilarityTransform(scale=scale)
 
     # Translate the center point to the origin (after scaling)
@@ -170,7 +177,7 @@ def bbox_center_alignment(
     cy = center[1] * scale
     t2 = SimilarityTransform(translation=(-1 * cx, -1 * cy))
 
-    # Apply rotation around origin (center of face)
+    # Rotation around the origin (the face center, after t2)
     t3 = SimilarityTransform(rotation=rot)
 
     # Translate origin to center of output image
@@ -191,19 +198,19 @@ def bbox_center_alignment(
 def transform_points_2d(points: np.ndarray, transform: np.ndarray) -> np.ndarray:
     """Apply a 2D affine transformation to an array of 2D points.
 
-    Both inputs are coerced to contiguous ``float32`` before the transform is
-    applied; the output dtype is ``float32`` regardless of the input dtypes.
+    Both inputs are coerced to contiguous `float32` before the transform is
+    applied; the output dtype is `float32` regardless of the input dtypes.
 
     Args:
-        points: An ``(N, 2)`` array of 2D points. When ``N == 0`` the function
-            short-circuits and returns an empty ``(0, 2)`` ``float32`` array
-            without touching ``transform``.
-        transform: A ``(2, 3)`` affine transformation matrix. ``(3, 3)``
+        points: An `(N, 2)` array of 2D points. When `N == 0` the function
+            short-circuits and returns an empty `(0, 2)` `float32` array
+            without touching `transform`.
+        transform: A `(2, 3)` affine transformation matrix. `(3, 3)`
             homogeneous matrices are **not** accepted — pass only the top two
             rows.
 
     Returns:
-        Transformed ``(N, 2)`` ``float32`` array of points.
+        Transformed `(N, 2)` `float32` array of points.
     """
     if points.shape[0] == 0:
         return np.empty((0, 2), dtype=np.float32)

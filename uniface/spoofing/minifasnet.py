@@ -25,8 +25,7 @@ DEFAULT_SCALES = {
 
 
 class MiniFASNet(BaseSpoofer):
-    """
-    MiniFASNet: Lightweight Face Anti-Spoofing with ONNX Runtime.
+    """MiniFASNet: Lightweight Face Anti-Spoofing with ONNX Runtime.
 
     MiniFASNet is a face anti-spoofing model that detects whether a face is real
     (live person) or fake (photo, video replay, mask, etc.). It supports two model
@@ -35,6 +34,10 @@ class MiniFASNet(BaseSpoofer):
     The model takes a face region cropped from the image using a bounding box
     and predicts whether it's a real or spoofed face.
 
+    Raises:
+        ValueError: If the model weights are invalid or not found.
+        RuntimeError: If the ONNX model fails to load or initialize.
+
     Reference:
         https://github.com/yakhyo/face-anti-spoofing
 
@@ -42,7 +45,7 @@ class MiniFASNet(BaseSpoofer):
         model_name (MiniFASNetWeights): The enum specifying the model variant to load.
             Options: V1SE (scale=4.0), V2 (scale=2.7).
             Defaults to `MiniFASNetWeights.V2`.
-        scale (Optional[float]): Custom crop scale factor for face region.
+        scale (float | None): Custom crop scale factor for face region.
             If None, uses the default scale for the selected model variant.
             V1SE uses 4.0, V2 uses 2.7.
         providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
@@ -50,7 +53,7 @@ class MiniFASNet(BaseSpoofer):
 
     Attributes:
         scale (float): Crop scale factor for face region extraction.
-        input_size (Tuple[int, int]): Model input dimensions (width, height).
+        input_size (tuple[int, int]): Model input dimensions (width, height).
 
     Example:
         >>> from uniface.spoofing import MiniFASNet
@@ -69,6 +72,7 @@ class MiniFASNet(BaseSpoofer):
 
     def __init__(
         self,
+        *,
         model_name: MiniFASNetWeights = MiniFASNetWeights.V2,
         scale: float | None = None,
         providers: list[str] | None = None,
@@ -83,8 +87,7 @@ class MiniFASNet(BaseSpoofer):
         self._initialize_model()
 
     def _initialize_model(self) -> None:
-        """
-        Initialize the ONNX model from the stored model path.
+        """Initialize the ONNX model from the stored model path.
 
         Raises:
             RuntimeError: If the model fails to load or initialize.
@@ -114,8 +117,7 @@ class MiniFASNet(BaseSpoofer):
         return [int(x1), int(y1), int(x2 - x1), int(y2 - y1)]
 
     def _crop_face(self, image: np.ndarray, bbox_xywh: list[int]) -> np.ndarray:
-        """
-        Crop and resize face region from image using scale factor.
+        """Crop and resize face region from image using scale factor.
 
         The crop is centered on the face bounding box and scaled to capture
         more context around the face, which is important for anti-spoofing.
@@ -152,8 +154,7 @@ class MiniFASNet(BaseSpoofer):
         return resized
 
     def preprocess(self, image: np.ndarray, bbox: list | np.ndarray) -> np.ndarray:
-        """
-        Preprocess the input image for model inference.
+        """Preprocess the input image for model inference.
 
         Crops the face region, converts to float32, and arranges
         dimensions for the model (NCHW format).
@@ -181,8 +182,7 @@ class MiniFASNet(BaseSpoofer):
         return face
 
     def postprocess(self, outputs: np.ndarray) -> SpoofingResult:
-        """
-        Postprocess raw model outputs into prediction result.
+        """Postprocess raw model outputs into prediction result.
 
         Applies softmax to convert logits to probabilities and
         returns the SpoofingResult with is_real flag and confidence score.
@@ -200,8 +200,7 @@ class MiniFASNet(BaseSpoofer):
         return SpoofingResult(is_real=(label_idx == 1), confidence=confidence)
 
     def predict(self, image: np.ndarray, bbox: list | np.ndarray) -> SpoofingResult:
-        """
-        Perform end-to-end anti-spoofing prediction on a face.
+        """Perform end-to-end anti-spoofing prediction on a face.
 
         Args:
             image: Input image in BGR format containing the face.
@@ -210,7 +209,6 @@ class MiniFASNet(BaseSpoofer):
         Returns:
             SpoofingResult: Result containing is_real flag and confidence score.
         """
-        # Preprocess
         input_tensor = self.preprocess(image, bbox)
 
         # Run inference

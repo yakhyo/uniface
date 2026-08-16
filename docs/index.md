@@ -26,7 +26,7 @@ template: home.html
 
 <div class="feature-card" markdown>
 ### :material-face-recognition: Face Detection
-RetinaFace, SCRFD, and YOLO detectors with 5-point landmarks.
+RetinaFace, SCRFD, CenterFace, and YOLO detectors with 5-point landmarks, plus BlazeFace for short-range MediaPipe parity.
 <a class="feature-card-link" href="modules/detection/" aria-label="Face Detection"></a>
 </div>
 
@@ -38,20 +38,26 @@ AdaFace, ArcFace, EdgeFace, MobileFace, and SphereFace embeddings for identity v
 
 <div class="feature-card" markdown>
 ### :material-map-marker: Landmarks
-Dense facial landmark localization — 106-point (2d106det) and 98 / 68-point (PIPNet) variants.
+Dense facial landmark localization — 106-point (2d106det), 98 / 68-point (PIPNet), and 468/478-point 3D mesh (Face Mesh, the 478 variant adding irises) variants.
 <a class="feature-card-link" href="modules/landmarks/" aria-label="Landmarks"></a>
 </div>
 
 <div class="feature-card" markdown>
 ### :material-account-details: Attributes
-Age, gender, race (FairFace), and emotion detection from faces.
+Age, gender, race (FairFace), emotion, and face states (FaceAttribNet) from faces.
 <a class="feature-card-link" href="modules/attributes/" aria-label="Attributes"></a>
 </div>
 
 <div class="feature-card" markdown>
 ### :material-face-man-shimmer: Face Parsing
-BiSeNet semantic segmentation with 19 facial component classes.
+BiSeNet semantic segmentation with 19 facial component classes, plus XSeg face masking.
 <a class="feature-card-link" href="modules/parsing/" aria-label="Face Parsing"></a>
+</div>
+
+<div class="feature-card" markdown>
+### :material-image-off: Portrait Matting
+Trimap-free alpha matte with MODNet for background removal and compositing.
+<a class="feature-card-link" href="modules/matting/" aria-label="Portrait Matting"></a>
 </div>
 
 <div class="feature-card" markdown>
@@ -106,12 +112,12 @@ UniFace runs out of the box on macOS, Linux, and Windows, with automatic hardwar
 
 **CPU / Apple Silicon**
 ```bash
-pip install uniface[cpu]
+pip install "uniface[cpu]"
 ```
 
 **GPU (NVIDIA CUDA)**
 ```bash
-pip install uniface[gpu]
+pip install "uniface[gpu]"
 ```
 
 **From Source**

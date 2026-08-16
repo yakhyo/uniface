@@ -1,6 +1,10 @@
 tmp_*
 .vscode/
 .DS_Store
+.claude
+
+# CLI tools in tools/ write results here by default (--save-dir)
+outputs/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
