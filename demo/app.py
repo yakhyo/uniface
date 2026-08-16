@@ -22,7 +22,11 @@ from uniface import (
     BlurFace,
     BYTETracker,
     EdgeFace,
+    EDifFIQA,
+    Emotion,
     FaceAnalyzer,
+    FaceAttribNet,
+    FaceMesh,
     FairFace,
     HeadPose,
     Landmark106,
@@ -30,6 +34,7 @@ from uniface import (
     MobileFace,
     MobileGaze,
     MODNet,
+    PIPNet,
     RetinaFace,
     SphereFace,
     XSeg,
@@ -40,12 +45,17 @@ from uniface.constants import (
     AdaFaceWeights,
     ArcFaceWeights,
     EdgeFaceWeights,
+    EDifFIQAWeights,
+    EmotionWeights,
+    FaceMeshWeights,
     GazeWeights,
     HeadPoseWeights,
+    LandmarkWeights,
     MiniFASNetWeights,
     MobileFaceWeights,
     MODNetWeights,
     ParsingWeights,
+    PIPNetWeights,
     RetinaFaceWeights,
     SCRFDWeights,
     SphereFaceWeights,
@@ -59,6 +69,8 @@ from uniface.draw import (
     draw_detections,
     draw_gaze,
     draw_head_pose,
+    draw_mesh,
+    draw_quality_score,
     draw_tracks,
     vis_parsing_maps,
 )
@@ -83,25 +95,38 @@ _gc_utils._json_schema_to_python_type = _safe_json_schema_to_python_type
 # Resolve asset paths relative to this script so examples work from any cwd
 # ---------------------------------------------------------------------------
 _DEMO_ASSETS_DIR = Path(__file__).resolve().parent / 'assets'
-EXAMPLE_DEFAULT = str(_DEMO_ASSETS_DIR / 'image.jpg')
-EXAMPLE_VER_IMG1 = str(_DEMO_ASSETS_DIR / 'verification' / 'image1.jpg')
-EXAMPLE_VER_IMG2 = str(_DEMO_ASSETS_DIR / 'verification' / 'image2.jpg')
-EXAMPLE_VER_IMG3 = str(_DEMO_ASSETS_DIR / 'verification' / 'image3.jpg')
-EXAMPLE_ATTR_1 = str(_DEMO_ASSETS_DIR / 'attribute' / 'image1.jpg')
-EXAMPLE_ATTR_2 = str(_DEMO_ASSETS_DIR / 'attribute' / 'image2.jpg')
-EXAMPLE_GAZE_1 = str(_DEMO_ASSETS_DIR / 'gaze' / 'image1.jpg')
-EXAMPLE_GAZE_2 = str(_DEMO_ASSETS_DIR / 'gaze' / 'image2.jpg')
-EXAMPLE_HEADPOSE_1 = str(_DEMO_ASSETS_DIR / 'headpose' / 'image1.jpg')
-EXAMPLE_HEADPOSE_2 = str(_DEMO_ASSETS_DIR / 'headpose' / 'image2.jpg')
-EXAMPLE_HEADPOSE_3 = str(_DEMO_ASSETS_DIR / 'headpose' / 'image3.jpg')
-EXAMPLE_MATTING_1 = str(_DEMO_ASSETS_DIR / 'matting' / 'image1.jpg')
-EXAMPLE_MATTING_2 = str(_DEMO_ASSETS_DIR / 'matting' / 'image2.jpg')
-EXAMPLE_PARSING_1 = str(_DEMO_ASSETS_DIR / 'parsing' / 'image1.jpg')
-EXAMPLE_PARSING_2 = str(_DEMO_ASSETS_DIR / 'parsing' / 'image2.jpg')
-EXAMPLE_SPOOF_1 = str(_DEMO_ASSETS_DIR / 'spoofing' / 'image1.jpg')
-EXAMPLE_SPOOF_2 = str(_DEMO_ASSETS_DIR / 'spoofing' / 'image2.jpg')
-EXAMPLE_SPOOF_3 = str(_DEMO_ASSETS_DIR / 'spoofing' / 'image3.jpg')
-EXAMPLE_ANONYMIZE = str(_DEMO_ASSETS_DIR / 'anonymize' / 'image.jpg')
+
+
+def _ex(tab: str, name: str) -> str:
+    """Absolute path to a bundled example image."""
+    return str(_DEMO_ASSETS_DIR / tab / name)
+
+
+EXAMPLE_DEFAULT = _ex('detection', 'group.jpg')
+EXAMPLE_DETECT = [_ex('detection', 'group.jpg'), _ex('detection', 'crowd.jpg')]
+EXAMPLE_VER = {
+    'einstein_1921': _ex('verification', 'einstein_1921.jpg'),
+    'einstein_1947': _ex('verification', 'einstein_1947.jpg'),
+    'curie': _ex('verification', 'curie.jpg'),
+    'bohr_1910': _ex('verification', 'bohr_1910.jpg'),
+    'bohr_1935': _ex('verification', 'bohr_1935.jpg'),
+}
+EXAMPLE_DEMOGRAPHY = [_ex('demography', n) for n in ('child.jpg', 'adult.jpg', 'middle.jpg', 'senior.jpg')]
+EXAMPLE_LANDMARKS = _ex('landmarks', 'face.jpg')
+EXAMPLE_MESH = _ex('mesh', 'face.jpg')
+EXAMPLE_PARSING = [_ex('parsing', n) for n in ('face.jpg', 'portrait.jpg', 'occluded.jpg')]
+EXAMPLE_GAZE = [_ex('gaze', n) for n in ('averted.jpg', 'away.jpg', 'right.jpg')]
+EXAMPLE_HEADPOSE = [_ex('headpose', n) for n in ('center.jpg', 'left.jpg', 'right.jpg')]
+EXAMPLE_MATTING = [_ex('matting', n) for n in ('face.jpg', 'hair.jpg')]
+EXAMPLE_SPOOF = [_ex('spoofing', n) for n in ('live.jpg', 'print.jpg', 'screen.jpg')]
+EXAMPLE_EMOTION = [
+    _ex('emotion', f'{e}.jpg') for e in ('happy', 'sad', 'angry', 'surprise', 'neutral', 'fear', 'disgust', 'contempt')
+]
+EXAMPLE_STATES = [
+    _ex('states', n) for n in ('glasses.jpg', 'sunglasses.jpg', 'mask.jpg', 'eyes_closed.jpg', 'glasses_alt.jpg')
+]
+EXAMPLE_QUALITY = [_ex('quality', n) for n in ('group.jpg', 'vintage.jpg', 'screen.jpg')]
+EXAMPLE_ANONYMIZE = _ex('anonymize', 'group.jpg')
 
 # ---------------------------------------------------------------------------
 # Model cache: lazily create and reuse model instances
@@ -185,6 +210,33 @@ SPOOFING_VARIANT_MAP: dict[str, MiniFASNetWeights] = {
 MATTING_VARIANT_MAP: dict[str, MODNetWeights] = {
     'Photographic': MODNetWeights.PHOTOGRAPHIC,
     'Webcam': MODNetWeights.WEBCAM,
+}
+
+# Sparse landmark models. Each maps a UI label to (class, weights enum) so the tab
+# can switch point counts without knowing which architecture produced them.
+LANDMARK_VARIANT_MAP: dict[str, tuple[type, object]] = {
+    '106-point — 2d106det': (Landmark106, LandmarkWeights.DEFAULT),
+    '98-point — PIPNet (WFLW)': (PIPNet, PIPNetWeights.WFLW_98),
+    '68-point — PIPNet (300W)': (PIPNet, PIPNetWeights.DW300_CELEBA_68),
+}
+
+MESH_VARIANT_MAP: dict[str, FaceMeshWeights] = {
+    '468-point — Face Mesh': FaceMeshWeights.V1_468,
+    '478-point — Face Landmarker (+ irises)': FaceMeshWeights.V2_478,
+}
+
+MESH_DRAW_MODES = ['partial', 'full', 'points']
+
+EMOTION_VARIANT_MAP: dict[str, EmotionWeights] = {
+    'AffectNet-7': EmotionWeights.AFFECNET7,
+    'AffectNet-8': EmotionWeights.AFFECNET8,
+}
+
+QUALITY_VARIANT_MAP: dict[str, EDifFIQAWeights] = {
+    'T — MobileFaceNet (1.7M)': EDifFIQAWeights.T,
+    'S — IResNet-18 (24.6M)': EDifFIQAWeights.S,
+    'M — IResNet-50 (44.1M)': EDifFIQAWeights.M,
+    'L — IResNet-100 (65.7M)': EDifFIQAWeights.L,
 }
 
 MATTING_BACKGROUNDS: dict[str, tuple[int, int, int] | str] = {
@@ -425,50 +477,222 @@ def analyze_faces_fn(
 
 
 # ===================================================================
-# Tab 4: Landmarks (106-point)
+# Tab 4: Sparse Landmarks (106 / 98 / 68-point)
 # ===================================================================
-def landmarks_fn(image: np.ndarray) -> tuple[np.ndarray, str]:
+# Color palette cycled across landmark indices so adjacent points stay distinguishable.
+_LANDMARK_COLORS = [
+    (255, 0, 0),
+    (0, 255, 0),
+    (0, 0, 255),
+    (255, 255, 0),
+    (255, 0, 255),
+    (0, 255, 255),
+    (128, 0, 255),
+    (255, 128, 0),
+]
+
+
+def landmarks_fn(image: np.ndarray, model_variant: str) -> tuple[np.ndarray, str]:
     if image is None:
         return None, ''
 
     bgr = _rgb_to_bgr(image)
     det = _default_detector()
-    landmarker = _get_model('landmarker_106', Landmark106)
+
+    landmarker_cls, weights = LANDMARK_VARIANT_MAP[model_variant]
+    landmarker = _get_model(f'landmarker_{weights.value}', landmarker_cls, model_name=weights)
 
     faces = det.detect(bgr)
     result = bgr.copy()
 
-    # Color palette for 106 landmarks
-    colors = [
-        (255, 0, 0),
-        (0, 255, 0),
-        (0, 0, 255),
-        (255, 255, 0),
-        (255, 0, 255),
-        (0, 255, 255),
-        (128, 0, 255),
-        (255, 128, 0),
-    ]
+    # Scale the dot radius to the image so dense point sets stay readable.
+    radius = max(1, round(min(bgr.shape[:2]) / 400))
 
     faces_json = {}
     for i, face in enumerate(faces):
-        lmk106 = landmarker.get_landmarks(bgr, face.bbox)
+        points = landmarker.get_landmarks(bgr, face.bbox)
         x1, y1, x2, y2 = map(int, face.bbox)
-        lmk_dict = {f'pt_{j}': {'x': int(pt[0]), 'y': int(pt[1])} for j, pt in enumerate(lmk106)}
+        lmk_dict = {f'pt_{j}': {'x': int(pt[0]), 'y': int(pt[1])} for j, pt in enumerate(points)}
         faces_json[f'face_{i + 1}'] = {
             'x1': x1,
             'y1': y1,
             'x2': x2,
             'y2': y2,
-            'num_landmarks': len(lmk106),
+            'num_landmarks': len(points),
             'landmarks': lmk_dict,
         }
 
-        for j, pt in enumerate(lmk106):
-            color = colors[j % len(colors)]
-            cv2.circle(result, (int(pt[0]), int(pt[1])), 2, color, -1)
+        for j, pt in enumerate(points):
+            color = _LANDMARK_COLORS[j % len(_LANDMARK_COLORS)]
+            cv2.circle(result, (int(pt[0]), int(pt[1])), radius, color, -1)
 
-    return _bgr_to_rgb(result), json.dumps({'num_faces': len(faces), **faces_json}, indent=2)
+    return _bgr_to_rgb(result), json.dumps({'model': model_variant, 'num_faces': len(faces), **faces_json}, indent=2)
+
+
+# ===================================================================
+# Tab: Dense Face Mesh (468 / 478-point)
+# ===================================================================
+def mesh_fn(image: np.ndarray, model_variant: str, draw_mode: str) -> tuple[np.ndarray, str]:
+    if image is None:
+        return None, ''
+
+    bgr = _rgb_to_bgr(image)
+    det = _default_detector()
+
+    weights = MESH_VARIANT_MAP[model_variant]
+    mesh = _get_model(f'mesh_{weights.value}', FaceMesh, model_name=weights)
+
+    faces = det.detect(bgr)
+    result = bgr.copy()
+
+    if not faces:
+        return _bgr_to_rgb(result), json.dumps({'model': model_variant, 'num_faces': 0}, indent=2)
+
+    # One session call for every face; the ROI is roll-normalized from the 5-point landmarks.
+    mesh_results = mesh.predict(bgr, faces)
+
+    # 468 dots at the default radius run together on a large image, so scale it down.
+    point_radius = max(1, round(min(bgr.shape[:2]) / 500))
+
+    faces_json = {}
+    for i, (face, mesh_result) in enumerate(zip(faces, mesh_results, strict=False), 1):
+        draw_mesh(result, mesh_result.landmarks, mode=draw_mode, point_radius=point_radius)
+        x1, y1, x2, y2 = map(int, face.bbox)
+        z = mesh_result.landmarks[:, 2]
+        faces_json[f'face_{i}'] = {
+            'x1': x1,
+            'y1': y1,
+            'x2': x2,
+            'y2': y2,
+            'num_landmarks': int(mesh_result.landmarks.shape[0]),
+            'presence_score': round(float(mesh_result.score), 4),
+            'depth_range': {'min': round(float(z.min()), 2), 'max': round(float(z.max()), 2)},
+        }
+
+    return _bgr_to_rgb(result), json.dumps(
+        {'model': model_variant, 'draw_mode': draw_mode, 'num_faces': len(faces), **faces_json},
+        indent=2,
+    )
+
+
+# ===================================================================
+# Tab: Emotion Recognition
+# ===================================================================
+def emotion_fn(image: np.ndarray, model_variant: str) -> tuple[np.ndarray, str]:
+    if image is None:
+        return None, ''
+
+    bgr = _rgb_to_bgr(image)
+    det = _default_detector()
+
+    weights = EMOTION_VARIANT_MAP[model_variant]
+    emotion = _get_model(f'emotion_{weights.value}', Emotion, model_name=weights)
+
+    faces = det.detect(bgr)
+    result = bgr.copy()
+
+    bboxes = [f.bbox for f in faces]
+    scores = [f.confidence for f in faces]
+    landmarks = [f.landmarks for f in faces]
+    draw_detections(image=result, bboxes=bboxes, scores=scores, landmarks=landmarks, corner_bbox=True)
+
+    faces_json = {}
+    for i, face in enumerate(faces, 1):
+        emotion_result = emotion.predict(bgr, face)
+        x1, y1, x2, y2 = map(int, face.bbox)
+        faces_json[f'face_{i}'] = {
+            'x1': x1,
+            'y1': y1,
+            'x2': x2,
+            'y2': y2,
+            'emotion': emotion_result.emotion,
+            'confidence': round(float(emotion_result.confidence), 4),
+        }
+
+        label = f'{emotion_result.emotion} {emotion_result.confidence:.2f}'
+        (tw, th), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2)
+        cv2.rectangle(result, (x1, y1 - th - 10), (x1 + tw + 10, y1), (0, 255, 0), -1)
+        cv2.putText(result, label, (x1 + 5, y1 - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 2)
+
+    return _bgr_to_rgb(result), json.dumps({'model': model_variant, 'num_faces': len(faces), **faces_json}, indent=2)
+
+
+# ===================================================================
+# Tab: Face States (eyes / glasses / mask)
+# ===================================================================
+def states_fn(image: np.ndarray, threshold: float) -> tuple[np.ndarray, str]:
+    if image is None:
+        return None, ''
+
+    bgr = _rgb_to_bgr(image)
+    det = _default_detector()
+    attrib = _get_model('face_attrib_net', FaceAttribNet)
+
+    faces = det.detect(bgr)
+    result = bgr.copy()
+
+    bboxes = [f.bbox for f in faces]
+    scores = [f.confidence for f in faces]
+    landmarks = [f.landmarks for f in faces]
+    draw_detections(image=result, bboxes=bboxes, scores=scores, landmarks=landmarks, corner_bbox=True)
+
+    faces_json = {}
+    for i, face in enumerate(faces, 1):
+        state = attrib.predict(bgr, face)
+        x1, y1, x2, y2 = map(int, face.bbox)
+
+        # Five independent binary heads: threshold each one, never argmax.
+        active = state.labels(threshold=threshold)
+        faces_json[f'face_{i}'] = {
+            'x1': x1,
+            'y1': y1,
+            'x2': x2,
+            'y2': y2,
+            'probabilities': {k: round(float(v), 4) for k, v in state.as_dict().items()},
+            'above_threshold': active,
+        }
+
+        # Stack one line per active attribute above the box.
+        for line_no, name in enumerate(reversed(active or ['(none)'])):
+            label = name.replace('_', ' ')
+            (tw, th), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
+            top = y1 - (th + 8) * (line_no + 1)
+            cv2.rectangle(result, (x1, top), (x1 + tw + 8, top + th + 6), (0, 200, 255), -1)
+            cv2.putText(result, label, (x1 + 4, top + th + 1), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
+
+    return _bgr_to_rgb(result), json.dumps({'threshold': threshold, 'num_faces': len(faces), **faces_json}, indent=2)
+
+
+# ===================================================================
+# Tab: Face Image Quality (eDifFIQA)
+# ===================================================================
+def quality_fn(image: np.ndarray, model_variant: str) -> tuple[np.ndarray, str]:
+    if image is None:
+        return None, ''
+
+    bgr = _rgb_to_bgr(image)
+    det = _default_detector()
+
+    weights = QUALITY_VARIANT_MAP[model_variant]
+    scorer = _get_model(f'quality_{weights.value}', EDifFIQA, model_name=weights)
+
+    faces = det.detect(bgr)
+    result = bgr.copy()
+
+    faces_json = {}
+    for i, face in enumerate(faces, 1):
+        quality = scorer.predict(bgr, face.landmarks)
+        x1, y1, x2, y2 = map(int, face.bbox)
+        faces_json[f'face_{i}'] = {
+            'x1': x1,
+            'y1': y1,
+            'x2': x2,
+            'y2': y2,
+            'quality': round(float(quality.score), 4),
+        }
+        draw_quality_score(result, face.bbox, quality.score)
+
+    return _bgr_to_rgb(result), json.dumps({'model': model_variant, 'num_faces': len(faces), **faces_json}, indent=2)
 
 
 # ===================================================================
@@ -874,9 +1098,9 @@ def build_app() -> gr.Blocks:
             f'<p style="margin: 4px 0 8px;">v{uniface.__version__} &nbsp;·&nbsp; '
             'Built on ONNX Runtime &nbsp;·&nbsp; Fast, lightweight, production-ready</p>'
             '<p style="margin: 0;">'
-            'Face Detection · Recognition · Landmarks · Parsing · '
-            'Gaze · Head Pose · Portrait Matting · Tracking · '
-            'Attributes · Anti-Spoofing · Anonymization'
+            'Face Detection · Recognition · Landmarks · Face Mesh · Parsing · '
+            'Gaze · Head Pose · Portrait Matting · Tracking · Demography · '
+            'Emotion · Face States · Quality · Anti-Spoofing · Anonymization'
             '</p>'
             '<p style="margin: 8px 0 0;">'
             '<a href="https://github.com/yakhyo/uniface" target="_blank">⭐ Star on GitHub</a>'
@@ -923,7 +1147,13 @@ def build_app() -> gr.Blocks:
             )
 
             gr.Examples(
-                examples=[[EXAMPLE_DEFAULT, 'RetinaFace', RetinaFaceWeights.MNET_V2.value, 0.5, 0.4]],
+                # Both rows stay on RetinaFace: the variant dropdown is repopulated by
+                # det_family.change, which has not fired yet when an example loads, so a
+                # row naming another family's variant would land on an invalid value.
+                examples=[
+                    [EXAMPLE_DETECT[0], 'RetinaFace', RetinaFaceWeights.MNET_V2.value, 0.5, 0.4],
+                    [EXAMPLE_DETECT[1], 'RetinaFace', RetinaFaceWeights.RESNET50.value, 0.3, 0.4],
+                ],
                 inputs=[det_image, det_family, det_variant, det_conf, det_nms],
                 label='Try an example',
             )
@@ -962,9 +1192,17 @@ def build_app() -> gr.Blocks:
 
             gr.Examples(
                 examples=[
-                    [EXAMPLE_VER_IMG1, EXAMPLE_VER_IMG2, 'ArcFace', ArcFaceWeights.RESNET.value],
-                    [EXAMPLE_VER_IMG1, EXAMPLE_VER_IMG3, 'ArcFace', ArcFaceWeights.RESNET.value],
-                    [EXAMPLE_VER_IMG2, EXAMPLE_VER_IMG3, 'ArcFace', ArcFaceWeights.RESNET.value],
+                    # Same person, 26 years apart
+                    [
+                        EXAMPLE_VER['einstein_1921'],
+                        EXAMPLE_VER['einstein_1947'],
+                        'ArcFace',
+                        ArcFaceWeights.RESNET.value,
+                    ],
+                    # Same person, 25 years apart
+                    [EXAMPLE_VER['bohr_1910'], EXAMPLE_VER['bohr_1935'], 'ArcFace', ArcFaceWeights.RESNET.value],
+                    # Different people
+                    [EXAMPLE_VER['einstein_1921'], EXAMPLE_VER['curie'], 'ArcFace', ArcFaceWeights.RESNET.value],
                 ],
                 inputs=[ver_image_a, ver_image_b, ver_family, ver_variant],
                 label='Try an example',
@@ -995,19 +1233,30 @@ def build_app() -> gr.Blocks:
 
             gr.Examples(
                 examples=[
-                    [EXAMPLE_ATTR_1, 'AgeGender'],
-                    [EXAMPLE_ATTR_2, 'FairFace'],
+                    [EXAMPLE_DEMOGRAPHY[0], 'AgeGender'],
+                    [EXAMPLE_DEMOGRAPHY[1], 'FairFace'],
+                    [EXAMPLE_DEMOGRAPHY[2], 'AgeGender'],
+                    [EXAMPLE_DEMOGRAPHY[3], 'FairFace'],
                 ],
                 inputs=[ana_image, ana_model],
                 label='Try an example',
             )
 
-        # ------ Tab 4: Landmarks ------
-        with gr.Tab('Landmarks (106-pt)'):
-            gr.Markdown('Detect 106 facial keypoints for detailed face geometry analysis.')
+        # ------ Tab 4: Sparse Landmarks ------
+        with gr.Tab('Landmarks'):
+            gr.Markdown(
+                'Sparse facial keypoints at three densities. '
+                '106-point comes from InsightFace 2d106det; the 98- and 68-point sets come from PIPNet.'
+            )
             with gr.Row():
                 with gr.Column():
                     lmk_image = gr.Image(label='Input Image', type='numpy')
+                    with gr.Accordion('Settings', open=False):
+                        lmk_variant = gr.Dropdown(
+                            choices=list(LANDMARK_VARIANT_MAP.keys()),
+                            value='106-point — 2d106det',
+                            label='Landmark Model',
+                        )
                     lmk_btn = gr.Button('Detect Landmarks', variant='primary')
                 with gr.Column():
                     lmk_output = gr.Image(label='Result')
@@ -1015,13 +1264,157 @@ def build_app() -> gr.Blocks:
 
             lmk_btn.click(
                 landmarks_fn,
-                inputs=[lmk_image],
+                inputs=[lmk_image, lmk_variant],
                 outputs=[lmk_output, lmk_text],
             )
 
             gr.Examples(
-                examples=[[EXAMPLE_DEFAULT]],
-                inputs=[lmk_image],
+                examples=[
+                    [EXAMPLE_LANDMARKS, '106-point — 2d106det'],
+                    [EXAMPLE_LANDMARKS, '98-point — PIPNet (WFLW)'],
+                    [EXAMPLE_LANDMARKS, '68-point — PIPNet (300W)'],
+                ],
+                inputs=[lmk_image, lmk_variant],
+                label='Try an example',
+            )
+
+        # ------ Tab: Dense Face Mesh ------
+        with gr.Tab('Face Mesh'):
+            gr.Markdown(
+                'Dense MediaPipe face mesh. The 468-point model is the classic Face Mesh; '
+                'the 478-point Face Landmarker adds ten iris points, drawn separately in red.'
+            )
+            with gr.Row():
+                with gr.Column():
+                    mesh_image = gr.Image(label='Input Image', type='numpy')
+                    with gr.Accordion('Settings', open=False):
+                        mesh_variant = gr.Dropdown(
+                            choices=list(MESH_VARIANT_MAP.keys()),
+                            value='468-point — Face Mesh',
+                            label='Mesh Model',
+                        )
+                        mesh_mode = gr.Radio(
+                            choices=MESH_DRAW_MODES,
+                            value='partial',
+                            label='Draw Mode',
+                            info="'full' renders the 2556-edge tessellation — detailed but heavy.",
+                        )
+                    mesh_btn = gr.Button('Predict Mesh', variant='primary')
+                with gr.Column():
+                    mesh_output = gr.Image(label='Result')
+                    mesh_text = gr.Textbox(label='Mesh Info', lines=8, show_copy_button=True)
+
+            mesh_btn.click(
+                mesh_fn,
+                inputs=[mesh_image, mesh_variant, mesh_mode],
+                outputs=[mesh_output, mesh_text],
+            )
+
+            gr.Examples(
+                examples=[
+                    [EXAMPLE_MESH, '468-point — Face Mesh', 'partial'],
+                    [EXAMPLE_MESH, '478-point — Face Landmarker (+ irises)', 'points'],
+                    [EXAMPLE_MESH, '468-point — Face Mesh', 'full'],
+                ],
+                inputs=[mesh_image, mesh_variant, mesh_mode],
+                label='Try an example',
+            )
+
+        # ------ Tab: Emotion ------
+        with gr.Tab('Emotion'):
+            gr.Markdown(
+                'Recognize facial expression per face. AffectNet-7 covers neutral, happy, sad, '
+                'surprise, fear, disgust and anger; AffectNet-8 adds contempt.'
+            )
+            with gr.Row():
+                with gr.Column():
+                    emo_image = gr.Image(label='Input Image', type='numpy')
+                    with gr.Accordion('Settings', open=False):
+                        emo_variant = gr.Radio(
+                            choices=list(EMOTION_VARIANT_MAP.keys()),
+                            value='AffectNet-7',
+                            label='Emotion Model',
+                        )
+                    emo_btn = gr.Button('Predict Emotion', variant='primary')
+                with gr.Column():
+                    emo_output = gr.Image(label='Result')
+                    emo_text = gr.Textbox(label='Emotions', lines=8, show_copy_button=True)
+
+            emo_btn.click(
+                emotion_fn,
+                inputs=[emo_image, emo_variant],
+                outputs=[emo_output, emo_text],
+            )
+
+            gr.Examples(
+                examples=[[path, 'AffectNet-7'] for path in EXAMPLE_EMOTION[:6]]
+                + [[EXAMPLE_EMOTION[7], 'AffectNet-8']],
+                inputs=[emo_image, emo_variant],
+                label='Try an example',
+            )
+
+        # ------ Tab: Face States ------
+        with gr.Tab('Face States'):
+            gr.Markdown(
+                'Five independent binary attributes per face: left/right eye open, eyeglasses, '
+                'sunglasses, and face mask. Each has its own classifier head, so several can be '
+                'high at once — every attribute is thresholded separately.'
+            )
+            with gr.Row():
+                with gr.Column():
+                    st_image = gr.Image(label='Input Image', type='numpy')
+                    with gr.Accordion('Settings', open=False):
+                        st_threshold = gr.Slider(0.05, 0.95, value=0.5, step=0.05, label='Attribute Threshold')
+                    st_btn = gr.Button('Predict States', variant='primary')
+                with gr.Column():
+                    st_output = gr.Image(label='Result')
+                    st_text = gr.Textbox(label='Face States', lines=10, show_copy_button=True)
+
+            st_btn.click(
+                states_fn,
+                inputs=[st_image, st_threshold],
+                outputs=[st_output, st_text],
+            )
+
+            gr.Examples(
+                examples=[[path, 0.5] for path in EXAMPLE_STATES],
+                inputs=[st_image, st_threshold],
+                label='Try an example',
+            )
+
+        # ------ Tab: Face Image Quality ------
+        with gr.Tab('Face Quality'):
+            gr.Markdown(
+                'Score each face for recognition suitability with eDifFIQA. Higher is better; '
+                'labels are red below 0.3, orange to 0.6, green above.'
+            )
+            with gr.Row():
+                with gr.Column():
+                    qa_image = gr.Image(label='Input Image', type='numpy')
+                    with gr.Accordion('Settings', open=False):
+                        qa_variant = gr.Dropdown(
+                            choices=list(QUALITY_VARIANT_MAP.keys()),
+                            value='T — MobileFaceNet (1.7M)',
+                            label='Model Size',
+                        )
+                    qa_btn = gr.Button('Score Quality', variant='primary')
+                with gr.Column():
+                    qa_output = gr.Image(label='Result')
+                    qa_text = gr.Textbox(label='Quality Scores', lines=8, show_copy_button=True)
+
+            qa_btn.click(
+                quality_fn,
+                inputs=[qa_image, qa_variant],
+                outputs=[qa_output, qa_text],
+            )
+
+            gr.Examples(
+                examples=[
+                    [EXAMPLE_QUALITY[0], 'T — MobileFaceNet (1.7M)'],
+                    [EXAMPLE_QUALITY[1], 'L — IResNet-100 (65.7M)'],
+                    [EXAMPLE_QUALITY[2], 'T — MobileFaceNet (1.7M)'],
+                ],
+                inputs=[qa_image, qa_variant],
                 label='Try an example',
             )
 
@@ -1055,8 +1448,9 @@ def build_app() -> gr.Blocks:
             )
             gr.Examples(
                 examples=[
-                    [EXAMPLE_PARSING_1, _parsing_default_variant],
-                    [EXAMPLE_PARSING_2, _parsing_xseg_variant],
+                    [EXAMPLE_PARSING[0], _parsing_default_variant],
+                    [EXAMPLE_PARSING[1], _parsing_default_variant],
+                    [EXAMPLE_PARSING[2], _parsing_xseg_variant],
                 ],
                 inputs=[par_image, par_variant],
                 label='Try an example',
@@ -1087,8 +1481,9 @@ def build_app() -> gr.Blocks:
 
             gr.Examples(
                 examples=[
-                    [EXAMPLE_GAZE_1, 'ResNet34'],
-                    [EXAMPLE_GAZE_2, 'ResNet34'],
+                    [EXAMPLE_GAZE[0], 'ResNet34'],
+                    [EXAMPLE_GAZE[1], 'ResNet34'],
+                    [EXAMPLE_GAZE[2], 'ResNet18'],
                 ],
                 inputs=[gaze_image, gaze_backbone],
                 label='Try an example',
@@ -1124,9 +1519,9 @@ def build_app() -> gr.Blocks:
 
             gr.Examples(
                 examples=[
-                    [EXAMPLE_HEADPOSE_1, 'ResNet18', 'cube'],
-                    [EXAMPLE_HEADPOSE_2, 'ResNet18', 'axis'],
-                    [EXAMPLE_HEADPOSE_3, 'MobileNetV2', 'cube'],
+                    [EXAMPLE_HEADPOSE[0], 'ResNet18', 'cube'],
+                    [EXAMPLE_HEADPOSE[1], 'ResNet18', 'axis'],
+                    [EXAMPLE_HEADPOSE[2], 'MobileNetV2', 'cube'],
                 ],
                 inputs=[hp_image, hp_backbone, hp_draw_type],
                 label='Try an example',
@@ -1157,9 +1552,9 @@ def build_app() -> gr.Blocks:
 
             gr.Examples(
                 examples=[
-                    [EXAMPLE_SPOOF_1, 'V2'],
-                    [EXAMPLE_SPOOF_2, 'V2'],
-                    [EXAMPLE_SPOOF_3, 'V2'],
+                    [EXAMPLE_SPOOF[0], 'V2'],
+                    [EXAMPLE_SPOOF[1], 'V2'],
+                    [EXAMPLE_SPOOF[2], 'V2'],
                 ],
                 inputs=[spf_image, spf_variant],
                 label='Try an example',
@@ -1199,8 +1594,8 @@ def build_app() -> gr.Blocks:
 
             gr.Examples(
                 examples=[
-                    [EXAMPLE_MATTING_1, 'Photographic', 'white'],
-                    [EXAMPLE_MATTING_2, 'Photographic', 'blur'],
+                    [EXAMPLE_MATTING[0], 'Photographic', 'white'],
+                    [EXAMPLE_MATTING[1], 'Photographic', 'blur'],
                 ],
                 inputs=[mat_image, mat_variant, mat_background],
                 label='Try an example',

@@ -1,8 +1,13 @@
-gradio>=4.0.0
+# CPU-only torch wheels: the Emotion model (DDAMFN) ships as TorchScript, and the
+# default PyPI wheel pulls in ~2.5 GB of CUDA libraries the Space cannot use.
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+gradio>=5.0.0
 uniface>=4.0.0
 numpy>=1.21.0
 opencv-python-headless>=4.5.0
 onnxruntime>=1.16.0
+torch>=2.0.0
 scikit-image>=0.19.0
 scipy>=1.7.0
 requests>=2.28.0
