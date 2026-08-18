@@ -1,6 +1,6 @@
 [project]
 name = "uniface"
-version = "4.0.0rc3"
+version = "4.0.0"
 description = "UniFace: A Unified Face Analysis Library for Python"
 readme = "README.md"
 license = "MIT"
