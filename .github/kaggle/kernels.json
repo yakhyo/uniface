@@ -1,0 +1,29 @@
+{
+  "$comment": [
+    "'slug' is where the kernel lives on Kaggle right now; 'title' is what it should be called.",
+    "Kaggle re-slugs a kernel to match its title, so a push whose title differs renames the kernel",
+    "and its old URL stops resolving. The kernel survives with its upvotes, comments and version",
+    "history (measured 2026-08-20). After such a push, update the slug here to where it landed;",
+    "sync.py prints the exact edit, and finds the kernel by title in the meantime.",
+    "'live': true marks a slug that already exists. sync.py refuses to push one it cannot find",
+    "under either name, so a mistyped slug fails loudly instead of stranding the original.",
+    "Titles come from each notebook H1, keeping examples/ the single source of truth."
+  ],
+  "kernels": [
+    {"notebook": "01_face_detection.ipynb", "slug": "face-detection-with-uniface", "title": "Face Detection with UniFace", "live": true},
+    {"notebook": "02_face_alignment.ipynb", "slug": "face-detection-and-alignment-with-uniface", "title": "Face Detection and Alignment with UniFace", "live": true},
+    {"notebook": "03_face_verification.ipynb", "slug": "face-verification-one-to-one-face-comparison", "title": "Face Verification: One-to-One Face Comparison", "live": true},
+    {"notebook": "04_face_search.ipynb", "slug": "face-search-one-to-many-face-matching", "title": "Face Search: One-to-Many Face Matching", "live": true},
+    {"notebook": "05_face_analyzer.ipynb", "slug": "face-analysis-with-uniface", "title": "Face Analysis with UniFace", "live": true},
+    {"notebook": "06_face_parsing.ipynb", "slug": "face-parsing-with-uniface", "title": "Face Parsing with UniFace", "live": true},
+    {"notebook": "07_face_anonymization.ipynb", "slug": "face-anonymization-with-uniface", "title": "Face Anonymization with UniFace", "live": true},
+    {"notebook": "08_gaze_estimation.ipynb", "slug": "gaze-estimation-with-uniface", "title": "Gaze Estimation with UniFace", "live": true},
+    {"notebook": "09_face_segmentation.ipynb", "slug": "xseg-face-segmentation", "title": "XSeg Face Segmentation", "live": true},
+    {"notebook": "10_face_vector_store.ipynb", "slug": "face-vector-store-with-faiss", "title": "Face Vector Store with FAISS", "live": true},
+    {"notebook": "11_head_pose_estimation.ipynb", "slug": "head-pose-estimation-with-uniface", "title": "Head Pose Estimation with UniFace", "live": true},
+    {"notebook": "12_face_recognition.ipynb", "slug": "face-recognition-retinaface-align-arcface", "title": "Face Recognition: RetinaFace → Align → ArcFace", "live": true},
+    {"notebook": "13_portrait_matting.ipynb", "slug": "portrait-matting-with-modnet", "title": "Portrait Matting with MODNet", "live": true},
+    {"notebook": "14_face_attributes.ipynb", "slug": "face-attribute-detection-with-uniface", "title": "Face Attribute Detection with UniFace", "live": true},
+    {"notebook": "15_face_mesh.ipynb", "slug": "dense-face-mesh-with-uniface", "title": "Dense Face Mesh with UniFace", "live": true}
+  ]
+}
