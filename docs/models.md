@@ -521,6 +521,35 @@ MODNet (Real-Time Trimap-Free Portrait Matting) produces soft alpha mattes from 
 
 ---
 
+### RobustVideoMatting
+
+RobustVideoMatting (RVM) produces alpha mattes from full images **and videos**. It is a recurrent network that carries temporal memory across frames, so video mattes stay stable on hair and other high-frequency edges where per-frame models flicker.
+
+| Model Name | Size | Use Case |
+| ---------- | ---- | -------- |
+| `MOBILENETV3` :material-check-circle: | 15 MB | Real-time / default |
+| `RESNET50` | 107 MB | Higher-capacity backbone |
+
+!!! info "Model Details"
+    **Paper**: [Robust High-Resolution Video Matting with Temporal Guidance](https://arxiv.org/abs/2108.11515) (WACV 2022)
+
+    **Source**: [PeterL1n/RobustVideoMatting](https://github.com/PeterL1n/RobustVideoMatting) — official ONNX weights
+
+    **Output**: Alpha matte `(H, W)` in `[0, 1]` (per frame)
+
+    **License**: [GPL-3.0](license-attribution.md)
+
+**Applications:**
+
+- Flicker-free video background removal
+- Video conferencing virtual backgrounds
+- Green screen compositing with stable hair edges
+
+!!! note "Video Usage"
+    Use `predict_frame()` / `predict_frames()` in a video loop so RVM can recycle its recurrent state; call `reset()` before a new sequence or after scene cuts. See [modules/matting](modules/matting.md).
+
+---
+
 ## Anti-Spoofing Models
 
 ### MiniFASNet Family
@@ -593,6 +622,7 @@ See [Model Cache & Offline Use](concepts/model-cache-offline.md) for full detail
 - **Face Parsing Training**: [yakhyo/face-parsing](https://github.com/yakhyo/face-parsing) - BiSeNet training code and pretrained weights
 - **Face Segmentation**: [yakhyo/face-segmentation](https://github.com/yakhyo/face-segmentation) - XSeg ONNX Inference
 - **Portrait Matting**: [yakhyo/modnet](https://github.com/yakhyo/modnet) - MODNet ported weights and inference (from [ZHKKKe/MODNet](https://github.com/ZHKKKe/MODNet))
+- **RobustVideoMatting**: [PeterL1n/RobustVideoMatting](https://github.com/PeterL1n/RobustVideoMatting) - Temporal-guidance video matting (official ONNX weights)
 - **Face Anti-Spoofing**: [yakhyo/face-anti-spoofing](https://github.com/yakhyo/face-anti-spoofing) - MiniFASNet ONNX inference (weights from [minivision-ai/Silent-Face-Anti-Spoofing](https://github.com/minivision-ai/Silent-Face-Anti-Spoofing))
 - **Face Image Quality Assessment**: [yakhyo/face-image-quality-assessment](https://github.com/yakhyo/face-image-quality-assessment) - eDifFIQA PyTorch inference, ONNX export and inference
 - **FairFace**: [yakhyo/fairface-onnx](https://github.com/yakhyo/fairface-onnx) - FairFace ONNX inference for race, gender, age prediction
@@ -609,5 +639,6 @@ See [Model Cache & Offline Use](concepts/model-cache-offline.md) for full detail
 - **ArcFace**: [Additive Angular Margin Loss for Deep Face Recognition](https://arxiv.org/abs/1801.07698)
 - **SphereFace**: [Deep Hypersphere Embedding for Face Recognition](https://arxiv.org/abs/1704.08063)
 - **MODNet**: [Real-Time Trimap-Free Portrait Matting via Objective Decomposition](https://arxiv.org/abs/2011.11961)
+- **RobustVideoMatting**: [Robust High-Resolution Video Matting with Temporal Guidance](https://arxiv.org/abs/2108.11515)
 - **BiSeNet**: [Bilateral Segmentation Network for Real-time Semantic Segmentation](https://arxiv.org/abs/1808.00897)
 - **PIPNet**: [Towards Efficient Facial Landmark Detection in the Wild](https://arxiv.org/abs/2003.03771)

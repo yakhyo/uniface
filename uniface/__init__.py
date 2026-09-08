@@ -38,7 +38,7 @@ from .detection import SCRFD, BlazeFace, CenterFace, RetinaFace, YOLOv5Face, YOL
 from .gaze import MobileGaze
 from .headpose import HeadPose
 from .landmark import FaceMesh, Landmark106, PIPNet
-from .matting import MODNet
+from .matting import MODNet, RobustVideoMatting
 from .parsing import BiSeNet, XSeg
 from .privacy import BlurFace
 from .quality import EDifFIQA
@@ -95,6 +95,7 @@ __all__ = [
     'HeadPoseResult',
     # Matting models
     'MODNet',
+    'RobustVideoMatting',
     # Parsing models
     'BiSeNet',
     'XSeg',

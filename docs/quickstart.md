@@ -559,7 +559,7 @@ For detailed model comparisons and benchmarks, see the [Model Zoo](models.md).
 | Gaze | `MobileGaze` (ResNet18/34/50, MobileNetV2, MobileOneS0) |
 | Head Pose | `HeadPose` (ResNet18/34/50, MobileNetV2/V3) |
 | Parsing | `BiSeNet` (ResNet18/34), `XSeg` |
-| Matting | `MODNet` |
+| Matting | `MODNet`, `RobustVideoMatting` (temporal video) |
 | Attributes | `AgeGender`, `FairFace`, `Emotion`, `FaceAttribNet` (face states) |
 | Anti-Spoofing | `MiniFASNet` (V1SE, V2) |
 | Quality | `EDifFIQA` (T, S, M, L) |

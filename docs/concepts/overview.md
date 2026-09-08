@@ -124,7 +124,7 @@ uniface/
 ├── landmark/       # Dense landmarks (Landmark106 = 106 pts, PIPNet = 98 / 68 pts, FaceMesh = 468 / 478 pts)
 ├── attribute/      # Age, gender, emotion, race, face states
 ├── parsing/        # Face semantic segmentation
-├── matting/        # Portrait matting (MODNet)
+├── matting/        # Portrait matting (MODNet, RobustVideoMatting)
 ├── gaze/           # Gaze estimation
 ├── headpose/       # Head pose estimation
 ├── spoofing/       # Anti-spoofing (MiniFASNet)

@@ -298,6 +298,20 @@ class MODNetWeights(str, Enum):
     WEBCAM       = "modnet_webcam"
 
 
+class RobustVideoMattingWeights(str, Enum):
+    """Robust Video Matting (RVM): temporal-guidance portrait matting for video.
+
+    RVM is a recurrent network: alpha predictions carry memory across frames,
+    which keeps mattes stable on hair and other high-frequency edges where
+    per-frame models flicker.
+
+    Model weights are GPL-3.0 licensed; see the license-attribution docs page.
+    https://github.com/PeterL1n/RobustVideoMatting
+    """
+    MOBILENETV3 = "rvm_mobilenetv3"
+    RESNET50    = "rvm_resnet50"
+
+
 class MiniFASNetWeights(str, Enum):
     """MiniFASNet: Lightweight Face Anti-Spoofing models.
 
@@ -612,6 +626,16 @@ MODEL_REGISTRY: dict[Enum, ModelInfo] = {
     MODNetWeights.WEBCAM: ModelInfo(
         url='https://github.com/yakhyo/modnet/releases/download/weights/modnet_webcam.onnx',
         sha256='de03cc16f3c91f25b7c2f0b42ea1a8d34f40a752234f3887572655e744e55306'
+    ),
+
+    # RobustVideoMatting (RVM) - GPL-3.0 weights, see docs/license-attribution.md
+    RobustVideoMattingWeights.MOBILENETV3: ModelInfo(
+        url='https://github.com/PeterL1n/RobustVideoMatting/releases/download/v1.0.0/rvm_mobilenetv3_fp32.onnx',
+        sha256='88d4531297118f595bf2fd60f6f566aec2e559393802d1f436c380f0cbbd2828'
+    ),
+    RobustVideoMattingWeights.RESNET50: ModelInfo(
+        url='https://github.com/PeterL1n/RobustVideoMatting/releases/download/v1.0.0/rvm_resnet50_fp32.onnx',
+        sha256='25db300fcb6ee27f941a1b52c97856e8d1f13c7f35817f81a612f89af0e8a85c'
     ),
 
     # eDifFIQA (Face Image Quality Assessment)
