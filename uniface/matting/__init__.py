@@ -6,5 +6,6 @@ from __future__ import annotations
 
 from .base import BaseMatting
 from .modnet import MODNet
+from .rvm import RobustVideoMatting
 
-__all__ = ['BaseMatting', 'MODNet']
+__all__ = ['BaseMatting', 'MODNet', 'RobustVideoMatting']

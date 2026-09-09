@@ -15,6 +15,8 @@ Portrait matting produces a soft alpha matte separating the foreground (person) 
 |-------|---------|------|----------|
 | **MODNet Photographic** :material-check-circle: | PHOTOGRAPHIC | 25 MB | High-quality portrait photos |
 | MODNet Webcam | WEBCAM | 25 MB | Real-time webcam feeds |
+| **RobustVideoMatting** :material-check-circle: | MOBILENETV3 | 15 MB | Temporal-stable matting for video |
+| RobustVideoMatting | RESNET50 | 107 MB | Video matting with a higher-capacity backbone |
 
 ---
 
@@ -96,6 +98,64 @@ cv2.imwrite("green_screen.jpg", green)
 MODNet is trimap-free, so a background that competes with the subject in sharpness and contrast
 is where the alpha edge softens. Compositing onto a blurred or plain background hides most of it;
 if you need a clean cut, shoot against a plain wall.
+
+---
+
+## Video Matting with RobustVideoMatting
+
+For **video**, per-frame matting flickers on hair and other high-frequency edges. RobustVideoMatting
+(RVM) is a *recurrent* network: it carries temporal memory across frames, so the alpha stays stable
+from frame to frame.
+
+```python
+import cv2
+from uniface.matting import RobustVideoMatting
+
+matting = RobustVideoMatting()          # MobileNetV3 (fast). RESNET50 is the higher-capacity variant.
+
+cap = cv2.VideoCapture("video.mp4")
+matting.reset()                          # Start a new sequence (also call after scene cuts)
+
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        break
+
+    matte = matting.predict_frame(frame)  # (H, W) float32 in [0, 1], reusing temporal memory
+    # ... composite `frame` and `matte` as shown above ...
+```
+
+For a list of frames at once (e.g. a preloaded clip), `predict_frames` returns the stacked mattes:
+
+```python
+mattes = matting.predict_frames(frames)  # (T, H, W) float32
+```
+
+### API notes
+
+- `predict(image)` processes a single image **without** temporal memory — use it for unrelated stills.
+  It never carries state between calls.
+- `predict_frame(frame)` / `predict_frames(frames)` reuse memory across frames. Memory is kept
+  between calls for chunked processing, and is reset automatically if the frame size changes.
+  Call `reset()` before starting an unrelated video.
+- `downsample_ratio` trades speed against detail (default `None` = auto, largest side mapped to
+  ~512 px). Lower it for lower resolutions, raise it when the full body is in shot.
+- The RVM model weights are [GPL-3.0 licensed](../license-attribution.md); check before shipping
+  commercially.
+
+```python
+from uniface.constants import RobustVideoMattingWeights
+from uniface.matting import RobustVideoMatting
+
+matting = RobustVideoMatting(model_name=RobustVideoMattingWeights.RESNET50,
+                             downsample_ratio=0.25)
+```
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `model_name` | `MOBILENETV3` | Model variant to load |
+| `downsample_ratio` | `None` | Internal working resolution fraction; `None` = auto |
+| `providers` | `None` | ONNX Runtime execution providers |
 
 ### Custom Background
 
