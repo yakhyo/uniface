@@ -1,0 +1,33 @@
+version: 2
+
+updates:
+  # Python dependencies resolved through uv.lock
+  - package-ecosystem: "uv"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore"
+    groups:
+      # One PR for every security fix instead of one PR per advisory
+      python-security:
+        applies-to: security-updates
+        patterns:
+          - "*"
+      python-versions:
+        applies-to: version-updates
+        patterns:
+          - "*"
+
+  # Workflow actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "ci"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
