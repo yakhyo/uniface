@@ -24,10 +24,11 @@ class ModelInfo:
 DOWNLOAD_CHUNK_SIZE = 256 * 1024  # 256 KiB
 HASH_CHUNK_SIZE = 1024 * 1024  # 1 MiB
 
-# Fallback source when a primary (GitHub Releases) URL is unreachable. Pinned to a
-# commit SHA so the fallback serves immutable bytes, matching the SHA-256 guarantee
-# of the primary path. Bump the SHA whenever new weights land in the mirror repo.
-HF_MIRROR_URL = 'https://huggingface.co/yakhyo/uniface-weights/resolve/4c7ed723a20deb7ff154b1ba7d6e73747d954016'
+# Fallback source when a primary (GitHub Releases) URL is unreachable. Tracks the
+# mirror's main branch: every download is checked against the SHA-256 in this
+# registry regardless of source, so a mutable ref cannot serve the wrong bytes --
+# it can only fail. Tracking main also means new weights need no change here.
+HF_MIRROR_URL = 'https://huggingface.co/yakhyo/uniface-weights/resolve/main'
 
 
 # fmt: off
@@ -64,6 +65,7 @@ class AdaFaceWeights(str, Enum):
     https://github.com/yakhyo/adaface-onnx
     """
     IR_18  = "adaface_ir_18"
+    IR_50  = "adaface_ir_50"
     IR_101 = "adaface_ir_101"
 
 class EdgeFaceWeights(str, Enum):
@@ -406,6 +408,10 @@ MODEL_REGISTRY: dict[Enum, ModelInfo] = {
     AdaFaceWeights.IR_18: ModelInfo(
         url='https://github.com/yakhyo/adaface-onnx/releases/download/weights/adaface_ir_18.onnx',
         sha256='6b6a35772fb636cdd4fa86520c1a259d0c41472a76f70f802b351837a00d9870'
+    ),
+    AdaFaceWeights.IR_50: ModelInfo(
+        url='https://github.com/yakhyo/adaface-onnx/releases/download/weights/adaface_ir_50.onnx',
+        sha256='9c0ae385d7362323c92d218de598d32e52a9130b78faac6a8a924091aca62c0b'
     ),
     AdaFaceWeights.IR_101: ModelInfo(
         url='https://github.com/yakhyo/adaface-onnx/releases/download/weights/adaface_ir_101.onnx',

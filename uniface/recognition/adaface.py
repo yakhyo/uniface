@@ -27,6 +27,7 @@ class AdaFace(BaseRecognizer):
     Args:
         model_name (AdaFaceWeights): The specific AdaFace model variant to use.
             - IR_18: Smaller model trained on WebFace4M (92 MB)
+            - IR_50: Mid-size model trained on WebFace4M (166 MB)
             - IR_101: Larger model trained on WebFace12M (249 MB)
             Defaults to `AdaFaceWeights.IR_18`.
         preprocessing (PreprocessConfig | None): An optional custom preprocessing

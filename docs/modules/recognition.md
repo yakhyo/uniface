@@ -13,7 +13,7 @@ Face recognition extracts embeddings for identity verification and face search.
 
 | Model | Backbone | Size | Embedding Dim |
 |-------|----------|------|---------------|
-| **AdaFace** | IR-18/IR-101 | 92-249 MB | 512 |
+| **AdaFace** | IR-18/IR-50/IR-101 | 92-249 MB | 512 |
 | **ArcFace** | MobileNet/ResNet | 8-166 MB | 512 |
 | **EdgeFace** | EdgeNeXt/LoRA | 5-70 MB | 512 |
 | **MobileFace** | MobileNet V2/V3 | 1-10 MB | 512 |
@@ -62,6 +62,7 @@ recognizer = AdaFace(providers=['CPUExecutionProvider'])
 | Variant | Dataset | Size | IJB-B | IJB-C |
 |---------|---------|------|-------|-------|
 | **IR_18** :material-check-circle: | WebFace4M | 92 MB | 93.03% | 94.99% |
+| IR_50 | WebFace4M | 166 MB | 95.44% | 96.98% |
 | IR_101 | WebFace12M | 249 MB | - | 97.66% |
 
 !!! info "Benchmark Metrics"
