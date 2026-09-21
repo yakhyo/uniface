@@ -146,6 +146,7 @@ Face recognition using adaptive margin based on image quality.
 | Model Name  | Backbone | Dataset     | Size   | IJB-B TAR | IJB-C TAR |
 | ----------- | -------- | ----------- | ------ | --------- | --------- |
 | `IR_18` :material-check-circle: | IR-18    | WebFace4M   | 92 MB  | 93.03%    | 94.99%    |
+| `IR_50`   | IR-50    | WebFace4M   | 166 MB | 95.44%    | 96.98%    |
 | `IR_101`  | IR-101   | WebFace12M  | 249 MB | -         | 97.66%    |
 
 !!! info "Training Data & Accuracy"

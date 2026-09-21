@@ -89,7 +89,7 @@ Large-scale face recognition datasets from the WebFace260M collection. Used for 
 | Property | WebFace4M     | WebFace12M     |
 | -------- | ------------- | -------------- |
 | Images   | ~4M           | ~12M           |
-| Used by  | AdaFace IR_18 | AdaFace IR_101 |
+| Used by  | AdaFace IR_18, IR_50 | AdaFace IR_101 |
 
 !!! info "Source"
 **Paper**: [AdaFace: Quality Adaptive Margin for Face Recognition](https://arxiv.org/abs/2204.00964)
