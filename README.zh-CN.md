@@ -1,4 +1,4 @@
-\[[English](README.md)\] | \[[Chinese](README.zh-CN.md)\] | \[[Korean](README.ko.md)\] | \[[Spanish](README.es.md)\] | \[[Uzbek](README.uz.md)\]
+\[[English](README.md)\] | \[[Chinese](README.zh-CN.md)\] | \[[Korean](README.ko.md)\] | \[[Uzbek](README.uz.md)\]
 
 <h1 align="center">UniFace：统一的 Python 人脸分析库</h1>
 
