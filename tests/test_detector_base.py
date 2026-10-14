@@ -42,7 +42,7 @@ def test_capability_flags_are_opt_in():
 
 
 def test_analyzer_disables_recognition_for_box_only_detector():
-    """A boxes-only detector must take the recognition-disabled branch, not load ArcFace."""
+    """A boxes-only detector must take the recognition-disabled branch, not load EdgeFace."""
     analyzer = FaceAnalyzer(detector=BoxOnlyDetector())
 
     assert analyzer.recognizer is None

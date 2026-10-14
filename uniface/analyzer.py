@@ -9,8 +9,11 @@ from typing import Any
 import numpy as np
 
 from uniface.attribute.base import BaseAttribute
+from uniface.constants import EdgeFaceWeights, RetinaFaceWeights
+from uniface.detection import RetinaFace
 from uniface.detection.base import BaseDetector
 from uniface.log import Logger
+from uniface.recognition import EdgeFace
 from uniface.recognition.base import BaseRecognizer
 from uniface.types import Face
 
@@ -31,13 +34,13 @@ class FaceAnalyzer:
     via the `predictors` list.  Each predictor's `predict(image, face)`
     is called once per detected face, enriching the `Face` in-place.
 
-    When called with no arguments, uses SCRFD (500M) for detection and
-    ArcFace (MobileNet) for recognition — the smallest and fastest variants.
+    When called with no arguments, uses RetinaFace (MobileNetV2) for detection
+    and EdgeFace (XXS) for recognition.
 
     Args:
-        detector: Face detector instance. Defaults to `SCRFD(SCRFD_500M_KPS)`.
+        detector: Face detector instance. Defaults to `RetinaFace(MNET_V2)`.
         recognizer: Face recognizer for extracting embeddings.
-            Defaults to `ArcFace(MNET)`. Pass `None` to disable recognition.
+            Defaults to `EdgeFace(XXS)`. Pass `None` to disable recognition.
         predictors: Optional list of `BaseAttribute` predictors to run on
             each detected face (e.g. `[AgeGender()]`).
 
@@ -59,10 +62,7 @@ class FaceAnalyzer:
         predictors: list[BaseAttribute] | None = None,
     ) -> None:
         if detector is None:
-            from uniface.constants import SCRFDWeights
-            from uniface.detection import SCRFD
-
-            detector = SCRFD(model_name=SCRFDWeights.SCRFD_500M_KPS)
+            detector = RetinaFace(model_name=RetinaFaceWeights.MNET_V2)
 
         # Checked before the _UNSET branch below so an unusable recognizer is never loaded.
         if not getattr(detector, 'supports_alignment', False):
@@ -75,9 +75,7 @@ class FaceAnalyzer:
             recognizer = None
 
         if recognizer is _UNSET:
-            from uniface.recognition import ArcFace
-
-            recognizer = ArcFace()
+            recognizer = EdgeFace(model_name=EdgeFaceWeights.XXS)
 
         self.detector = detector
         self.recognizer = recognizer
