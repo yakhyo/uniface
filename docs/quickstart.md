@@ -13,7 +13,7 @@ models you hand it. Start here if you want a whole pipeline rather than one mode
 import cv2
 from uniface import FaceAnalyzer
 
-analyzer = FaceAnalyzer()          # SCRFD + ArcFace by default, no arguments needed
+analyzer = FaceAnalyzer()          # RetinaFace + EdgeFace by default, no arguments needed
 faces = analyzer.analyze(cv2.imread("photo.jpg"))
 
 for face in faces:

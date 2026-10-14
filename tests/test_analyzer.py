@@ -121,3 +121,14 @@ def test_repr_lists_predictors():
 def test_constructor_is_keyword_only():
     with pytest.raises(TypeError):
         FaceAnalyzer(StubDetector())
+
+
+def test_defaults_use_permissively_licensed_weights():
+    """InsightFace weights (SCRFD, ArcFace) are non-commercial, so they must stay opt-in."""
+    from uniface.detection import RetinaFace
+    from uniface.recognition import EdgeFace
+
+    analyzer = FaceAnalyzer()
+
+    assert isinstance(analyzer.detector, RetinaFace)
+    assert isinstance(analyzer.recognizer, EdgeFace)
