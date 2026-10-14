@@ -6,21 +6,21 @@ Overview of all training datasets and evaluation benchmarks used by UniFace mode
 
 ## Quick Reference
 
-| Task        | Dataset                                          | Scale                  | Models                                      |
-| ----------- | ------------------------------------------------ | ---------------------- | ------------------------------------------- |
-| Detection   | [WIDER FACE](#wider-face)                        | 32K images             | RetinaFace, SCRFD, CenterFace, YOLOv5-Face, YOLOv8-Face |
-| Detection   | Proprietary (Google)                             | -                      | BlazeFace                                   |
-| Recognition | [MS1MV2](#ms1mv2)                                | 5.8M images, 85.7K IDs | MobileFace, SphereFace                      |
-| Recognition | [WebFace600K](#webface600k)                      | 600K images            | ArcFace                                     |
-| Recognition | [WebFace4M / WebFace12M](#webface4m-webface12m)  | 4M / 12M images        | AdaFace, EdgeFace                           |
-| Landmarks   | [WFLW](#wflw) / [300W+CelebA](#300w-celeba)      | 10K / 3.8K labeled + 202.6K unlabeled | PIPNet (98 / 68 pts)         |
-| Landmarks   | Proprietary (Google)                             | -                      | Face Mesh (468 / 478 pts)                   |
-| Attributes  | Proprietary (Qualcomm)                           | -                      | FaceAttribNet                               |
-| Gaze        | [Gaze360](#gaze360)                              | 238 subjects           | MobileGaze                                  |
-| Parsing     | [CelebAMask-HQ](#celebamask-hq)                  | 30K images             | BiSeNet                                     |
-| Attributes  | [CelebA](#celeba)                                | 200K images            | AgeGender                                   |
-| Attributes  | [FairFace](#fairface)                            | Balanced demographics  | FairFace                                    |
-| Attributes  | [AffectNet](#affectnet)                          | Emotion labels         | Emotion                                     |
+| Task        | Dataset                                        | Scale                                 | Models                                                  |
+| ----------- | ---------------------------------------------- | ------------------------------------- | ------------------------------------------------------- |
+| Detection   | [WIDER FACE](#wider-face)                       | 32K images                            | RetinaFace, SCRFD, CenterFace, YOLOv5-Face, YOLOv8-Face |
+| Detection   | Proprietary (Google)                           | -                                     | BlazeFace                                               |
+| Recognition | [MS1MV2](#ms1mv2)                               | 5.8M images, 85.7K IDs                | MobileFace, SphereFace                                  |
+| Recognition | [WebFace600K](#webface600k)                     | 600K images                           | ArcFace                                                 |
+| Recognition | [WebFace4M / WebFace12M](#webface4m-webface12m) | 4M / 12M images                       | AdaFace, EdgeFace                                       |
+| Landmarks   | [WFLW](#wflw) / [300W+CelebA](#300w-celeba)      | 10K / 3.8K labeled + 202.6K unlabeled | PIPNet (98 / 68 pts)                                    |
+| Landmarks   | Proprietary (Google)                           | -                                     | Face Mesh (468 / 478 pts)                               |
+| Attributes  | Proprietary (Qualcomm)                         | -                                     | FaceAttribNet                                           |
+| Gaze        | [Gaze360](#gaze360)                             | 238 subjects                          | MobileGaze                                              |
+| Parsing     | [CelebAMask-HQ](#celebamask-hq)                 | 30K images                            | BiSeNet                                                 |
+| Attributes  | [CelebA](#celeba)                               | 200K images                           | AgeGender                                               |
+| Attributes  | [FairFace](#fairface)                           | Balanced demographics                 | FairFace                                                |
+| Attributes  | [AffectNet](#affectnet)                         | Emotion labels                        | Emotion                                                 |
 
 ---
 
@@ -40,9 +40,14 @@ Large-scale face detection benchmark with images across 61 event categories. Con
 | Used by  | RetinaFace, SCRFD, YOLOv5-Face, YOLOv8-Face |
 
 !!! info "Download & References"
-**Paper**: [WIDER FACE: A Face Detection Benchmark](https://arxiv.org/abs/1511.06523)
+    **Paper**: [WIDER FACE: A Face Detection Benchmark](https://arxiv.org/abs/1511.06523)
 
     **Download**: [http://shuoyang1213.me/WIDERFACE/](http://shuoyang1213.me/WIDERFACE/)
+
+!!! tip "Prepared dataset for RetinaFace training"
+    Organized WIDER FACE dataset with five-point landmark annotations:
+    [Google Drive](https://drive.google.com/open?id=11UGV3nbVv1x9IC--_tK3Uxf7hA6rlbsS) or [Baidu Cloud](https://pan.baidu.com/s/1jIp9t30oYivrAvrgUgIoLQ) (password: `ruck`).
+    Prepared by [biubug6](https://github.com/biubug6).
 
 ---
 
@@ -86,9 +91,9 @@ Medium-scale face recognition dataset from the WebFace series.
 
 Large-scale face recognition datasets from the WebFace260M collection. Used for training AdaFace models with adaptive quality-aware margin, and EdgeFace models for edge devices.
 
-| Property | WebFace4M     | WebFace12M     |
-| -------- | ------------- | -------------- |
-| Images   | ~4M           | ~12M           |
+| Property | WebFace4M            | WebFace12M     |
+| -------- | -------------------- | -------------- |
+| Images   | ~4M                  | ~12M           |
 | Used by  | AdaFace IR_18, IR_50 | AdaFace IR_101 |
 
 !!! info "Source"
@@ -153,12 +158,12 @@ WIDER FACE. Used to train the supervised PIPNet 98-point variant shipped with Un
 The 68-point PIPNet variant is trained in a generalizable semi-supervised setting (GSSL):
 labeled images come from 300W and unlabeled images come from CelebA.
 
-| Property        | Value                                                                            |
-| --------------- | -------------------------------------------------------------------------------- |
-| Labeled images  | 3,837 (3,148 train: LFPW train + HELEN train + AFW; 689 test: LFPW test + HELEN test + iBUG) |
-| Unlabeled       | 202,599 (full CelebA; bounding boxes from RetinaFace per the PIPNet paper)        |
-| Annotation      | 68-point iBUG layout                                                             |
-| Used by         | PIPNet 300W+CelebA-68                                                            |
+| Property       | Value                                                                                        |
+| -------------- | -------------------------------------------------------------------------------------------- |
+| Labeled images | 3,837 (3,148 train: LFPW train + HELEN train + AFW; 689 test: LFPW test + HELEN test + iBUG) |
+| Unlabeled      | 202,599 (full CelebA; bounding boxes from RetinaFace per the PIPNet paper)                   |
+| Annotation     | 68-point iBUG layout                                                                         |
+| Used by        | PIPNet 300W+CelebA-68                                                                        |
 
 !!! info "Reference"
     **Paper**: [PIPNet (Pixel-in-Pixel Net)](https://arxiv.org/abs/2003.03771) (IJCV 2021)
@@ -228,13 +233,13 @@ data/
 
 Large-scale synthesized face dataset with large pose variations, generated from 300W by face profiling. Used for training head pose estimation models.
 
-| Property    | Value                         |
-| ----------- | ----------------------------- |
-| Images      | ~122,000 (synthesized)        |
-| Source      | 300W (profiled)               |
-| Pose range  | ±90° yaw                     |
-| Evaluation  | AFLW2000                      |
-| Used by     | All HeadPose models           |
+| Property   | Value                  |
+| ---------- | ---------------------- |
+| Images     | ~122,000 (synthesized) |
+| Source     | 300W (profiled)        |
+| Pose range | ±90° yaw             |
+| Evaluation | AFLW2000               |
+| Used by    | All HeadPose models    |
 
 !!! info "Download & Reference"
     **Paper**: [Face Alignment Across Large Poses: A 3D Solution](https://arxiv.org/abs/1511.07212)
@@ -351,8 +356,8 @@ Recognition models are evaluated across multiple benchmarks. Aligned 112x112 val
 !!! info "Download"
 **Kaggle**: [agedb-30-calfw-cplfw-lfw-aligned-112x112](https://www.kaggle.com/datasets/yakhyokhuja/agedb-30-calfw-cplfw-lfw-aligned-112x112)
 
-| Benchmark    | Description                                                       | Used by                         |
-| ------------ | ----------------------------------------------------------------- | ------------------------------- |
+| Benchmark          | Description                                                       | Used by                         |
+| ------------------ | ----------------------------------------------------------------- | ------------------------------- |
 | **LFW**      | Labeled Faces in the Wild - standard face verification benchmark  | ArcFace, MobileFace, SphereFace |
 | **CALFW**    | Cross-Age LFW - face verification across age gaps                 | MobileFace, SphereFace          |
 | **CPLFW**    | Cross-Pose LFW - face verification across pose variations         | MobileFace, SphereFace          |
@@ -367,8 +372,8 @@ See [Model Zoo - Recognition](models.md#face-recognition-models) for per-model a
 
 ### Gaze Estimation
 
-| Benchmark            | Metric        | Description                                  |
-| -------------------- | ------------- | -------------------------------------------- |
+| Benchmark                  | Metric        | Description                                  |
+| -------------------------- | ------------- | -------------------------------------------- |
 | **Gaze360 test set** | MAE (degrees) | Mean Absolute Error in gaze angle prediction |
 
 See [Model Zoo - Gaze](models.md#gaze-estimation-models) for per-model MAE scores.
@@ -379,8 +384,8 @@ See [Model Zoo - Gaze](models.md#gaze-estimation-models) for per-model MAE score
 
 For training your own models or reproducing results, see the following repositories:
 
-| Task        | Repository                                                                | Datasets Supported              |
-| ----------- | ------------------------------------------------------------------------- | ------------------------------- |
+| Task        | Repository                                                               | Datasets Supported              |
+| ----------- | ------------------------------------------------------------------------ | ------------------------------- |
 | Detection   | [yakhyo/retinaface-pytorch](https://github.com/yakhyo/retinaface-pytorch) | WIDER FACE                      |
 | Recognition | [yakhyo/face-recognition](https://github.com/yakhyo/face-recognition)     | MS1MV2, CASIA-WebFace, VGGFace2 |
 | Gaze        | [yakhyo/gaze-estimation](https://github.com/yakhyo/gaze-estimation)       | Gaze360, MPIIFaceGaze           |
