@@ -41,10 +41,7 @@ pip install "uniface[gpu]"          # NVIDIA CUDA
 pip install --pre "uniface[cpu]"    # eng soʻnggi dastlabki reliz
 ```
 
-<details>
-<summary><b>Birinchi skript</b></summary>
-
-<br>
+### Birinchi skript
 
 `FaceAnalyzer` bitta chaqiruvda yuzni aniqlash, tekislash va tanib olishni bajaradi. Atribut modellarini alohida qoʻshish kerak.
 
@@ -60,8 +57,6 @@ for face in analyzer.analyze(cv2.imread("photo.jpg")):
 
 `bbox`, `confidence`, `landmarks` va `embedding` har doim toʻldiriladi. Yosh, jins, irq, hissiyot, sifat
 va yuz holatlari tegishli bashorat modelini uzatmaguningizcha `None` boʻlib qoladi.
-
-</details>
 
 <details>
 <summary><b>Barcha oʻn beshta vazifa va ularni bajaradigan modellar</b></summary>
