@@ -8,7 +8,7 @@ UniFace is a Python library for face detection, recognition, tracking, landmark 
 
 ## Code Style
 
-- Python 3.10+ with type hints
+- Python 3.11+ with type hints
 - Line length: 120
 - Single quotes for strings, double quotes for docstrings
 - Google-style docstrings
