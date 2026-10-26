@@ -17,20 +17,16 @@ import os
 from pathlib import Path
 
 from _common import get_source_type
+from _draw import Card, draw_attribute_cards
 import cv2
 
 from uniface.attribute import Emotion
 from uniface.detection import SCRFD, RetinaFace
-from uniface.draw import draw_detections
 
 
-def draw_emotion_label(image, bbox, emotion: str, confidence: float):
-    """Draw emotion label above the bounding box."""
-    x1, y1 = int(bbox[0]), int(bbox[1])
-    text = f'{emotion} ({confidence:.2f})'
-    (tw, th), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2)
-    cv2.rectangle(image, (x1, y1 - th - 10), (x1 + tw + 10, y1), (255, 0, 0), -1)
-    cv2.putText(image, text, (x1 + 5, y1 - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+def emotion_card(emotion: str, confidence: float) -> Card:
+    """Card content for an emotion prediction."""
+    return Card('Emotion', emotion, confidence=confidence)
 
 
 def process_image(
@@ -52,12 +48,14 @@ def process_image(
     if not faces:
         return
 
-    draw_detections(image=image, faces=faces, vis_threshold=threshold, corner_bbox=True)
+    cards = []
 
     for i, face in enumerate(faces):
         result = emotion_predictor.predict(image, face)
         print(f'  Face {i + 1}: {result.emotion} (confidence: {result.confidence:.3f})')
-        draw_emotion_label(image, face.bbox, result.emotion, result.confidence)
+        if face.confidence >= threshold:  # same cut-off as the old box drawing
+            cards.append((face.bbox, emotion_card(result.emotion, result.confidence)))
+    draw_attribute_cards(image, cards)
 
     os.makedirs(save_dir, exist_ok=True)
     output_path = os.path.join(save_dir, f'{Path(image_path).stem}_emotion.jpg')
@@ -99,11 +97,13 @@ def process_video(
         frame_count += 1
         faces = detector.detect(frame)
 
-        draw_detections(image=frame, faces=faces, vis_threshold=threshold, corner_bbox=True)
+        cards = []
 
         for face in faces:
             result = emotion_predictor.predict(frame, face)
-            draw_emotion_label(frame, face.bbox, result.emotion, result.confidence)
+            if face.confidence >= threshold:  # same cut-off as the old box drawing
+                cards.append((face.bbox, emotion_card(result.emotion, result.confidence)))
+        draw_attribute_cards(frame, cards)
 
         cv2.putText(frame, f'Faces: {len(faces)}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         out.write(frame)
@@ -133,11 +133,13 @@ def run_camera(detector, emotion_predictor, camera_id: int = 0, threshold: float
 
         faces = detector.detect(frame)
 
-        draw_detections(image=frame, faces=faces, vis_threshold=threshold, corner_bbox=True)
+        cards = []
 
         for face in faces:
             result = emotion_predictor.predict(frame, face)
-            draw_emotion_label(frame, face.bbox, result.emotion, result.confidence)
+            if face.confidence >= threshold:  # same cut-off as the old box drawing
+                cards.append((face.bbox, emotion_card(result.emotion, result.confidence)))
+        draw_attribute_cards(frame, cards)
 
         cv2.putText(frame, f'Faces: {len(faces)}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         cv2.imshow('Emotion Detection', frame)

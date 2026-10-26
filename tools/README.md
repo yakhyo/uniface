@@ -26,6 +26,7 @@ CLI utilities for testing and running UniFace features.
 | `parse.py` | Face semantic segmentation (BiSeNet) |
 | `xseg.py` | Face segmentation (XSeg) |
 | `batch_process.py` | Batch process folder of images |
+| `teaser.py` | Teaser videos (before/after wipe, 9:16 + 1:1 + 16:9), output-only overlay videos and showcases |
 | `download_model.py` | Download model weights |
 | `sha256_generate.py` | Generate SHA256 hash for model files |
 
@@ -123,6 +124,11 @@ python tools/search.py --reference person.jpg --source video.mp4
 
 # Batch processing
 python tools/batch_process.py --input images/ --output results/
+
+# Teaser videos (any feature: detection, mesh, tracking, emotion, states, matting, ...)
+python tools/teaser.py detection --source clip.mp4                  # 9:16 + 1:1 + 16:9 teasers
+python tools/teaser.py mesh --source clip.mp4 --output-only         # overlay on the full frame
+python tools/teaser.py showcase --teasers teasers/ --kind all       # join teasers into showcases
 
 # Download models
 python tools/download_model.py --model-type retinaface

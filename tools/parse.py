@@ -17,12 +17,12 @@ import os
 from pathlib import Path
 
 from _common import get_source_type
+from _draw import draw_face_parsing
 import cv2
 import numpy as np
 
 from uniface.constants import ParsingWeights
 from uniface.detection import RetinaFace
-from uniface.draw import vis_parsing_maps
 from uniface.parsing import BiSeNet
 
 
@@ -86,10 +86,7 @@ def process_image(detector, parser, image_path: str, save_dir: str = 'outputs', 
         mask = parser.parse(face_crop)
         print(f'  Face {i + 1}: parsed with {len(set(mask.flatten()))} unique classes')
 
-        vis_result = vis_parsing_maps(face_crop, mask, save_image=False)
-
-        result_image[y1:y2, x1:x2] = vis_result
-        cv2.rectangle(result_image, (x1, y1), (x2, y2), (0, 255, 0), 2)
+        draw_face_parsing(result_image, mask, (x1, y1, x2, y2))
 
     os.makedirs(save_dir, exist_ok=True)
     output_path = os.path.join(save_dir, f'{Path(image_path).stem}_parsing.jpg')
@@ -133,10 +130,8 @@ def process_video(detector, parser, video_path: str, save_dir: str = 'outputs', 
                 continue
 
             mask = parser.parse(face_crop)
-            vis_result = vis_parsing_maps(face_crop, mask, save_image=False)
 
-            frame[y1:y2, x1:x2] = vis_result
-            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+            draw_face_parsing(frame, mask, (x1, y1, x2, y2))
 
         cv2.putText(frame, f'Faces: {len(faces)}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         out.write(frame)
@@ -174,10 +169,8 @@ def run_camera(detector, parser, camera_id: int = 0, expand_ratio: float = 0.2):
                 continue
 
             mask = parser.parse(face_crop)
-            vis_result = vis_parsing_maps(face_crop, mask, save_image=False)
 
-            frame[y1:y2, x1:x2] = vis_result
-            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+            draw_face_parsing(frame, mask, (x1, y1, x2, y2))
 
         cv2.putText(frame, f'Faces: {len(faces)}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         cv2.imshow('Face Parsing', frame)
