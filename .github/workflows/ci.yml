@@ -37,8 +37,6 @@ jobs:
         include:
           # Full Python range on Linux (fastest runner)
           - os: ubuntu-latest
-            python-version: "3.10"
-          - os: ubuntu-latest
             python-version: "3.11"
           - os: ubuntu-latest
             python-version: "3.12"

@@ -65,12 +65,12 @@ This project uses [Ruff](https://docs.astral.sh/ruff/) for linting and formattin
 #### General Rules
 
 - **Line length:** 120 characters maximum
-- **Python version:** 3.10+ (use modern syntax)
+- **Python version:** 3.11+ (use modern syntax)
 - **Quote style:** Single quotes for strings, double quotes for docstrings
 
 #### Type Hints
 
-Use modern Python 3.10+ type hints (PEP 585 and PEP 604):
+Use modern Python 3.11+ type hints (PEP 585 and PEP 604):
 
 ```python
 # Preferred (modern)
@@ -215,7 +215,7 @@ Releases are fully automated via GitHub Actions. Only maintainers with branch-pr
 The `Release Pipeline` workflow runs all stages in sequence:
 
 1. **Validate** — checks the version string against PEP 440 and confirms the tag does not already exist.
-2. **Test** — runs the test suite on Python 3.10–3.14.
+2. **Test** — runs the test suite on Python 3.11–3.14.
 3. **Release** — updates `pyproject.toml` and `uniface/__init__.py`, commits `chore: Release vX.Y.Z` to `main`, creates and pushes tag `vX.Y.Z`.
 4. **Publish** — builds the package, uploads to PyPI, and creates a GitHub Release (flagged as pre-release for `a`/`b`/`rc`/`.dev` versions).
 5. **Deploy docs** — runs only for **stable** versions. Pre-releases do not update the live documentation site.

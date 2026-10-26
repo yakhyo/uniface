@@ -6,7 +6,7 @@ This guide covers all installation options for UniFace.
 
 ## Requirements
 
-- **Python**: 3.10 – 3.14
+- **Python**: 3.11 – 3.14
 - **Operating Systems**: macOS, Linux, Windows
 
 ---
@@ -247,11 +247,11 @@ pip install "uniface[gpu]"   # or uniface[cpu]
 
 ### Import Errors
 
-Ensure you're using Python 3.10+:
+Ensure you're using Python 3.11+:
 
 ```bash
 python --version
-# Should show: Python 3.10.x or higher
+# Should show: Python 3.11.x or higher
 ```
 
 ---
