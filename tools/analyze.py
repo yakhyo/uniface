@@ -17,35 +17,24 @@ import os
 from pathlib import Path
 
 from _common import get_source_type
+from _draw import Card, draw_attribute_cards
 import cv2
 import numpy as np
 
 from uniface.analyzer import FaceAnalyzer
 from uniface.attribute import AgeGender
 from uniface.detection import RetinaFace
-from uniface.draw import draw_detections
 from uniface.recognition import ArcFace
 
 
-def draw_face_info(image, face):
-    """Draw face attributes above bounding box."""
-    x1, y1, _x2, y2 = map(int, face.bbox)
-    lines = []
-    if face.age is not None and face.sex is not None:
-        lines.append(f'{face.sex}, {face.age}y')
+def face_card(face) -> Card | None:
+    """Card content from a FaceAnalyzer result (emotion and/or age + gender)."""
+    demo = f'{face.sex}, Age {face.age}' if face.age is not None and face.sex is not None else None
     if face.emotion is not None:
-        lines.append(face.emotion)
-
-    if not lines:
-        return
-
-    for i, line in enumerate(lines):
-        y_pos = y1 - 10 - (len(lines) - 1 - i) * 25
-        if y_pos < 20:
-            y_pos = y2 + 20 + i * 25
-        (tw, th), _ = cv2.getTextSize(line, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2)
-        cv2.rectangle(image, (x1, y_pos - th - 5), (x1 + tw + 10, y_pos + 5), (0, 255, 0), -1)
-        cv2.putText(image, line, (x1 + 5, y_pos), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 2)
+        return Card('Emotion', face.emotion, confidence=face.emotion_confidence, subtitle=demo)
+    if demo is not None:
+        return Card('Age & Gender', face.sex, subtitle=f'Age {face.age}')
+    return None
 
 
 def process_image(analyzer, image_path: str, save_dir: str = 'outputs', show_similarity: bool = True):
@@ -100,10 +89,13 @@ def process_image(analyzer, image_path: str, save_dir: str = 'outputs', show_sim
             status = 'Same' if sim > 0.4 else 'Different'
             print(f'  Face {i + 1} ↔ Face {j + 1}: {sim:.3f} ({status})')
 
-    draw_detections(image=image, faces=faces, corner_bbox=True)
+    cards = []
 
     for face in faces:
-        draw_face_info(image, face)
+        card = face_card(face)
+        if card is not None:
+            cards.append((face.bbox, card))
+    draw_attribute_cards(image, cards)
 
     os.makedirs(save_dir, exist_ok=True)
     output_path = os.path.join(save_dir, f'{Path(image_path).stem}_analysis.jpg')
@@ -139,10 +131,13 @@ def process_video(analyzer, video_path: str, save_dir: str = 'outputs'):
         frame_count += 1
         faces = analyzer.analyze(frame)
 
-        draw_detections(image=frame, faces=faces, corner_bbox=True)
+        cards = []
 
         for face in faces:
-            draw_face_info(frame, face)
+            card = face_card(face)
+            if card is not None:
+                cards.append((face.bbox, card))
+        draw_attribute_cards(frame, cards)
 
         cv2.putText(frame, f'Faces: {len(faces)}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         out.write(frame)
@@ -172,10 +167,13 @@ def run_camera(analyzer, camera_id: int = 0):
 
         faces = analyzer.analyze(frame)
 
-        draw_detections(image=frame, faces=faces, corner_bbox=True)
+        cards = []
 
         for face in faces:
-            draw_face_info(frame, face)
+            card = face_card(face)
+            if card is not None:
+                cards.append((face.bbox, card))
+        draw_attribute_cards(frame, cards)
 
         cv2.putText(frame, f'Faces: {len(faces)}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         cv2.imshow('Face Analyzer', frame)

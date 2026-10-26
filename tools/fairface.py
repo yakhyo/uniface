@@ -17,20 +17,16 @@ import os
 from pathlib import Path
 
 from _common import get_source_type
+from _draw import Card, draw_attribute_cards
 import cv2
 
 from uniface.attribute import FairFace
 from uniface.detection import SCRFD, RetinaFace
-from uniface.draw import draw_detections
 
 
-def draw_fairface_label(image, bbox, sex: str, age_group: str, race: str):
-    """Draw FairFace attributes above the bounding box."""
-    x1, y1 = int(bbox[0]), int(bbox[1])
-    text = f'{sex}, {age_group}, {race}'
-    (tw, th), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)
-    cv2.rectangle(image, (x1, y1 - th - 10), (x1 + tw + 10, y1), (0, 255, 0), -1)
-    cv2.putText(image, text, (x1 + 5, y1 - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 2)
+def fairface_card(sex: str, age_group: str, race: str) -> Card:
+    """Card content for a FairFace prediction."""
+    return Card('FairFace', sex, subtitle=f'Age {age_group}, {race}')
 
 
 def process_image(
@@ -52,12 +48,14 @@ def process_image(
     if not faces:
         return
 
-    draw_detections(image=image, faces=faces, vis_threshold=threshold, corner_bbox=True)
+    cards = []
 
     for i, face in enumerate(faces):
         result = fairface.predict(image, face)
         print(f'  Face {i + 1}: {result.sex}, {result.age_group}, {result.race}')
-        draw_fairface_label(image, face.bbox, result.sex, result.age_group, result.race)
+        if face.confidence >= threshold:  # same cut-off as the old box drawing
+            cards.append((face.bbox, fairface_card(result.sex, result.age_group, result.race)))
+    draw_attribute_cards(image, cards)
 
     os.makedirs(save_dir, exist_ok=True)
     output_path = os.path.join(save_dir, f'{Path(image_path).stem}_fairface.jpg')
@@ -99,11 +97,13 @@ def process_video(
         frame_count += 1
         faces = detector.detect(frame)
 
-        draw_detections(image=frame, faces=faces, vis_threshold=threshold, corner_bbox=True)
+        cards = []
 
         for face in faces:
             result = fairface.predict(frame, face)
-            draw_fairface_label(frame, face.bbox, result.sex, result.age_group, result.race)
+            if face.confidence >= threshold:  # same cut-off as the old box drawing
+                cards.append((face.bbox, fairface_card(result.sex, result.age_group, result.race)))
+        draw_attribute_cards(frame, cards)
 
         cv2.putText(frame, f'Faces: {len(faces)}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         out.write(frame)
@@ -133,11 +133,13 @@ def run_camera(detector, fairface, camera_id: int = 0, threshold: float = 0.6):
 
         faces = detector.detect(frame)
 
-        draw_detections(image=frame, faces=faces, vis_threshold=threshold, corner_bbox=True)
+        cards = []
 
         for face in faces:
             result = fairface.predict(frame, face)
-            draw_fairface_label(frame, face.bbox, result.sex, result.age_group, result.race)
+            if face.confidence >= threshold:  # same cut-off as the old box drawing
+                cards.append((face.bbox, fairface_card(result.sex, result.age_group, result.race)))
+        draw_attribute_cards(frame, cards)
 
         cv2.putText(frame, f'Faces: {len(faces)}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         cv2.imshow('FairFace Detection', frame)
