@@ -39,10 +39,7 @@ pip install "uniface[gpu]"          # NVIDIA CUDA
 pip install --pre "uniface[cpu]"    # latest pre-release
 ```
 
-<details>
-<summary><b>A first script</b></summary>
-
-<br>
+### A first script
 
 `FaceAnalyzer` runs detection, alignment and recognition in one call. Attribute models are opt-in.
 
@@ -58,8 +55,6 @@ for face in analyzer.analyze(cv2.imread("photo.jpg")):
 
 `bbox`, `confidence`, `landmarks` and `embedding` are always set. Age, sex, race, emotion, quality
 and the face states stay `None` until you pass the predictor that fills them.
-
-</details>
 
 <details>
 <summary><b>All fifteen tasks, and which model does each</b></summary>

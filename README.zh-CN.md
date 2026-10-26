@@ -41,10 +41,7 @@ pip install "uniface[gpu]"          # NVIDIA CUDA
 pip install --pre "uniface[cpu]"    # 最新预发布版本
 ```
 
-<details>
-<summary><b>第一个示例脚本</b></summary>
-
-<br>
+### 第一个示例脚本
 
 `FaceAnalyzer` 通过一次调用完成检测、对齐和识别。属性模型需要显式启用。
 
@@ -60,8 +57,6 @@ for face in analyzer.analyze(cv2.imread("photo.jpg")):
 
 `bbox`、`confidence`、`landmarks` 和 `embedding` 始终会被赋值。年龄、性别、种族、情绪、质量
 和人脸状态保持为 `None`，直到你传入相应的预测模型。
-
-</details>
 
 <details>
 <summary><b>全部十五项任务及其对应模型</b></summary>

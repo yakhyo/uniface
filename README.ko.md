@@ -41,10 +41,7 @@ pip install "uniface[gpu]"          # NVIDIA CUDA
 pip install --pre "uniface[cpu]"    # 최신 사전 릴리스
 ```
 
-<details>
-<summary><b>첫 번째 예제</b></summary>
-
-<br>
+### 첫 번째 예제
 
 `FaceAnalyzer`는 한 번의 호출로 검출, 정렬 및 인식을 수행합니다. 속성 모델은 필요할 때 명시적으로 추가합니다.
 
@@ -60,8 +57,6 @@ for face in analyzer.analyze(cv2.imread("photo.jpg")):
 
 `bbox`, `confidence`, `landmarks`, `embedding`은 항상 설정됩니다. 나이, 성별, 인종, 감정, 품질
 및 얼굴 상태는 해당 값을 채우는 예측 모델을 전달하기 전까지 `None`으로 유지됩니다.
-
-</details>
 
 <details>
 <summary><b>15가지 작업과 각 작업에 사용되는 모델</b></summary>
