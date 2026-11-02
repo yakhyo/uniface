@@ -22,6 +22,14 @@ template: home.html
 
 </div>
 
+<figure class="hero-demo">
+  <picture>
+    <source srcset="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/uniface_hero.avif" type="image/avif">
+    <img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/uniface_hero.webp" width="1920" height="1080" alt="UniFace running face detection, landmarks, face mesh, tracking, recognition, attributes, head pose, face parsing and anonymization on video">
+  </picture>
+  <figcaption>Nine of the fifteen tasks, one library. Every overlay is UniFace output, rendered frame by frame.</figcaption>
+</figure>
+
 <div class="feature-grid" markdown>
 
 <div class="feature-card" markdown>

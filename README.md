@@ -33,6 +33,17 @@
   <a href="https://yakhyo.github.io/uniface/"><img src="https://img.shields.io/badge/Full%20Docs-30363d?style=for-the-badge&logoColor=white" alt="Full Docs"></a>
 </p>
 
+<div align="center">
+  <picture>
+    <source srcset="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/uniface_hero.avif" type="image/avif">
+    <img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/uniface_hero.webp" width="100%" alt="UniFace running face detection, landmarks, face mesh, tracking, recognition, attributes, head pose, face parsing and anonymization on video">
+  </picture>
+  <br>
+  <sub>Nine of the fifteen tasks, one library. Every overlay is UniFace output, rendered frame by frame.</sub>
+</div>
+
+<br>
+
 ```bash
 pip install "uniface[cpu]"          # CPU and Apple Silicon
 pip install "uniface[gpu]"          # NVIDIA CUDA

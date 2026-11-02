@@ -35,6 +35,17 @@ Bu sahifa [inglizcha README](README.md) faylining oʻzbekcha tarjimasidir. Havol
   <a href="https://yakhyo.github.io/uniface/"><img src="https://img.shields.io/badge/To%CA%BBliq%20hujjatlar-30363d?style=for-the-badge&logoColor=white" alt="Toʻliq hujjatlar"></a>
 </p>
 
+<div align="center">
+  <picture>
+    <source srcset="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/uniface_hero.avif" type="image/avif">
+    <img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/uniface_hero.webp" width="100%" alt="UniFace videoda yuzni aniqlash, nuqtalar, yuz to'ri, kuzatish, tanish, atributlar, bosh holati, yuzni qismlarga ajratish va anonimlashtirishni bajarmoqda">
+  </picture>
+  <br>
+  <sub>O'n beshta vazifadan to'qqiztasi, bitta kutubxonada. Videodagi barcha belgilar UniFace tomonidan kadrma-kadr chizilgan.</sub>
+</div>
+
+<br>
+
 ```bash
 pip install "uniface[cpu]"          # CPU va Apple Silicon
 pip install "uniface[gpu]"          # NVIDIA CUDA
