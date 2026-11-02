@@ -35,6 +35,17 @@
   <a href="https://yakhyo.github.io/uniface/"><img src="https://img.shields.io/badge/%E5%AE%8C%E6%95%B4%E6%96%87%E6%A1%A3-30363d?style=for-the-badge&logoColor=white" alt="完整文档"></a>
 </p>
 
+<div align="center">
+  <picture>
+    <source srcset="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/uniface_hero.avif" type="image/avif">
+    <img src="https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/uniface_hero.webp" width="100%" alt="UniFace 在视频上运行人脸检测、关键点、人脸网格、跟踪、识别、属性、头部姿态、人脸解析和匿名化">
+  </picture>
+  <br>
+  <sub>十五项任务中的九项，同一个库。所有叠加效果均为 UniFace 逐帧输出。</sub>
+</div>
+
+<br>
+
 ```bash
 pip install "uniface[cpu]"          # CPU 和 Apple Silicon
 pip install "uniface[gpu]"          # NVIDIA CUDA

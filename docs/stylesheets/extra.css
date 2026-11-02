@@ -248,3 +248,25 @@
     padding: 1.25rem;
   }
 }
+
+/* Animated hero on the home page (AVIF with WebP fallback) */
+.md-content .hero-demo {
+  margin: 0 auto 2.5rem;
+  max-width: 1100px;
+  text-align: center;
+}
+
+.md-content .hero-demo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: var(--md-shadow-z2);
+}
+
+.md-content .hero-demo figcaption {
+  margin-top: 0.6rem;
+  max-width: none;
+  font-size: 0.75rem;
+  color: var(--md-default-fg-color--light);
+}
