@@ -8,17 +8,17 @@
 <p align="center"><b>Python용 통합 얼굴 분석 라이브러리</b></p>
 
 <p align="center">
-  <a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a> · <b>한국어</b> · <a href="README.uz.md">Oʻzbekcha</a>
+  <a href="https://github.com/yakhyo/uniface/blob/main/README.md">English</a> · <a href="https://github.com/yakhyo/uniface/blob/main/README.zh-CN.md">简体中文</a> · <b>한국어</b> · <a href="https://github.com/yakhyo/uniface/blob/main/README.uz.md">Oʻzbekcha</a>
 </p>
 
-<p align="center"><sub>이 페이지는 <a href="README.md">영문 README</a>의 한국어 번역입니다. 링크된 문서는 주로 영어로 제공됩니다. 번역을 수정할 때는 영문 버전과 내용을 맞춰 주세요.</sub></p>
+<p align="center"><sub>이 페이지는 <a href="https://github.com/yakhyo/uniface/blob/main/README.md">영문 README</a>의 한국어 번역입니다. 링크된 문서는 주로 영어로 제공됩니다. 번역을 수정할 때는 영문 버전과 내용을 맞춰 주세요.</sub></p>
 
 <div align="center">
 
 [![PyPI Version](https://img.shields.io/pypi/v/uniface.svg?label=Version)](https://pypi.org/project/uniface/)
 [![Python Version](https://img.shields.io/badge/Python-3.11%2B-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Github Build Status](https://github.com/yakhyo/uniface/actions/workflows/ci.yml/badge.svg)](https://github.com/yakhyo/uniface/actions)
+[![GitHub Build Status](https://github.com/yakhyo/uniface/actions/workflows/ci.yml/badge.svg)](https://github.com/yakhyo/uniface/actions)
 [![PyPI Downloads](https://static.pepy.tech/personalized-badge/uniface?period=total&units=INTERNATIONAL_SYSTEM&left_color=GRAY&right_color=BLUE&left_text=Downloads)](https://pepy.tech/projects/uniface)
 [![Kaggle Badge](https://img.shields.io/badge/%EB%85%B8%ED%8A%B8%EB%B6%81-Kaggle?label=Kaggle&color=blue)](https://www.kaggle.com/yakhyokhuja/code)
 [![Hugging Face Spaces](https://img.shields.io/badge/Demo-%F0%9F%A4%97%20Spaces-blue)](https://huggingface.co/spaces/yakhyo/uniface)
@@ -27,7 +27,7 @@
 
 <p align="center">
   UniFace는 가볍고 프로덕션 환경에서 사용할 수 있는 Python 라이브러리로, 얼굴 검출, 인식,<br>
-  추적, 랜드마크 분석, 얼굴 파싱, 시선 추정 및 얼굴 속성 분석을 지원합니다.
+  추적, 랜드마크, 페이스 메시, 얼굴 파싱, 시선, 얼굴 속성, 안티스푸핑 등을 지원합니다.
 </p>
 
 <p align="center">

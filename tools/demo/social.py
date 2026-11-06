@@ -4,12 +4,11 @@
 
 """Social cards: the GitHub repo preview (1280x640, still and animated) and the docs link preview (1200x630).
 
-Every picture on the cards is a frame of a ``tools/teaser.py --output-only`` clip, and the logo is
-``docs/assets/brand/logo/uniface-logo-dark-2400.png``. Needs ``ffmpeg`` on PATH, Pillow and NumPy.
+The repo preview is the logo on the icon's own two oranges. The animation and the link preview use frames of
+``tools/teaser.py --output-only`` clips. The logo is ``docs/assets/brand/logo/uniface-logo-dark-2400.png``.
+Needs ``ffmpeg`` on PATH, Pillow and NumPy.
 
 Inputs:
-    --grid      Folder of overlay clips for the six-tile card; the same folder ``hero.py`` reads
-                (``face_detection_original_output.mp4`` and so on).
     --features  Folder of overlay clips of one person, one clip per feature. The published cards use
                 one second of ``face_parsing_original.mp4``:
 
@@ -19,12 +18,11 @@ Inputs:
         done
 
 Usage:
-    python tools/demo/social.py --grid demo_videos/original_output --features demo_videos/social_src
-    python tools/demo/social.py --features demo_videos/social_src --only og
+    python tools/demo/social.py --features demo_videos/social_src
+    python tools/demo/social.py --only card
 
 Outputs:
-    <out>/uniface-social-preview.png  1280x640 six-tile card, for the repo social preview
-    <out>/uniface-social-preview.jpg  the same card as a JPEG
+    <out>/uniface-social-preview.png  1280x640 brand card, for the repo social preview
     <out>/uniface-social-preview.gif  1280x640 one face, wiping through seven features, 10 fps
     <out>/uniface-preview.mp4         the same animation at 25 fps, H.264
     <og>                              1200x630 Face Mesh card for Open Graph and X link previews
@@ -53,26 +51,14 @@ INK = (11, 15, 23)  # brand ink: card background
 TEXT = (240, 243, 246)  # brand off-white
 SUBTLE = (201, 209, 217)
 MUTED = (139, 148, 158)
-ACCENT = (238, 90, 47)  # brand orange
-LINK = (88, 166, 255)
+ACCENT = (238, 90, 47)  # brand orange, upper half of the icon tile
+DEEP = (201, 67, 31)  # lower half of the icon tile
+PEACH = (255, 217, 204)  # lower half of the icon plate
 BOX = (22, 27, 34)
 BOX_EDGE = (48, 54, 61)
 
 TAGLINE = ('A Unified Face Analysis', 'Library for Python')
-BADGE = 'OPEN SOURCE · MIT'
 PIP = 'pip install uniface'
-FACTS = ('15 tasks', 'ONNX Runtime', 'CPU & GPU')
-URL = 'github.com/yakhyo/uniface'
-
-# Six-tile card: (clip stem in --grid, label, crop as (w, h, x, y) in source px or None for the full frame)
-TILES = [
-    ('face_detection_original', 'Detection', None),
-    ('face_mesh_original', 'Face Mesh', (1080, 608, 0, 150)),
-    ('face_tracking_original', 'Tracking', None),
-    ('face_attributes_original', 'Attributes', None),
-    ('face_parsing_original', 'Face Parsing', None),
-    ('face_anonymization_original', 'Anonymization', None),
-]
 
 # Wipe animation and link preview: (teaser slug in --features, label), in play order
 FEATURES = [
@@ -142,14 +128,6 @@ def grab(path: Path, at: float | None = None) -> Image.Image:
     return Image.open(BytesIO(png)).convert('RGB')
 
 
-def cover(img: Image.Image, w: int, h: int) -> Image.Image:
-    """Centre-crop ``img`` to the aspect ratio of ``w`` x ``h`` and resize it to that size."""
-    scale = max(w / img.width, h / img.height)
-    cw, ch = w / scale, h / scale
-    x, y = (img.width - cw) / 2, (img.height - ch) / 2
-    return img.resize((w, h), Image.Resampling.LANCZOS, box=(x, y, x + cw, y + ch))
-
-
 # ---------------------------------------------------------------- drawing
 class Card:
     """A card drawn at ``SS`` times its size; every coordinate passed in is in final pixels.
@@ -189,13 +167,6 @@ class Card:
         self.img.alpha_composite(logo.resize((w, h), Image.Resampling.LANCZOS), (round(x * SS), round(y * SS)))
         return h / SS
 
-    def photo(self, img: Image.Image, x: float, y: float, w: float, h: float, radius: float) -> None:
-        """Paste ``img`` cropped to fill the box, with rounded corners."""
-        size = (round(w * SS), round(h * SS))
-        mask = Image.new('L', size, 0)
-        ImageDraw.Draw(mask).rounded_rectangle((0, 0, size[0] - 1, size[1] - 1), radius=radius * SS, fill=255)
-        self.img.paste(cover(img, *size), (round(x * SS), round(y * SS)), mask)
-
     def tag(self, x: float, y: float, text: str, size: int, anchor: str = 'bl') -> float:
         """Dark rounded label; ``anchor`` 'bl' puts its bottom-left corner at (x, y), 'br' its bottom-right.
 
@@ -232,30 +203,71 @@ def pip_box(card: Card, x: float, y: float, size: int) -> None:
     card.text(end, base, PIP, 'Mono', size, TEXT)
 
 
-# ---------------------------------------------------------------- six-tile card
-def tile_card(grid: Path, logo: Path) -> Image.Image:
-    """The 1280x640 still: name, tagline and install line on the left, six features on the right."""
-    card = Card(1280, 640)
-    x = 60
-    card.text(x, 147, BADGE, 'SemiBold', 15, ACCENT, spacing=1.6)
-    card.logo(x, 172, 330, logo)
-    for i, line in enumerate(TAGLINE):
-        card.text(x, 302 + i * 38, line, 'Regular', 29, SUBTLE)
-    pip_box(card, x, 378, 20)
-    end = card.text(x, 486, FACTS[0], 'SemiBold', 18, TEXT)
-    card.text(end, 486, ''.join(f' · {fact}' for fact in FACTS[1:]), 'Regular', 18, MUTED)
-    card.text(x, 515, URL, 'Medium', 18, LINK)
+# ---------------------------------------------------------------- brand card (repo social preview)
+def mark_plate(px: int) -> Image.Image:
+    """The icon's plate without its orange tile, ``px`` wide, with the shared-stem uf cut out (transparent).
 
-    tw, th, gap = 320, 180, 8
-    x0, y0 = 1280 - 60 - 2 * tw - gap, (640 - 3 * th - 2 * gap) / 2
-    for i, (stem, label, crop) in enumerate(TILES):
-        frame = grab(grid / f'{stem}_output.mp4')
-        if crop:
-            w, h, cx, cy = crop
-            frame = frame.crop((cx, cy, cx + w, cy + h))
-        tx, ty = x0 + (i % 2) * (tw + gap), y0 + (i // 2) * (th + gap)
-        card.photo(frame, tx, ty, tw, th, radius=10)
-        card.tag(tx + 8, ty + th - 8, label, 14)
+    Mirrors ``docs/assets/brand/icon/uniface-icon.svg`` in its 128-unit grid: the plate spans 22-106 with
+    corner radius 22, white above the tile diagonal and peach below; the letters are a 12-unit stroke.
+    """
+    k = px * 4 / 84  # drawn at 4x, then downscaled
+
+    def at(v: float) -> float:
+        return (v - 22) * k
+
+    size = round(84 * k)
+    mask = Image.new('L', (size, size), 0)
+    d = ImageDraw.Draw(mask)
+    d.rounded_rectangle((0, 0, size - 1, size - 1), radius=22 * k, fill=255)
+    width, r = round(12 * k), 13 + 6  # Pillow draws an arc's width inwards from its box, so pad the radius
+    for line in (((41, 57), (41, 75.5)), ((67, 94), (67, 54.5)), ((79.5, 42), (88, 42)), ((66, 57), (89, 57))):
+        d.line([(at(x), at(y)) for x, y in line], fill=0, width=width)
+    d.arc((at(54 - r), at(75 - r), at(54 + r), at(75 + r)), 0, 180, fill=0, width=width)  # bowl of the u
+    d.arc((at(80 - r), at(55 - r), at(80 + r), at(55 + r)), 180, 270, fill=0, width=width)  # hook of the f
+    upper = Image.new('L', (size, size), 0)
+    ImageDraw.Draw(upper).polygon([(at(0), at(0)), (at(128), at(0)), (at(0), at(128))], fill=255)
+    plate = Image.new('RGBA', (size, size), (*PEACH, 255))
+    plate.paste((255, 255, 255, 255), (0, 0, size, size), upper)
+    plate.putalpha(mask)
+    return plate.resize((px, px), Image.Resampling.LANCZOS)
+
+
+def brand_card(logo: Path) -> Image.Image:
+    """The 1280x640 repo preview: plate and name centred on the icon's two oranges, tagline and install line below."""
+    card = Card(1280, 640)
+    w, h = card.img.size
+    card.draw.rectangle((0, 0, w, h), fill=(*ACCENT, 255))
+    card.draw.polygon([(w, 0), (w, h), (0, h)], fill=(*DEEP, 255))
+
+    plate = mark_plate(150 * SS)
+    full = Image.open(logo).convert('RGBA')
+    name = full.crop((round(full.width * 0.27), 0, full.width, full.height))  # the logo minus its icon
+    name = name.crop(name.getbbox())
+    name = name.resize((round(name.width * 104 * SS / name.height), 104 * SS), Image.Resampling.LANCZOS)
+    gap = 40 * SS
+    x0, y0 = (w - plate.width - gap - name.width) // 2, 150 * SS
+    card.img.alpha_composite(plate, (x0, y0))
+    card.img.alpha_composite(name, (x0 + plate.width + gap, y0 + (plate.height - name.height) // 2))
+
+    tagline = ' '.join(TAGLINE)
+    f = font('Regular', 38 * SS)
+    card.text(640 - card.draw.textlength(tagline, font=f) / SS / 2, 392, tagline, 'Regular', 38, (255, 255, 255))
+
+    size, f = 26, font('Mono', 26 * SS)  # the install line in a translucent white box
+    bw, bh = card.draw.textlength(f'$ {PIP}', font=f) / SS + 2 * size * 0.85, size * 2.35
+    bx, by = 640 - bw / 2, 440
+    layer = Image.new('RGBA', card.img.size, (0, 0, 0, 0))
+    ImageDraw.Draw(layer).rounded_rectangle(
+        (bx * SS, by * SS, (bx + bw) * SS, (by + bh) * SS),
+        radius=size * 0.4 * SS,
+        fill=(255, 255, 255, 40),
+        outline=(255, 255, 255, 90),
+        width=SS,
+    )
+    card.img.alpha_composite(layer)
+    base = by + bh / 2 + size * 0.36
+    end = card.text(bx + size * 0.85, base, '$ ', 'Mono', size, PEACH)
+    card.text(end, base, PIP, 'Mono', size, (255, 255, 255))
     return card.final()
 
 
@@ -362,7 +374,6 @@ def report(path: Path) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description='Render the UniFace social preview and link preview cards.')
-    parser.add_argument('--grid', type=Path, help='Folder of hero overlay clips (<stem>_output.mp4)')
     parser.add_argument('--features', type=Path, help='Folder of uniface_<slug>_output.mp4 clips of one person')
     parser.add_argument('--out', type=Path, default=ROOT / 'assets/social', help='Folder for the repo preview files')
     parser.add_argument('--og', type=Path, default=ROOT / 'docs/assets/og-image.jpg', help='Link preview path')
@@ -376,18 +387,14 @@ def main() -> None:
         sys.exit('ffmpeg is required')
     if args.font_dir:
         FONT_DIRS.insert(0, args.font_dir)
-    if args.only in (None, 'card') and args.grid is None:
-        parser.error('--grid is required for the six-tile card')
     if args.only in (None, 'wipe', 'og') and args.features is None:
         parser.error('--features is required for the wipe and the link preview')
     args.out.mkdir(parents=True, exist_ok=True)
 
     if args.only in (None, 'card'):
-        card = tile_card(args.grid, args.logo)
+        card = brand_card(args.logo)
         card.save(args.out / 'uniface-social-preview.png', optimize=True)
-        card.save(args.out / 'uniface-social-preview.jpg', quality=90, optimize=True, progressive=True)
         report(args.out / 'uniface-social-preview.png')
-        report(args.out / 'uniface-social-preview.jpg')
 
     if args.only in (None, 'wipe', 'og'):
         frames = [grab(args.features / f'uniface_{slug}_output.mp4', args.at) for slug, _ in FEATURES]
