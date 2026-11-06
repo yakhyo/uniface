@@ -1,5 +1,3 @@
-\[[English](README.md)\] | \[[Chinese](README.zh-CN.md)\] | \[[Korean](README.ko.md)\] | \[[Uzbek](README.uz.md)\]
-
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yakhyo/uniface/main/.github/logos/logo/uniface-logo-dark.svg">
@@ -9,14 +7,18 @@
 
 <p align="center"><b>Python uchun yagona yuz tahlili kutubxonasi</b></p>
 
-Bu sahifa [inglizcha README](README.md) faylining oʻzbekcha tarjimasidir. Havolalardagi hujjatlar asosan ingliz tilida. Tarjimani yangilashda inglizcha nusxa bilan mosligini saqlang.
+<p align="center">
+  <a href="https://github.com/yakhyo/uniface/blob/main/README.md">English</a> · <a href="https://github.com/yakhyo/uniface/blob/main/README.zh-CN.md">简体中文</a> · <a href="https://github.com/yakhyo/uniface/blob/main/README.ko.md">한국어</a> · <b>Oʻzbekcha</b>
+</p>
+
+<p align="center"><sub>Bu sahifa <a href="https://github.com/yakhyo/uniface/blob/main/README.md">inglizcha README</a> faylining oʻzbekcha tarjimasidir. Havolalardagi hujjatlar asosan ingliz tilida. Tarjimani yangilashda inglizcha nusxa bilan mosligini saqlang.</sub></p>
 
 <div align="center">
 
 [![PyPI Version](https://img.shields.io/pypi/v/uniface.svg?label=Version)](https://pypi.org/project/uniface/)
 [![Python Version](https://img.shields.io/badge/Python-3.11%2B-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Github Build Status](https://github.com/yakhyo/uniface/actions/workflows/ci.yml/badge.svg)](https://github.com/yakhyo/uniface/actions)
+[![GitHub Build Status](https://github.com/yakhyo/uniface/actions/workflows/ci.yml/badge.svg)](https://github.com/yakhyo/uniface/actions)
 [![PyPI Downloads](https://static.pepy.tech/personalized-badge/uniface?period=total&units=INTERNATIONAL_SYSTEM&left_color=GRAY&right_color=BLUE&left_text=Downloads)](https://pepy.tech/projects/uniface)
 [![Kaggle Badge](https://img.shields.io/badge/Notebooklar-Kaggle?label=Kaggle&color=blue)](https://www.kaggle.com/yakhyokhuja/code)
 [![Hugging Face Spaces](https://img.shields.io/badge/Demo-%F0%9F%A4%97%20Spaces-blue)](https://huggingface.co/spaces/yakhyo/uniface)
@@ -24,8 +26,8 @@ Bu sahifa [inglizcha README](README.md) faylining oʻzbekcha tarjimasidir. Havol
 </div>
 
 <p align="center">
-  UniFace — ishlab chiqarish muhitida foydalanishga tayyor, yengil Python kutubxonasi. U yuzlarni aniqlash, tanib olish,<br>
-  kuzatish, tayanch nuqtalarni tahlil qilish, yuz qismlarini segmentlash, nigoh yoʻnalishini baholash va yuz atributlarini tahlil qilishni qoʻllab-quvvatlaydi.
+  UniFace ishlab chiqarish muhitida foydalanishga tayyor, yengil Python kutubxonasi. U yuzlarni aniqlash, tanib olish,<br>
+  kuzatish, tayanch nuqtalar, yuz toʻri, yuz qismlarini segmentlash, nigoh, atributlar, soxta yuzni aniqlash va boshqalarni qoʻllab-quvvatlaydi.
 </p>
 
 <p align="center">

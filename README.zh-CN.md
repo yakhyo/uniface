@@ -1,5 +1,3 @@
-\[[English](README.md)\] | \[[Chinese](README.zh-CN.md)\] | \[[Korean](README.ko.md)\] | \[[Uzbek](README.uz.md)\]
-
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yakhyo/uniface/main/.github/logos/logo/uniface-logo-dark.svg">
@@ -9,14 +7,18 @@
 
 <p align="center"><b>统一的 Python 人脸分析库</b></p>
 
-本页是 [英文 README](README.md) 的简体中文翻译。链接指向的文档主要使用英文；更新翻译时请与英文版本保持同步。
+<p align="center">
+  <a href="https://github.com/yakhyo/uniface/blob/main/README.md">English</a> · <b>简体中文</b> · <a href="https://github.com/yakhyo/uniface/blob/main/README.ko.md">한국어</a> · <a href="https://github.com/yakhyo/uniface/blob/main/README.uz.md">Oʻzbekcha</a>
+</p>
+
+<p align="center"><sub>本页是 <a href="https://github.com/yakhyo/uniface/blob/main/README.md">英文 README</a> 的简体中文翻译。链接指向的文档主要使用英文；更新翻译时请与英文版本保持同步。</sub></p>
 
 <div align="center">
 
 [![PyPI Version](https://img.shields.io/pypi/v/uniface.svg?label=Version)](https://pypi.org/project/uniface/)
 [![Python Version](https://img.shields.io/badge/Python-3.11%2B-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Github Build Status](https://github.com/yakhyo/uniface/actions/workflows/ci.yml/badge.svg)](https://github.com/yakhyo/uniface/actions)
+[![GitHub Build Status](https://github.com/yakhyo/uniface/actions/workflows/ci.yml/badge.svg)](https://github.com/yakhyo/uniface/actions)
 [![PyPI Downloads](https://static.pepy.tech/personalized-badge/uniface?period=total&units=INTERNATIONAL_SYSTEM&left_color=GRAY&right_color=BLUE&left_text=Downloads)](https://pepy.tech/projects/uniface)
 [![Kaggle Badge](https://img.shields.io/badge/%E4%BA%A4%E4%BA%92%E5%BC%8F%E7%AC%94%E8%AE%B0%E6%9C%AC-Kaggle?label=Kaggle&color=blue)](https://www.kaggle.com/yakhyokhuja/code)
 [![Hugging Face Spaces](https://img.shields.io/badge/Demo-%F0%9F%A4%97%20Spaces-blue)](https://huggingface.co/spaces/yakhyo/uniface)
@@ -25,7 +27,7 @@
 
 <p align="center">
   UniFace 是一个轻量级、可用于生产环境的 Python 库，支持人脸检测、识别、<br>
-  跟踪、关键点分析、人脸解析、视线估计和人脸属性分析。
+  跟踪、关键点、人脸网格、人脸解析、视线、人脸属性、活体检测等功能。
 </p>
 
 <p align="center">

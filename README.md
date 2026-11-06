@@ -1,5 +1,3 @@
-\[[English](README.md)\] | \[[Chinese](README.zh-CN.md)\] | \[[Korean](README.ko.md)\] | \[[Uzbek](README.uz.md)\]
-
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yakhyo/uniface/main/.github/logos/logo/uniface-logo-dark.svg">
@@ -9,12 +7,16 @@
 
 <p align="center"><b>A Unified Face Analysis Library for Python</b></p>
 
+<p align="center">
+  <b>English</b> · <a href="https://github.com/yakhyo/uniface/blob/main/README.zh-CN.md">简体中文</a> · <a href="https://github.com/yakhyo/uniface/blob/main/README.ko.md">한국어</a> · <a href="https://github.com/yakhyo/uniface/blob/main/README.uz.md">Oʻzbekcha</a>
+</p>
+
 <div align="center">
 
 [![PyPI Version](https://img.shields.io/pypi/v/uniface.svg?label=Version)](https://pypi.org/project/uniface/)
 [![Python Version](https://img.shields.io/badge/Python-3.11%2B-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Github Build Status](https://github.com/yakhyo/uniface/actions/workflows/ci.yml/badge.svg)](https://github.com/yakhyo/uniface/actions)
+[![GitHub Build Status](https://github.com/yakhyo/uniface/actions/workflows/ci.yml/badge.svg)](https://github.com/yakhyo/uniface/actions)
 [![PyPI Downloads](https://static.pepy.tech/personalized-badge/uniface?period=total&units=INTERNATIONAL_SYSTEM&left_color=GRAY&right_color=BLUE&left_text=Downloads)](https://pepy.tech/projects/uniface)
 [![Kaggle Badge](https://img.shields.io/badge/Notebooks-Kaggle?label=Kaggle&color=blue)](https://www.kaggle.com/yakhyokhuja/code)
 [![Hugging Face Spaces](https://img.shields.io/badge/Demo-%F0%9F%A4%97%20Spaces-blue)](https://huggingface.co/spaces/yakhyo/uniface)
@@ -23,7 +25,7 @@
 
 <p align="center">
   UniFace is a lightweight, production-ready Python library for face detection, recognition,<br>
-  tracking, landmark analysis, face parsing, gaze estimation, and face attributes.
+  tracking, landmarks, face mesh, parsing, gaze, attributes, anti-spoofing and more.
 </p>
 
 <p align="center">
