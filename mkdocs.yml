@@ -12,6 +12,8 @@ copyright: Copyright &copy; 2026 Yakhyokhuja Valikhujaev
 theme:
   name: material
   custom_dir: docs/overrides
+  logo: assets/brand/icon/uniface-icon.svg
+  favicon: assets/brand/icon/favicon.ico
   palette:
     - media: "(prefers-color-scheme)"
       toggle:
@@ -52,7 +54,6 @@ theme:
     - toc.follow
 
   icon:
-    logo: material/book-open-page-variant
     repo: fontawesome/brands/git-alt
     admonition:
       note: octicons/tag-16
@@ -167,5 +168,6 @@ nav:
   - Resources:
       - Contributing: contributing.md
       - License: license-attribution.md
+      - Brand Assets: brand.md
       - Releases: https://github.com/yakhyo/uniface/releases
       - Discussions: https://github.com/yakhyo/uniface/discussions

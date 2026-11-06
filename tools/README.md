@@ -28,6 +28,7 @@ CLI utilities for testing and running UniFace features.
 | `batch_process.py` | Batch process folder of images |
 | `teaser.py` | Teaser videos (before/after wipe, 9:16 + 1:1 + 16:9), output-only overlay videos and showcases |
 | `demo/hero.py` | Render the README hero grid (animated AVIF, WebP and MP4) from `teaser.py` overlay clips |
+| `demo/social.py` | Render the GitHub social preview (PNG, JPG, GIF, MP4) and the docs link preview from `teaser.py` overlay clips |
 | `download_model.py` | Download model weights |
 | `sha256_generate.py` | Generate SHA256 hash for model files |
 
