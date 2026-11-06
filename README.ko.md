@@ -1,6 +1,13 @@
 \[[English](README.md)\] | \[[Chinese](README.zh-CN.md)\] | \[[Korean](README.ko.md)\] | \[[Uzbek](README.uz.md)\]
 
-<h1 align="center">UniFace: Python용 통합 얼굴 분석 라이브러리</h1>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yakhyo/uniface/main/.github/logos/logo/uniface-logo-dark.svg">
+    <img src="https://raw.githubusercontent.com/yakhyo/uniface/main/.github/logos/logo/uniface-logo-light.svg" width="360" alt="UniFace">
+  </picture>
+</p>
+
+<p align="center"><b>Python용 통합 얼굴 분석 라이브러리</b></p>
 
 이 페이지는 [영문 README](README.md)의 한국어 번역입니다. 링크된 문서는 주로 영어로 제공됩니다. 번역을 수정할 때는 영문 버전과 내용을 맞춰 주세요.
 
@@ -14,10 +21,6 @@
 [![Kaggle Badge](https://img.shields.io/badge/%EB%85%B8%ED%8A%B8%EB%B6%81-Kaggle?label=Kaggle&color=blue)](https://www.kaggle.com/yakhyokhuja/code)
 [![Hugging Face Spaces](https://img.shields.io/badge/Demo-%F0%9F%A4%97%20Spaces-blue)](https://huggingface.co/spaces/yakhyo/uniface)
 
-</div>
-
-<div align="center">
-    <img src="https://raw.githubusercontent.com/yakhyo/uniface/main/.github/logos/uniface_rounded_q80.webp" width="90%" alt="UniFace — Python용 통합 얼굴 분석 라이브러리">
 </div>
 
 <p align="center">

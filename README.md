@@ -1,6 +1,13 @@
 \[[English](README.md)\] | \[[Chinese](README.zh-CN.md)\] | \[[Korean](README.ko.md)\] | \[[Uzbek](README.uz.md)\]
 
-<h1 align="center">UniFace: A Unified Face Analysis Library for Python</h1>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yakhyo/uniface/main/.github/logos/logo/uniface-logo-dark.svg">
+    <img src="https://raw.githubusercontent.com/yakhyo/uniface/main/.github/logos/logo/uniface-logo-light.svg" width="360" alt="UniFace">
+  </picture>
+</p>
+
+<p align="center"><b>A Unified Face Analysis Library for Python</b></p>
 
 <div align="center">
 
@@ -12,10 +19,6 @@
 [![Kaggle Badge](https://img.shields.io/badge/Notebooks-Kaggle?label=Kaggle&color=blue)](https://www.kaggle.com/yakhyokhuja/code)
 [![Hugging Face Spaces](https://img.shields.io/badge/Demo-%F0%9F%A4%97%20Spaces-blue)](https://huggingface.co/spaces/yakhyo/uniface)
 
-</div>
-
-<div align="center">
-    <img src="https://raw.githubusercontent.com/yakhyo/uniface/main/.github/logos/uniface_rounded_q80.webp" width="90%" alt="UniFace - A Unified Face Analysis Library for Python">
 </div>
 
 <p align="center">

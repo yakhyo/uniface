@@ -1,6 +1,13 @@
 \[[English](README.md)\] | \[[Chinese](README.zh-CN.md)\] | \[[Korean](README.ko.md)\] | \[[Uzbek](README.uz.md)\]
 
-<h1 align="center">UniFace：统一的 Python 人脸分析库</h1>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yakhyo/uniface/main/.github/logos/logo/uniface-logo-dark.svg">
+    <img src="https://raw.githubusercontent.com/yakhyo/uniface/main/.github/logos/logo/uniface-logo-light.svg" width="360" alt="UniFace">
+  </picture>
+</p>
+
+<p align="center"><b>统一的 Python 人脸分析库</b></p>
 
 本页是 [英文 README](README.md) 的简体中文翻译。链接指向的文档主要使用英文；更新翻译时请与英文版本保持同步。
 
@@ -14,10 +21,6 @@
 [![Kaggle Badge](https://img.shields.io/badge/%E4%BA%A4%E4%BA%92%E5%BC%8F%E7%AC%94%E8%AE%B0%E6%9C%AC-Kaggle?label=Kaggle&color=blue)](https://www.kaggle.com/yakhyokhuja/code)
 [![Hugging Face Spaces](https://img.shields.io/badge/Demo-%F0%9F%A4%97%20Spaces-blue)](https://huggingface.co/spaces/yakhyo/uniface)
 
-</div>
-
-<div align="center">
-    <img src="https://raw.githubusercontent.com/yakhyo/uniface/main/.github/logos/uniface_rounded_q80.webp" width="90%" alt="UniFace — 统一的 Python 人脸分析库">
 </div>
 
 <p align="center">

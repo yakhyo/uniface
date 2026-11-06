@@ -5,3 +5,31 @@
     Support our work &mdash; give UniFace a <span class="twemoji">{% include ".icons/octicons/star-fill-16.svg" %}</span> on <strong>GitHub</strong> and help us reach more developers!
   </a>
 {% endblock %}
+
+{% block extrahead %}
+  {{ super() }}
+  <link rel="apple-touch-icon" href="{{ 'assets/brand/icon/uniface-icon-180.png' | url }}">
+  {#- Link previews (Open Graph / X) for every docs page; the card image lives in docs/assets/og-image.jpg -#}
+  {%- if page and page.title and not page.is_homepage -%}
+    {%- set og_title = page.title ~ " - " ~ config.site_name -%}
+  {%- else -%}
+    {%- set og_title = config.site_name ~ " - " ~ config.site_description -%}
+  {%- endif -%}
+  {%- set og_description = page.meta.description if page and page.meta and page.meta.description else config.site_description -%}
+  {%- set og_image = config.site_url.rstrip("/") ~ "/assets/og-image.jpg" %}
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="{{ config.site_name }}">
+  <meta property="og:title" content="{{ og_title }}">
+  <meta property="og:description" content="{{ og_description }}">
+  <meta property="og:url" content="{{ page.canonical_url }}">
+  <meta property="og:image" content="{{ og_image }}">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="UniFace - a unified face analysis library for Python">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@y_valikhujaev">
+  <meta name="twitter:title" content="{{ og_title }}">
+  <meta name="twitter:description" content="{{ og_description }}">
+  <meta name="twitter:image" content="{{ og_image }}">
+{% endblock %}
