@@ -1,5 +1,3 @@
-\[[English](README.md)\] | \[[Chinese](README.zh-CN.md)\] | \[[Korean](README.ko.md)\] | \[[Uzbek](README.uz.md)\]
-
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yakhyo/uniface/main/.github/logos/logo/uniface-logo-dark.svg">
@@ -9,7 +7,11 @@
 
 <p align="center"><b>Python용 통합 얼굴 분석 라이브러리</b></p>
 
-이 페이지는 [영문 README](README.md)의 한국어 번역입니다. 링크된 문서는 주로 영어로 제공됩니다. 번역을 수정할 때는 영문 버전과 내용을 맞춰 주세요.
+<p align="center">
+  <a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a> · <b>한국어</b> · <a href="README.uz.md">Oʻzbekcha</a>
+</p>
+
+<p align="center"><sub>이 페이지는 <a href="README.md">영문 README</a>의 한국어 번역입니다. 링크된 문서는 주로 영어로 제공됩니다. 번역을 수정할 때는 영문 버전과 내용을 맞춰 주세요.</sub></p>
 
 <div align="center">
 

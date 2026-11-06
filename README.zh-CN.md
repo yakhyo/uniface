@@ -1,5 +1,3 @@
-\[[English](README.md)\] | \[[Chinese](README.zh-CN.md)\] | \[[Korean](README.ko.md)\] | \[[Uzbek](README.uz.md)\]
-
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yakhyo/uniface/main/.github/logos/logo/uniface-logo-dark.svg">
@@ -9,7 +7,11 @@
 
 <p align="center"><b>统一的 Python 人脸分析库</b></p>
 
-本页是 [英文 README](README.md) 的简体中文翻译。链接指向的文档主要使用英文；更新翻译时请与英文版本保持同步。
+<p align="center">
+  <a href="README.md">English</a> · <b>简体中文</b> · <a href="README.ko.md">한국어</a> · <a href="README.uz.md">Oʻzbekcha</a>
+</p>
+
+<p align="center"><sub>本页是 <a href="README.md">英文 README</a> 的简体中文翻译。链接指向的文档主要使用英文；更新翻译时请与英文版本保持同步。</sub></p>
 
 <div align="center">
 

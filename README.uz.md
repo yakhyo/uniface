@@ -1,5 +1,3 @@
-\[[English](README.md)\] | \[[Chinese](README.zh-CN.md)\] | \[[Korean](README.ko.md)\] | \[[Uzbek](README.uz.md)\]
-
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/yakhyo/uniface/main/.github/logos/logo/uniface-logo-dark.svg">
@@ -9,7 +7,11 @@
 
 <p align="center"><b>Python uchun yagona yuz tahlili kutubxonasi</b></p>
 
-Bu sahifa [inglizcha README](README.md) faylining oʻzbekcha tarjimasidir. Havolalardagi hujjatlar asosan ingliz tilida. Tarjimani yangilashda inglizcha nusxa bilan mosligini saqlang.
+<p align="center">
+  <a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.ko.md">한국어</a> · <b>Oʻzbekcha</b>
+</p>
+
+<p align="center"><sub>Bu sahifa <a href="README.md">inglizcha README</a> faylining oʻzbekcha tarjimasidir. Havolalardagi hujjatlar asosan ingliz tilida. Tarjimani yangilashda inglizcha nusxa bilan mosligini saqlang.</sub></p>
 
 <div align="center">
 
