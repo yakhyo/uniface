@@ -95,7 +95,7 @@ and the face states stay `None` until you pass the predictor that fills them.
 | Anonymization | 5 blur methods |
 | Vector Store | FAISS-backed embedding search |
 
-Runs on CPU, Apple Silicon and CUDA. Weights download on first use, verified by SHA-256.
+Runs on CPU, Apple Silicon and CUDA. Weights download on first use.
 
 </details>
 
@@ -183,15 +183,9 @@ Runs on CPU, Apple Silicon and CUDA. Weights download on first use, verified by 
 
 <div align="center">
 
-**[Get Started](https://yakhyo.github.io/uniface/quickstart/)** &nbsp;·&nbsp;
-[Model Zoo](https://yakhyo.github.io/uniface/models/) &nbsp;·&nbsp;
-[Notebooks](https://yakhyo.github.io/uniface/notebooks/) &nbsp;·&nbsp;
-[Model licences](https://yakhyo.github.io/uniface/license-attribution/) &nbsp;·&nbsp;
 [Contributing](CONTRIBUTING.md) &nbsp;·&nbsp;
-[Discord](https://discord.gg/wdzrjr7R5j) &nbsp;·&nbsp;
 [Issues](https://github.com/yakhyo/uniface/issues)
 
-Runs on CPU, Apple Silicon and CUDA. Weights download on first use, verified by SHA-256.<br>
 UniFace is [MIT](LICENSE); some pretrained weights are not, so check
 [licences](https://yakhyo.github.io/uniface/license-attribution/) before shipping commercially.<br>
 Not affiliated with [Uniface](https://uniface.com/) by Rocket Software.

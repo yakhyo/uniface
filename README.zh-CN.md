@@ -97,7 +97,7 @@ for face in analyzer.analyze(cv2.imread("photo.jpg")):
 | 匿名化 | 5 种模糊方法 |
 | 向量存储 | 基于 FAISS 的嵌入向量搜索 |
 
-支持 CPU、Apple Silicon 和 CUDA。模型权重在首次使用时下载，并通过 SHA-256 校验。
+支持 CPU、Apple Silicon 和 CUDA。模型权重在首次使用时下载。
 
 </details>
 
@@ -185,15 +185,9 @@ for face in analyzer.analyze(cv2.imread("photo.jpg")):
 
 <div align="center">
 
-**[快速开始](https://yakhyo.github.io/uniface/quickstart/)** &nbsp;·&nbsp;
-[模型库](https://yakhyo.github.io/uniface/models/) &nbsp;·&nbsp;
-[交互式笔记本](https://yakhyo.github.io/uniface/notebooks/) &nbsp;·&nbsp;
-[模型许可证](https://yakhyo.github.io/uniface/license-attribution/) &nbsp;·&nbsp;
 [参与贡献](CONTRIBUTING.md) &nbsp;·&nbsp;
-[Discord](https://discord.gg/wdzrjr7R5j) &nbsp;·&nbsp;
 [问题反馈](https://github.com/yakhyo/uniface/issues)
 
-支持 CPU、Apple Silicon 和 CUDA。模型权重在首次使用时下载，并通过 SHA-256 校验。<br>
 UniFace 使用 [MIT](LICENSE) 许可证；部分预训练权重采用其他许可证，因此在商业发布前请查看
 [许可证说明](https://yakhyo.github.io/uniface/license-attribution/)。<br>
 本项目与 Rocket Software 的 [Uniface](https://uniface.com/) 无关。

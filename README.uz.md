@@ -97,7 +97,7 @@ va yuz holatlari tegishli bashorat modelini uzatmaguningizcha `None` boʻlib qol
 | Anonimlashtirish | 5 xil xiralashtirish usuli |
 | Vektorlar ombori | FAISS asosida embedding vektorlarini qidirish |
 
-CPU, Apple Silicon va CUDA da ishlaydi. Model vaznlari birinchi foydalanishda yuklab olinadi va SHA-256 orqali tekshiriladi.
+CPU, Apple Silicon va CUDA da ishlaydi. Model vaznlari birinchi foydalanishda yuklab olinadi.
 
 </details>
 
@@ -185,15 +185,9 @@ CPU, Apple Silicon va CUDA da ishlaydi. Model vaznlari birinchi foydalanishda yu
 
 <div align="center">
 
-**[Boshlash](https://yakhyo.github.io/uniface/quickstart/)** &nbsp;·&nbsp;
-[Modellar toʻplami](https://yakhyo.github.io/uniface/models/) &nbsp;·&nbsp;
-[Notebooklar](https://yakhyo.github.io/uniface/notebooks/) &nbsp;·&nbsp;
-[Model litsenziyalari](https://yakhyo.github.io/uniface/license-attribution/) &nbsp;·&nbsp;
 [Hissa qoʻshish](CONTRIBUTING.md) &nbsp;·&nbsp;
-[Discord](https://discord.gg/wdzrjr7R5j) &nbsp;·&nbsp;
 [Muammolar](https://github.com/yakhyo/uniface/issues)
 
-CPU, Apple Silicon va CUDA da ishlaydi. Model vaznlari birinchi foydalanishda yuklab olinadi va SHA-256 orqali tekshiriladi.<br>
 UniFace [MIT](LICENSE) litsenziyasi asosida tarqatiladi; ayrim oldindan oʻqitilgan model vaznlari boshqa litsenziyalarga ega. Tijoriy tarqatishdan oldin
 [litsenziyalarni](https://yakhyo.github.io/uniface/license-attribution/) tekshiring.<br>
 Loyiha Rocket Software kompaniyasining [Uniface](https://uniface.com/) mahsulotiga aloqador emas.
