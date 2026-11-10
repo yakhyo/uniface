@@ -86,7 +86,7 @@ for face in analyzer.analyze(cv2.imread("photo.jpg")):
 | 얼굴 추적 | BYTETracker, 동영상 프레임 간 ID 유지 |
 | 얼굴 랜드마크 | 2d106det (106), PIPNet (98 / 68), Face Mesh (468 / 478, 3D) |
 | 얼굴 파싱 | BiSeNet (19개 클래스), XSeg 마스크 생성 |
-| 인물 매팅 | MODNet, 트라이맵 불필요 |
+| 인물 매팅 | MODNet, PP-Matting (v1 HRNet-W18, v2 STDC1), 트라이맵 불필요 |
 | 시선 추정 | MobileGaze (ResNet-18 / 34 / 50, MobileNetV2) |
 | 머리 자세 | 6D 회전 표현, 피치 / 요 / 롤 |
 | 인구통계학적 속성 | AgeGender, FairFace (연령대, 성별, 인종) |

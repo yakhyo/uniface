@@ -522,6 +522,35 @@ MODNet (Real-Time Trimap-Free Portrait Matting) produces soft alpha mattes from 
 
 ---
 
+### PP-Matting
+
+PP-Matting produces soft alpha mattes from full images without a trimap. The weights are PaddleSeg's human matting
+models converted to ONNX. Two variants are available: PP-MattingV2 with an STDC1 backbone and PP-Matting with an
+HRNet-W18 backbone.
+
+| Model Name | Variant | Size | Use Case |
+| ---------- | ------- | ---- | -------- |
+| `V2` :material-check-circle: | PP-MattingV2, STDC1 | 34.2 MB | Faster, default |
+| `V1` | PP-Matting, HRNet-W18 | 93.8 MB | More accurate, slower |
+
+!!! info "Model Details"
+    **Paper**: [PP-Matting: High-Accuracy Natural Image Matting](https://arxiv.org/abs/2204.09433) (arXiv 2022)
+
+    **Source**: [yakhyo/ppmatting](https://github.com/yakhyo/ppmatting), ported weights and clean inference codebase from [PaddleSeg Matting](https://github.com/PaddlePaddle/PaddleSeg/tree/release/2.10/Matting)
+
+    **Output**: Alpha matte `(H, W)` in `[0, 1]`
+
+!!! note "Accuracy"
+    PaddleSeg reports 8.95M parameters and a SAD of 40.59 for PP-MattingV2, and 24.5M parameters and a SAD of 31.56
+    for PP-Matting, both on PPM-AIM-195 (lower SAD is better). The shipped ONNX files score 40.59 and 31.55 on the
+    same set.
+
+!!! note "Input Requirements"
+    Operates on full images (not face crops). No trimap or face detection required. The short side is capped at
+    512 px and both sides are floored to a multiple of 32. The matte is resized back to the input size.
+
+---
+
 ## Anti-Spoofing Models
 
 ### MiniFASNet Family
@@ -594,6 +623,7 @@ See [Model Cache & Offline Use](concepts/model-cache-offline.md) for full detail
 - **Face Parsing Training**: [yakhyo/face-parsing](https://github.com/yakhyo/face-parsing) - BiSeNet training code and pretrained weights
 - **Face Segmentation**: [yakhyo/face-segmentation](https://github.com/yakhyo/face-segmentation) - XSeg ONNX Inference
 - **Portrait Matting**: [yakhyo/modnet](https://github.com/yakhyo/modnet) - MODNet ported weights and inference (from [ZHKKKe/MODNet](https://github.com/ZHKKKe/MODNet))
+- **PP-Matting**: [yakhyo/ppmatting](https://github.com/yakhyo/ppmatting) - PP-Matting ported weights and inference (from [PaddleSeg Matting](https://github.com/PaddlePaddle/PaddleSeg/tree/release/2.10/Matting))
 - **Face Anti-Spoofing**: [yakhyo/face-anti-spoofing](https://github.com/yakhyo/face-anti-spoofing) - MiniFASNet ONNX inference (weights from [minivision-ai/Silent-Face-Anti-Spoofing](https://github.com/minivision-ai/Silent-Face-Anti-Spoofing))
 - **Face Image Quality Assessment**: [yakhyo/face-image-quality-assessment](https://github.com/yakhyo/face-image-quality-assessment) - eDifFIQA PyTorch inference, ONNX export and inference
 - **FairFace**: [yakhyo/fairface-onnx](https://github.com/yakhyo/fairface-onnx) - FairFace ONNX inference for race, gender, age prediction
@@ -610,5 +640,6 @@ See [Model Cache & Offline Use](concepts/model-cache-offline.md) for full detail
 - **ArcFace**: [Additive Angular Margin Loss for Deep Face Recognition](https://arxiv.org/abs/1801.07698)
 - **SphereFace**: [Deep Hypersphere Embedding for Face Recognition](https://arxiv.org/abs/1704.08063)
 - **MODNet**: [Real-Time Trimap-Free Portrait Matting via Objective Decomposition](https://arxiv.org/abs/2011.11961)
+- **PP-Matting**: [PP-Matting: High-Accuracy Natural Image Matting](https://arxiv.org/abs/2204.09433)
 - **BiSeNet**: [Bilateral Segmentation Network for Real-time Semantic Segmentation](https://arxiv.org/abs/1808.00897)
 - **PIPNet**: [Towards Efficient Facial Landmark Detection in the Wild](https://arxiv.org/abs/2003.03771)

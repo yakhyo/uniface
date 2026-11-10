@@ -300,6 +300,15 @@ class MODNetWeights(str, Enum):
     WEBCAM       = "modnet_webcam"
 
 
+class PPMattingWeights(str, Enum):
+    """PP-Matting: Trimap-free portrait matting from PaddleSeg.
+
+    https://github.com/yakhyo/ppmatting
+    """
+    V2 = "ppmatting_v2"
+    V1 = "ppmatting_v1"
+
+
 class MiniFASNetWeights(str, Enum):
     """MiniFASNet: Lightweight Face Anti-Spoofing models.
 
@@ -618,6 +627,16 @@ MODEL_REGISTRY: dict[Enum, ModelInfo] = {
     MODNetWeights.WEBCAM: ModelInfo(
         url='https://github.com/yakhyo/modnet/releases/download/weights/modnet_webcam.onnx',
         sha256='de03cc16f3c91f25b7c2f0b42ea1a8d34f40a752234f3887572655e744e55306'
+    ),
+
+    # PP-Matting (Portrait Matting)
+    PPMattingWeights.V2: ModelInfo(
+        url='https://github.com/yakhyo/ppmatting/releases/download/weights/ppmatting_v2.onnx',
+        sha256='7846bea9cd2ad94a81b44deeddfa1521bbcfd15bb297c181116eecb25c6f0335'
+    ),
+    PPMattingWeights.V1: ModelInfo(
+        url='https://github.com/yakhyo/ppmatting/releases/download/weights/ppmatting_v1.onnx',
+        sha256='24639937f579f1cc06d3b1206c5305f8bb93db6951de30da475f880d72e0a4f4'
     ),
 
     # eDifFIQA (Face Image Quality Assessment)

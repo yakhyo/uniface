@@ -29,6 +29,7 @@ their upstream terms. Several of them prohibit commercial use — check the
 | BiSeNet | [yakhyo/face-parsing](https://github.com/yakhyo/face-parsing) | MIT | Follows source |
 | MobileGaze | [yakhyo/gaze-estimation](https://github.com/yakhyo/gaze-estimation) | MIT | Follows source |
 | MODNet | [yakhyo/modnet](https://github.com/yakhyo/modnet) | Apache-2.0 | Apache-2.0 |
+| PP-Matting | [yakhyo/ppmatting](https://github.com/yakhyo/ppmatting) | Apache-2.0 | Apache-2.0, training data undocumented upstream |
 | MiniFASNet | [yakhyo/face-anti-spoofing](https://github.com/yakhyo/face-anti-spoofing) | Apache-2.0 | Apache-2.0 |
 | FairFace | [yakhyo/fairface-onnx](https://github.com/yakhyo/fairface-onnx) | CC BY 4.0 | CC BY 4.0 |
 | AgeGender | [InsightFace](https://github.com/deepinsight/insightface) — `genderage` from the buffalo packs | MIT | **Non-commercial**[^insightface] |

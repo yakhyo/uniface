@@ -86,7 +86,7 @@ for face in analyzer.analyze(cv2.imread("photo.jpg")):
 | 人脸跟踪 | BYTETracker, 视频帧之间保持一致的 ID |
 | 人脸关键点 | 2d106det (106), PIPNet (98 / 68), Face Mesh (468 / 478, 3D) |
 | 人脸解析 | BiSeNet (19 个类别), XSeg 掩码生成 |
-| 人像抠图 | MODNet, 无需三分图 |
+| 人像抠图 | MODNet, PP-Matting (v1 HRNet-W18, v2 STDC1), 无需三分图 |
 | 视线估计 | MobileGaze (ResNet-18 / 34 / 50, MobileNetV2) |
 | 头部姿态 | 6D 旋转表示，俯仰 / 偏航 / 翻滚 |
 | 人口统计属性 | AgeGender, FairFace (年龄组、性别、种族) |

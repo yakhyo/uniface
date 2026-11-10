@@ -84,7 +84,7 @@ and the face states stay `None` until you pass the predictor that fills them.
 | Face Tracking | BYTETracker, persistent IDs across video frames |
 | Facial Landmarks | 2d106det (106), PIPNet (98 / 68), Face Mesh (468 / 478, 3D) |
 | Face Parsing | BiSeNet (19 classes), XSeg masking |
-| Portrait Matting | MODNet, trimap-free |
+| Portrait Matting | MODNet, PP-Matting (v1 HRNet-W18, v2 STDC1), trimap-free |
 | Gaze Estimation | MobileGaze (ResNet-18 / 34 / 50, MobileNetV2) |
 | Head Pose | 6D rotation representation, pitch / yaw / roll |
 | Demographics | AgeGender, FairFace (age group, sex, race) |

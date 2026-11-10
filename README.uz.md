@@ -86,7 +86,7 @@ va yuz holatlari tegishli bashorat modelini uzatmaguningizcha `None` boʻlib qol
 | Yuzni kuzatish | BYTETracker, video kadrlari orasida saqlanadigan ID lar |
 | Yuz tayanch nuqtalari | 2d106det (106), PIPNet (98 / 68), Face Mesh (468 / 478, 3D) |
 | Yuz qismlarini segmentlash | BiSeNet (19 ta sinf), XSeg yordamida niqob yaratish |
-| Odam tasvirini fondan ajratish | MODNet, trimap talab qilmaydi |
+| Odam tasvirini fondan ajratish | MODNet, PP-Matting (v1 HRNet-W18, v2 STDC1), trimap talab qilmaydi |
 | Nigoh yoʻnalishini baholash | MobileGaze (ResNet-18 / 34 / 50, MobileNetV2) |
 | Bosh holati | 6D aylanish ifodasi, pitch / yaw / roll |
 | Demografik atributlar | AgeGender, FairFace (yosh guruhi, jins, irq) |
