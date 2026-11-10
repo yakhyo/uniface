@@ -370,6 +370,14 @@ result = (image * matte_3ch + bg * (1 - matte_3ch)).astype(np.uint8)
 cv2.imwrite("green_screen.jpg", result)
 ```
 
+PP-Matting is a drop-in alternative with the same `predict()` call and the same matte:
+
+```python
+from uniface.matting import PPMatting
+
+matting = PPMatting()  # PP-MattingV2 (STDC1); PPMattingWeights.V1 is more accurate and slower
+```
+
 ---
 
 ## Face Anonymization
@@ -559,7 +567,7 @@ For detailed model comparisons and benchmarks, see the [Model Zoo](models.md).
 | Gaze | `MobileGaze` (ResNet18/34/50, MobileNetV2, MobileOneS0) |
 | Head Pose | `HeadPose` (ResNet18/34/50, MobileNetV2/V3) |
 | Parsing | `BiSeNet` (ResNet18/34), `XSeg` |
-| Matting | `MODNet` |
+| Matting | `MODNet`, `PPMatting` |
 | Attributes | `AgeGender`, `FairFace`, `Emotion`, `FaceAttribNet` (face states) |
 | Anti-Spoofing | `MiniFASNet` (V1SE, V2) |
 | Quality | `EDifFIQA` (T, S, M, L) |

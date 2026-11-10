@@ -64,7 +64,7 @@ BiSeNet semantic segmentation with 19 facial component classes, plus XSeg face m
 
 <div class="feature-card" markdown>
 ### :material-image-off: Portrait Matting
-Trimap-free alpha matte with MODNet for background removal and compositing.
+Trimap-free alpha matte with MODNet or PP-Matting for background removal and compositing.
 <a class="feature-card-link" href="modules/matting/" aria-label="Portrait Matting"></a>
 </div>
 

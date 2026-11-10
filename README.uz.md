@@ -86,7 +86,7 @@ va yuz holatlari tegishli bashorat modelini uzatmaguningizcha `None` boʻlib qol
 | Yuzni kuzatish | BYTETracker, video kadrlari orasida saqlanadigan ID lar |
 | Yuz tayanch nuqtalari | 2d106det (106), PIPNet (98 / 68), Face Mesh (468 / 478, 3D) |
 | Yuz qismlarini segmentlash | BiSeNet (19 ta sinf), XSeg yordamida niqob yaratish |
-| Odam tasvirini fondan ajratish | MODNet, trimap talab qilmaydi |
+| Odam tasvirini fondan ajratish | MODNet, PP-Matting (v1 HRNet-W18, v2 STDC1), trimap talab qilmaydi |
 | Nigoh yoʻnalishini baholash | MobileGaze (ResNet-18 / 34 / 50, MobileNetV2) |
 | Bosh holati | 6D aylanish ifodasi, pitch / yaw / roll |
 | Demografik atributlar | AgeGender, FairFace (yosh guruhi, jins, irq) |
@@ -97,7 +97,7 @@ va yuz holatlari tegishli bashorat modelini uzatmaguningizcha `None` boʻlib qol
 | Anonimlashtirish | 5 xil xiralashtirish usuli |
 | Vektorlar ombori | FAISS asosida embedding vektorlarini qidirish |
 
-CPU, Apple Silicon va CUDA da ishlaydi. Model vaznlari birinchi foydalanishda yuklab olinadi va SHA-256 orqali tekshiriladi.
+CPU, Apple Silicon va CUDA da ishlaydi. Model vaznlari birinchi foydalanishda yuklab olinadi.
 
 </details>
 
@@ -185,15 +185,9 @@ CPU, Apple Silicon va CUDA da ishlaydi. Model vaznlari birinchi foydalanishda yu
 
 <div align="center">
 
-**[Boshlash](https://yakhyo.github.io/uniface/quickstart/)** &nbsp;·&nbsp;
-[Modellar toʻplami](https://yakhyo.github.io/uniface/models/) &nbsp;·&nbsp;
-[Notebooklar](https://yakhyo.github.io/uniface/notebooks/) &nbsp;·&nbsp;
-[Model litsenziyalari](https://yakhyo.github.io/uniface/license-attribution/) &nbsp;·&nbsp;
 [Hissa qoʻshish](CONTRIBUTING.md) &nbsp;·&nbsp;
-[Discord](https://discord.gg/wdzrjr7R5j) &nbsp;·&nbsp;
 [Muammolar](https://github.com/yakhyo/uniface/issues)
 
-CPU, Apple Silicon va CUDA da ishlaydi. Model vaznlari birinchi foydalanishda yuklab olinadi va SHA-256 orqali tekshiriladi.<br>
 UniFace [MIT](LICENSE) litsenziyasi asosida tarqatiladi; ayrim oldindan oʻqitilgan model vaznlari boshqa litsenziyalarga ega. Tijoriy tarqatishdan oldin
 [litsenziyalarni](https://yakhyo.github.io/uniface/license-attribution/) tekshiring.<br>
 Loyiha Rocket Software kompaniyasining [Uniface](https://uniface.com/) mahsulotiga aloqador emas.

@@ -86,7 +86,7 @@ for face in analyzer.analyze(cv2.imread("photo.jpg")):
 | 얼굴 추적 | BYTETracker, 동영상 프레임 간 ID 유지 |
 | 얼굴 랜드마크 | 2d106det (106), PIPNet (98 / 68), Face Mesh (468 / 478, 3D) |
 | 얼굴 파싱 | BiSeNet (19개 클래스), XSeg 마스크 생성 |
-| 인물 매팅 | MODNet, 트라이맵 불필요 |
+| 인물 매팅 | MODNet, PP-Matting (v1 HRNet-W18, v2 STDC1), 트라이맵 불필요 |
 | 시선 추정 | MobileGaze (ResNet-18 / 34 / 50, MobileNetV2) |
 | 머리 자세 | 6D 회전 표현, 피치 / 요 / 롤 |
 | 인구통계학적 속성 | AgeGender, FairFace (연령대, 성별, 인종) |
@@ -97,7 +97,7 @@ for face in analyzer.analyze(cv2.imread("photo.jpg")):
 | 익명화 | 5가지 블러 방식 |
 | 벡터 저장소 | FAISS 기반 임베딩 검색 |
 
-CPU, Apple Silicon 및 CUDA에서 실행됩니다. 모델 가중치는 처음 사용할 때 다운로드되며 SHA-256으로 검증됩니다.
+CPU, Apple Silicon 및 CUDA에서 실행됩니다. 모델 가중치는 처음 사용할 때 다운로드됩니다.
 
 </details>
 
@@ -185,15 +185,9 @@ CPU, Apple Silicon 및 CUDA에서 실행됩니다. 모델 가중치는 처음 �
 
 <div align="center">
 
-**[시작하기](https://yakhyo.github.io/uniface/quickstart/)** &nbsp;·&nbsp;
-[모델 모음](https://yakhyo.github.io/uniface/models/) &nbsp;·&nbsp;
-[노트북](https://yakhyo.github.io/uniface/notebooks/) &nbsp;·&nbsp;
-[모델 라이선스](https://yakhyo.github.io/uniface/license-attribution/) &nbsp;·&nbsp;
 [기여하기](CONTRIBUTING.md) &nbsp;·&nbsp;
-[Discord](https://discord.gg/wdzrjr7R5j) &nbsp;·&nbsp;
 [이슈](https://github.com/yakhyo/uniface/issues)
 
-CPU, Apple Silicon 및 CUDA에서 실행됩니다. 모델 가중치는 처음 사용할 때 다운로드되며 SHA-256으로 검증됩니다.<br>
 UniFace는 [MIT](LICENSE) 라이선스를 사용합니다. 일부 사전 학습 가중치에는 다른 라이선스가 적용되므로 상업적으로 배포하기 전에
 [라이선스 안내](https://yakhyo.github.io/uniface/license-attribution/)를 확인하세요.<br>
 이 프로젝트는 Rocket Software의 [Uniface](https://uniface.com/)와 관련이 없습니다.
