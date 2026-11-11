@@ -9,7 +9,7 @@
 
 This library provides unified APIs for:
 - Face detection (BlazeFace, CenterFace, RetinaFace, SCRFD, YOLOv5Face, YOLOv8Face)
-- Face recognition (AdaFace, ArcFace, AuraFace, EdgeFace, MobileFace, SphereFace)
+- Face recognition (AdaFace, ArcFace, AuraFace, EdgeFace, HyperFace, MobileFace, SphereFace)
 - Face tracking (ByteTrack with Kalman filtering)
 - Facial landmarks (106 / 98 / 68-point: 2d106det, PIPNet; 468/478-point dense: FaceMesh)
 - Face parsing (semantic segmentation)
@@ -42,7 +42,7 @@ from .matting import MODNet, PPMatting
 from .parsing import BiSeNet, XSeg
 from .privacy import BlurFace
 from .quality import EDifFIQA
-from .recognition import AdaFace, ArcFace, AuraFace, EdgeFace, MobileFace, SphereFace
+from .recognition import AdaFace, ArcFace, AuraFace, EdgeFace, HyperFace, MobileFace, SphereFace
 from .spoofing import MiniFASNet
 
 # The faiss dependency is imported lazily at FAISS(...) construction, so this
@@ -81,6 +81,7 @@ __all__ = [
     'ArcFace',
     'AuraFace',
     'EdgeFace',
+    'HyperFace',
     'MobileFace',
     'SphereFace',
     # Landmark models

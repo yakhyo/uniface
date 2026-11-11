@@ -103,7 +103,7 @@ else:
 | 0.6 | High security, rejects some genuine pairs with large age gaps | Lower FAR |
 | 0.7 | Very strict | Very low FAR |
 
-Scores depend on the model. AuraFace, for example, works best near 0.3.
+Scores depend on the model. AuraFace and HyperFace, for example, work best near 0.3.
 
 ---
 

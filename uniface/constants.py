@@ -89,6 +89,15 @@ class AuraFaceWeights(str, Enum):
     """
     R100 = "auraface_r100"
 
+class HyperFaceWeights(str, Enum):
+    """HyperFace: Generating Synthetic Face Recognition Datasets by Exploring Face Embedding Hypersphere.
+
+    IR-50 backbone from Idiap, trained on the synthetic HyperFace 50k dataset.
+    Outputs 512-D embeddings from 112x112 aligned face crops.
+    https://github.com/yakhyo/hyperface-onnx
+    """
+    IR_50 = "hyperface_ir_50"
+
 class RetinaFaceWeights(str, Enum):
     """Trained on WIDER FACE dataset.
 
@@ -458,6 +467,12 @@ MODEL_REGISTRY: dict[Enum, ModelInfo] = {
     AuraFaceWeights.R100: ModelInfo(
         url='https://github.com/yakhyo/auraface-onnx/releases/download/weights/auraface_r100.onnx',
         sha256='291665ffcaed5c78bd55c6c20bdf506c1232206a7f59ca145db3cd986fd1b77a'
+    ),
+
+    # HyperFace
+    HyperFaceWeights.IR_50: ModelInfo(
+        url='https://github.com/yakhyo/hyperface-onnx/releases/download/weights/hyperface_ir_50.onnx',
+        sha256='78622392cbc9abf11f0eadb4f7982793329482574f0b616017ef50ade1b7ed59'
     ),
 
     # SCRFD

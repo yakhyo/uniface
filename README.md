@@ -81,7 +81,7 @@ that fills them.
 | Task | Models |
 | --- | --- |
 | Face Detection | RetinaFace, SCRFD, CenterFace, YOLOv5-Face, YOLOv8-Face, BlazeFace |
-| Face Recognition | AdaFace, ArcFace, AuraFace, EdgeFace, MobileFace, SphereFace |
+| Face Recognition | AdaFace, ArcFace, AuraFace, EdgeFace, HyperFace, MobileFace, SphereFace |
 | Face Tracking | BYTETracker, persistent IDs across video frames |
 | Facial Landmarks | 2d106det (106), PIPNet (98 / 68), Face Mesh (468 / 478, 3D) |
 | Face Parsing | BiSeNet (19 classes), XSeg masking |

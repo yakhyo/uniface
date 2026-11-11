@@ -25,6 +25,7 @@ their upstream terms. Several of them prohibit commercial use — check the
 | ArcFace | [InsightFace](https://github.com/deepinsight/insightface) | MIT | **Non-commercial**[^insightface] |
 | AuraFace | [yakhyo/auraface-onnx](https://github.com/yakhyo/auraface-onnx), architecture & weights from [fal/AuraFace-v1](https://huggingface.co/fal/AuraFace-v1) | Apache-2.0 | Apache-2.0 |
 | EdgeFace | [yakhyo/edgeface-onnx](https://github.com/yakhyo/edgeface-onnx) — architecture & weights from [otroshi/edgeface](https://github.com/otroshi/edgeface), Idiap Research Institute | BSD-3-Clause | **Conflicting**: BSD-3-Clause in the GitHub repo, CC BY-NC-SA 4.0 on Hugging Face[^edgeface] |
+| HyperFace | [yakhyo/hyperface-onnx](https://github.com/yakhyo/hyperface-onnx), architecture & weights from [Idiap/HyperFace-50k-StyleGAN](https://huggingface.co/Idiap/HyperFace-50k-StyleGAN) | MIT | MIT |
 | MobileFace | [yakhyo/face-recognition](https://github.com/yakhyo/face-recognition) | MIT | Follows source |
 | SphereFace | [yakhyo/face-recognition](https://github.com/yakhyo/face-recognition) | MIT | Follows source |
 | BiSeNet | [yakhyo/face-parsing](https://github.com/yakhyo/face-parsing) | MIT | Follows source |

@@ -14,6 +14,7 @@ Overview of all training datasets and evaluation benchmarks used by UniFace mode
 | Recognition | [WebFace600K](#webface600k)                     | ~600K identities                      | ArcFace                                                 |
 | Recognition | [WebFace4M / WebFace12M](#webface4m-webface12m) | 4M / 12M images                       | AdaFace, EdgeFace                                       |
 | Recognition | Undisclosed (fal)                              | -                                     | AuraFace                                                |
+| Recognition | HyperFace 50k (synthetic, Idiap)               | 3.2M images, 50K IDs                  | HyperFace                                               |
 | Landmarks   | [WFLW](#wflw) / [300W+CelebA](#300w-celeba)      | 10K / 3.8K labeled + 202.6K unlabeled | PIPNet (98 / 68 pts)                                    |
 | Landmarks   | Proprietary (Google)                           | -                                     | Face Mesh (468 / 478 pts)                               |
 | Attributes  | Proprietary (Qualcomm)                         | -                                     | FaceAttribNet                                           |
@@ -359,11 +360,11 @@ Recognition models are evaluated across multiple benchmarks. Aligned 112x112 val
 
 | Benchmark          | Description                                                       | Used by                         |
 | ------------------ | ----------------------------------------------------------------- | ------------------------------- |
-| **LFW**      | Labeled Faces in the Wild - standard face verification benchmark  | ArcFace, AuraFace, EdgeFace, MobileFace, SphereFace |
-| **CALFW**    | Cross-Age LFW - face verification across age gaps                 | AuraFace, EdgeFace, MobileFace, SphereFace |
-| **CPLFW**    | Cross-Pose LFW - face verification across pose variations         | AuraFace, EdgeFace, MobileFace, SphereFace |
-| **AgeDB-30** | Age database with 30-year age gaps                                | ArcFace, AuraFace, EdgeFace, MobileFace, SphereFace |
-| **CFP-FP**   | Celebrities in Frontal-Profile - frontal vs. profile verification | ArcFace, AuraFace, EdgeFace     |
+| **LFW**      | Labeled Faces in the Wild - standard face verification benchmark  | ArcFace, AuraFace, EdgeFace, HyperFace, MobileFace, SphereFace |
+| **CALFW**    | Cross-Age LFW - face verification across age gaps                 | AuraFace, EdgeFace, HyperFace, MobileFace, SphereFace |
+| **CPLFW**    | Cross-Pose LFW - face verification across pose variations         | AuraFace, EdgeFace, HyperFace, MobileFace, SphereFace |
+| **AgeDB-30** | Age database with 30-year age gaps                                | ArcFace, AuraFace, EdgeFace, HyperFace, MobileFace, SphereFace |
+| **CFP-FP**   | Celebrities in Frontal-Profile - frontal vs. profile verification | ArcFace, AuraFace, EdgeFace, HyperFace |
 | **IJB-B**    | IARPA Janus Benchmark B - TAR@FAR=0.01%                           | AdaFace                         |
 | **IJB-C**    | IARPA Janus Benchmark C - TAR@FAR=1e-4                            | AdaFace, ArcFace                |
 
