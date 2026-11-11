@@ -11,8 +11,9 @@ Overview of all training datasets and evaluation benchmarks used by UniFace mode
 | Detection   | [WIDER FACE](#wider-face)                       | 32K images                            | RetinaFace, SCRFD, CenterFace, YOLOv5-Face, YOLOv8-Face |
 | Detection   | Proprietary (Google)                           | -                                     | BlazeFace                                               |
 | Recognition | [MS1MV2](#ms1mv2)                               | 5.8M images, 85.7K IDs                | MobileFace, SphereFace                                  |
-| Recognition | [WebFace600K](#webface600k)                     | 600K images                           | ArcFace                                                 |
+| Recognition | [WebFace600K](#webface600k)                     | ~600K identities                      | ArcFace                                                 |
 | Recognition | [WebFace4M / WebFace12M](#webface4m-webface12m) | 4M / 12M images                       | AdaFace, EdgeFace                                       |
+| Recognition | Undisclosed (fal)                              | -                                     | AuraFace                                                |
 | Landmarks   | [WFLW](#wflw) / [300W+CelebA](#300w-celeba)      | 10K / 3.8K labeled + 202.6K unlabeled | PIPNet (98 / 68 pts)                                    |
 | Landmarks   | Proprietary (Google)                           | -                                     | Face Mesh (468 / 478 pts)                               |
 | Attributes  | Proprietary (Qualcomm)                         | -                                     | FaceAttribNet                                           |
@@ -37,7 +38,7 @@ Large-scale face detection benchmark with images across 61 event categories. Con
 | Images   | ~32,000 (train/val/test split)              |
 | Faces    | ~394,000 annotated                          |
 | Subsets  | Easy, Medium, Hard                          |
-| Used by  | RetinaFace, SCRFD, YOLOv5-Face, YOLOv8-Face |
+| Used by  | RetinaFace, SCRFD, CenterFace, YOLOv5-Face, YOLOv8-Face |
 
 !!! info "Download & References"
     **Paper**: [WIDER FACE: A Face Detection Benchmark](https://arxiv.org/abs/1511.06523)
@@ -73,11 +74,11 @@ Refined version of the MS-Celeb-1M dataset, cleaned by InsightFace. Widely used 
 
 #### WebFace600K
 
-Medium-scale face recognition dataset from the WebFace series.
+InsightFace's name for the WebFace260M subset its `buffalo` recognition models are trained on, with about 600K identities.
 
 | Property | Value   |
 | -------- | ------- |
-| Images   | ~600K   |
+| Identities | ~600K |
 | Used by  | ArcFace |
 
 !!! info "Source"
@@ -94,7 +95,7 @@ Large-scale face recognition datasets from the WebFace260M collection. Used for 
 | Property | WebFace4M            | WebFace12M     |
 | -------- | -------------------- | -------------- |
 | Images   | ~4M                  | ~12M           |
-| Used by  | AdaFace IR_18, IR_50 | AdaFace IR_101 |
+| Used by  | AdaFace IR_18, IR_50, EdgeFace | AdaFace IR_101, EdgeFace |
 
 !!! info "Source"
 **Paper**: [AdaFace: Quality Adaptive Margin for Face Recognition](https://arxiv.org/abs/2204.00964)
@@ -149,7 +150,7 @@ WIDER FACE. Used to train the supervised PIPNet 98-point variant shipped with Un
 | Used by    | PIPNet WFLW-98                         |
 
 !!! info "Reference"
-    **Project page**: [WFLW dataset](https://wywu.github.io/projects/LAB/WFLW.html)
+    **Paper**: [Look at Boundary: A Boundary-Aware Face Alignment Algorithm](https://arxiv.org/abs/1805.10483)
 
 ---
 
@@ -358,11 +359,11 @@ Recognition models are evaluated across multiple benchmarks. Aligned 112x112 val
 
 | Benchmark          | Description                                                       | Used by                         |
 | ------------------ | ----------------------------------------------------------------- | ------------------------------- |
-| **LFW**      | Labeled Faces in the Wild - standard face verification benchmark  | ArcFace, MobileFace, SphereFace |
-| **CALFW**    | Cross-Age LFW - face verification across age gaps                 | MobileFace, SphereFace          |
-| **CPLFW**    | Cross-Pose LFW - face verification across pose variations         | MobileFace, SphereFace          |
-| **AgeDB-30** | Age database with 30-year age gaps                                | ArcFace, MobileFace, SphereFace |
-| **CFP-FP**   | Celebrities in Frontal-Profile - frontal vs. profile verification | ArcFace                         |
+| **LFW**      | Labeled Faces in the Wild - standard face verification benchmark  | ArcFace, AuraFace, EdgeFace, MobileFace, SphereFace |
+| **CALFW**    | Cross-Age LFW - face verification across age gaps                 | AuraFace, EdgeFace, MobileFace, SphereFace |
+| **CPLFW**    | Cross-Pose LFW - face verification across pose variations         | AuraFace, EdgeFace, MobileFace, SphereFace |
+| **AgeDB-30** | Age database with 30-year age gaps                                | ArcFace, AuraFace, EdgeFace, MobileFace, SphereFace |
+| **CFP-FP**   | Celebrities in Frontal-Profile - frontal vs. profile verification | ArcFace, AuraFace, EdgeFace     |
 | **IJB-B**    | IARPA Janus Benchmark B - TAR@FAR=0.01%                           | AdaFace                         |
 | **IJB-C**    | IARPA Janus Benchmark C - TAR@FAR=1e-4                            | AdaFace, ArcFace                |
 

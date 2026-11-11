@@ -13,9 +13,9 @@ Facial attribute analysis for age, gender, race, emotion, and face state detecti
 
 | Model | Attributes | Size | Notes |
 |-------|------------|------|-------|
-| **AgeGender** | Age, Gender | 8 MB | Exact age prediction |
-| **FairFace** | Gender, Age Group, Race | 44 MB | Balanced demographics |
-| **Emotion** | 7-8 emotions | 2 MB | Requires PyTorch |
+| **AgeGender** | Age, Gender | 1.3 MB | Exact age prediction |
+| **FairFace** | Gender, Age Group, Race | 81 MB | Balanced demographics |
+| **Emotion** | 7-8 emotions | 18 MB | Requires PyTorch |
 | **FaceAttribNet** | Eye openness, Eyeglasses, Mask, Sunglasses | 41 MB | Multi-label (independent probabilities) |
 
 ---
@@ -101,11 +101,12 @@ result.race       # Race/ethnicity label
 | Indian |
 | Middle Eastern |
 
-!!! note "FairFace orders ages more reliably than AgeGender"
+!!! note "AgeGender and FairFace on the same photographs"
 
-    On four subjects spanning child to elderly, `AgeGender` put the child at 30 and returned Male
-    for the elderly woman. FairFace's buckets ordered correctly on the same photographs. Prefer
-    FairFace when the relative order matters more than an exact number.
+    On four subjects spanning child to elderly, both models ordered the ages correctly:
+    `AgeGender` returned 3, 24, 54 and 72, and FairFace returned 3-9, 20-29, 40-49 and 60-69.
+    They disagreed on the child's gender. Use `AgeGender` for an exact number and FairFace for
+    an age bucket with race.
 
 ### Age Groups
 

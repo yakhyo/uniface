@@ -14,10 +14,11 @@ Face recognition extracts embeddings for identity verification and face search.
 | Model | Backbone | Size | Embedding Dim |
 |-------|----------|------|---------------|
 | **AdaFace** | IR-18/IR-50/IR-101 | 92-249 MB | 512 |
-| **ArcFace** | MobileNet/ResNet | 8-166 MB | 512 |
+| **ArcFace** | MobileNet/ResNet | 13-166 MB | 512 |
+| **AuraFace** | ResNet100 | 249 MB | 512 |
 | **EdgeFace** | EdgeNeXt/LoRA | 5-70 MB | 512 |
-| **MobileFace** | MobileNet V2/V3 | 1-10 MB | 512 |
-| **SphereFace** | Sphere20/36 | 50-92 MB | 512 |
+| **MobileFace** | MobileNet V1/V2/V3 | 1.4-13 MB | 512 |
+| **SphereFace** | Sphere20/36 | 93-132 MB | 512 |
 
 ---
 
@@ -63,7 +64,7 @@ recognizer = AdaFace(providers=['CPUExecutionProvider'])
 |---------|---------|------|-------|-------|
 | **IR_18** :material-check-circle: | WebFace4M | 92 MB | 93.03% | 94.99% |
 | IR_50 | WebFace4M | 166 MB | 95.44% | 96.98% |
-| IR_101 | WebFace12M | 249 MB | - | 97.66% |
+| IR_101 | WebFace12M | 249 MB | 96.41% | 97.66% |
 
 !!! info "Benchmark Metrics"
     IJB-B and IJB-C accuracy reported as TAR@FAR=0.01%
@@ -110,13 +111,60 @@ recognizer = ArcFace(providers=['CPUExecutionProvider'])
 
 | Variant | Backbone | Size | LFW | CFP-FP | AgeDB-30 | IJB-C |
 |---------|----------|------|-----|--------|----------|-------|
-| **MNET** :material-check-circle: | MobileNet | 8 MB | 99.70% | 98.00% | 96.58% | 95.02% |
+| **MNET** :material-check-circle: | MobileNet | 13 MB | 99.70% | 98.00% | 96.58% | 95.02% |
 | RESNET | ResNet50 | 166 MB | 99.83% | 99.33% | 98.23% | 97.25% |
 
 !!! info "Training Data & Metrics"
-    **Dataset**: Trained on WebFace600K (600K images)
+    **Dataset**: Trained on WebFace600K (about 600K identities)
 
     **Accuracy**: IJB-C reported as TAR@FAR=1e-4
+
+---
+
+## AuraFace
+
+A ResNet100 face encoder released by fal under Apache-2.0. It was trained on a commercial dataset so that the weights can be used in commercial products.
+
+### Basic Usage
+
+```python
+from uniface.detection import RetinaFace
+from uniface.recognition import AuraFace
+
+detector = RetinaFace()
+recognizer = AuraFace()
+
+# Detect face
+faces = detector.detect(image)
+
+# Extract embedding
+if faces:
+    embedding = recognizer.get_normalized_embedding(image, faces[0].landmarks)
+    print(f"Embedding shape: {embedding.shape}")  # (512,)
+```
+
+### Model Variants
+
+```python
+from uniface.recognition import AuraFace
+from uniface.constants import AuraFaceWeights
+
+# ResNet100 (default)
+recognizer = AuraFace(model_name=AuraFaceWeights.R100)
+
+# Force CPU execution
+recognizer = AuraFace(providers=['CPUExecutionProvider'])
+```
+
+| Variant | Backbone | Size | LFW | CALFW | CPLFW | CFP-FP | AgeDB-30 |
+|---------|----------|------|-----|-------|-------|--------|----------|
+| **R100** :material-check-circle: | ResNet100 | 249 MB | 99.65% | 94.70% | 90.93% | 95.19% | 96.10% |
+
+!!! info "Reference"
+    **Source**: [huggingface.co/fal/AuraFace-v1](https://huggingface.co/fal/AuraFace-v1) | [github.com/yakhyo/auraface-onnx](https://github.com/yakhyo/auraface-onnx)
+
+!!! note "Threshold"
+    At a fixed threshold on 1,000 LFW pairs, 0.3 gave 99.0% accuracy and 0.4 gave 97.2%, so start near 0.3 instead of the 0.4 default of `FAISS.search` and the search tools.
 
 ---
 
@@ -209,10 +257,10 @@ recognizer = MobileFace(model_name=MobileFaceWeights.MNET_V3_LARGE)
 
 | Variant | Params | Size | LFW | CALFW | CPLFW | AgeDB-30 |
 |---------|--------|------|-----|-------|-------|----------|
-| MNET_025 | 0.36M | 1 MB | 98.76% | 92.02% | 82.37% | 90.02% |
-| **MNET_V2** :material-check-circle: | 2.29M | 4 MB | 99.55% | 94.87% | 86.89% | 95.16% |
-| MNET_V3_SMALL | 1.25M | 3 MB | 99.30% | 93.77% | 85.29% | 92.79% |
-| MNET_V3_LARGE | 3.52M | 10 MB | 99.53% | 94.56% | 86.79% | 95.13% |
+| MNET_025 | 0.36M | 1.4 MB | 98.76% | 92.02% | 82.37% | 90.02% |
+| **MNET_V2** :material-check-circle: | 2.29M | 8.7 MB | 99.55% | 94.87% | 86.89% | 95.16% |
+| MNET_V3_SMALL | 1.25M | 4.8 MB | 99.30% | 93.77% | 85.29% | 92.79% |
+| MNET_V3_LARGE | 3.52M | 13 MB | 99.53% | 94.56% | 86.79% | 95.13% |
 
 ---
 
@@ -232,8 +280,8 @@ embedding = recognizer.get_normalized_embedding(image, landmarks)
 
 | Variant | Params | Size | LFW | CALFW | CPLFW | AgeDB-30 |
 |---------|--------|------|-----|-------|-------|----------|
-| SPHERE20 | 24.5M | 50 MB | 99.67% | 95.61% | 88.75% | 96.58% |
-| SPHERE36 | 34.6M | 92 MB | 99.72% | 95.64% | 89.92% | 96.83% |
+| SPHERE20 | 24.5M | 93 MB | 99.67% | 95.61% | 88.75% | 96.58% |
+| SPHERE36 | 34.6M | 132 MB | 99.72% | 95.64% | 89.92% | 96.83% |
 
 ---
 
@@ -260,20 +308,22 @@ print(f"Similarity: {similarity:.4f}")
 
 ### Threshold Guidelines
 
-| Threshold | Decision | Use Case |
-|-----------|----------|----------|
-| > 0.7 | Very high confidence | Security-critical |
-| > 0.6 | Same person | General verification |
-| 0.4 - 0.6 | Uncertain | Manual review needed |
-| < 0.4 | Different people | Rejection |
+| Similarity | Reading |
+|------------|---------|
+| > 0.6 | Same person, high confidence |
+| 0.4 - 0.6 | Likely the same person. Large age gaps and low-quality photos land here |
+| < 0.4 | Different people at the default threshold |
+
+`FAISS.search` and the search tools accept a match above 0.4 by default, and `tools/recognize.py` above 0.35.
+Scores depend on the model, so treat these bands as a starting point.
 
 <figure markdown="span">
   ![Verification across long time gaps](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/verification_alt.jpg){ width="100%" }
-  <figcaption>AdaFace IR-101 on archival portraits. Genuine pairs 26 and 15 years apart score +0.583 and +0.623; impostor pairs score +0.047 and −0.031</figcaption>
+  <figcaption>AdaFace IR-101 on archival portraits. Genuine pairs 26 and 25 years apart score +0.583 and +0.689; impostor pairs score +0.001 and −0.031</figcaption>
 </figure>
 
 Those numbers show why the table above is a starting point, not a rule. A genuine pair 26 years
-apart lands at 0.583, below the 0.6 "same person" row, while the impostor pairs sit near zero.
+apart lands at 0.583, below the 0.6 "high confidence" row, while the impostor pairs sit near zero.
 The gap between genuine and impostor stays wide, but the genuine floor drops with age gap, image
 age and scan quality. Calibrate the threshold on pairs that look like your own data.
 
@@ -299,6 +349,7 @@ aligned_face, _ = face_alignment(image, landmarks)
 ## Building a Face Database
 
 ```python
+import cv2
 import numpy as np
 from uniface.detection import RetinaFace
 from uniface.recognition import ArcFace
@@ -331,7 +382,7 @@ database = {key: data[key] for key in data.files}
 Find a person in a database:
 
 ```python
-def search_face(query_embedding, database, threshold=0.6):
+def search_face(query_embedding, database, threshold=0.4):
     """Find best match in database."""
     best_match = None
     best_similarity = -1
@@ -360,7 +411,7 @@ else:
 ## Available Recognizers
 
 ```python
-from uniface.recognition import ArcFace, AdaFace, EdgeFace, MobileFace, SphereFace
+from uniface.recognition import ArcFace, AdaFace, AuraFace, EdgeFace, MobileFace, SphereFace
 
 recognizer = ArcFace()
 # or

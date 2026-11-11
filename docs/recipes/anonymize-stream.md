@@ -58,7 +58,7 @@ while True:
         break
 
     faces = detector.detect(frame)
-    blurrer.anonymize(frame, faces, inplace=True)
+    frame = blurrer.anonymize(frame, faces, inplace=True)
     out.write(frame)
 
 cap.release()

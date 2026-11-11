@@ -71,7 +71,7 @@ for face in analyzer.analyze(cv2.imread("photo.jpg")):
     print(face.bbox, face.sex, face.age_group, face.embedding.shape)
 ```
 
-`bbox`, `confidence`, `landmarks` va `embedding` har doim toʻldiriladi. Yosh, jins, irq, hissiyot, sifat
+`bbox`, `confidence` va `landmarks` har doim toʻldiriladi, `embedding` esa tanib olish modeli ishlaganda (standart holat) toʻldiriladi. Yosh, jins, irq, hissiyot
 va yuz holatlari tegishli bashorat modelini uzatmaguningizcha `None` boʻlib qoladi.
 
 <details>
@@ -82,12 +82,12 @@ va yuz holatlari tegishli bashorat modelini uzatmaguningizcha `None` boʻlib qol
 | Vazifa | Modellar |
 | --- | --- |
 | Yuzni aniqlash | RetinaFace, SCRFD, CenterFace, YOLOv5-Face, YOLOv8-Face, BlazeFace |
-| Yuzni tanib olish | AdaFace, ArcFace, EdgeFace, MobileFace, SphereFace |
+| Yuzni tanib olish | AdaFace, ArcFace, AuraFace, EdgeFace, MobileFace, SphereFace |
 | Yuzni kuzatish | BYTETracker, video kadrlari orasida saqlanadigan ID lar |
 | Yuz tayanch nuqtalari | 2d106det (106), PIPNet (98 / 68), Face Mesh (468 / 478, 3D) |
 | Yuz qismlarini segmentlash | BiSeNet (19 ta sinf), XSeg yordamida niqob yaratish |
 | Odam tasvirini fondan ajratish | MODNet, PP-Matting (v1 HRNet-W18, v2 STDC1), trimap talab qilmaydi |
-| Nigoh yoʻnalishini baholash | MobileGaze (ResNet-18 / 34 / 50, MobileNetV2) |
+| Nigoh yoʻnalishini baholash | MobileGaze (ResNet-18 / 34 / 50, MobileNetV2, MobileOne-S0) |
 | Bosh holati | 6D aylanish ifodasi, pitch / yaw / roll |
 | Demografik atributlar | AgeGender, FairFace (yosh guruhi, jins, irq) |
 | Hissiyot | AffectNet-7 va AffectNet-8 |

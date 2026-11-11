@@ -4,7 +4,7 @@ Face anonymization protects privacy by blurring or obscuring faces in images and
 
 <figure markdown="span">
   ![Face Anonymization](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/anonymization.jpg){ width="100%" }
-  <figcaption>Five anonymization methods: pixelate, gaussian, blackout, elliptical, and median</figcaption>
+  <figcaption>Four of the five anonymization methods: pixelate, gaussian, elliptical, and blackout</figcaption>
 </figure>
 
 ---
@@ -52,7 +52,7 @@ blurrer = BlurFace(method='pixelate', pixel_blocks=15)
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `pixel_blocks` | 15 | Number of blocks (lower = more pixelated) |
+| `pixel_blocks` | 15 | Block size in pixels (higher = more pixelated) |
 
 ### Gaussian
 
@@ -125,6 +125,8 @@ blurrer = BlurFace(method='pixelate')
 result = blurrer.anonymize(image, faces, inplace=True)
 # 'image' and 'result' point to the same array
 ```
+
+`method='elliptical'` is the exception: it always returns a new array and leaves the input untouched, so use the return value.
 
 ---
 

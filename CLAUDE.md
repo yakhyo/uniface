@@ -13,7 +13,7 @@ UniFace is a Python library for face detection, recognition, tracking, landmark 
 - Single quotes for strings, double quotes for docstrings
 - Google-style docstrings
 - Formatter/linter: Ruff (config in `pyproject.toml`)
-- Run `ruff format .` and `ruff check . --fix` before committing
+- Run `ruff format uniface tests tools` and `ruff check . --fix` before committing (`ruff format .` would also rewrite the Markdown docs)
 
 ## Commit Messages
 
@@ -53,14 +53,16 @@ pre-commit run --all-files
 
 ```
 uniface/            # Main package
-  detection/        # Face detection models (SCRFD, RetinaFace, YOLOv5, YOLOv8)
-  recognition/      # Face recognition/verification (AdaFace, ArcFace, EdgeFace, MobileFace, SphereFace)
+  detection/        # Face detection models (BlazeFace, CenterFace, RetinaFace, SCRFD, YOLOv5, YOLOv8)
+  recognition/      # Face recognition/verification (AdaFace, ArcFace, AuraFace, EdgeFace, MobileFace, SphereFace)
   landmark/         # Facial landmark models
   tracking/         # Object tracking (ByteTrack)
   parsing/          # Face parsing/segmentation (BiSeNet, XSeg)
   gaze/             # Gaze estimation
   headpose/         # Head pose estimation
-  attribute/        # Age, gender, emotion detection
+  attribute/        # Age, gender, emotion, race, face states
+  matting/          # Portrait matting (MODNet, PP-Matting)
+  quality/          # Face image quality assessment (eDifFIQA)
   spoofing/         # Anti-spoofing (MiniFASNet)
   privacy/          # Face anonymization
   stores/           # Vector stores (FAISS)
@@ -69,6 +71,7 @@ uniface/            # Main package
   analyzer.py       # High-level FaceAnalyzer API
   types.py          # Shared type definitions
 tests/              # Unit tests
+tools/              # CLI scripts
 examples/           # Jupyter notebooks (outputs are auto-stripped)
 docs/               # MkDocs documentation
 ```

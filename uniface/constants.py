@@ -80,6 +80,15 @@ class EdgeFaceWeights(str, Enum):
     S_GAMMA_05  = "edgeface_s_gamma_05"
     BASE        = "edgeface_base"
 
+class AuraFaceWeights(str, Enum):
+    """AuraFace: Open-Source Face Recognition and Identity Preservation Models.
+
+    ResNet100 backbone released by fal.
+    Outputs 512-D embeddings from 112x112 aligned face crops.
+    https://github.com/yakhyo/auraface-onnx
+    """
+    R100 = "auraface_r100"
+
 class RetinaFaceWeights(str, Enum):
     """Trained on WIDER FACE dataset.
 
@@ -443,6 +452,12 @@ MODEL_REGISTRY: dict[Enum, ModelInfo] = {
     EdgeFaceWeights.BASE: ModelInfo(
         url='https://github.com/yakhyo/edgeface-onnx/releases/download/weights/edgeface_base.onnx',
         sha256='b56942f072c67385f44734b9458b0ccc4a2226888a113f77e0c802ad0c77b4c3'
+    ),
+
+    # AuraFace
+    AuraFaceWeights.R100: ModelInfo(
+        url='https://github.com/yakhyo/auraface-onnx/releases/download/weights/auraface_r100.onnx',
+        sha256='291665ffcaed5c78bd55c6c20bdf506c1232206a7f59ca145db3cd986fd1b77a'
     ),
 
     # SCRFD

@@ -13,19 +13,19 @@ RetinaFace models are trained on the [WIDER FACE](datasets.md#wider-face) datase
 | Model Name     | Params | Size  | Easy   | Medium | Hard   |
 | -------------- | ------ | ----- | ------ | ------ | ------ |
 | `MNET_025`   | 0.4M   | 1.7MB | 88.48% | 87.02% | 80.61% |
-| `MNET_050`   | 1.0M   | 2.6MB | 89.42% | 87.97% | 82.40% |
-| `MNET_V1`    | 3.5M   | 3.8MB | 90.59% | 89.14% | 84.13% |
-| `MNET_V2` :material-check-circle: | 3.2M   | 3.5MB | 91.70% | 91.03% | 86.60% |
-| `RESNET18`   | 11.7M  | 27MB  | 92.50% | 91.02% | 86.63% |
-| `RESNET34`   | 24.8M  | 56MB  | 94.16% | 93.12% | 88.90% |
+| `MNET_050`   | 1.7M   | 6.3MB | 89.42% | 87.97% | 82.40% |
+| `MNET_V1`    | 4.2M   | 16MB  | 90.59% | 89.14% | 84.13% |
+| `MNET_V2` :material-check-circle: | 3.1M   | 12MB  | 91.70% | 91.03% | 86.60% |
+| `RESNET18`   | 12.0M  | 46MB  | 92.50% | 91.02% | 86.63% |
+| `RESNET34`   | 22.1M  | 84MB  | 94.16% | 93.12% | 88.90% |
 | `RESNET50`   | 27.4M  | 104MB | 94.72%* | 93.67%* | 88.82%* |
 
 *\* `RESNET50` weights come from [HivisionIDPhotos](https://huggingface.co/TheEeeeLin/HivisionIDPhotos_matting/blob/main/retinaface-resnet50.onnx);
 its scores are measured with [widerface_evaluation](https://github.com/yakhyo/widerface_evaluation) rather than quoted
-from the paper. It trails `RESNET34` on Hard despite being ~2x the size.*
+from the paper. It trails `RESNET34` on Hard despite being ~1.2x the size.*
 
 !!! info "Accuracy & Benchmarks"
-    **Accuracy**: WIDER FACE validation set (Easy/Medium/Hard subsets) - from [RetinaFace paper](https://arxiv.org/abs/1905.00641)
+    **Accuracy**: WIDER FACE validation set (Easy/Medium/Hard subsets), multi-scale testing - from [yakhyo/retinaface-pytorch](https://github.com/yakhyo/retinaface-pytorch)
 
     **Speed**: Benchmark on your own hardware using `python tools/detect.py --source <image>`
 
@@ -37,11 +37,11 @@ SCRFD (Sample and Computation Redistribution for Efficient Face Detection) model
 
 | Model Name       | Params | Size  | Easy   | Medium | Hard   |
 | ---------------- | ------ | ----- | ------ | ------ | ------ |
-| `SCRFD_500M_KPS`   | 0.6M   | 2.5MB | 90.57% | 88.12% | 68.51% |
-| `SCRFD_10G_KPS` :material-check-circle: | 4.2M   | 17MB  | 95.16% | 93.87% | 83.05% |
+| `SCRFD_500M_KPS`   | 0.6M   | 2.5MB | 90.97% | 88.44% | 69.49% |
+| `SCRFD_10G_KPS` :material-check-circle: | 4.2M   | 17MB  | 95.40% | 94.01% | 82.80% |
 
 !!! info "Accuracy & Benchmarks"
-    **Accuracy**: WIDER FACE validation set - from [SCRFD paper](https://arxiv.org/abs/2105.04714)
+    **Accuracy**: WIDER FACE validation set - from the [InsightFace SCRFD model zoo](https://github.com/deepinsight/insightface/tree/master/detection/scrfd), `_KPS` rows
 
     **Speed**: Benchmark on your own hardware using `python tools/detect.py --source <image>`
 
@@ -59,7 +59,7 @@ CenterFace is an anchor-free detector (MobileNetV2 + FPN) that treats faces as c
 [original repo](https://github.com/Star-Clouds/CenterFace) reports 93.5% / 92.4% / 87.5%.*
 
 !!! info "Accuracy & Benchmarks"
-    **Accuracy**: WIDER FACE validation set - from [CenterFace paper](https://arxiv.org/abs/1911.03599)
+    **Accuracy**: WIDER FACE validation set - from the [CenterFace repo](https://github.com/Star-Clouds/CenterFace)
 
     **Speed**: Benchmark on your own hardware using `python tools/detect.py --source <image> --method centerface`
 
@@ -147,7 +147,7 @@ Face recognition using adaptive margin based on image quality.
 | ----------- | -------- | ----------- | ------ | --------- | --------- |
 | `IR_18` :material-check-circle: | IR-18    | WebFace4M   | 92 MB  | 93.03%    | 94.99%    |
 | `IR_50`   | IR-50    | WebFace4M   | 166 MB | 95.44%    | 96.98%    |
-| `IR_101`  | IR-101   | WebFace12M  | 249 MB | -         | 97.66%    |
+| `IR_101`  | IR-101   | WebFace12M  | 249 MB | 96.41%    | 97.66%    |
 
 !!! info "Training Data & Accuracy"
     **Dataset**: [WebFace4M / WebFace12M](datasets.md#webface4m-webface12m) (4M / 12M images)
@@ -166,11 +166,11 @@ Face recognition using additive angular margin loss.
 
 | Model Name  | Backbone  | Params | Size  | LFW    | CFP-FP | AgeDB-30 | IJB-C |
 | ----------- | --------- | ------ | ----- | ------ | ------ | -------- | ----- |
-| `MNET` :material-check-circle: | MobileNet | 2.0M   | 8MB   | 99.70% | 98.00% | 96.58%   | 95.02% |
+| `MNET` :material-check-circle: | MobileNet | 3.4M   | 13MB  | 99.70% | 98.00% | 96.58%   | 95.02% |
 | `RESNET`  | ResNet50  | 43.6M  | 166MB | 99.83% | 99.33% | 98.23%   | 97.25% |
 
 !!! info "Training Data"
-    **Dataset**: Trained on [WebFace600K](datasets.md#webface600k) (600K images)
+    **Dataset**: Trained on [WebFace600K](datasets.md#webface600k) (about 600K identities)
 
     **Accuracy**: IJB-C accuracy reported as TAR@FAR=1e-4
 
@@ -182,10 +182,10 @@ Lightweight face recognition models with MobileNet backbones.
 
 | Model Name        | Backbone         | Params | Size | LFW    | CALFW  | CPLFW  | AgeDB-30 |
 | ----------------- | ---------------- | ------ | ---- | ------ | ------ | ------ | -------- |
-| `MNET_025`      | MobileNetV1 0.25 | 0.36M  | 1MB  | 98.76% | 92.02% | 82.37% | 90.02%   |
-| `MNET_V2` :material-check-circle:    | MobileNetV2      | 2.29M  | 4MB  | 99.55% | 94.87% | 86.89% | 95.16%   |
-| `MNET_V3_SMALL` | MobileNetV3-S    | 1.25M  | 3MB  | 99.30% | 93.77% | 85.29% | 92.79%   |
-| `MNET_V3_LARGE` | MobileNetV3-L    | 3.52M  | 10MB | 99.53% | 94.56% | 86.79% | 95.13%   |
+| `MNET_025`      | MobileNetV1 0.25 | 0.36M  | 1.4MB | 98.76% | 92.02% | 82.37% | 90.02%   |
+| `MNET_V2` :material-check-circle:    | MobileNetV2      | 2.29M  | 8.7MB | 99.55% | 94.87% | 86.89% | 95.16%   |
+| `MNET_V3_SMALL` | MobileNetV3-S    | 1.25M  | 4.8MB | 99.30% | 93.77% | 85.29% | 92.79%   |
+| `MNET_V3_LARGE` | MobileNetV3-L    | 3.52M  | 13MB | 99.53% | 94.56% | 86.79% | 95.13%   |
 
 !!! info "Training Data"
     **Dataset**: Trained on [MS1MV2](datasets.md#ms1mv2) (5.8M images, 85K identities)
@@ -200,8 +200,8 @@ Face recognition using angular softmax loss.
 
 | Model Name   | Backbone | Params | Size | LFW    | CALFW  | CPLFW  | AgeDB-30 |
 | ------------ | -------- | ------ | ---- | ------ | ------ | ------ | -------- |
-| `SPHERE20` | Sphere20 | 24.5M  | 50MB | 99.67% | 95.61% | 88.75% | 96.58%   |
-| `SPHERE36` | Sphere36 | 34.6M  | 92MB | 99.72% | 95.64% | 89.92% | 96.83%   |
+| `SPHERE20` | Sphere20 | 24.5M  | 93MB | 99.67% | 95.61% | 88.75% | 96.58%   |
+| `SPHERE36` | Sphere36 | 34.6M  | 132MB | 99.72% | 95.64% | 89.92% | 96.83%   |
 
 !!! info "Training Data"
     **Dataset**: Trained on [MS1MV2](datasets.md#ms1mv2) (5.8M images, 85K identities)
@@ -231,6 +231,21 @@ Efficient face recognition designed for edge devices, using EdgeNeXt backbone wi
 
 ---
 
+### AuraFace
+
+A ResNet100 face encoder released by fal under Apache-2.0.
+
+| Model Name | Backbone  | Params | Size   | LFW    | CALFW  | CPLFW  | CFP-FP | AgeDB-30 |
+| ---------- | --------- | ------ | ------ | ------ | ------ | ------ | ------ | -------- |
+| `R100` :material-check-circle: | ResNet100 | 65.1M  | 249 MB | 99.65% | 94.70% | 90.93% | 95.19% | 96.10%   |
+
+!!! info "Training Data & Reference"
+    **Dataset**: A commercial dataset. fal does not name its sources.
+
+    **Source**: [huggingface.co/fal/AuraFace-v1](https://huggingface.co/fal/AuraFace-v1) | [github.com/yakhyo/auraface-onnx](https://github.com/yakhyo/auraface-onnx)
+
+---
+
 ## Facial Landmark Models
 
 ### 106-Point Landmark Detection
@@ -239,17 +254,21 @@ Facial landmark localization model.
 
 | Model Name | Points | Params | Size |
 | ---------- | ------ | ------ | ---- |
-| `DEFAULT` (2d_106) | 106 | 3.7M | 14MB |
+| `DEFAULT` (2d_106) | 106 | 1.3M | 4.8MB |
 
 **Landmark Groups:**
 
 | Group | Points | Count |
 |-------|--------|-------|
 | Face contour | 0-32 | 33 points |
-| Eyebrows | 33-50 | 18 points |
-| Nose | 51-62 | 12 points |
-| Eyes | 63-86 | 24 points |
-| Mouth | 87-105 | 19 points |
+| Left eye | 33-42 | 10 points |
+| Left eyebrow | 43-51 | 9 points |
+| Mouth | 52-71 | 20 points |
+| Nose | 72-86 | 15 points |
+| Right eye | 87-96 | 10 points |
+| Right eyebrow | 97-105 | 9 points |
+
+Left and right are as seen in the image.
 
 ---
 
@@ -306,7 +325,7 @@ inference call.
 
 | Model Name  | Attributes  | Params | Size |
 | ----------- | ----------- | ------ | ---- |
-| `DEFAULT`   | Age, Gender | 2.1M   | 8MB  |
+| `DEFAULT`   | Age, Gender | 0.3M   | 1.3MB |
 
 !!! info "Training Data"
     **Dataset**: Trained on [CelebA](datasets.md#celeba)
@@ -320,7 +339,7 @@ inference call.
 
 | Model Name  | Attributes            | Params | Size  |
 | ----------- | --------------------- | ------ | ----- |
-| `DEFAULT`   | Race, Gender, Age Group | -      | 44MB  |
+| `DEFAULT`   | Race, Gender, Age Group | 21.3M  | 81MB  |
 
 !!! info "Training Data"
     **Dataset**: Trained on [FairFace](datasets.md#fairface) dataset with balanced demographics
@@ -338,8 +357,8 @@ inference call.
 
 | Model Name    | Classes | Params | Size |
 | ------------- | ------- | ------ | ---- |
-| `AFFECNET7` | 7       | 0.5M   | 2MB  |
-| `AFFECNET8` | 8       | 0.5M   | 2MB  |
+| `AFFECNET7` | 7       | 4.2M   | 18MB |
+| `AFFECNET8` | 8       | 4.2M   | 18MB |
 
 **Classes (7)**: Neutral, Happy, Sad, Surprise, Fear, Disgust, Angry
 
@@ -378,11 +397,11 @@ Gaze direction prediction models trained on [Gaze360](datasets.md#gaze360) datas
 
 | Model Name     | Params | Size    | MAE*  |
 | -------------- | ------ | ------- | ----- |
-| `RESNET18`   | 11.7M  | 43 MB   | 12.84 |
-| `RESNET34` :material-check-circle: | 24.8M  | 81.6 MB | 11.33 |
-| `RESNET50`   | 25.6M  | 91.3 MB | 11.34 |
-| `MOBILENET_V2` | 3.5M   | 9.59 MB | 13.07 |
-| `MOBILEONE_S0` | 2.1M   | 4.8 MB  | 12.58 |
+| `RESNET18`   | 11.3M  | 43 MB   | 12.84 |
+| `RESNET34` :material-check-circle: | 21.4M  | 81.6 MB | 11.33 |
+| `RESNET50`   | 23.9M  | 91.3 MB | 11.34 |
+| `MOBILENET_V2` | 2.4M   | 9.3 MB  | 13.07 |
+| `MOBILEONE_S0` | 1.2M   | 4.8 MB  | 12.58 |
 
 *MAE (Mean Absolute Error) in degrees on Gaze360 test set - lower is better
 
@@ -404,12 +423,12 @@ Head pose estimation models using 6D rotation representation. Trained on [300W-L
 
 | Model Name     | Backbone | Size    | MAE*  |
 | -------------- | -------- | ------- | ----- |
-| `RESNET18` :material-check-circle: | ResNet18 | 43 MB   | 5.22° |
-| `RESNET34`   | ResNet34 | 82 MB   | 5.07° |
-| `RESNET50`   | ResNet50 | 91 MB   | 4.83° |
-| `MOBILENET_V2` | MobileNetV2 | 9.6 MB  | 5.72° |
-| `MOBILENET_V3_SMALL` | MobileNetV3-Small | 4.8 MB  | 6.31° |
-| `MOBILENET_V3_LARGE` | MobileNetV3-Large | 16 MB   | 5.58° |
+| `RESNET18` :material-check-circle: | ResNet18 | 43 MB   | 4.85° |
+| `RESNET34`   | ResNet34 | 81 MB   | 4.54° |
+| `RESNET50`   | ResNet50 | 90 MB   | 4.02° |
+| `MOBILENET_V2` | MobileNetV2 | 8.5 MB  | 5.39° |
+| `MOBILENET_V3_SMALL` | MobileNetV3-Small | 5.8 MB  | 7.47° |
+| `MOBILENET_V3_LARGE` | MobileNetV3-Large | 16 MB   | 5.74° |
 
 *MAE (Mean Absolute Error) in degrees on AFLW2000 test set — lower is better
 
@@ -559,8 +578,8 @@ Face anti-spoofing models for liveness detection. Detect if a face is real (live
 
 | Model Name | Size   | Scale |
 | ---------- | ------ | ----- |
-| `V1SE`   | 1.2 MB | 4.0   |
-| `V2` :material-check-circle:  | 1.2 MB | 2.7   |
+| `V1SE`   | 1.7 MB | 4.0   |
+| `V2` :material-check-circle:  | 1.7 MB | 2.7   |
 
 !!! info "Output Format"
     **Output**: Returns `SpoofingResult(is_real, confidence)` where is_real: True=Real, False=Fake
@@ -617,6 +636,7 @@ See [Model Cache & Offline Use](concepts/model-cache-offline.md) for full detail
 - **YOLOv8-Face ONNX**: [yakhyo/yolov8-face-onnx-inference](https://github.com/yakhyo/yolov8-face-onnx-inference) - ONNX inference implementation
 - **AdaFace Original**: [mk-minchul/AdaFace](https://github.com/mk-minchul/AdaFace) - Original PyTorch implementation
 - **AdaFace ONNX**: [yakhyo/adaface-onnx](https://github.com/yakhyo/adaface-onnx) - ONNX export and inference
+- **AuraFace**: [yakhyo/auraface-onnx](https://github.com/yakhyo/auraface-onnx) - AuraFace ported weights and inference (from [fal/AuraFace-v1](https://huggingface.co/fal/AuraFace-v1))
 - **Face Recognition Training**: [yakhyo/face-recognition](https://github.com/yakhyo/face-recognition) - ArcFace, MobileFace, SphereFace training code
 - **Gaze Estimation Training**: [yakhyo/gaze-estimation](https://github.com/yakhyo/gaze-estimation) - MobileGaze training code and pretrained weights
 - **Head Pose Estimation**: [yakhyo/head-pose-estimation](https://github.com/yakhyo/head-pose-estimation) - 6D rotation head pose estimation training and ONNX models

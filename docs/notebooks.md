@@ -36,7 +36,7 @@ git clone https://github.com/yakhyo/uniface.git
 cd uniface
 
 # Install dependencies
-pip install "uniface[cpu]" jupyter   # or uniface[gpu] for CUDA
+pip install "uniface[cpu]" jupyter
 
 # Launch Jupyter
 jupyter notebook examples/
@@ -52,8 +52,9 @@ Click any **"Open in Colab"** badge above. The notebooks automatically:
 2. Clone the repository to access test images
 3. Set up the correct working directory
 
-!!! tip "GPU Acceleration"
-    In Colab, go to **Runtime → Change runtime type → GPU** for faster inference.
+!!! note "The notebooks run on the CPU"
+    Each notebook installs `uniface[cpu]`, so switching Colab to a GPU runtime does not speed them up.
+    To use a GPU, change the first cell to install `uniface[gpu]` instead.
 
 ---
 

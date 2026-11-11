@@ -23,10 +23,9 @@ Gaze estimation predicts where a person is looking (pitch and yaw angles).
 
 !!! note "The default is ResNet-34"
 
-    `MobileGaze()` loads ResNet-34. On three subjects looking left, part-left and right,
-    ResNet-18 was the only backbone that returned a positive yaw on the third face; the others
-    read all three as leftward. Backbone choice changes the sign, not just the error, so test
-    yours on faces like your own.
+    `MobileGaze()` loads ResNet-34. Backbones can disagree by more than their average error
+    suggests: on one of the sample faces, yaw ranged from 0° with MobileOne-S0 to +28° with
+    ResNet-18. Test yours on faces like your own.
 
 
 ---
@@ -75,7 +74,7 @@ gaze = MobileGaze()
 # Lightweight for mobile/edge
 gaze = MobileGaze(model_name=GazeWeights.MOBILEONE_S0)
 
-# Higher accuracy
+# Largest backbone (accuracy on par with ResNet34)
 gaze = MobileGaze(model_name=GazeWeights.RESNET50)
 ```
 
@@ -97,8 +96,8 @@ result.yaw    # Horizontal angle in radians
           pitch = +90° (looking up)
                │
                │
-yaw = -90° ────┼──── yaw = +90°
-(looking left) │     (looking right)
+yaw = +90° ────┼──── yaw = -90°
+(image left)   │     (image right)
                │
           pitch = -90° (looking down)
 ```
@@ -108,8 +107,8 @@ yaw = -90° ────┼──── yaw = +90°
   - Negative = looking down
 
 - **Yaw**: Horizontal gaze angle
-  - Positive = looking right
-  - Negative = looking left
+  - Positive = looking to the subject's own right, which is the left side of the image
+  - Negative = looking to the subject's own left, which is the right side of the image
 
 ---
 

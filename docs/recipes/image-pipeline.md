@@ -218,30 +218,34 @@ def visualize_analysis(image_path, output_path):
     image = cv2.imread(image_path)
     faces = detector.detect(image)
 
+    # Draw on a copy: the models must read the untouched image,
+    # otherwise boxes and labels end up inside their input crops.
+    canvas = image.copy()
+
     for face in faces:
         x1, y1, x2, y2 = map(int, face.bbox)
 
         # Draw bounding box
-        cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 2)
+        cv2.rectangle(canvas, (x1, y1), (x2, y2), (0, 255, 0), 2)
 
         # Age and gender
         attrs = age_gender.predict(image, face)
         label = f"{attrs.sex}, {attrs.age}y"
-        cv2.putText(image, label, (x1, y1 - 10),
+        cv2.putText(canvas, label, (x1, y1 - 10),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
 
         # Gaze
         face_crop = image[y1:y2, x1:x2]
         if face_crop.size > 0:
             gaze_result = gaze.estimate(face_crop)
-            draw_gaze(image, face.bbox, gaze_result.pitch, gaze_result.yaw)
+            draw_gaze(canvas, face.bbox, gaze_result.pitch, gaze_result.yaw)
 
         # Confidence
         conf_label = f"{face.confidence:.0%}"
-        cv2.putText(image, conf_label, (x1, y2 + 20),
+        cv2.putText(canvas, conf_label, (x1, y2 + 20),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
 
-    cv2.imwrite(output_path, image)
+    cv2.imwrite(output_path, canvas)
     print(f"Saved to {output_path}")
 
 # Usage

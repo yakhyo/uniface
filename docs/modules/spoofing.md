@@ -21,8 +21,8 @@ Face anti-spoofing detects whether a face is real (live) or fake (photo, video r
 
 | Model | Size |
 |-------|------|
-| MiniFASNet V1SE | 1.2 MB |
-| **MiniFASNet V2** :material-check-circle: | 1.2 MB |
+| MiniFASNet V1SE | 1.7 MB |
+| **MiniFASNet V2** :material-check-circle: | 1.7 MB |
 
 ---
 
@@ -55,7 +55,7 @@ result = spoofer.predict(image, face.bbox)
 
 # SpoofingResult dataclass
 result.is_real     # True = real, False = fake
-result.confidence  # 0.0 to 1.0
+result.confidence  # 0.0 to 1.0, probability of the predicted label (real or fake), not P(real)
 ```
 
 ---
@@ -75,8 +75,8 @@ spoofer = MiniFASNet(model_name=MiniFASNetWeights.V1SE)
 
 | Variant | Size | Scale Factor |
 |---------|------|--------------|
-| V1SE | 1.2 MB | 4.0 |
-| **V2** :material-check-circle: | 1.2 MB | 2.7 |
+| V1SE | 1.7 MB | 4.0 |
+| **V2** :material-check-circle: | 1.7 MB | 2.7 |
 
 ---
 

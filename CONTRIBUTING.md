@@ -52,6 +52,7 @@ Once installed, pre-commit will automatically run on every commit to check:
 
 - Code formatting and linting (Ruff)
 - Security issues (Bandit)
+- Notebook outputs (nbstripout) and an up-to-date `uv.lock`
 - General file hygiene (trailing whitespace, YAML/TOML validity, etc.)
 
 **Note:** All PRs are automatically checked by CI. The merge button will only be available after all checks pass.
@@ -160,9 +161,6 @@ pytest tests/ -v
 
 # Run specific test file
 pytest tests/test_scrfd.py
-
-# Run with coverage
-pytest tests/ --cov=uniface --cov-report=html
 ```
 
 ## Adding New Features
@@ -216,7 +214,7 @@ The `Release Pipeline` workflow runs all stages in sequence:
 
 1. **Validate** — checks the version string against PEP 440 and confirms the tag does not already exist.
 2. **Test** — runs the test suite on Python 3.11–3.14.
-3. **Release** — updates `pyproject.toml` and `uniface/__init__.py`, commits `chore: Release vX.Y.Z` to `main`, creates and pushes tag `vX.Y.Z`.
+3. **Release** — updates `pyproject.toml`, `uniface/__init__.py` and `uv.lock`, commits `chore: Release vX.Y.Z` to `main`, creates and pushes tag `vX.Y.Z`.
 4. **Publish** — builds the package, uploads to PyPI, and creates a GitHub Release (flagged as pre-release for `a`/`b`/`rc`/`.dev` versions).
 5. **Deploy docs** — runs only for **stable** versions. Pre-releases do not update the live documentation site.
 

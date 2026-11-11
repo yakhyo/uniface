@@ -71,7 +71,7 @@ for face in analyzer.analyze(cv2.imread("photo.jpg")):
     print(face.bbox, face.sex, face.age_group, face.embedding.shape)
 ```
 
-`bbox`、`confidence`、`landmarks` 和 `embedding` 始终会被赋值。年龄、性别、种族、情绪、质量
+`bbox`、`confidence` 和 `landmarks` 始终会被赋值，`embedding` 在识别模型运行时（默认行为）被赋值。年龄、性别、种族、情绪
 和人脸状态保持为 `None`，直到你传入相应的预测模型。
 
 <details>
@@ -82,12 +82,12 @@ for face in analyzer.analyze(cv2.imread("photo.jpg")):
 | 任务 | 模型 |
 | --- | --- |
 | 人脸检测 | RetinaFace, SCRFD, CenterFace, YOLOv5-Face, YOLOv8-Face, BlazeFace |
-| 人脸识别 | AdaFace, ArcFace, EdgeFace, MobileFace, SphereFace |
+| 人脸识别 | AdaFace, ArcFace, AuraFace, EdgeFace, MobileFace, SphereFace |
 | 人脸跟踪 | BYTETracker, 视频帧之间保持一致的 ID |
 | 人脸关键点 | 2d106det (106), PIPNet (98 / 68), Face Mesh (468 / 478, 3D) |
 | 人脸解析 | BiSeNet (19 个类别), XSeg 掩码生成 |
 | 人像抠图 | MODNet, PP-Matting (v1 HRNet-W18, v2 STDC1), 无需三分图 |
-| 视线估计 | MobileGaze (ResNet-18 / 34 / 50, MobileNetV2) |
+| 视线估计 | MobileGaze (ResNet-18 / 34 / 50, MobileNetV2, MobileOne-S0) |
 | 头部姿态 | 6D 旋转表示，俯仰 / 偏航 / 翻滚 |
 | 人口统计属性 | AgeGender, FairFace (年龄组、性别、种族) |
 | 情绪 | AffectNet-7 和 AffectNet-8 |
