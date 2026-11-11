@@ -71,7 +71,7 @@ for face in analyzer.analyze(cv2.imread("photo.jpg")):
     print(face.bbox, face.sex, face.age_group, face.embedding.shape)
 ```
 
-`bbox`, `confidence`, `landmarks`, `embedding`은 항상 설정됩니다. 나이, 성별, 인종, 감정, 품질
+`bbox`, `confidence`, `landmarks`는 항상 설정되며, `embedding`은 인식 모델이 실행될 때(기본 동작) 설정됩니다. 나이, 성별, 인종, 감정
 및 얼굴 상태는 해당 값을 채우는 예측 모델을 전달하기 전까지 `None`으로 유지됩니다.
 
 <details>
@@ -82,12 +82,12 @@ for face in analyzer.analyze(cv2.imread("photo.jpg")):
 | 작업 | 모델 |
 | --- | --- |
 | 얼굴 검출 | RetinaFace, SCRFD, CenterFace, YOLOv5-Face, YOLOv8-Face, BlazeFace |
-| 얼굴 인식 | AdaFace, ArcFace, EdgeFace, MobileFace, SphereFace |
+| 얼굴 인식 | AdaFace, ArcFace, AuraFace, EdgeFace, MobileFace, SphereFace |
 | 얼굴 추적 | BYTETracker, 동영상 프레임 간 ID 유지 |
 | 얼굴 랜드마크 | 2d106det (106), PIPNet (98 / 68), Face Mesh (468 / 478, 3D) |
 | 얼굴 파싱 | BiSeNet (19개 클래스), XSeg 마스크 생성 |
 | 인물 매팅 | MODNet, PP-Matting (v1 HRNet-W18, v2 STDC1), 트라이맵 불필요 |
-| 시선 추정 | MobileGaze (ResNet-18 / 34 / 50, MobileNetV2) |
+| 시선 추정 | MobileGaze (ResNet-18 / 34 / 50, MobileNetV2, MobileOne-S0) |
 | 머리 자세 | 6D 회전 표현, 피치 / 요 / 롤 |
 | 인구통계학적 속성 | AgeGender, FairFace (연령대, 성별, 인종) |
 | 감정 | AffectNet-7 및 AffectNet-8 |

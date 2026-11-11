@@ -13,7 +13,7 @@ Facial landmark detection provides precise localization of facial features.
 
 | Model | Points | Size |
 |-------|--------|------|
-| **Landmark106** | 106 | 14 MB |
+| **Landmark106** | 106 | 4.8 MB |
 | **PIPNet (WFLW-98)** | 98 | 47 MB |
 | **PIPNet (300W+CelebA-68)** | 68 | 46 MB |
 | **FaceMesh** (`V1_468`) | 468 (3D) | 2.4 MB |
@@ -49,11 +49,17 @@ if faces:
 
 | Range | Group | Points |
 |-------|-------|--------|
-| 0-32 | Face Contour | 33 |
-| 33-50 | Eyebrows | 18 |
-| 51-62 | Nose | 12 |
-| 63-86 | Eyes | 24 |
-| 87-105 | Mouth | 19 |
+| 0-32 | Face contour | 33 |
+| 33-42 | Left eye | 10 |
+| 43-51 | Left eyebrow | 9 |
+| 52-71 | Mouth | 20 |
+| 72-86 | Nose | 15 |
+| 87-96 | Right eye | 10 |
+| 97-105 | Right eyebrow | 9 |
+
+Left and right are as seen in the image, so the left eye is the one on the left side of the picture.
+The contour indices do not run along the jawline in order: point 0 is the chin, and the two sides are
+numbered separately. See [Draw with Connections](#draw-with-connections) for the drawing order.
 
 ### Extract Specific Features
 
@@ -63,23 +69,19 @@ landmarks = landmarker.get_landmarks(image, face.bbox)
 # Face contour
 contour = landmarks[0:33]
 
-# Left eyebrow
-left_eyebrow = landmarks[33:42]
-
-# Right eyebrow
-right_eyebrow = landmarks[42:51]
-
-# Nose
-nose = landmarks[51:63]
-
-# Left eye
-left_eye = landmarks[63:72]
-
-# Right eye
-right_eye = landmarks[76:84]
+# Left eye and eyebrow (left side of the image)
+left_eye = landmarks[33:43]
+left_eyebrow = landmarks[43:52]
 
 # Mouth
-mouth = landmarks[87:106]
+mouth = landmarks[52:72]
+
+# Nose (point 86 is the tip)
+nose = landmarks[72:87]
+
+# Right eye and eyebrow
+right_eye = landmarks[87:97]
+right_eyebrow = landmarks[97:106]
 ```
 
 ---
@@ -186,6 +188,7 @@ result.landmarks.shape                  # (478, 3)
 result.landmarks[:NUM_MESH_LANDMARKS]   # the 468 mesh points, as V1_468 returns them
 result.landmarks[IRIS_LEFT]             # (5, 3) — center, right, top, left, bottom
 result.landmarks[IRIS_RIGHT]            # (5, 3)
+# IRIS_LEFT is the iris on the left side of the image, which is the subject's right eye.
 
 left_pupil = result.landmarks[IRIS_LEFT][0, :2]
 ```
@@ -294,29 +297,27 @@ cv2.imwrite("landmarks.jpg", image_with_landmarks)
 ### Draw with Connections
 
 ```python
+import cv2
+import numpy as np
+
+# Contour points from one temple, down through the chin (point 0), up to the other temple
+CONTOUR = [1, 9, 10, 11, 12, 13, 14, 15, 16, 2, 3, 4, 5, 6, 7, 8, 0,
+           24, 23, 22, 21, 20, 19, 18, 32, 31, 30, 29, 28, 27, 26, 25, 17]
+
 def draw_landmarks_with_connections(image, landmarks):
-    """Draw landmarks with facial feature connections."""
-    landmarks = landmarks.astype(int)
+    """Draw the 106 landmarks with the face contour, eye and mouth outlines."""
+    points = landmarks.astype(np.int32)
 
-    # Face contour (0-32)
-    for i in range(32):
-        cv2.line(image, tuple(landmarks[i]), tuple(landmarks[i+1]), (255, 255, 0), 1)
+    # Face contour
+    cv2.polylines(image, [points[CONTOUR]], False, (255, 255, 0), 1)
 
-    # Left eyebrow (33-41)
-    for i in range(33, 41):
-        cv2.line(image, tuple(landmarks[i]), tuple(landmarks[i+1]), (0, 255, 0), 1)
-
-    # Right eyebrow (42-50)
-    for i in range(42, 50):
-        cv2.line(image, tuple(landmarks[i]), tuple(landmarks[i+1]), (0, 255, 0), 1)
-
-    # Nose (51-62)
-    for i in range(51, 62):
-        cv2.line(image, tuple(landmarks[i]), tuple(landmarks[i+1]), (0, 0, 255), 1)
+    # Outline of each eye (33-42, 87-96) and the mouth (52-71)
+    for start, end in ((33, 43), (87, 97), (52, 72)):
+        cv2.polylines(image, [cv2.convexHull(points[start:end])], True, (0, 255, 0), 1)
 
     # Draw points
-    for x, y in landmarks:
-        cv2.circle(image, (x, y), 2, (0, 255, 255), -1)
+    for x, y in points:
+        cv2.circle(image, (int(x), int(y)), 2, (0, 255, 255), -1)
 
     return image
 ```
@@ -352,13 +353,17 @@ def eye_aspect_ratio(eye_landmarks):
     ear = (v1 + v2) / (2.0 * h)
     return ear
 
-# Usage with 106-point landmarks
-left_eye = landmarks[63:72]  # Approximate eye points
-ear = eye_aspect_ratio(left_eye)
+# Usage with 106-point landmarks: corner, two upper-lid points, corner, two lower-lid points
+left_eye = landmarks[[35, 41, 42, 39, 37, 36]]
+right_eye = landmarks[[89, 95, 96, 93, 91, 90]]
+ear = (eye_aspect_ratio(left_eye) + eye_aspect_ratio(right_eye)) / 2
 
-if ear < 0.2:
-    print("Eye closed (blink detected)")
+if ear < 0.15:
+    print("Eyes closed (blink detected)")
 ```
+
+On the sample photos an open eye measures about 0.24 to 0.31 and a closed eye about 0.08, so 0.15 is a
+starting point. Tune it on your own footage.
 
 ### Head Pose Estimation
 
@@ -380,12 +385,12 @@ def estimate_head_pose(landmarks, image_shape):
 
     # 2D image points (from 106 landmarks)
     image_points = np.array([
-        landmarks[51],   # Nose tip
-        landmarks[16],   # Chin
-        landmarks[63],   # Left eye corner
-        landmarks[76],   # Right eye corner
-        landmarks[87],   # Left mouth corner
-        landmarks[93]    # Right mouth corner
+        landmarks[86],   # Nose tip
+        landmarks[0],    # Chin
+        landmarks[35],   # Left eye outer corner
+        landmarks[93],   # Right eye outer corner
+        landmarks[52],   # Left mouth corner
+        landmarks[61]    # Right mouth corner
     ], dtype=np.float64)
 
     # Camera matrix

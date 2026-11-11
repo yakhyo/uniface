@@ -5,9 +5,10 @@
 
 from .adaface import AdaFace
 from .arcface import ArcFace
+from .auraface import AuraFace
 from .base import BaseRecognizer
 from .edgeface import EdgeFace
 from .mobileface import MobileFace
 from .sphereface import SphereFace
 
-__all__ = ['AdaFace', 'ArcFace', 'BaseRecognizer', 'EdgeFace', 'MobileFace', 'SphereFace']
+__all__ = ['AdaFace', 'ArcFace', 'AuraFace', 'BaseRecognizer', 'EdgeFace', 'MobileFace', 'SphereFace']

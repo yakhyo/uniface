@@ -89,7 +89,7 @@ similarity = compute_similarity(embedding1, embedding2)
 if similarity > 0.6:
     print("Same person (high confidence)")
 elif similarity > 0.4:
-    print("Uncertain (manual review)")
+    print("Likely the same person")
 else:
     print("Different people")
 ```
@@ -98,10 +98,12 @@ else:
 
 | Threshold | Decision | False Accept Rate |
 |-----------|----------|-------------------|
-| 0.4 | Low security | Higher FAR |
-| 0.5 | Balanced | Moderate FAR |
-| 0.6 | High security | Lower FAR |
+| 0.4 | Library default (`FAISS.search`, search tools) | Higher FAR |
+| 0.5 | Stricter | Moderate FAR |
+| 0.6 | High security, rejects some genuine pairs with large age gaps | Lower FAR |
 | 0.7 | Very strict | Very low FAR |
+
+Scores depend on the model. AuraFace, for example, works best near 0.3.
 
 ---
 
@@ -110,6 +112,7 @@ else:
 Test on your data to find optimal thresholds:
 
 ```python
+import cv2
 import numpy as np
 
 def calibrate_threshold(same_pairs, diff_pairs, recognizer, detector):
@@ -156,7 +159,7 @@ def calibrate_threshold(same_pairs, diff_pairs, recognizer, detector):
 
 ## Anti-Spoofing Thresholds
 
-The MiniFASNet model returns a confidence score:
+MiniFASNet returns a label (`is_real`) and the confidence of that label:
 
 ```python
 from uniface.spoofing import MiniFASNet
@@ -164,13 +167,14 @@ from uniface.spoofing import MiniFASNet
 spoofer = MiniFASNet()
 result = spoofer.predict(image, face.bbox)
 
-# Default threshold (0.5)
-if result.is_real:  # confidence > 0.5
+# Default: the label with the highest probability among the model's three classes
+if result.is_real:
     print("Real face")
 
-# Custom threshold for high security
+# Stricter: also require a confident "real".
+# confidence is the probability of the predicted label, so check is_real first.
 SPOOF_THRESHOLD = 0.7
-if result.confidence > SPOOF_THRESHOLD:
+if result.is_real and result.confidence > SPOOF_THRESHOLD:
     print("Real face (high confidence)")
 else:
     print("Potentially fake")
@@ -215,10 +219,10 @@ draw_detections(
 
 | Parameter | Default | Range | Lower = | Higher = |
 |-----------|---------|-------|---------|----------|
-| `confidence_threshold` | 0.5 | 0.1-0.9 | More detections | Fewer false positives |
-| `nms_threshold` | 0.4 | 0.1-0.7 | Fewer overlaps | More overlapping boxes |
-| Similarity threshold | 0.6 | 0.3-0.8 | More matches (FAR↑) | Fewer matches (FRR↑) |
-| Spoof confidence | 0.5 | 0.3-0.9 | More "real" | Stricter liveness |
+| `confidence_threshold` | 0.5 (RetinaFace, SCRFD) | 0.1-0.9 | More detections | Fewer false positives |
+| `nms_threshold` | 0.4 (RetinaFace, SCRFD) | 0.1-0.7 | Fewer overlaps | More overlapping boxes |
+| Similarity threshold | 0.4 (`FAISS.search`) | 0.3-0.8 | More matches (FAR↑) | Fewer matches (FRR↑) |
+| Spoof confidence (with `is_real`) | None, label only | 0.5-0.9 | More faces accepted as real | Stricter liveness |
 
 ---
 

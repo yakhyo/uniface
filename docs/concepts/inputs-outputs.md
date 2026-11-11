@@ -29,8 +29,9 @@ print(f"Dtype: {image.dtype}")  # uint8
     ```
 
 !!! warning "Dtype"
-    Images must be `uint8` in `[0, 255]`, three-channel. A float `[0, 1]` array or a
-    grayscale frame raises `ValueError` rather than returning quietly wrong results:
+    Images must be `uint8` in `[0, 255]`, three-channel. Detectors and `FaceMesh` raise
+    `ValueError` on a float `[0, 1]` array or a grayscale frame. The other models do not check
+    and return wrong results without an error, so always pass the array as `cv2.imread` gives it:
 
     ```python
     detector.detect(image.astype(np.float32) / 255.0)
@@ -58,7 +59,7 @@ class Face:
     bbox: np.ndarray        # [x1, y1, x2, y2]
     confidence: float       # 0.0 to 1.0
     landmarks: np.ndarray   # (5, 2) from detectors — except BlazeFace, which returns (6, 2).
-                            # Dense landmarkers return (106, 2), (98, 2), (68, 2), (468, 3), or (478, 3).
+                            # Dense landmarkers return their own arrays and do not write here.
 
     # Optional (enriched by analyzers)
     embedding: np.ndarray | None = None
@@ -73,7 +74,7 @@ class Face:
     eyeglasses: float | None = None      # [0, 1] probability, from FaceAttribNet
     mask: float | None = None            # [0, 1] probability, from FaceAttribNet
     sunglasses: float | None = None      # [0, 1] probability, from FaceAttribNet
-    quality: float | None = None        # [0, 1] quality score from eDifFIQA
+    quality: float | None = None        # Not set by any model; assign EDifFIQA().predict(...).score yourself
     track_id: int | None = None         # Persistent ID from tracker
 ```
 
@@ -135,9 +136,9 @@ print(f"Yaw: {np.degrees(result.yaw):.1f}°")
 ```python
 @dataclass(frozen=True)
 class HeadPoseResult:
-    pitch: float  # Rotation around X-axis (degrees), + = looking down
-    yaw: float    # Rotation around Y-axis (degrees), + = looking right
-    roll: float   # Rotation around Z-axis (degrees), + = tilting clockwise
+    pitch: float  # Rotation around X-axis (degrees), + = looking up
+    yaw: float    # Rotation around Y-axis (degrees), + = turned to the subject's right (image left)
+    roll: float   # Rotation around Z-axis (degrees), + = tilting clockwise in the image
 ```
 
 **Usage:**

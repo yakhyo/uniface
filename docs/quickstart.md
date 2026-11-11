@@ -23,17 +23,20 @@ for face in faces:
 Attribute models are opt-in. Pass them as `predictors=` and their fields appear on every face:
 
 ```python
+import cv2
 from uniface import FaceAnalyzer, FairFace
 
 analyzer = FaceAnalyzer(predictors=[FairFace()])
+image = cv2.imread("photo.jpg")
 
 for face in analyzer.analyze(image):
     print(f"{face.sex}, {face.age_group}, embedding {face.embedding.shape}")
 ```
 
 !!! info "Which fields are populated"
-    `bbox`, `confidence`, `landmarks` and `embedding` are always set. Everything else
-    (`age`, `age_group`, `gender`, `race`, `emotion`, `quality`, the face states) stays `None`
+    `bbox`, `confidence` and `landmarks` are always set. `embedding` is set whenever a recognizer
+    runs, which is the default; it is `None` with `recognizer=None` or with BlazeFace. Everything else
+    (`age`, `age_group`, `gender`, `race`, `emotion`, the face states) stays `None`
     until you pass the predictor that fills it, so a bare `FaceAnalyzer()` returns `age=None`.
 
 ---
@@ -68,7 +71,7 @@ for i, face in enumerate(faces):
 ```
 Face 1:
   Confidence: 0.99
-  BBox: [120.5, 85.3, 245.8, 210.6]
+  BBox: [120.5  85.3 245.8 210.6]
   Landmarks: 5 points
 ```
 
@@ -127,8 +130,8 @@ if faces1 and faces2:
     from uniface import compute_similarity
     similarity = compute_similarity(emb1, emb2, normalized=True)
 
-    # Interpret result
-    if similarity > 0.6:
+    # Interpret result (0.4 is the default threshold of FAISS.search and the search tools)
+    if similarity > 0.4:
         print(f"Same person (similarity: {similarity:.3f})")
     else:
         print(f"Different people (similarity: {similarity:.3f})")
@@ -136,8 +139,10 @@ if faces1 and faces2:
 
 !!! tip "Similarity Thresholds"
     - `> 0.6`: Same person (high confidence)
-    - `0.4 - 0.6`: Uncertain (manual review)
-    - `< 0.4`: Different people
+    - `0.4 - 0.6`: Likely the same person. Large age gaps and low-quality photos land here
+    - `< 0.4`: Different people at the default threshold
+
+    Scores depend on the model. Calibrate on your own data; see [Thresholds](concepts/thresholds-calibration.md).
 
 ---
 
@@ -561,7 +566,7 @@ For detailed model comparisons and benchmarks, see the [Model Zoo](models.md).
 | Task | Available Models |
 |------|------------------|
 | Detection | `RetinaFace`, `SCRFD`, `CenterFace`, `YOLOv5Face`, `YOLOv8Face`, `BlazeFace` (short-range, 6 keypoints) |
-| Recognition | `ArcFace`, `AdaFace`, `EdgeFace`, `MobileFace`, `SphereFace` |
+| Recognition | `ArcFace`, `AdaFace`, `AuraFace`, `EdgeFace`, `MobileFace`, `SphereFace` |
 | Landmarks | `Landmark106` (106 pts), `PIPNet` (98 / 68 pts), `FaceMesh` (468 or 478 pts, 3D) |
 | Tracking | `BYTETracker` |
 | Gaze | `MobileGaze` (ResNet18/34/50, MobileNetV2, MobileOneS0) |
@@ -626,12 +631,12 @@ python -c "import platform; print(platform.machine())"
 
 ```python
 from uniface.detection import BlazeFace, CenterFace, RetinaFace, SCRFD, YOLOv5Face, YOLOv8Face
-from uniface.recognition import ArcFace, AdaFace
+from uniface.recognition import AdaFace, ArcFace, AuraFace, EdgeFace, MobileFace, SphereFace
 from uniface.attribute import AgeGender, Emotion, FaceAttribNet, FairFace
 from uniface.landmark import FaceMesh, Landmark106, PIPNet
 from uniface.gaze import MobileGaze
 from uniface.headpose import HeadPose
-from uniface.matting import MODNet
+from uniface.matting import MODNet, PPMatting
 from uniface.parsing import BiSeNet, XSeg
 from uniface.privacy import BlurFace
 from uniface.quality import EDifFIQA

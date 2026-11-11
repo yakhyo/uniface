@@ -12,7 +12,7 @@ Models are downloaded on first use:
 from uniface.detection import RetinaFace
 
 # First run: downloads model to cache
-detector = RetinaFace()  # ~3.5 MB download
+detector = RetinaFace()  # ~12 MB download
 
 # Subsequent runs: loads from cache
 detector = RetinaFace()  # Instant
@@ -101,11 +101,14 @@ path = verify_model_weights(RetinaFaceWeights.MNET_V2)
 print(f"Downloaded: {path}")
 ```
 
-Or use the CLI tool:
+Or use the CLI tool from a clone of the repository (`tools/` is not part of the pip package):
 
 ```bash
-python tools/download_model.py
+python tools/download_model.py --model-type retinaface
 ```
+
+Run without arguments, it downloads every model in the registry, about 3.5 GB in total.
+`python tools/download_model.py --help` lists the family names.
 
 ---
 
@@ -129,7 +132,8 @@ print(f"Copy from: {path}")
 
 ```bash
 # Copy the entire cache directory
-scp -r ~/.uniface/models/ user@offline-machine:~/.uniface/models/
+ssh user@offline-machine 'mkdir -p ~/.uniface'
+scp -r ~/.uniface/models user@offline-machine:~/.uniface/
 ```
 
 ### 3. Point to the cache (if non-default location)
@@ -171,13 +175,15 @@ source instead of being cached.
 
 ## Available Models
 
+A selection of common models. The [Model Zoo](../models.md) lists every model with its size.
+
 ### Detection Models
 
 | Model | Size | Download |
 |-------|------|----------|
 | RetinaFace MNET_025 | 1.7 MB | ✅ |
-| RetinaFace MNET_V2 | 3.5 MB | ✅ |
-| RetinaFace RESNET34 | 56 MB | ✅ |
+| RetinaFace MNET_V2 | 12 MB | ✅ |
+| RetinaFace RESNET34 | 84 MB | ✅ |
 | SCRFD 500M | 2.5 MB | ✅ |
 | SCRFD 10G | 17 MB | ✅ |
 | YOLOv5n-Face | 11 MB | ✅ |
@@ -190,23 +196,23 @@ source instead of being cached.
 
 | Model | Size | Download |
 |-------|------|----------|
-| ArcFace MNET | 8 MB | ✅ |
+| ArcFace MNET | 13 MB | ✅ |
 | ArcFace RESNET | 166 MB | ✅ |
-| MobileFace MNET_V2 | 4 MB | ✅ |
-| SphereFace SPHERE20 | 50 MB | ✅ |
+| MobileFace MNET_V2 | 8.7 MB | ✅ |
+| SphereFace SPHERE20 | 93 MB | ✅ |
 
 ### Other Models
 
 | Model | Size | Download |
 |-------|------|----------|
-| Landmark106 | 14 MB | ✅ |
+| Landmark106 | 4.8 MB | ✅ |
 | PIPNet WFLW-98 | 47 MB | ✅ |
 | PIPNet 300W+CelebA-68 | 46 MB | ✅ |
-| AgeGender | 8 MB | ✅ |
-| FairFace | 44 MB | ✅ |
+| AgeGender | 1.3 MB | ✅ |
+| FairFace | 81 MB | ✅ |
 | Gaze ResNet34 | 82 MB | ✅ |
 | BiSeNet ResNet18 | 51 MB | ✅ |
-| MiniFASNet V2 | 1.2 MB | ✅ |
+| MiniFASNet V2 | 1.7 MB | ✅ |
 
 ---
 

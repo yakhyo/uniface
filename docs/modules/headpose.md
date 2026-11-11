@@ -13,12 +13,12 @@ Head pose estimation predicts the 3D orientation of a person's head (pitch, yaw,
 
 | Model | Backbone | Size | MAE* |
 |-------|----------|------|------|
-| **ResNet18** :material-check-circle: | ResNet18 | 43 MB | 5.22° |
-| ResNet34 | ResNet34 | 82 MB | 5.07° |
-| ResNet50 | ResNet50 | 91 MB | 4.83° |
-| MobileNetV2 | MobileNetV2 | 9.6 MB | 5.72° |
-| MobileNetV3-Small | MobileNetV3 | 4.8 MB | 6.31° |
-| MobileNetV3-Large | MobileNetV3 | 16 MB | 5.58° |
+| **ResNet18** :material-check-circle: | ResNet18 | 43 MB | 4.85° |
+| ResNet34 | ResNet34 | 81 MB | 4.54° |
+| ResNet50 | ResNet50 | 90 MB | 4.02° |
+| MobileNetV2 | MobileNetV2 | 8.5 MB | 5.39° |
+| MobileNetV3-Small | MobileNetV3 | 5.8 MB | 7.47° |
+| MobileNetV3-Large | MobileNetV3 | 16 MB | 5.74° |
 
 *MAE = Mean Absolute Error on AFLW2000 test set (lower is better)
 
@@ -82,21 +82,21 @@ result.roll   # Rotation around Z-axis in degrees
 ### Angle Convention
 
 ```
-          pitch > 0 (looking down)
+          pitch > 0 (looking up)
                │
                │
-yaw < 0  ─────┼───── yaw > 0
-(looking left) │     (looking right)
+yaw > 0  ─────┼───── yaw < 0
+(image left)   │     (image right)
                │
-          pitch < 0 (looking up)
+          pitch < 0 (looking down)
 
-roll > 0 = clockwise tilt
-roll < 0 = counter-clockwise tilt
+roll > 0 = clockwise tilt in the image
+roll < 0 = counter-clockwise tilt in the image
 ```
 
-- **Pitch**: Rotation around X-axis (positive = looking down)
-- **Yaw**: Rotation around Y-axis (positive = looking right)
-- **Roll**: Rotation around Z-axis (positive = tilting clockwise)
+- **Pitch**: Rotation around X-axis (positive = looking up)
+- **Yaw**: Rotation around Y-axis (positive = turned to the subject's own right, which is the left side of the image)
+- **Roll**: Rotation around Z-axis (positive = tilting clockwise as seen in the image)
 
 !!! warning "Pitch and roll degrade past roughly 60° of yaw"
 

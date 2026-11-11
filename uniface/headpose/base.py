@@ -84,7 +84,7 @@ class BaseHeadPoseEstimator(ABC):
 
         Returns:
             HeadPoseResult: Result containing Euler angles in degrees:
-                - pitch: Rotation around X-axis (positive = down)
+                - pitch: Rotation around X-axis (positive = up)
                 - yaw: Rotation around Y-axis (positive = right)
                 - roll: Rotation around Z-axis (positive = clockwise)
 

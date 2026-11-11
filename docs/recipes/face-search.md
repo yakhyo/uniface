@@ -55,9 +55,9 @@ For identifying faces against a database of many known people, use the
 [`FAISS`](../modules/stores.md) vector store.
 
 !!! info "Install extra"
-`bash
+    ```bash
     pip install faiss-cpu
-    `
+    ```
 
 ### Build an index
 

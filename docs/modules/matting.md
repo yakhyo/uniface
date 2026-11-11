@@ -59,7 +59,7 @@ matting = MODNet(input_size=256)
 | Parameter | Default | Description |
 |-----------|---------|-------------|
 | `model_name` | `PHOTOGRAPHIC` | Model variant to load |
-| `input_size` | `512` | Target shorter-side size for preprocessing |
+| `input_size` | `512` | Shorter side is resized to this value when it is larger, or when the whole image is smaller; otherwise the image keeps its size |
 | `providers` | `None` | ONNX Runtime execution providers |
 
 ### PP-Matting
@@ -85,8 +85,9 @@ matting = PPMatting(model_name=PPMattingWeights.V1)
 | `providers` | `None` | ONNX Runtime execution providers |
 
 Both sides are floored to a multiple of 32 before inference, and the matte is resized back to the input size.
-On macOS, the auto-selected CoreML execution provider can make the HRNet-W18 matte differ from the CPU provider
-by about 0.04 on a few pixels, so pass `providers=['CPUExecutionProvider']` for bit-stable results.
+On macOS, the auto-selected CoreML execution provider can make the HRNet-W18 matte differ from the CPU provider.
+The mean difference is small, but a few thousand pixels can differ by any amount up to the full `[0, 1]` range, so
+pass `providers=['CPUExecutionProvider']` for stable results. PP-MattingV2 agrees between the two to within 0.01.
 
 ---
 

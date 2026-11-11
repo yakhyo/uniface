@@ -57,7 +57,7 @@ class HeadPoseResult:
     """Result of head pose estimation.
 
     Attributes:
-        pitch: Rotation around X-axis in degrees (positive = looking down).
+        pitch: Rotation around X-axis in degrees (positive = looking up).
         yaw: Rotation around Y-axis in degrees (positive = looking right).
         roll: Rotation around Z-axis in degrees (positive = tilting clockwise).
     """

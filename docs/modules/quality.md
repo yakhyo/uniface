@@ -70,7 +70,7 @@ Scores are roughly in `[0, 1]` but eDifFIQA is **not** a calibrated probability 
 |-------|--------------|
 | ≥ 0.7 | Sharp, frontal, well-lit |
 | 0.4 – 0.7 | Acceptable (some blur / off-angle / low-res) |
-| < 0.3 | Heavy blur, occlusion, or severe degradation |
+| < 0.4 | Heavy blur, occlusion, or severe degradation |
 
 Calibrate your own threshold on a held-out set rather than reusing these bands verbatim.
 

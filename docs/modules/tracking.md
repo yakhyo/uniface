@@ -141,7 +141,7 @@ tracker = BYTETracker(
 |-----------|---------|-------------|
 | `track_thresh` | 0.5 | Detections above this score go through first-pass association |
 | `track_buffer` | 30 | How many frames to keep a lost track before removing it |
-| `match_thresh` | 0.8 | IoU threshold for matching tracks to detections |
+| `match_thresh` | 0.8 | Maximum IoU distance (`1 - IoU`) for a first-pass match. A track and a detection match only if their IoU is at least `1 - match_thresh`, which is 0.2 at the default |
 | `low_thresh` | 0.1 | Detections below this score are discarded entirely |
 
 ---
@@ -165,7 +165,7 @@ tracks = tracker.update(detections)
 #        [300.5, 80.2, 379.7, 200.1, 2.]])
 ```
 
-The output bounding boxes come from the Kalman filter prediction, so they may differ slightly from the input. Track IDs are integers that persist across frames for the same object.
+The output bounding boxes come from the Kalman filter's corrected state (the prediction fused with the matched detection), so they may differ slightly from the input. Track IDs are integers that persist across frames for the same object.
 
 ---
 
@@ -178,6 +178,8 @@ tracker.reset()
 ```
 
 This clears all active, lost, and removed tracks, resets the frame counter, and resets the ID counter back to zero.
+
+The ID counter is shared by every `BYTETracker` in the process. Calling `reset()` on one tracker restarts numbering for all of them, and a second tracker created without a reset continues from where the first one stopped. When you track several streams at once, do not rely on IDs being unique or starting at 1 per stream.
 
 ---
 
@@ -211,8 +213,8 @@ draw_tracks(
     This is not specific to BYTETracker; it applies to any IoU-based tracker. A few
     things that can help:
 
-    - **Lower `match_thresh`** (e.g. `0.5` or `0.6`) so the tracker accepts lower
-      overlap as a valid match.
+    - **Raise `match_thresh`** (e.g. `0.9`) so the tracker accepts lower
+      overlap as a valid match. Lowering it makes matching stricter.
     - **Increase `track_buffer`** (e.g. `60` or higher) to hold onto lost tracks
       longer before discarding them.
     - **Use a higher-resolution input** if possible, so face bounding boxes are
@@ -222,7 +224,7 @@ draw_tracks(
     tracker = BYTETracker(
         track_thresh=0.4,
         track_buffer=60,
-        match_thresh=0.6,
+        match_thresh=0.9,
     )
     ```
 

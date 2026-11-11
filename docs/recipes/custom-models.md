@@ -90,8 +90,11 @@ the `Face` (bbox, landmarks), run inference, and write results back:
 from uniface.attribute import BaseAttribute
 
 class MyPredictor(BaseAttribute):
+    def __init__(self):
+        self._initialize_model()
+
     def _initialize_model(self):
-        ...  # load your model
+        ...  # load your model, e.g. self.session = onnxruntime.InferenceSession(path)
 
     def preprocess(self, image, *args):
         ...  # crop and normalize
@@ -100,7 +103,9 @@ class MyPredictor(BaseAttribute):
         ...  # raw output to a result object
 
     def predict(self, image, face):
-        result = self.postprocess(self._run(self.preprocess(image, face.bbox)))
+        blob = self.preprocess(image, face.bbox)
+        prediction = self.session.run(None, {self.session.get_inputs()[0].name: blob})[0]
+        result = self.postprocess(prediction)
         face.age = result.age  # enrich the Face in-place
         return result
 ```
@@ -111,6 +116,9 @@ from uniface import FaceAnalyzer
 analyzer = FaceAnalyzer(predictors=[MyPredictor()])
 faces = analyzer.analyze(image)
 ```
+
+`FaceAnalyzer` catches an exception raised inside a predictor, logs a warning and leaves the field at
+`None`. Call `uniface.enable_logging()` while developing, or a bug in your predictor will pass silently.
 
 ---
 

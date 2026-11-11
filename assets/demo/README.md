@@ -7,12 +7,14 @@ Photographs and rendered figures covering every component that a still image can
 python3 tools/demo/build_demos.py assets
 ```
 
+The emotion figure needs PyTorch (`pip install torch`). A component that fails is reported and skipped.
+
 46 source photographs (16 MB), 20 figures (5.9 MB). Every number below is measured by that script,
 not quoted from a paper. Rerun it after changing a source and update this file from its output.
 
 ## Naming
 
-One pattern for every source: **`<task>_<variant>.jpg`**, task first. A trailing `2` marks a second
+One pattern for every source: **`<task>_<variant>.jpg`**, task first. A `_b` after the task marks a second
 set of subjects for the same task (`state_mask` and `state_b_mask` are different people). Verification
 uses `verify_<name>_<year>`, because a figure needs several photographs of one person and the
 name is what tells you which.

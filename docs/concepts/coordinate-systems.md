@@ -66,7 +66,7 @@ def xywh_to_xyxy(bbox):
 
 ### 5-Point Landmarks (Detection)
 
-Returned by all detection models:
+Returned by every detector except BlazeFace, which returns six points:
 
 ```python
 landmarks = face.landmarks  # Shape: (5, 2)
@@ -114,11 +114,15 @@ landmarks = landmarker.get_landmarks(image, face.bbox)
 
 | Range | Group | Points |
 |-------|-------|--------|
-| 0-32 | Face Contour | 33 |
-| 33-50 | Eyebrows | 18 |
-| 51-62 | Nose | 12 |
-| 63-86 | Eyes | 24 |
-| 87-105 | Mouth | 19 |
+| 0-32 | Face contour | 33 |
+| 33-42 | Left eye | 10 |
+| 43-51 | Left eyebrow | 9 |
+| 52-71 | Mouth | 20 |
+| 72-86 | Nose | 15 |
+| 87-96 | Right eye | 10 |
+| 97-105 | Right eyebrow | 9 |
+
+Left and right are as seen in the image, so the left eye is the one on the left side of the picture.
 
 ### 98 / 68-Point Landmarks (PIPNet)
 
@@ -199,7 +203,7 @@ result = gaze_estimator.estimate(face_crop)
 
 # Angles in radians
 pitch = result.pitch  # Vertical: + = up, - = down
-yaw = result.yaw      # Horizontal: + = right, - = left
+yaw = result.yaw      # Horizontal: + = the subject's right (image left), - = the subject's left
 
 # Convert to degrees
 import numpy as np
@@ -213,8 +217,8 @@ yaw_deg = np.degrees(yaw)
           pitch = +90° (up)
                │
                │
-yaw = -90° ────┼──── yaw = +90°
-(left)         │      (right)
+yaw = +90° ────┼──── yaw = -90°
+(image left)   │      (image right)
                │
           pitch = -90° (down)
 ```

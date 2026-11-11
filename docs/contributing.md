@@ -29,7 +29,7 @@ uv run pytest
 We use [Ruff](https://docs.astral.sh/ruff/) for formatting:
 
 ```bash
-ruff format .
+ruff format uniface tests tools
 ruff check . --fix
 ```
 
@@ -106,7 +106,7 @@ docs: Update installation instructions
 
 ## Releases
 
-Releases are automated via GitHub Actions. Maintainers trigger **Actions → Release Pipeline → Run workflow** with a [PEP 440](https://peps.python.org/pep-0440/) version (e.g. `0.7.0`, `0.7.0rc1`). The pipeline runs tests, bumps `pyproject.toml` + `uniface/__init__.py`, tags the commit, publishes to PyPI, and creates a GitHub Release. Docs redeploy only for stable releases.
+Releases are automated via GitHub Actions. Maintainers trigger **Actions → Release Pipeline → Run workflow** with a [PEP 440](https://peps.python.org/pep-0440/) version (e.g. `0.7.0`, `0.7.0rc1`). The pipeline runs tests, bumps `pyproject.toml` + `uniface/__init__.py` and refreshes `uv.lock`, tags the commit, publishes to PyPI, and creates a GitHub Release. Docs redeploy only for stable releases.
 
 See [CONTRIBUTING.md](https://github.com/yakhyo/uniface/blob/main/CONTRIBUTING.md#release-process) for the full process.
 

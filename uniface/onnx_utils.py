@@ -17,8 +17,8 @@ try:
 except ImportError as e:
     raise ImportError(
         'onnxruntime is not installed. Install it with one of:\n'
-        '  pip install uniface[cpu]   # CPU / Apple Silicon\n'
-        '  pip install uniface[gpu]   # NVIDIA GPU (CUDA)\n'
+        '  pip install "uniface[cpu]"   # CPU / Apple Silicon\n'
+        '  pip install "uniface[gpu]"   # NVIDIA GPU (CUDA)\n'
         'Do not install both — they conflict.'
     ) from e
 
