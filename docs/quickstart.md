@@ -566,7 +566,7 @@ For detailed model comparisons and benchmarks, see the [Model Zoo](models.md).
 | Task | Available Models |
 |------|------------------|
 | Detection | `RetinaFace`, `SCRFD`, `CenterFace`, `YOLOv5Face`, `YOLOv8Face`, `BlazeFace` (short-range, 6 keypoints) |
-| Recognition | `ArcFace`, `AdaFace`, `AuraFace`, `EdgeFace`, `MobileFace`, `SphereFace` |
+| Recognition | `ArcFace`, `AdaFace`, `AuraFace`, `EdgeFace`, `HyperFace`, `MobileFace`, `SphereFace` |
 | Landmarks | `Landmark106` (106 pts), `PIPNet` (98 / 68 pts), `FaceMesh` (468 or 478 pts, 3D) |
 | Tracking | `BYTETracker` |
 | Gaze | `MobileGaze` (ResNet18/34/50, MobileNetV2, MobileOneS0) |
@@ -631,7 +631,7 @@ python -c "import platform; print(platform.machine())"
 
 ```python
 from uniface.detection import BlazeFace, CenterFace, RetinaFace, SCRFD, YOLOv5Face, YOLOv8Face
-from uniface.recognition import AdaFace, ArcFace, AuraFace, EdgeFace, MobileFace, SphereFace
+from uniface.recognition import AdaFace, ArcFace, AuraFace, EdgeFace, HyperFace, MobileFace, SphereFace
 from uniface.attribute import AgeGender, Emotion, FaceAttribNet, FairFace
 from uniface.landmark import FaceMesh, Landmark106, PIPNet
 from uniface.gaze import MobileGaze

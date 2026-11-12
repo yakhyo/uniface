@@ -246,6 +246,23 @@ A ResNet100 face encoder released by fal under Apache-2.0.
 
 ---
 
+### HyperFace
+
+An IR-50 face encoder from Idiap, trained only on synthetic identities and released under MIT.
+
+| Model Name | Backbone | Params | Size   | LFW    | CALFW  | CPLFW  | CFP-FP | AgeDB-30 |
+| ---------- | -------- | ------ | ------ | ------ | ------ | ------ | ------ | -------- |
+| `IR_50` :material-check-circle: | IR-50 | 43.6M  | 166 MB | 98.27% | 91.48% | 85.60% | 92.24% | 90.40%   |
+
+!!! info "Training Data & Reference"
+    **Dataset**: HyperFace 50k, 3.2M generated images of 50K synthetic identities
+
+    **Paper**: [HyperFace: Generating Synthetic Face Recognition Datasets by Exploring Face Embedding Hypersphere](https://www.idiap.ch/paper/hyperface/) (ICLR 2025)
+
+    **Source**: [huggingface.co/Idiap/HyperFace-50k-StyleGAN](https://huggingface.co/Idiap/HyperFace-50k-StyleGAN) | [github.com/yakhyo/hyperface-onnx](https://github.com/yakhyo/hyperface-onnx)
+
+---
+
 ## Facial Landmark Models
 
 ### 106-Point Landmark Detection
@@ -637,6 +654,7 @@ See [Model Cache & Offline Use](concepts/model-cache-offline.md) for full detail
 - **AdaFace Original**: [mk-minchul/AdaFace](https://github.com/mk-minchul/AdaFace) - Original PyTorch implementation
 - **AdaFace ONNX**: [yakhyo/adaface-onnx](https://github.com/yakhyo/adaface-onnx) - ONNX export and inference
 - **AuraFace**: [yakhyo/auraface-onnx](https://github.com/yakhyo/auraface-onnx) - AuraFace ported weights and inference (from [fal/AuraFace-v1](https://huggingface.co/fal/AuraFace-v1))
+- **HyperFace**: [yakhyo/hyperface-onnx](https://github.com/yakhyo/hyperface-onnx) - HyperFace ported weights and inference (from [Idiap/HyperFace-50k-StyleGAN](https://huggingface.co/Idiap/HyperFace-50k-StyleGAN))
 - **Face Recognition Training**: [yakhyo/face-recognition](https://github.com/yakhyo/face-recognition) - ArcFace, MobileFace, SphereFace training code
 - **Gaze Estimation Training**: [yakhyo/gaze-estimation](https://github.com/yakhyo/gaze-estimation) - MobileGaze training code and pretrained weights
 - **Head Pose Estimation**: [yakhyo/head-pose-estimation](https://github.com/yakhyo/head-pose-estimation) - 6D rotation head pose estimation training and ONNX models

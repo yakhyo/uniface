@@ -82,7 +82,7 @@ for face in analyzer.analyze(cv2.imread("photo.jpg")):
 | 작업 | 모델 |
 | --- | --- |
 | 얼굴 검출 | RetinaFace, SCRFD, CenterFace, YOLOv5-Face, YOLOv8-Face, BlazeFace |
-| 얼굴 인식 | AdaFace, ArcFace, AuraFace, EdgeFace, MobileFace, SphereFace |
+| 얼굴 인식 | AdaFace, ArcFace, AuraFace, EdgeFace, HyperFace, MobileFace, SphereFace |
 | 얼굴 추적 | BYTETracker, 동영상 프레임 간 ID 유지 |
 | 얼굴 랜드마크 | 2d106det (106), PIPNet (98 / 68), Face Mesh (468 / 478, 3D) |
 | 얼굴 파싱 | BiSeNet (19개 클래스), XSeg 마스크 생성 |

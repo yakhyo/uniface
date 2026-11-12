@@ -82,7 +82,7 @@ va yuz holatlari tegishli bashorat modelini uzatmaguningizcha `None` boʻlib qol
 | Vazifa | Modellar |
 | --- | --- |
 | Yuzni aniqlash | RetinaFace, SCRFD, CenterFace, YOLOv5-Face, YOLOv8-Face, BlazeFace |
-| Yuzni tanib olish | AdaFace, ArcFace, AuraFace, EdgeFace, MobileFace, SphereFace |
+| Yuzni tanib olish | AdaFace, ArcFace, AuraFace, EdgeFace, HyperFace, MobileFace, SphereFace |
 | Yuzni kuzatish | BYTETracker, video kadrlari orasida saqlanadigan ID lar |
 | Yuz tayanch nuqtalari | 2d106det (106), PIPNet (98 / 68), Face Mesh (468 / 478, 3D) |
 | Yuz qismlarini segmentlash | BiSeNet (19 ta sinf), XSeg yordamida niqob yaratish |

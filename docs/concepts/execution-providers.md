@@ -42,7 +42,7 @@ detector = RetinaFace(providers=['CUDAExecutionProvider', 'CPUExecutionProvider'
 All **ONNX-based** model classes accept the `providers` parameter:
 
 - Detection: `RetinaFace`, `SCRFD`, `CenterFace`, `YOLOv5Face`, `YOLOv8Face`, `BlazeFace`
-- Recognition: `AdaFace`, `ArcFace`, `AuraFace`, `EdgeFace`, `MobileFace`, `SphereFace`
+- Recognition: `AdaFace`, `ArcFace`, `AuraFace`, `EdgeFace`, `HyperFace`, `MobileFace`, `SphereFace`
 - Landmarks: `Landmark106`, `PIPNet`, `FaceMesh`
 - Gaze: `MobileGaze`
 - Head pose: `HeadPose`

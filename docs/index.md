@@ -40,7 +40,7 @@ RetinaFace, SCRFD, CenterFace, and YOLO detectors with 5-point landmarks, plus B
 
 <div class="feature-card" markdown>
 ### :material-account-check: Face Recognition
-AdaFace, ArcFace, AuraFace, EdgeFace, MobileFace, and SphereFace embeddings for identity verification.
+AdaFace, ArcFace, AuraFace, EdgeFace, HyperFace, MobileFace, and SphereFace embeddings for identity verification.
 <a class="feature-card-link" href="modules/recognition/" aria-label="Face Recognition"></a>
 </div>
 

@@ -82,7 +82,7 @@ for face in analyzer.analyze(cv2.imread("photo.jpg")):
 | 任务 | 模型 |
 | --- | --- |
 | 人脸检测 | RetinaFace, SCRFD, CenterFace, YOLOv5-Face, YOLOv8-Face, BlazeFace |
-| 人脸识别 | AdaFace, ArcFace, AuraFace, EdgeFace, MobileFace, SphereFace |
+| 人脸识别 | AdaFace, ArcFace, AuraFace, EdgeFace, HyperFace, MobileFace, SphereFace |
 | 人脸跟踪 | BYTETracker, 视频帧之间保持一致的 ID |
 | 人脸关键点 | 2d106det (106), PIPNet (98 / 68), Face Mesh (468 / 478, 3D) |
 | 人脸解析 | BiSeNet (19 个类别), XSeg 掩码生成 |

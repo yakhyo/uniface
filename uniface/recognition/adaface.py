@@ -4,9 +4,6 @@
 
 from __future__ import annotations
 
-import cv2
-import numpy as np
-
 from uniface.constants import AdaFaceWeights
 from uniface.model_store import verify_model_weights
 
@@ -49,6 +46,8 @@ class AdaFace(BaseRecognizer):
         https://github.com/yakhyo/adaface-onnx
     """
 
+    swap_rb = False
+
     def __init__(
         self,
         *,
@@ -60,37 +59,3 @@ class AdaFace(BaseRecognizer):
             preprocessing = PreprocessConfig(input_mean=127.5, input_std=127.5, input_size=(112, 112))
         model_path = verify_model_weights(model_name)
         super().__init__(model_path=model_path, preprocessing=preprocessing, providers=providers)
-
-    def preprocess(self, face_img: np.ndarray) -> np.ndarray:
-        """Preprocess the image: resize, normalize, and convert to blob.
-
-        AdaFace uses BGR color space (no RGB conversion).
-
-        Args:
-            face_img: Input image in BGR format.
-
-        Returns:
-            Preprocessed image as a NumPy array ready for inference.
-        """
-        resized_img = cv2.resize(face_img, self.input_size)
-
-        if isinstance(self.input_std, list | tuple):
-            # Per-channel normalization (keep BGR)
-            mean_array = np.array(self.input_mean, dtype=np.float32)
-            std_array = np.array(self.input_std, dtype=np.float32)
-            normalized_img = (resized_img.astype(np.float32) - mean_array) / std_array
-
-            # Change to NCHW format (batch, channels, height, width)
-            blob = np.transpose(normalized_img, (2, 0, 1))  # CHW
-            blob = np.expand_dims(blob, axis=0)  # NCHW
-        else:
-            # Single-value normalization using cv2.dnn (keep BGR, swapRB=False)
-            blob = cv2.dnn.blobFromImage(
-                resized_img,
-                scalefactor=1.0 / self.input_std,
-                size=self.input_size,
-                mean=(self.input_mean, self.input_mean, self.input_mean),
-                swapRB=False,  # Keep BGR for AdaFace
-            )
-
-        return blob

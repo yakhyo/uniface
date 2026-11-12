@@ -17,6 +17,7 @@ Face recognition extracts embeddings for identity verification and face search.
 | **ArcFace** | MobileNet/ResNet | 13-166 MB | 512 |
 | **AuraFace** | ResNet100 | 249 MB | 512 |
 | **EdgeFace** | EdgeNeXt/LoRA | 5-70 MB | 512 |
+| **HyperFace** | IR-50 | 166 MB | 512 |
 | **MobileFace** | MobileNet V1/V2/V3 | 1.4-13 MB | 512 |
 | **SphereFace** | Sphere20/36 | 93-132 MB | 512 |
 
@@ -128,32 +129,10 @@ A ResNet100 face encoder released by fal under Apache-2.0. It was trained on a c
 ### Basic Usage
 
 ```python
-from uniface.detection import RetinaFace
 from uniface.recognition import AuraFace
 
-detector = RetinaFace()
 recognizer = AuraFace()
-
-# Detect face
-faces = detector.detect(image)
-
-# Extract embedding
-if faces:
-    embedding = recognizer.get_normalized_embedding(image, faces[0].landmarks)
-    print(f"Embedding shape: {embedding.shape}")  # (512,)
-```
-
-### Model Variants
-
-```python
-from uniface.recognition import AuraFace
-from uniface.constants import AuraFaceWeights
-
-# ResNet100 (default)
-recognizer = AuraFace(model_name=AuraFaceWeights.R100)
-
-# Force CPU execution
-recognizer = AuraFace(providers=['CPUExecutionProvider'])
+embedding = recognizer.get_normalized_embedding(image, landmarks)
 ```
 
 | Variant | Backbone | Size | LFW | CALFW | CPLFW | CFP-FP | AgeDB-30 |
@@ -223,6 +202,33 @@ recognizer = EdgeFace(providers=['CPUExecutionProvider'])
     **Paper**: [EdgeFace: Efficient Face Recognition Model for Edge Devices](https://arxiv.org/abs/2307.01838v2) (IEEE T-BIOM 2024)
 
     **Source**: [github.com/otroshi/edgeface](https://github.com/otroshi/edgeface)
+
+---
+
+## HyperFace
+
+An IR-50 face encoder from Idiap, trained only on synthetic identities and released under MIT. Like AdaFace, it reads the aligned face in BGR order, which `HyperFace` handles for you.
+
+### Basic Usage
+
+```python
+from uniface.recognition import HyperFace
+
+recognizer = HyperFace()
+embedding = recognizer.get_normalized_embedding(image, landmarks)
+```
+
+| Variant | Backbone | Size | LFW | CALFW | CPLFW | CFP-FP | AgeDB-30 |
+|---------|----------|------|-----|-------|-------|--------|----------|
+| **IR_50** :material-check-circle: | IR-50 | 166 MB | 98.27% | 91.48% | 85.60% | 92.24% | 90.40% |
+
+!!! info "Training Data & Reference"
+    **Dataset**: HyperFace 50k, 3.2M synthetic images of 50K synthetic identities
+
+    **Source**: [huggingface.co/Idiap/HyperFace-50k-StyleGAN](https://huggingface.co/Idiap/HyperFace-50k-StyleGAN) | [github.com/yakhyo/hyperface-onnx](https://github.com/yakhyo/hyperface-onnx)
+
+!!! note "Threshold"
+    At a fixed threshold on 1,000 LFW pairs, 0.3 gave 98.4% accuracy and 0.4 gave 95.2%, so start near 0.3 instead of the 0.4 default of `FAISS.search` and the search tools.
 
 ---
 
@@ -411,7 +417,7 @@ else:
 ## Available Recognizers
 
 ```python
-from uniface.recognition import ArcFace, AdaFace, AuraFace, EdgeFace, MobileFace, SphereFace
+from uniface.recognition import ArcFace, AdaFace, AuraFace, EdgeFace, HyperFace, MobileFace, SphereFace
 
 recognizer = ArcFace()
 # or

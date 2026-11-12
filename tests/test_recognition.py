@@ -10,7 +10,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from uniface.recognition import ArcFace, AuraFace, EdgeFace, MobileFace, SphereFace
+from uniface.recognition import ArcFace, AuraFace, EdgeFace, HyperFace, MobileFace, SphereFace
 
 SOURCE = Path(__file__).resolve().parent.parent / 'assets' / 'source'
 
@@ -43,6 +43,12 @@ def edgeface_model():
 def auraface_model():
     """Fixture to initialize the AuraFace model for testing."""
     return AuraFace()
+
+
+@pytest.fixture
+def hyperface_model():
+    """Fixture to initialize the HyperFace model for testing."""
+    return HyperFace()
 
 
 @pytest.fixture
@@ -250,6 +256,77 @@ def test_auraface_separates_identities(auraface_model):
         image = cv2.imread(str(SOURCE / f'{name}.jpg'))
         face = max(detector.detect(image), key=lambda f: f.confidence)
         embeddings.append(auraface_model.get_normalized_embedding(image, face.landmarks))
+
+    same = compute_similarity(embeddings[0], embeddings[1], normalized=True)
+    different = compute_similarity(embeddings[0], embeddings[2], normalized=True)
+
+    assert same > 0.5, f'Same person should score above 0.5, got {same}'
+    assert different < 0.2, f'Different people should score below 0.2, got {different}'
+
+
+# HyperFace Tests
+def test_hyperface_initialization(hyperface_model):
+    """Test that the HyperFace model initializes correctly."""
+    assert hyperface_model is not None, 'HyperFace model initialization failed.'
+
+
+def test_hyperface_embedding_shape(hyperface_model, mock_aligned_face):
+    """Test that HyperFace produces embeddings with the correct shape."""
+    embedding = hyperface_model.get_embedding(mock_aligned_face)
+
+    assert embedding.shape[1] == 512, f'Expected 512-dim embedding, got {embedding.shape[1]}'
+    assert embedding.shape[0] == 1, 'Embedding should have batch dimension of 1'
+
+
+def test_hyperface_normalized_embedding(hyperface_model, mock_landmarks):
+    """Test that HyperFace normalized embeddings have unit length."""
+    mock_image = np.random.randint(0, 255, (640, 640, 3), dtype=np.uint8)
+
+    embedding = hyperface_model.get_normalized_embedding(mock_image, mock_landmarks)
+
+    assert embedding.shape == (512,), f'Expected shape (512,), got {embedding.shape}'
+    norm = np.linalg.norm(embedding)
+    assert np.isclose(norm, 1.0, atol=1e-5), f'Normalized embedding should have norm 1.0, got {norm}'
+
+
+def test_hyperface_embedding_dtype(hyperface_model, mock_aligned_face):
+    """Test that HyperFace embeddings have the correct data type."""
+    embedding = hyperface_model.get_embedding(mock_aligned_face)
+    assert embedding.dtype == np.float32, f'Expected float32, got {embedding.dtype}'
+
+
+def test_hyperface_consistency(hyperface_model, mock_aligned_face):
+    """Test that the same input produces the same HyperFace embedding."""
+    embedding1 = hyperface_model.get_embedding(mock_aligned_face)
+    embedding2 = hyperface_model.get_embedding(mock_aligned_face)
+
+    assert np.allclose(embedding1, embedding2), 'Same input should produce same embedding'
+
+
+def test_hyperface_preprocess_keeps_bgr(hyperface_model):
+    """Test that HyperFace preprocessing keeps BGR channel order."""
+    face = np.zeros((112, 112, 3), dtype=np.uint8)
+    face[:, :, 0] = 255  # blue channel in BGR
+
+    blob = hyperface_model.preprocess(face)
+
+    assert blob.shape == (1, 3, 112, 112)
+    assert np.allclose(blob[0, 0], 1.0), 'First channel should still be blue'
+    assert np.allclose(blob[0, 1:], -1.0)
+
+
+def test_hyperface_separates_identities(hyperface_model):
+    """Test that HyperFace scores one person's photos above a different person's."""
+    import cv2
+
+    from uniface import RetinaFace, compute_similarity
+
+    detector = RetinaFace()
+    embeddings = []
+    for name in ('verify_now_2010', 'verify_now_2014', 'parse_face'):
+        image = cv2.imread(str(SOURCE / f'{name}.jpg'))
+        face = max(detector.detect(image), key=lambda f: f.confidence)
+        embeddings.append(hyperface_model.get_normalized_embedding(image, face.landmarks))
 
     same = compute_similarity(embeddings[0], embeddings[1], normalized=True)
     different = compute_similarity(embeddings[0], embeddings[2], normalized=True)
