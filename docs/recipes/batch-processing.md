@@ -54,9 +54,12 @@ for image_path in tqdm(image_files, desc="Processing"):
 ## Extract Embeddings
 
 ```python
+from pathlib import Path
+
+import cv2
+import numpy as np
 from uniface.detection import RetinaFace
 from uniface.recognition import ArcFace
-import numpy as np
 
 detector = RetinaFace()
 recognizer = ArcFace()

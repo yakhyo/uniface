@@ -9,7 +9,7 @@
 
 This library provides unified APIs for:
 - Face detection (BlazeFace, CenterFace, RetinaFace, SCRFD, YOLOv5Face, YOLOv8Face)
-- Face recognition (AdaFace, ArcFace, EdgeFace, MobileFace, SphereFace)
+- Face recognition (AdaFace, ArcFace, AuraFace, EdgeFace, HyperFace, MobileFace, SphereFace)
 - Face tracking (ByteTrack with Kalman filtering)
 - Facial landmarks (106 / 98 / 68-point: 2d106det, PIPNet; 468/478-point dense: FaceMesh)
 - Face parsing (semantic segmentation)
@@ -26,7 +26,7 @@ from __future__ import annotations
 
 __license__ = 'MIT'
 __author__ = 'Yakhyokhuja Valikhujaev'
-__version__ = '4.2.1'
+__version__ = '4.3.0'
 
 from uniface.face_utils import compute_similarity, face_alignment
 from uniface.log import Logger, enable_logging
@@ -38,11 +38,11 @@ from .detection import SCRFD, BlazeFace, CenterFace, RetinaFace, YOLOv5Face, YOL
 from .gaze import MobileGaze
 from .headpose import HeadPose
 from .landmark import FaceMesh, Landmark106, PIPNet
-from .matting import MODNet
+from .matting import MODNet, PPMatting
 from .parsing import BiSeNet, XSeg
 from .privacy import BlurFace
 from .quality import EDifFIQA
-from .recognition import AdaFace, ArcFace, EdgeFace, MobileFace, SphereFace
+from .recognition import AdaFace, ArcFace, AuraFace, EdgeFace, HyperFace, MobileFace, SphereFace
 from .spoofing import MiniFASNet
 
 # The faiss dependency is imported lazily at FAISS(...) construction, so this
@@ -79,7 +79,9 @@ __all__ = [
     # Recognition models
     'AdaFace',
     'ArcFace',
+    'AuraFace',
     'EdgeFace',
+    'HyperFace',
     'MobileFace',
     'SphereFace',
     # Landmark models
@@ -95,6 +97,7 @@ __all__ = [
     'HeadPoseResult',
     # Matting models
     'MODNet',
+    'PPMatting',
     # Parsing models
     'BiSeNet',
     'XSeg',

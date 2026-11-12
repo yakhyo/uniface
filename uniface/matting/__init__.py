@@ -6,5 +6,6 @@ from __future__ import annotations
 
 from .base import BaseMatting
 from .modnet import MODNet
+from .ppmatting import PPMatting
 
-__all__ = ['BaseMatting', 'MODNet']
+__all__ = ['BaseMatting', 'MODNet', 'PPMatting']

@@ -160,7 +160,7 @@ class BYTETracker:
     Args:
         track_thresh: High confidence detection threshold.
         track_buffer: Maximum frames to keep lost tracks.
-        match_thresh: IoU threshold for first association.
+        match_thresh: Maximum IoU distance (1 - IoU) for first association.
         low_thresh: Low confidence detection threshold.
     """
 

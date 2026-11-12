@@ -40,7 +40,7 @@ RetinaFace, SCRFD, CenterFace, and YOLO detectors with 5-point landmarks, plus B
 
 <div class="feature-card" markdown>
 ### :material-account-check: Face Recognition
-AdaFace, ArcFace, EdgeFace, MobileFace, and SphereFace embeddings for identity verification.
+AdaFace, ArcFace, AuraFace, EdgeFace, HyperFace, MobileFace, and SphereFace embeddings for identity verification.
 <a class="feature-card-link" href="modules/recognition/" aria-label="Face Recognition"></a>
 </div>
 
@@ -64,7 +64,7 @@ BiSeNet semantic segmentation with 19 facial component classes, plus XSeg face m
 
 <div class="feature-card" markdown>
 ### :material-image-off: Portrait Matting
-Trimap-free alpha matte with MODNet for background removal and compositing.
+Trimap-free alpha matte with MODNet or PP-Matting for background removal and compositing.
 <a class="feature-card-link" href="modules/matting/" aria-label="Portrait Matting"></a>
 </div>
 
@@ -116,7 +116,7 @@ FAISS-backed embedding store for fast multi-identity face search.
 
 ## Installation
 
-UniFace runs out of the box on macOS, Linux, and Windows, with automatic hardware acceleration on Apple Silicon, NVIDIA CUDA, and CPU. Inference runs on **ONNX Runtime** (with **PyTorch** for a few optional models) — installed automatically by the extra you choose below.
+UniFace runs out of the box on macOS, Linux, and Windows, with automatic hardware acceleration on Apple Silicon, NVIDIA CUDA, and CPU. Inference runs on **ONNX Runtime**, installed by the extra you choose below. The Emotion model also needs **PyTorch** (`pip install torch`), which no extra installs.
 
 **CPU / Apple Silicon**
 ```bash

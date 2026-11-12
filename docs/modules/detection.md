@@ -13,8 +13,8 @@ Face detection is the first step in any face analysis pipeline. UniFace provides
 
 | Model | Backbone | Size | Easy | Medium | Hard | Landmarks |
 |-------|----------|------|------|--------|------|:---------:|
-| **RetinaFace** | MobileNet V2 | 3.5 MB | 91.7% | 91.0% | 86.6% | :material-check: |
-| **SCRFD** | SCRFD-10G | 17 MB | 95.2% | 93.9% | 83.1% | :material-check: |
+| **RetinaFace** | MobileNet V2 | 12 MB | 91.7% | 91.0% | 86.6% | :material-check: |
+| **SCRFD** | SCRFD-10G | 17 MB | 95.4% | 94.0% | 82.8% | :material-check: |
 | **CenterFace** | MobileNet V2 | 7.0 MB | 92.2% | 91.1% | 78.2% | :material-check: |
 | **YOLOv5-Face** | YOLOv5s | 28 MB | 94.3% | 92.6% | 83.2% | :material-check: |
 | **YOLOv8-Face** | YOLOv8n | 12 MB | 94.6% | 92.3% | 79.6% | :material-check: |
@@ -84,11 +84,11 @@ detector = RetinaFace(model_name=RetinaFaceWeights.RESNET34)
 | Variant | Params | Size | Easy | Medium | Hard |
 |---------|--------|------|------|--------|------|
 | MNET_025 | 0.4M | 1.7 MB | 88.5% | 87.0% | 80.6% |
-| MNET_050 | 1.0M | 2.6 MB | 89.4% | 88.0% | 82.4% |
-| MNET_V1 | 3.5M | 3.8 MB | 90.6% | 89.1% | 84.1% |
-| **MNET_V2** :material-check-circle: | 3.2M | 3.5 MB | 91.7% | 91.0% | 86.6% |
-| RESNET18 | 11.7M | 27 MB | 92.5% | 91.0% | 86.6% |
-| RESNET34 | 24.8M | 56 MB | 94.2% | 93.1% | 88.9% |
+| MNET_050 | 1.7M | 6.3 MB | 89.4% | 88.0% | 82.4% |
+| MNET_V1 | 4.2M | 16 MB | 90.6% | 89.1% | 84.1% |
+| **MNET_V2** :material-check-circle: | 3.1M | 12 MB | 91.7% | 91.0% | 86.6% |
+| RESNET18 | 12.0M | 46 MB | 92.5% | 91.0% | 86.6% |
+| RESNET34 | 22.1M | 84 MB | 94.2% | 93.1% | 88.9% |
 | RESNET50 | 27.4M | 104 MB | 94.7%* | 93.7%* | 88.8%* |
 
 *\* `RESNET50` weights come from [HivisionIDPhotos](https://huggingface.co/TheEeeeLin/HivisionIDPhotos_matting/blob/main/retinaface-resnet50.onnx);
@@ -137,8 +137,8 @@ detector = SCRFD(model_name=SCRFDWeights.SCRFD_10G_KPS)
 
 | Variant | Params | Size | Easy | Medium | Hard |
 |---------|--------|------|------|--------|------|
-| SCRFD_500M_KPS | 0.6M | 2.5 MB | 90.6% | 88.1% | 68.5% |
-| **SCRFD_10G_KPS** :material-check-circle: | 4.2M | 17 MB | 95.2% | 93.9% | 83.1% |
+| SCRFD_500M_KPS | 0.6M | 2.5 MB | 91.0% | 88.4% | 69.5% |
+| **SCRFD_10G_KPS** :material-check-circle: | 4.2M | 17 MB | 95.4% | 94.0% | 82.8% |
 
 <figure markdown="span">
   ![SCRFD on a crowd](https://raw.githubusercontent.com/yakhyo/uniface/main/assets/demo/detection_alt.jpg){ width="100%" }
@@ -190,8 +190,7 @@ faces = detector.detect(image)
 !!! warning "Limitations"
     - **Landmark precision**: landmarks are decoded from a single coarse feature-map cell
       per face, so they are less precise than SCRFD or RetinaFace (roughly 5% of box size
-      deviation on upright faces). For alignment-critical recognition, prefer SCRFD/RetinaFace,
-      or refine with [PIPNet / Landmark106](landmarks.md) on CenterFace boxes.
+      deviation on upright faces). For alignment-critical recognition, prefer SCRFD/RetinaFace.
     - **Rotated faces**: detection recall and landmark accuracy drop faster than SCRFD as
       in-plane rotation increases (noticeable beyond ~20-30 degrees). Best suited for
       roughly upright faces (webcams, portraits, surveillance).
@@ -205,7 +204,7 @@ detector = CenterFace(
     model_name=CenterFaceWeights.DEFAULT,
     confidence_threshold=0.35,
     nms_threshold=0.3,
-    input_size=(640, 640),  # width and height must be multiples of 32
+    input_size=(640, 640),  # upper bound (width, height): larger images are scaled down; None = native size
     providers=None,         # Auto-detect, or ['CPUExecutionProvider']
 )
 ```
@@ -416,10 +415,11 @@ cv2.imwrite("result.jpg", image)
 
 ## Performance Comparison
 
-Benchmark on your hardware:
+Benchmark on your hardware with a video file or a camera ID. The tool draws the inference FPS on each frame.
+With an image it reports the face count only.
 
 ```bash
-python tools/detect.py --source image.jpg
+python tools/detect.py --source video.mp4 --detector scrfd
 ```
 
 ---

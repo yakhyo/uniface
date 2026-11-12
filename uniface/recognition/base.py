@@ -38,6 +38,9 @@ class BaseRecognizer(ABC):
     It provides the core functionality for preprocessing, inference, and embedding extraction.
     """
 
+    # Models that take BGR input set this to False
+    swap_rb: bool = True
+
     @abstractmethod
     def __init__(
         self,
@@ -111,8 +114,8 @@ class BaseRecognizer(ABC):
 
         if isinstance(self.input_std, list | tuple):
             # Per-channel normalization
-            rgb_img = cv2.cvtColor(resized_img, cv2.COLOR_BGR2RGB).astype(np.float32)
-            normalized_img = (rgb_img - np.array(self.input_mean, dtype=np.float32)) / np.array(
+            img = cv2.cvtColor(resized_img, cv2.COLOR_BGR2RGB) if self.swap_rb else resized_img
+            normalized_img = (img.astype(np.float32) - np.array(self.input_mean, dtype=np.float32)) / np.array(
                 self.input_std, dtype=np.float32
             )
 
@@ -126,7 +129,7 @@ class BaseRecognizer(ABC):
                 scalefactor=1.0 / self.input_std,
                 size=self.input_size,
                 mean=(self.input_mean, self.input_mean, self.input_mean),
-                swapRB=True,  # Convert BGR to RGB
+                swapRB=self.swap_rb,  # Convert BGR to RGB unless the model takes BGR
             )
 
         return blob

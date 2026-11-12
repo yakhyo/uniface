@@ -15,7 +15,7 @@ graph TB
     end
 
     subgraph Detection
-        DET[RetinaFace / SCRFD / YOLOv5Face / YOLOv8Face]
+        DET[RetinaFace / SCRFD / CenterFace / YOLOv5Face / YOLOv8Face / BlazeFace]
     end
 
     subgraph Analysis
@@ -68,7 +68,7 @@ graph TB
 
 ### 1. Cross-Platform Inference
 
-UniFace gives you consistent, hardware-accelerated face analysis across macOS, Linux, and Windows from a single API. The optimal hardware backend is selected automatically; models run on ONNX Runtime, with PyTorch for a few optional ones.
+UniFace gives you consistent, hardware-accelerated face analysis across macOS, Linux, and Windows from a single API. The optimal hardware backend is selected automatically; models run on ONNX Runtime, and the Emotion model also needs PyTorch.
 
 - **Cross-platform**: Same models work on macOS, Linux, Windows
 - **Hardware acceleration**: Automatic selection of optimal provider
@@ -119,18 +119,20 @@ def detect(self, image: np.ndarray) -> list[Face]:
 ```
 uniface/
 ├── detection/      # Face detection (BlazeFace, CenterFace, RetinaFace, SCRFD, YOLOv5Face, YOLOv8Face)
-├── recognition/    # Face recognition (AdaFace, ArcFace, EdgeFace, MobileFace, SphereFace)
+├── recognition/    # Face recognition (AdaFace, ArcFace, AuraFace, EdgeFace, HyperFace, MobileFace, SphereFace)
 ├── tracking/       # Multi-object tracking (BYTETracker)
 ├── landmark/       # Dense landmarks (Landmark106 = 106 pts, PIPNet = 98 / 68 pts, FaceMesh = 468 / 478 pts)
 ├── attribute/      # Age, gender, emotion, race, face states
 ├── parsing/        # Face semantic segmentation
-├── matting/        # Portrait matting (MODNet)
+├── matting/        # Portrait matting (MODNet, PP-Matting)
 ├── gaze/           # Gaze estimation
 ├── headpose/       # Head pose estimation
 ├── spoofing/       # Anti-spoofing (MiniFASNet)
 ├── quality/        # Face image quality assessment (eDifFIQA)
 ├── privacy/        # Face anonymization
 ├── stores/         # Vector stores (FAISS)
+├── analyzer.py     # FaceAnalyzer
+├── face_utils.py   # Face alignment and similarity
 ├── types.py        # Dataclasses (Face, GazeResult, HeadPoseResult, etc.)
 ├── constants.py    # Model weights and URLs
 ├── model_store.py  # Model download and caching
@@ -201,6 +203,9 @@ for face in faces:
     print(f"Embedding: {face.embedding.shape}")
 ```
 
+`AgeGender` and `FairFace` both set `gender`. Predictors run in list order, so the last one wins:
+here the age comes from `AgeGender` and the gender from `FairFace`.
+
 ---
 
 ## Model Lifecycle
@@ -212,6 +217,8 @@ for face in faces:
 5. **Inference**: Hardware-accelerated execution
 
 ```python
+from uniface.detection import RetinaFace
+
 # Models auto-download on first use
 detector = RetinaFace()  # Downloads if not cached
 

@@ -15,6 +15,8 @@ Portrait matting produces a soft alpha matte separating the foreground (person) 
 |-------|---------|------|----------|
 | **MODNet Photographic** :material-check-circle: | PHOTOGRAPHIC | 25 MB | High-quality portrait photos |
 | MODNet Webcam | WEBCAM | 25 MB | Real-time webcam feeds |
+| **PP-MattingV2** :material-check-circle: | V2 | 34.2 MB | Default `PPMatting` variant, faster |
+| PP-Matting | V1 | 93.8 MB | More accurate, slower |
 
 ---
 
@@ -38,6 +40,8 @@ print(f"Matte range: [{matte.min():.2f}, {matte.max():.2f}]")  # [0, 1]
 
 ## Model Variants
 
+### MODNet
+
 ```python
 from uniface.matting import MODNet
 from uniface.constants import MODNetWeights
@@ -55,8 +59,35 @@ matting = MODNet(input_size=256)
 | Parameter | Default | Description |
 |-----------|---------|-------------|
 | `model_name` | `PHOTOGRAPHIC` | Model variant to load |
-| `input_size` | `512` | Target shorter-side size for preprocessing |
+| `input_size` | `512` | Shorter side is resized to this value when it is larger, or when the whole image is smaller; otherwise the image keeps its size |
 | `providers` | `None` | ONNX Runtime execution providers |
+
+### PP-Matting
+
+`PPMatting` is a drop-in alternative to `MODNet` with the same `predict()` call and the same `(H, W)` float32
+matte in `[0, 1]`.
+
+```python
+from uniface.matting import PPMatting
+from uniface.constants import PPMattingWeights
+
+# PP-MattingV2 with STDC1 (default): faster
+matting = PPMatting()
+
+# PP-Matting with HRNet-W18: more accurate, slower
+matting = PPMatting(model_name=PPMattingWeights.V1)
+```
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `model_name` | `V2` | Model variant to load |
+| `max_short` | `512` | Upper bound on the shorter side; smaller images are never upscaled |
+| `providers` | `None` | ONNX Runtime execution providers |
+
+Both sides are floored to a multiple of 32 before inference, and the matte is resized back to the input size.
+On macOS, the auto-selected CoreML execution provider can make the HRNet-W18 matte differ from the CPU provider.
+The mean difference is small, but a few thousand pixels can differ by any amount up to the full `[0, 1]` range, so
+pass `providers=['CPUExecutionProvider']` for stable results. PP-MattingV2 agrees between the two to within 0.01.
 
 ---
 
@@ -145,14 +176,20 @@ cv2.destroyAllWindows()
 ## Available Matting Models
 
 ```python
-from uniface.constants import MODNetWeights
-from uniface.matting import MODNet
+from uniface.constants import MODNetWeights, PPMattingWeights
+from uniface.matting import MODNet, PPMatting
 
 # Default (Photographic)
 matting = MODNet()
 
 # Webcam variant
 matting = MODNet(model_name=MODNetWeights.WEBCAM)
+
+# PP-MattingV2 with STDC1 (default PPMatting variant)
+matting = PPMatting()
+
+# PP-Matting with HRNet-W18
+matting = PPMatting(model_name=PPMattingWeights.V1)
 ```
 
 ---

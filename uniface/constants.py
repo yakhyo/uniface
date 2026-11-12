@@ -80,6 +80,24 @@ class EdgeFaceWeights(str, Enum):
     S_GAMMA_05  = "edgeface_s_gamma_05"
     BASE        = "edgeface_base"
 
+class AuraFaceWeights(str, Enum):
+    """AuraFace: Open-Source Face Recognition and Identity Preservation Models.
+
+    ResNet100 backbone released by fal.
+    Outputs 512-D embeddings from 112x112 aligned face crops.
+    https://github.com/yakhyo/auraface-onnx
+    """
+    R100 = "auraface_r100"
+
+class HyperFaceWeights(str, Enum):
+    """HyperFace: Generating Synthetic Face Recognition Datasets by Exploring Face Embedding Hypersphere.
+
+    IR-50 backbone from Idiap, trained on the synthetic HyperFace 50k dataset.
+    Outputs 512-D embeddings from 112x112 aligned face crops.
+    https://github.com/yakhyo/hyperface-onnx
+    """
+    IR_50 = "hyperface_ir_50"
+
 class RetinaFaceWeights(str, Enum):
     """Trained on WIDER FACE dataset.
 
@@ -300,6 +318,15 @@ class MODNetWeights(str, Enum):
     WEBCAM       = "modnet_webcam"
 
 
+class PPMattingWeights(str, Enum):
+    """PP-Matting: Trimap-free portrait matting from PaddleSeg.
+
+    https://github.com/yakhyo/ppmatting
+    """
+    V2 = "ppmatting_v2"
+    V1 = "ppmatting_v1"
+
+
 class MiniFASNetWeights(str, Enum):
     """MiniFASNet: Lightweight Face Anti-Spoofing models.
 
@@ -434,6 +461,18 @@ MODEL_REGISTRY: dict[Enum, ModelInfo] = {
     EdgeFaceWeights.BASE: ModelInfo(
         url='https://github.com/yakhyo/edgeface-onnx/releases/download/weights/edgeface_base.onnx',
         sha256='b56942f072c67385f44734b9458b0ccc4a2226888a113f77e0c802ad0c77b4c3'
+    ),
+
+    # AuraFace
+    AuraFaceWeights.R100: ModelInfo(
+        url='https://github.com/yakhyo/auraface-onnx/releases/download/weights/auraface_r100.onnx',
+        sha256='291665ffcaed5c78bd55c6c20bdf506c1232206a7f59ca145db3cd986fd1b77a'
+    ),
+
+    # HyperFace
+    HyperFaceWeights.IR_50: ModelInfo(
+        url='https://github.com/yakhyo/hyperface-onnx/releases/download/weights/hyperface_ir_50.onnx',
+        sha256='78622392cbc9abf11f0eadb4f7982793329482574f0b616017ef50ade1b7ed59'
     ),
 
     # SCRFD
@@ -618,6 +657,16 @@ MODEL_REGISTRY: dict[Enum, ModelInfo] = {
     MODNetWeights.WEBCAM: ModelInfo(
         url='https://github.com/yakhyo/modnet/releases/download/weights/modnet_webcam.onnx',
         sha256='de03cc16f3c91f25b7c2f0b42ea1a8d34f40a752234f3887572655e744e55306'
+    ),
+
+    # PP-Matting (Portrait Matting)
+    PPMattingWeights.V2: ModelInfo(
+        url='https://github.com/yakhyo/ppmatting/releases/download/weights/ppmatting_v2.onnx',
+        sha256='7846bea9cd2ad94a81b44deeddfa1521bbcfd15bb297c181116eecb25c6f0335'
+    ),
+    PPMattingWeights.V1: ModelInfo(
+        url='https://github.com/yakhyo/ppmatting/releases/download/weights/ppmatting_v1.onnx',
+        sha256='24639937f579f1cc06d3b1206c5305f8bb93db6951de30da475f880d72e0a4f4'
     ),
 
     # eDifFIQA (Face Image Quality Assessment)

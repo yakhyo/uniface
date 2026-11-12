@@ -290,14 +290,14 @@ parser = XSeg()
 # Custom settings
 parser = XSeg(
     align_size=256,   # Face alignment size
-    blur_sigma=5,     # Gaussian blur for smoothing (0 = raw)
+    blur_sigma=5,     # Gaussian blur, then values below 0.5 are cut to 0 (0 = raw)
 )
 ```
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
 | `align_size` | 256 | Face alignment output size |
-| `blur_sigma` | 0 | Mask smoothing (0 = no blur) |
+| `blur_sigma` | 0 | Gaussian blur sigma. After blurring, values below 0.5 are cut to 0, which re-sharpens the edge and slightly shrinks the mask (0 = raw output) |
 
 ### Methods
 

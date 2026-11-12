@@ -16,12 +16,14 @@ import numpy as np
 
 from uniface.detection import SCRFD, RetinaFace
 from uniface.face_utils import compute_similarity
-from uniface.recognition import AdaFace, ArcFace, EdgeFace, MobileFace, SphereFace
+from uniface.recognition import AdaFace, ArcFace, AuraFace, EdgeFace, HyperFace, MobileFace, SphereFace
 
 RECOGNIZERS = {
     'arcface': ArcFace,
     'adaface': AdaFace,
+    'auraface': AuraFace,
     'edgeface': EdgeFace,
+    'hyperface': HyperFace,
     'mobileface': MobileFace,
     'sphereface': SphereFace,
 }

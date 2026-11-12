@@ -41,13 +41,16 @@ detector = RetinaFace(providers=['CUDAExecutionProvider', 'CPUExecutionProvider'
 
 All **ONNX-based** model classes accept the `providers` parameter:
 
-- Detection: `RetinaFace`, `SCRFD`, `YOLOv5Face`, `YOLOv8Face`
-- Recognition: `ArcFace`, `AdaFace`, `MobileFace`, `SphereFace`
-- Landmarks: `Landmark106`, `PIPNet`
+- Detection: `RetinaFace`, `SCRFD`, `CenterFace`, `YOLOv5Face`, `YOLOv8Face`, `BlazeFace`
+- Recognition: `AdaFace`, `ArcFace`, `AuraFace`, `EdgeFace`, `HyperFace`, `MobileFace`, `SphereFace`
+- Landmarks: `Landmark106`, `PIPNet`, `FaceMesh`
 - Gaze: `MobileGaze`
+- Head pose: `HeadPose`
 - Parsing: `BiSeNet`, `XSeg`
-- Attributes: `AgeGender`, `FairFace`
+- Matting: `MODNet`, `PPMatting`
+- Attributes: `AgeGender`, `FairFace`, `FaceAttribNet`
 - Anti-Spoofing: `MiniFASNet`
+- Quality: `EDifFIQA`
 
 !!! note "Non-ONNX components"
     - **Emotion** uses TorchScript and selects its device automatically (`mps` / `cuda` / `cpu`). It does **not** accept the `providers` parameter.
@@ -69,7 +72,7 @@ print("Available providers:", providers)
 === "macOS (Apple Silicon)"
 
     ```
-    ['CoreMLExecutionProvider', 'CPUExecutionProvider']
+    ['CoreMLExecutionProvider', 'AzureExecutionProvider', 'CPUExecutionProvider']
     ```
 
 === "Linux (NVIDIA GPU)"
@@ -104,7 +107,9 @@ python -c "import platform; print(platform.machine())"
 ```
 
 !!! tip "Performance"
-    Apple Silicon Macs use CoreML acceleration automatically, providing excellent performance for face analysis tasks.
+    Apple Silicon Macs use CoreML automatically. The gain depends on the model: on an M-series Mac, SCRFD ran about
+    three times faster with CoreML than on the CPU, while the default RetinaFace was faster with
+    `providers=['CPUExecutionProvider']`. Time both on your own machine.
 
 ---
 
@@ -118,8 +123,8 @@ pip install "uniface[gpu]"
 
 **Requirements:**
 
-- CUDA 11.x or 12.x
-- cuDNN 8.x
+- CUDA 13.x and cuDNN 9.x for the current `onnxruntime-gpu` from PyPI (1.27 and newer)
+- An older CUDA 12.x setup needs a matching older `onnxruntime-gpu`
 - Compatible NVIDIA driver
 
 Verify CUDA:
@@ -188,12 +193,13 @@ detector = RetinaFace(input_size=(320, 320))
 detector = RetinaFace(input_size=(640, 640))
 ```
 
-### 3. Batch Processing
+### 3. Reuse the Model
 
-Process multiple images to maximize GPU utilization:
+Detectors take one image per call. Create the model once and reuse it across images, so the session
+and the provider warm-up are paid for only once:
 
 ```python
-# Process images in batch (GPU-efficient)
+# One detector, many images
 for image_path in image_paths:
     image = cv2.imread(image_path)
     faces = detector.detect(image)

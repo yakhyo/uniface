@@ -10,7 +10,7 @@ CLI utilities for testing and running UniFace features.
 | `track.py` | Face tracking on video with ByteTrack |
 | `analyze.py` | Complete face analysis (detection + recognition + attributes) |
 | `anonymize.py` | Face anonymization/blurring for privacy |
-| `emotion.py` | Emotion detection (7 or 8 emotions) |
+| `emotion.py` | Emotion detection (7 classes), requires `pip install torch` |
 | `gaze.py` | Gaze direction estimation |
 | `headpose.py` | Head pose estimation (pitch, yaw, roll) |
 | `landmarks.py` | 106-point facial landmark detection |
@@ -27,6 +27,7 @@ CLI utilities for testing and running UniFace features.
 | `xseg.py` | Face segmentation (XSeg) |
 | `batch_process.py` | Batch process folder of images |
 | `teaser.py` | Teaser videos (before/after wipe, 9:16 + 1:1 + 16:9), output-only overlay videos and showcases |
+| `demo/build_demos.py` | Rebuild the component figures in `assets/demo/` from the photographs in `assets/source/` |
 | `demo/hero.py` | Render the README hero grid (animated AVIF, WebP and MP4) from `teaser.py` overlay clips |
 | `demo/social.py` | Render the GitHub social preview (PNG, JPG, GIF, MP4) and the docs link preview from `teaser.py` overlay clips |
 | `download_model.py` | Download model weights |
@@ -134,7 +135,7 @@ python tools/teaser.py showcase --teasers teasers/ --kind all       # join tease
 
 # Download models
 python tools/download_model.py --model-type retinaface
-python tools/download_model.py  # downloads all
+python tools/download_model.py  # every model, about 3.5 GB
 ```
 
 ## Common Options
@@ -142,7 +143,7 @@ python tools/download_model.py  # downloads all
 | Option | Description |
 |--------|-------------|
 | `--source` | Input source: image/video path or camera ID (0, 1, ...) |
-| `--detector` | Choose detector: `retinaface`, `scrfd`, `centerface`, `blazeface`, `yolov5face`, `yolov8face` |
+| `--detector` | Choose detector, where the tool has the option. `detect.py` takes `retinaface`, `scrfd`, `centerface`, `blazeface`, `yolov5face` or `yolov8face`; most others take `retinaface` or `scrfd`. Check `--help` |
 | `--threshold` | Visualization confidence threshold (default: varies) |
 | `--save-dir` | Output directory (default: `outputs`) |
 

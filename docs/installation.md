@@ -71,8 +71,8 @@ This installs `onnxruntime-gpu`, which includes both `CUDAExecutionProvider` and
 **Requirements:**
 
 - NVIDIA driver compatible with your CUDA version
-- CUDA 11.x or 12.x toolkit
-- cuDNN 8.x
+- CUDA 13.x and cuDNN 9.x for the current `onnxruntime-gpu` from PyPI (1.27 and newer)
+- An older CUDA 12.x setup needs a matching older `onnxruntime-gpu`
 
 !!! info "CUDA Compatibility"
     See the [ONNX Runtime GPU compatibility matrix](https://onnxruntime.ai/docs/execution-providers/CUDA-ExecutionProvider.html)
@@ -157,7 +157,7 @@ UniFace has minimal core dependencies:
 |---------|---------|---------|
 | `faiss-cpu` / `faiss-gpu` | `pip install faiss-cpu` | FAISS vector store |
 | `torch` | `pip install torch` | Emotion model (TorchScript) |
-| `torchvision` | `pip install torchvision` | Faster NMS for YOLO detectors |
+| `torchvision` | `pip install torchvision` | Faster NMS for YOLO detectors, when constructed with `nms_mode='torchvision'` |
 
 ---
 
@@ -202,7 +202,7 @@ pip install "uniface[gpu]"   # install the one you want
 
 UniFace ships release candidates and betas to PyPI ahead of stable releases (versions like `4.0.0rc1`, `4.0.0b1`, `4.0.0a1`). These let you try upcoming features before they're finalized.
 
-`pip install uniface` always installs the latest **stable** release. To opt in to pre-releases:
+`pip install "uniface[cpu]"` always installs the latest **stable** release. To opt in to pre-releases:
 
 ```bash
 # Latest pre-release (if newer than latest stable)
@@ -226,6 +226,7 @@ If you see:
 ImportError: onnxruntime is not installed. Install it with one of:
   pip install "uniface[cpu]"   # CPU / Apple Silicon
   pip install "uniface[gpu]"   # NVIDIA GPU (CUDA)
+Do not install both — they conflict.
 ```
 
 You installed uniface without an extra. Run the appropriate command above.

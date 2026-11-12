@@ -20,7 +20,7 @@ Run UniFace examples directly in your browser with Google Colab, or download and
 | [Face Vector Store](https://github.com/yakhyo/uniface/blob/main/examples/10_face_vector_store.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/10_face_vector_store.ipynb) | [![Open in Kaggle](https://kaggle.com/static/images/open-in-kaggle.svg)](https://www.kaggle.com/code/yakhyokhuja/face-vector-store-with-faiss) | FAISS-backed face database |
 | [Head Pose Estimation](https://github.com/yakhyo/uniface/blob/main/examples/11_head_pose_estimation.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/11_head_pose_estimation.ipynb) | [![Open in Kaggle](https://kaggle.com/static/images/open-in-kaggle.svg)](https://www.kaggle.com/code/yakhyokhuja/head-pose-estimation-with-uniface) | 3D head orientation estimation |
 | [Face Recognition](https://github.com/yakhyo/uniface/blob/main/examples/12_face_recognition.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/12_face_recognition.ipynb) | [![Open in Kaggle](https://kaggle.com/static/images/open-in-kaggle.svg)](https://www.kaggle.com/code/yakhyokhuja/face-recognition-retinaface-align-arcface) | Standalone face recognition pipeline |
-| [Portrait Matting](https://github.com/yakhyo/uniface/blob/main/examples/13_portrait_matting.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/13_portrait_matting.ipynb) | [![Open in Kaggle](https://kaggle.com/static/images/open-in-kaggle.svg)](https://www.kaggle.com/code/yakhyokhuja/portrait-matting-with-modnet) | Portrait matting with MODNet |
+| [Portrait Matting](https://github.com/yakhyo/uniface/blob/main/examples/13_portrait_matting.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/13_portrait_matting.ipynb) | [![Open in Kaggle](https://kaggle.com/static/images/open-in-kaggle.svg)](https://www.kaggle.com/code/yakhyokhuja/portrait-matting-with-modnet) | Portrait matting with MODNet and PP-Matting |
 | [Face Attributes](https://github.com/yakhyo/uniface/blob/main/examples/14_face_attributes.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/14_face_attributes.ipynb) | [![Open in Kaggle](https://kaggle.com/static/images/open-in-kaggle.svg)](https://www.kaggle.com/code/yakhyokhuja/face-attribute-detection-with-uniface) | Face states (eyes, glasses, sunglasses, mask) |
 | [Face Mesh](https://github.com/yakhyo/uniface/blob/main/examples/15_face_mesh.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yakhyo/uniface/blob/main/examples/15_face_mesh.ipynb) | [![Open in Kaggle](https://kaggle.com/static/images/open-in-kaggle.svg)](https://www.kaggle.com/code/yakhyokhuja/dense-face-mesh-with-uniface) | 468 / 478-point dense 3D mesh |
 
@@ -36,7 +36,7 @@ git clone https://github.com/yakhyo/uniface.git
 cd uniface
 
 # Install dependencies
-pip install "uniface[cpu]" jupyter   # or uniface[gpu] for CUDA
+pip install "uniface[cpu]" jupyter
 
 # Launch Jupyter
 jupyter notebook examples/
@@ -52,8 +52,9 @@ Click any **"Open in Colab"** badge above. The notebooks automatically:
 2. Clone the repository to access test images
 3. Set up the correct working directory
 
-!!! tip "GPU Acceleration"
-    In Colab, go to **Runtime → Change runtime type → GPU** for faster inference.
+!!! note "The notebooks run on the CPU"
+    Each notebook installs `uniface[cpu]`, so switching Colab to a GPU runtime does not speed them up.
+    To use a GPU, change the first cell to install `uniface[gpu]` instead.
 
 ---
 
