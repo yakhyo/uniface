@@ -129,7 +129,7 @@ def generate_anchors(image_size: tuple[int, int] = (640, 640)) -> np.ndarray:
     """Generate anchor boxes for a given image size (RetinaFace specific).
 
     Args:
-        image_size: Input image size as (width, height). Defaults to (640, 640).
+        image_size: Input image size as (height, width). Defaults to (640, 640).
 
     Returns:
         Anchor box coordinates as a numpy array with shape (num_anchors, 4).

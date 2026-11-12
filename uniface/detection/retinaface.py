@@ -14,6 +14,7 @@ from uniface.common import (
     generate_anchors,
     non_max_suppression,
     resize_image,
+    validate_image,
 )
 from uniface.constants import RetinaFaceWeights
 from uniface.log import Logger
@@ -107,7 +108,8 @@ class RetinaFace(BaseDetector):
 
         # Precompute anchors if using static size
         if not self.dynamic_size and self.input_size is not None:
-            self._priors = generate_anchors(image_size=self.input_size)
+            width, height = self.input_size
+            self._priors = generate_anchors(image_size=(height, width))
             Logger.debug('Generated anchors for static input size.')
 
         self._initialize_model(self._model_path)
@@ -189,6 +191,9 @@ class RetinaFace(BaseDetector):
             ...     # Can pass landmarks directly to recognition
             ...     embedding = recognizer.get_normalized_embedding(image, face.landmarks)
         """
+
+        # dynamic_size skips resize_image, which is where the other path validates
+        validate_image(image)
 
         original_height, original_width = image.shape[:2]
 

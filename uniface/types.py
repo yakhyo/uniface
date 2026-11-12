@@ -42,7 +42,7 @@ class GazeResult:
 
     Attributes:
         pitch: Vertical gaze angle in radians (positive = up, negative = down).
-        yaw: Horizontal gaze angle in radians (positive = right, negative = left).
+        yaw: Horizontal gaze angle in radians (positive = subject's own right, image left).
     """
 
     pitch: float
@@ -58,7 +58,7 @@ class HeadPoseResult:
 
     Attributes:
         pitch: Rotation around X-axis in degrees (positive = looking up).
-        yaw: Rotation around Y-axis in degrees (positive = looking right).
+        yaw: Rotation around Y-axis in degrees (positive = turned to the subject's own right, image left).
         roll: Rotation around Z-axis in degrees (positive = tilting clockwise).
     """
 
@@ -239,7 +239,7 @@ class FaceMeshResult:
         return f'FaceMeshResult(landmarks={self.landmarks.shape}, score={self.score:.4f})'
 
 
-@dataclass(slots=True)
+@dataclass(slots=True, eq=False)
 class Face:
     """Detected face with analysis results.
 
@@ -248,6 +248,8 @@ class Face:
 
     Note: This dataclass is mutable (not frozen) because FaceAnalyzer enriches
     Face objects with additional attributes after initial detection.
+
+    Faces compare by identity: two faces are equal only if they are the same object.
 
     Attributes:
         bbox: Bounding box coordinates [x1, y1, x2, y2].

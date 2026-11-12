@@ -192,7 +192,7 @@ Examples:
         '--pixel-blocks',
         type=int,
         default=20,
-        help='Number of pixel blocks for pixelate (default: 20, lower=more pixelated)',
+        help='Block size in pixels for pixelate (default: 20, higher=more pixelated)',
     )
     parser.add_argument(
         '--color',

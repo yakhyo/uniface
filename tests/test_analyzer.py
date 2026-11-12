@@ -4,6 +4,10 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+import subprocess
+import sys
+
 import numpy as np
 import pytest
 
@@ -102,6 +106,22 @@ def test_failing_predictor_does_not_break_the_pipeline(image):
 
     assert len(faces) == 2
     assert stamper.calls == 2
+
+
+def test_failing_predictor_is_reported_in_a_plain_script():
+    """With no logging setup, the failure still reaches stderr instead of passing silently."""
+    script = (
+        'import numpy as np\n'
+        'from tests.test_analyzer import FailingPredictor, StubDetector\n'
+        'from uniface.analyzer import FaceAnalyzer\n'
+        'analyzer = FaceAnalyzer(detector=StubDetector(num_faces=1), recognizer=None, predictors=[FailingPredictor()])\n'
+        'analyzer.analyze(np.zeros((240, 320, 3), dtype=np.uint8))\n'
+    )
+    repo_root = Path(__file__).resolve().parent.parent
+
+    result = subprocess.run([sys.executable, '-c', script], capture_output=True, text=True, cwd=repo_root, check=True)
+
+    assert 'FailingPredictor prediction failed: boom' in result.stderr
 
 
 def test_predictors_default_to_empty(image):

@@ -302,3 +302,18 @@ class TestFace:
 
         similarity = sample_face.compute_similarity(other_face)
         assert similarity == pytest.approx(1.0, abs=1e-5)
+
+    def test_faces_compare_by_identity(self, sample_face):
+        """Faces work with ==, `in`, list.remove and sets instead of raising on their array fields."""
+        other_face = Face(
+            bbox=sample_face.bbox.copy(),
+            confidence=sample_face.confidence,
+            landmarks=sample_face.landmarks.copy(),
+        )
+        faces = [other_face, sample_face]
+
+        assert sample_face != other_face
+        assert sample_face in faces
+        faces.remove(sample_face)
+        assert faces == [other_face]
+        assert len({sample_face, other_face}) == 2
