@@ -118,7 +118,7 @@ faces = analyzer.analyze(image)
 ```
 
 `FaceAnalyzer` catches an exception raised inside a predictor, logs a warning and leaves the field at
-`None`. Call `uniface.enable_logging()` while developing, or a bug in your predictor will pass silently.
+`None`. The warning is printed to stderr unless your application sends the `uniface` logger somewhere else.
 
 ---
 

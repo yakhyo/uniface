@@ -22,7 +22,7 @@ class BaseGazeEstimator(ABC):
 
     The gaze direction is represented as pitch and yaw angles in radians:
     - Pitch: Vertical angle (positive = looking up, negative = looking down)
-    - Yaw: Horizontal angle (positive = looking right, negative = looking left)
+    - Yaw: Horizontal angle (positive = looking to the subject's own right, image left)
     """
 
     @abstractmethod
@@ -84,7 +84,7 @@ class BaseGazeEstimator(ABC):
         Returns:
             GazeResult: Result containing pitch and yaw angles in radians:
                 - pitch: Vertical gaze angle (positive = up, negative = down)
-                - yaw: Horizontal gaze angle (positive = right, negative = left)
+                - yaw: Horizontal gaze angle (positive = subject's own right, image left)
 
         Example:
             >>> estimator = MobileGaze()

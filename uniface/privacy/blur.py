@@ -82,7 +82,7 @@ class EllipticalBlur:
 
             kernel_size = max(3, int((min(axes_y, axes_x) * 2 / 7) * self.blur_strength)) | 1
             blurred = cv2.GaussianBlur(image, (kernel_size, kernel_size), 0)
-            image = (blurred * mask + image * (1 - mask)).astype(np.uint8)
+            image[:] = (blurred * mask + image * (1 - mask)).astype(np.uint8)
 
         return image
 

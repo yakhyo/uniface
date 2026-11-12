@@ -24,7 +24,7 @@ class PreprocessConfig:
     Attributes:
         input_mean: Mean value(s) for normalization.
         input_std: Standard deviation value(s) for normalization.
-        input_size: Target image size as (height, width).
+        input_size: Target image size as (width, height).
     """
 
     input_mean: float | list[float] = 127.5

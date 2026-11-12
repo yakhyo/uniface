@@ -31,7 +31,7 @@ def get_cache_dir() -> str:
         2. Default: `~/.uniface/models`.
 
     Returns:
-        Absolute, expanded path to the cache directory.
+        Path to the cache directory with `~` expanded. A relative `UNIFACE_CACHE_DIR` is returned as is.
 
     Example:
         >>> from uniface import get_cache_dir

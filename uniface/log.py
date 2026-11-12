@@ -11,13 +11,12 @@ __all__ = ['Logger', 'enable_logging']
 # Create logger for uniface
 Logger = logging.getLogger('uniface')
 Logger.setLevel(logging.WARNING)  # Only show warnings/errors by default
-Logger.addHandler(logging.NullHandler())
 
 
 def enable_logging(level: int = logging.INFO) -> None:
     """Enable verbose logging for uniface.
 
-    Configures the logger to output messages to stdout with timestamps.
+    Configures the logger to output messages to stderr with timestamps.
     Call this function to see informational messages during model loading
     and inference.
 

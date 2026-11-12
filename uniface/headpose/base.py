@@ -21,8 +21,8 @@ class BaseHeadPoseEstimator(ABC):
     predicts the orientation of a person's head based on their face image.
 
     The head orientation is represented as Euler angles in degrees:
-    - Pitch: Rotation around X-axis (positive = looking down, negative = looking up)
-    - Yaw: Rotation around Y-axis (positive = looking right, negative = looking left)
+    - Pitch: Rotation around X-axis (positive = looking up, negative = looking down)
+    - Yaw: Rotation around Y-axis (positive = turned to the subject's own right, image left)
     - Roll: Rotation around Z-axis (positive = tilting clockwise, negative = tilting counter-clockwise)
     """
 
@@ -85,7 +85,7 @@ class BaseHeadPoseEstimator(ABC):
         Returns:
             HeadPoseResult: Result containing Euler angles in degrees:
                 - pitch: Rotation around X-axis (positive = up)
-                - yaw: Rotation around Y-axis (positive = right)
+                - yaw: Rotation around Y-axis (positive = subject's own right, image left)
                 - roll: Rotation around Z-axis (positive = clockwise)
 
         Example:
