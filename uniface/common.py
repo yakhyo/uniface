@@ -4,7 +4,6 @@
 
 from __future__ import annotations
 
-import itertools
 import math
 
 import cv2
@@ -135,26 +134,27 @@ def generate_anchors(image_size: tuple[int, int] = (640, 640)) -> np.ndarray:
         Anchor box coordinates as a numpy array with shape (num_anchors, 4).
     """
     # RetinaFace FPN strides and corresponding anchor sizes per level
-    steps = [8, 16, 32]
-    min_sizes = [[16, 32], [64, 128], [256, 512]]
+    steps = (8, 16, 32)
+    min_sizes = ((16, 32), (64, 128), (256, 512))
+    height, width = image_size
 
-    anchors = []
-    feature_maps = [[math.ceil(image_size[0] / step), math.ceil(image_size[1] / step)] for step in steps]
+    levels = []
+    for step, sizes in zip(steps, min_sizes, strict=True):
+        map_height = math.ceil(height / step)
+        map_width = math.ceil(width / step)
 
-    for k, (map_height, map_width) in enumerate(feature_maps):
-        step = steps[k]
-        for i, j in itertools.product(range(map_height), range(map_width)):
-            for min_size in min_sizes[k]:
-                s_kx = min_size / image_size[1]
-                s_ky = min_size / image_size[0]
+        cy = (np.arange(map_height, dtype=np.float32) + np.float32(0.5)) * np.float32(step / height)
+        cx = (np.arange(map_width, dtype=np.float32) + np.float32(0.5)) * np.float32(step / width)
+        grid_y, grid_x = np.meshgrid(cy, cx, indexing='ij')
 
-                dense_cx = [x * step / image_size[1] for x in [j + 0.5]]
-                dense_cy = [y * step / image_size[0] for y in [i + 0.5]]
-                for cy, cx in itertools.product(dense_cy, dense_cx):
-                    anchors += [cx, cy, s_kx, s_ky]
+        centers = np.stack((grid_x, grid_y), axis=-1).reshape(-1, 1, 2)
+        centers = np.broadcast_to(centers, (map_height * map_width, len(sizes), 2))
+        wh = np.array([[s / width, s / height] for s in sizes], dtype=np.float32)
+        wh = np.broadcast_to(wh, (map_height * map_width, len(sizes), 2))
 
-    output = np.array(anchors, dtype=np.float32).reshape(-1, 4)
-    return output
+        levels.append(np.concatenate((centers, wh), axis=-1).reshape(-1, 4))
+
+    return np.concatenate(levels, axis=0)
 
 
 def non_max_suppression(dets: np.ndarray, threshold: float) -> list[int]:
@@ -247,20 +247,12 @@ def decode_landmarks(
     if variances is None:
         variances = [0.1, 0.2]
 
-    # Reshape predictions to [num_priors, 5, 2] to process landmark points
+    # Reshape predictions to [num_priors, 5, 2] and broadcast priors without 5x allocation
     predictions = predictions.reshape(predictions.shape[0], 5, 2)
-
-    # Expand priors to match (num_priors, 5, 2)
-    priors_xy = np.repeat(priors[:, :2][:, np.newaxis, :], 5, axis=1)  # (num_priors, 5, 2)
-    priors_wh = np.repeat(priors[:, 2:][:, np.newaxis, :], 5, axis=1)  # (num_priors, 5, 2)
-
-    # Compute absolute landmark positions
-    landmarks = priors_xy + predictions * variances[0] * priors_wh
+    landmarks = priors[:, np.newaxis, :2] + predictions * (variances[0] * priors[:, np.newaxis, 2:])
 
     # Flatten back to [num_priors, 10]
-    landmarks = landmarks.reshape(landmarks.shape[0], -1)
-
-    return landmarks
+    return landmarks.reshape(landmarks.shape[0], -1)
 
 
 def distance2bbox(
@@ -313,16 +305,12 @@ def distance2kps(
     Returns:
         Decoded keypoints with shape (n, 2k).
     """
-    preds = []
-    for i in range(0, distance.shape[1], 2):
-        px = points[:, i % 2] + distance[:, i]
-        py = points[:, i % 2 + 1] + distance[:, i + 1]
-        if max_shape is not None:
-            px = np.clip(px, 0, max_shape[1])
-            py = np.clip(py, 0, max_shape[0])
-        preds.append(px)
-        preds.append(py)
-    return np.stack(preds, axis=-1)
+    num_kps = distance.shape[1] // 2
+    pts = points[:, np.newaxis, :] + distance.reshape(-1, num_kps, 2)
+    if max_shape is not None:
+        pts[..., 0] = np.clip(pts[..., 0], 0, max_shape[1])
+        pts[..., 1] = np.clip(pts[..., 1], 0, max_shape[0])
+    return pts.reshape(-1, num_kps * 2)
 
 
 def letterbox_resize(

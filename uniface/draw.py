@@ -371,8 +371,8 @@ def draw_mesh(
 
     if mode in ('full', 'partial'):
         edges = FACEMESH_TESSELATION_FULL if mode == 'full' else FACEMESH_TESSELATION_PARTIAL
-        for start_idx, end_idx in edges:
-            cv2.line(image, points[start_idx], points[end_idx], color, 1, cv2.LINE_AA)
+        edge_segments = points[np.asarray(edges, dtype=np.int32)]
+        cv2.polylines(image, edge_segments, False, color, 1, cv2.LINE_AA)
 
     if mode in ('partial', 'points'):
         for x, y in mesh:
