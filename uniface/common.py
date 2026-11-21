@@ -78,12 +78,13 @@ def resize_image(
     model_ratio = height / width
     if im_ratio > model_ratio:
         new_height = height
-        new_width = int(new_height / im_ratio)
+        new_width = max(1, int(new_height / im_ratio))
+        resize_factor = float(new_height) / frame.shape[0]
     else:
         new_width = width
-        new_height = int(new_width * im_ratio)
+        new_height = max(1, int(new_width * im_ratio))
+        resize_factor = float(new_width) / frame.shape[1]
 
-    resize_factor = float(new_height) / frame.shape[0]
     resized_frame = cv2.resize(frame, (new_width, new_height))
 
     # Create blank image and place resized image on it
@@ -370,7 +371,7 @@ def letterbox_resize(
 
     # Calculate scale ratio to fit within target_size
     scale = min(target_size / img_h, target_size / img_w)
-    new_h, new_w = int(img_h * scale), int(img_w * scale)
+    new_h, new_w = max(1, int(img_h * scale)), max(1, int(img_w * scale))
 
     # Resize image maintaining aspect ratio
     img_resized = cv2.resize(image, (new_w, new_h), interpolation=cv2.INTER_LINEAR)
