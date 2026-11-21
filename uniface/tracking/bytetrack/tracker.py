@@ -62,15 +62,16 @@ class STrack(BaseTrack):
             stracks[i].mean = mean
             stracks[i].covariance = cov
 
-    def activate(self, kalman_filter: KalmanFilter, frame_id: int) -> None:
+    def activate(self, kalman_filter: KalmanFilter, frame_id: int, track_id: int | None = None) -> None:
         """Start a new tracklet.
 
         Args:
             kalman_filter: Kalman filter instance.
             frame_id: Current frame number.
+            track_id: Optional explicit track ID (used for per-tracker ID isolation).
         """
         self.kalman_filter = kalman_filter
-        self.track_id = self.next_id()
+        self.track_id = track_id if track_id is not None else self.next_id()
         self.mean, self.covariance = self.kalman_filter.initiate(self._tlwh_to_xyah(self._tlwh))
 
         self.tracklet_len = 0
@@ -80,13 +81,20 @@ class STrack(BaseTrack):
         self.frame_id = frame_id
         self.start_frame = frame_id
 
-    def re_activate(self, new_track: STrack, frame_id: int, new_id: bool = False) -> None:
+    def re_activate(
+        self,
+        new_track: STrack,
+        frame_id: int,
+        new_id: bool = False,
+        track_id: int | None = None,
+    ) -> None:
         """Reactivate a lost track.
 
         Args:
             new_track: New detection to reactivate with.
             frame_id: Current frame number.
             new_id: Whether to assign a new track ID.
+            track_id: Optional explicit track ID when `new_id` is True.
         """
         self.mean, self.covariance = self.kalman_filter.update(
             self.mean, self.covariance, self._tlwh_to_xyah(new_track.tlwh)
@@ -96,7 +104,7 @@ class STrack(BaseTrack):
         self.is_activated = True
         self.frame_id = frame_id
         if new_id:
-            self.track_id = self.next_id()
+            self.track_id = track_id if track_id is not None else self.next_id()
         self.score = new_track.score
 
     def update(self, new_track: STrack, frame_id: int) -> None:
@@ -164,6 +172,8 @@ class BYTETracker:
         low_thresh: Low confidence detection threshold.
     """
 
+    _MAX_REMOVED_TRACKS = 1000
+
     def __init__(
         self,
         *,
@@ -178,18 +188,23 @@ class BYTETracker:
         self.buffer_size = track_buffer
 
         self.frame_id = 0
+        self._next_id = 0
         self.kalman_filter = KalmanFilter()
         self.tracked_stracks: list[STrack] = []
         self.lost_stracks: list[STrack] = []
         self.removed_stracks: list[STrack] = []
 
+    def _alloc_id(self) -> int:
+        self._next_id += 1
+        return self._next_id
+
     def reset(self) -> None:
-        """Reset tracker state."""
+        """Reset tracker state without affecting other BYTETracker instances."""
         self.frame_id = 0
+        self._next_id = 0
         self.tracked_stracks = []
         self.lost_stracks = []
         self.removed_stracks = []
-        BaseTrack.reset_id()
 
     def update(self, detections: np.ndarray) -> np.ndarray:
         """Update tracker with new detections.
@@ -289,7 +304,7 @@ class BYTETracker:
             track = detections_remain[inew]
             if track.score < self.track_thresh:
                 continue
-            track.activate(self.kalman_filter, self.frame_id)
+            track.activate(self.kalman_filter, self.frame_id, track_id=self._alloc_id())
             activated_stracks.append(track)
 
         # Step 5: Remove old lost tracks
@@ -304,9 +319,11 @@ class BYTETracker:
         self.tracked_stracks = _joint_stracks(self.tracked_stracks, refind_stracks)
         self.lost_stracks = _sub_stracks(self.lost_stracks, self.tracked_stracks)
         self.lost_stracks.extend(lost_stracks)
-        self.lost_stracks = _sub_stracks(self.lost_stracks, self.removed_stracks)
+        self.lost_stracks = _sub_stracks(self.lost_stracks, removed_stracks)
         self.tracked_stracks, self.lost_stracks = _remove_duplicate_stracks(self.tracked_stracks, self.lost_stracks)
         self.removed_stracks.extend(removed_stracks)
+        if len(self.removed_stracks) > self._MAX_REMOVED_TRACKS:
+            self.removed_stracks = self.removed_stracks[-self._MAX_REMOVED_TRACKS :]
 
         # Output confirmed tracks
         outputs = []

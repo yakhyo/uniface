@@ -130,11 +130,12 @@ class KalmanFilter:
         ]
         sqr = np.square(np.r_[std_pos, std_vel]).T
 
-        motion_cov = np.array([np.diag(sqr[i]) for i in range(len(mean))])
+        motion_cov = np.zeros((len(mean), 8, 8), dtype=sqr.dtype)
+        diag_idx = np.arange(8)
+        motion_cov[:, diag_idx, diag_idx] = sqr
 
         mean = np.dot(mean, self._motion_mat.T)
-        left = np.dot(self._motion_mat, covariance).transpose((1, 0, 2))
-        covariance = np.dot(left, self._motion_mat.T) + motion_cov
+        covariance = self._motion_mat @ covariance @ self._motion_mat.T + motion_cov
 
         return mean, covariance
 
