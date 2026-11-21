@@ -8,6 +8,7 @@ import numpy as np
 import torch
 
 from uniface.attribute.base import BaseAttribute
+from uniface.common import validate_image
 from uniface.constants import EmotionWeights
 from uniface.face_utils import face_alignment
 from uniface.log import Logger
@@ -34,23 +35,30 @@ class Emotion(BaseAttribute):
         *,
         model_name: EmotionWeights = EmotionWeights.AFFECNET7,
         input_size: tuple[int, int] = (112, 112),
+        device: str | torch.device | None = None,
     ) -> None:
         """Initializes the emotion recognition model.
 
         Args:
             model_name (EmotionWeights): The enum for the model weights to load.
-            input_size (tuple[int, int]): The expected input size for the model.
+            input_size (tuple[int, int]): Expected input size as (height, width).
+            device (str | torch.device | None): Torch device override (e.g. 'cpu', 'cuda').
+                If None, auto-selects MPS > CUDA > CPU.
         """
-        Logger.info(f'Initializing Emotion with model={model_name.name}')
+        Logger.info(f'Initializing Emotion with model={model_name}')
 
-        if torch.backends.mps.is_available():
+        if device is not None:
+            self.device = torch.device(device)
+        elif torch.backends.mps.is_available():
             self.device = torch.device('mps')
         elif torch.cuda.is_available():
             self.device = torch.device('cuda')
         else:
             self.device = torch.device('cpu')
 
-        self.input_size = input_size
+        self.input_size = tuple(input_size)
+        self._mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
+        self._std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
         self.model_path = verify_model_weights(model_name)
 
         # Define emotion labels based on the selected model
@@ -92,24 +100,25 @@ class Emotion(BaseAttribute):
         Returns:
             torch.Tensor: The preprocessed image tensor ready for inference.
         """
+        validate_image(image)
         landmarks = np.asarray(landmarks)
 
         aligned_image, _ = face_alignment(image, landmarks)
 
-        # Convert BGR to RGB, resize, normalize, and convert to a CHW tensor
+        # Convert BGR to RGB, resize only if input_size != (112, 112), normalize, and convert to NCHW
         rgb_image = cv2.cvtColor(aligned_image, cv2.COLOR_BGR2RGB)
-        resized_image = cv2.resize(rgb_image, self.input_size).astype(np.float32) / 255.0
-        mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
-        std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
-        normalized_image = (resized_image - mean) / std
-        transposed_image = normalized_image.transpose((2, 0, 1))
+        if rgb_image.shape[:2] != self.input_size:
+            rgb_image = cv2.resize(rgb_image, self.input_size[::-1])
+        resized_image = rgb_image.astype(np.float32) / 255.0
+        normalized_image = (resized_image - self._mean) / self._std
+        transposed_image = np.ascontiguousarray(normalized_image.transpose((2, 0, 1)), dtype=np.float32)
 
         return torch.from_numpy(transposed_image).unsqueeze(0).to(self.device)
 
     def postprocess(self, prediction: torch.Tensor) -> EmotionResult:
         """Processes the raw model output to get the emotion label and confidence score."""
-        probabilities = torch.nn.functional.softmax(prediction, dim=1).squeeze().cpu().numpy()
-        pred_index = np.argmax(probabilities)
+        probabilities = torch.nn.functional.softmax(prediction.detach(), dim=-1).reshape(-1).cpu().numpy()
+        pred_index = int(np.argmax(probabilities))
         emotion_label = self.emotion_labels[pred_index]
         confidence = float(probabilities[pred_index])
         return EmotionResult(emotion=emotion_label, confidence=confidence)

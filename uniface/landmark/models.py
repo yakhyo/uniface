@@ -6,6 +6,7 @@
 import cv2
 import numpy as np
 
+from uniface.common import validate_image
 from uniface.constants import LandmarkWeights
 from uniface.face_utils import bbox_center_alignment, transform_points_2d
 from uniface.log import Logger
@@ -104,7 +105,10 @@ class Landmark106(BaseLandmarker):
                 - The preprocessed image blob ready for inference.
                 - The affine transformation matrix used for alignment.
         """
-        width, height = bbox[2] - bbox[0], bbox[3] - bbox[1]
+        validate_image(image)
+        width, height = float(bbox[2] - bbox[0]), float(bbox[3] - bbox[1])
+        if width <= 0.0 or height <= 0.0:
+            raise ValueError(f'Invalid bounding box {bbox[:4]}: width and height must be positive')
         center = ((bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2)
         scale = self.input_size[0] / (max(width, height) * 1.5)
 
@@ -133,9 +137,7 @@ class Landmark106(BaseLandmarker):
         Returns:
             np.ndarray: An array of landmark points in the original image's coordinates.
         """
-        landmarks = predictions.reshape((-1, 2))
-        landmarks[:, 0:2] += 1
-        landmarks[:, 0:2] *= self.input_size[0] // 2
+        landmarks = (np.asarray(predictions, dtype=np.float32).reshape((-1, 2)) + 1.0) * (self.input_size[0] / 2.0)
 
         inverse_matrix = cv2.invertAffineTransform(transform_matrix)
         landmarks = transform_points_2d(landmarks, inverse_matrix)

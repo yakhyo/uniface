@@ -7,7 +7,7 @@ import cv2
 import numpy as np
 
 from uniface.attribute.base import BaseAttribute
-from uniface.common import softmax
+from uniface.common import softmax, validate_image
 from uniface.constants import FairFaceWeights
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
@@ -68,10 +68,12 @@ class FairFace(BaseAttribute):
             providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
                 the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
         """
-        Logger.info(f'Initializing FairFace with model={model_name.name}')
+        Logger.info(f'Initializing FairFace with model={model_name}')
         self.model_path = verify_model_weights(model_name)
         # Normalized to a tuple so a [224, 224] list still compares equal to the ONNX metadata.
         self.input_size = tuple(input_size) if input_size is not None else (224, 224)
+        self._mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
+        self._std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
         self.providers = providers
         self._initialize_model()
 
@@ -111,21 +113,27 @@ class FairFace(BaseAttribute):
         Returns:
             np.ndarray: The preprocessed image blob ready for inference.
         """
+        validate_image(image)
+
         # Crop face if bbox provided
         if bbox is not None:
-            bbox = np.asarray(bbox, dtype=int)
-            x1, y1, x2, y2 = bbox[:4]
+            height, width = image.shape[:2]
+            x1, y1, x2, y2 = (float(v) for v in np.asarray(bbox)[:4])
+            if x2 <= x1 or y2 <= y1:
+                raise ValueError(f'Invalid bounding box {[x1, y1, x2, y2]}: expected x2 > x1 and y2 > y1')
 
             # Add padding (25% of face size)
             w, h = x2 - x1, y2 - y1
             padding = 0.25
-            x_pad = int(w * padding)
-            y_pad = int(h * padding)
+            x_pad = w * padding
+            y_pad = h * padding
 
-            x1 = max(0, x1 - x_pad)
-            y1 = max(0, y1 - y_pad)
-            x2 = min(image.shape[1], x2 + x_pad)
-            y2 = min(image.shape[0], y2 + y_pad)
+            x1 = max(0, round(x1 - x_pad))
+            y1 = max(0, round(y1 - y_pad))
+            x2 = min(width, round(x2 + x_pad))
+            y2 = min(height, round(y2 + y_pad))
+            if x2 <= x1 or y2 <= y1:
+                raise ValueError(f'Bounding box {bbox[:4]} does not overlap the {width}x{height} image')
 
             image = image[y1:y2, x1:x2]
 
@@ -137,15 +145,11 @@ class FairFace(BaseAttribute):
 
         # Normalize with ImageNet mean and std
         image = image.astype(np.float32) / 255.0
-        mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
-        std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
-        image = (image - mean) / std
+        image = (image - self._mean) / self._std
 
         # Transpose to CHW format and add batch dimension
         image = np.transpose(image, (2, 0, 1))
-        image = np.expand_dims(image, axis=0)
-
-        return image
+        return np.ascontiguousarray(image[np.newaxis], dtype=np.float32)
 
     def postprocess(self, prediction: tuple[np.ndarray, np.ndarray, np.ndarray]) -> DemographyResult:
         """Processes the raw model output to extract race, gender, and age.

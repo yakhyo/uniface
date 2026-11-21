@@ -63,7 +63,7 @@ class EDifFIQA(BaseQualityEstimator):
         model_name: EDifFIQAWeights = EDifFIQAWeights.T,
         providers: list[str] | None = None,
     ) -> None:
-        Logger.info(f'Initializing EDifFIQA with model={model_name.name}')
+        Logger.info(f'Initializing EDifFIQA with model={model_name}')
 
         self.providers = providers
         self.model_path = verify_model_weights(model_name)

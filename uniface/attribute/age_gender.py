@@ -7,6 +7,7 @@ import cv2
 import numpy as np
 
 from uniface.attribute.base import BaseAttribute
+from uniface.common import validate_image
 from uniface.constants import AgeGenderWeights
 from uniface.face_utils import bbox_center_alignment
 from uniface.log import Logger
@@ -53,7 +54,7 @@ class AgeGender(BaseAttribute):
             providers (list[str] | None): ONNX Runtime execution providers. If None, auto-detects
                 the best available provider. Example: ['CPUExecutionProvider'] to force CPU.
         """
-        Logger.info(f'Initializing AgeGender with model={model_name.name}')
+        Logger.info(f'Initializing AgeGender with model={model_name}')
         self.model_path = verify_model_weights(model_name)
         # Normalized to a tuple so a [224, 224] list still compares equal to the ONNX metadata.
         self.input_size = tuple(input_size) if input_size is not None else None
@@ -98,14 +99,18 @@ class AgeGender(BaseAttribute):
         Returns:
             np.ndarray: The preprocessed image blob ready for inference.
         """
+        validate_image(image)
         bbox = np.asarray(bbox)
 
-        width, height = bbox[2] - bbox[0], bbox[3] - bbox[1]
+        width, height = float(bbox[2] - bbox[0]), float(bbox[3] - bbox[1])
+        if width <= 0.0 or height <= 0.0:
+            raise ValueError(f'Invalid bounding box {bbox[:4]}: width and height must be positive')
         center = ((bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2)
-        scale = self.input_size[1] / (max(width, height) * 1.5)
+        target_dim = max(self.input_size)
+        scale = target_dim / (max(width, height) * 1.5)
 
         rotation = 0.0
-        aligned_face, _ = bbox_center_alignment(image, center, self.input_size[1], scale, rotation)
+        aligned_face, _ = bbox_center_alignment(image, center, target_dim, scale, rotation)
 
         blob = cv2.dnn.blobFromImage(
             aligned_face,
@@ -127,8 +132,8 @@ class AgeGender(BaseAttribute):
         """
         # First two values are gender logits
         gender = int(np.argmax(prediction[:2]))
-        # Third value is normalized age, scaled by 100
-        age = int(np.round(prediction[2] * 100))
+        # Third value is normalized age, scaled by 100 and clamped to non-negative years
+        age = max(0, int(np.round(prediction[2] * 100)))
         return DemographyResult(gender=gender, age=age)
 
     def predict(self, image: np.ndarray, face: Face) -> DemographyResult:

@@ -10,6 +10,7 @@ from dataclasses import dataclass
 import cv2
 import numpy as np
 
+from uniface.common import validate_image
 from uniface.face_utils import face_alignment
 from uniface.log import Logger
 from uniface.onnx_utils import create_onnx_session
@@ -110,24 +111,30 @@ class BaseRecognizer(ABC):
         Returns:
             Preprocessed image as a NumPy array ready for inference.
         """
-        resized_img = cv2.resize(face_img, self.input_size)
+        validate_image(face_img)
+        target_wh = self.input_size
+        if face_img.shape[:2] != (target_wh[1], target_wh[0]):
+            resized_img = cv2.resize(face_img, target_wh)
+        else:
+            resized_img = face_img
 
-        if isinstance(self.input_std, list | tuple):
+        if isinstance(self.input_mean, list | tuple | np.ndarray) or isinstance(
+            self.input_std, list | tuple | np.ndarray
+        ):
             # Per-channel normalization
             img = cv2.cvtColor(resized_img, cv2.COLOR_BGR2RGB) if self.swap_rb else resized_img
-            normalized_img = (img.astype(np.float32) - np.array(self.input_mean, dtype=np.float32)) / np.array(
-                self.input_std, dtype=np.float32
-            )
+            mean = np.asarray(self.input_mean, dtype=np.float32)
+            std = np.asarray(self.input_std, dtype=np.float32)
+            normalized_img = (img.astype(np.float32) - mean) / std
 
-            # Change to NCHW (batch, channels, height, width)
-            blob = np.transpose(normalized_img, (2, 0, 1))  # CHW
-            blob = np.expand_dims(blob, axis=0)  # NCHW
+            # Change to contiguous NCHW (batch, channels, height, width)
+            blob = np.ascontiguousarray(np.transpose(normalized_img, (2, 0, 1))[np.newaxis], dtype=np.float32)
         else:
             # Single-value normalization
             blob = cv2.dnn.blobFromImage(
                 resized_img,
                 scalefactor=1.0 / self.input_std,
-                size=self.input_size,
+                size=target_wh,
                 mean=(self.input_mean, self.input_mean, self.input_mean),
                 swapRB=self.swap_rb,  # Convert BGR to RGB unless the model takes BGR
             )
@@ -146,6 +153,7 @@ class BaseRecognizer(ABC):
         Returns:
             Face embedding with shape (1, 512) — raw ONNX output with batch dimension.
         """
+        validate_image(image)
         # If landmarks are provided, align the face first
         if landmarks is not None:
             aligned_face, _ = face_alignment(image, landmarks, image_size=self.input_size)
@@ -159,12 +167,14 @@ class BaseRecognizer(ABC):
 
         return embedding
 
-    def get_normalized_embedding(self, image: np.ndarray, landmarks: np.ndarray) -> np.ndarray:
+    def get_normalized_embedding(self, image: np.ndarray, landmarks: np.ndarray | None = None) -> np.ndarray:
         """Extract an L2-normalized face embedding vector from an image.
 
         Args:
-            image: Input face image in BGR format.
-            landmarks: Facial landmarks (5 points for alignment).
+            image: Input face image in BGR format. If already aligned (112x112),
+                landmarks can be None.
+            landmarks: Facial landmarks (5 points for alignment). Optional if
+                image is already aligned.
 
         Returns:
             L2-normalized face embedding as a 1D vector with shape (512,).
@@ -173,12 +183,14 @@ class BaseRecognizer(ABC):
         norm = np.linalg.norm(embedding)
         return embedding / norm if norm > 0 else embedding
 
-    def __call__(self, image: np.ndarray, landmarks: np.ndarray) -> np.ndarray:
+    def __call__(self, image: np.ndarray, landmarks: np.ndarray | None = None) -> np.ndarray:
         """Callable shortcut for the `get_normalized_embedding` method.
 
         Args:
-            image: Input face image in BGR format.
-            landmarks: Facial landmarks (5 points for alignment).
+            image: Input face image in BGR format. If already aligned (112x112),
+                landmarks can be None.
+            landmarks: Facial landmarks (5 points for alignment). Optional if
+                image is already aligned.
 
         Returns:
             L2-normalized face embedding as a 1D vector with shape (512,).

@@ -6,7 +6,7 @@
 import cv2
 import numpy as np
 
-from uniface.common import softmax
+from uniface.common import softmax, validate_image
 from uniface.constants import MiniFASNetWeights
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
@@ -77,7 +77,7 @@ class MiniFASNet(BaseSpoofer):
         scale: float | None = None,
         providers: list[str] | None = None,
     ) -> None:
-        Logger.info(f'Initializing MiniFASNet with model={model_name.name}')
+        Logger.info(f'Initializing MiniFASNet with model={model_name}')
 
         # Use default scale for the model variant if not specified
         self.scale = scale if scale is not None else DEFAULT_SCALES.get(model_name, 2.7)
@@ -111,12 +111,12 @@ class MiniFASNet(BaseSpoofer):
             Logger.error(f"Failed to load MiniFASNet model from '{self.model_path}'", exc_info=True)
             raise RuntimeError(f'Failed to initialize MiniFASNet model: {e}') from e
 
-    def _xyxy_to_xywh(self, bbox: list | np.ndarray) -> list[int]:
-        """Convert bounding box from [x1, y1, x2, y2] to [x, y, w, h] format."""
-        x1, y1, x2, y2 = bbox[:4]
-        return [int(x1), int(y1), int(x2 - x1), int(y2 - y1)]
+    def _xyxy_to_xywh(self, bbox: list | np.ndarray) -> tuple[float, float, float, float]:
+        """Convert bounding box from [x1, y1, x2, y2] to (x, y, w, h) format."""
+        x1, y1, x2, y2 = (float(v) for v in bbox[:4])
+        return x1, y1, x2 - x1, y2 - y1
 
-    def _crop_face(self, image: np.ndarray, bbox_xywh: list[int]) -> np.ndarray:
+    def _crop_face(self, image: np.ndarray, bbox_xywh: tuple[float, float, float, float]) -> np.ndarray:
         """Crop and resize face region from image using scale factor.
 
         The crop is centered on the face bounding box and scaled to capture
@@ -124,13 +124,15 @@ class MiniFASNet(BaseSpoofer):
 
         Args:
             image: Input image in BGR format.
-            bbox_xywh: Face bounding box in [x, y, w, h] format.
+            bbox_xywh: Face bounding box in (x, y, w, h) format.
 
         Returns:
             Cropped and resized face region.
         """
         src_h, src_w = image.shape[:2]
         x, y, box_w, box_h = bbox_xywh
+        if box_w <= 0.0 or box_h <= 0.0:
+            raise ValueError(f'Invalid bounding box width/height ({box_w}, {box_h}): must be positive')
 
         # Calculate the scale to apply based on image and face size
         scale = min((src_h - 1) / box_h, (src_w - 1) / box_w, self.scale)
@@ -138,20 +140,20 @@ class MiniFASNet(BaseSpoofer):
         new_h = box_h * scale
 
         # Calculate center of the bounding box
-        center_x = x + box_w / 2
-        center_y = y + box_h / 2
+        center_x = x + box_w / 2.0
+        center_y = y + box_h / 2.0
 
-        # Calculate new bounding box coordinates
-        x1 = max(0, int(center_x - new_w / 2))
-        y1 = max(0, int(center_y - new_h / 2))
-        x2 = min(src_w - 1, int(center_x + new_w / 2))
-        y2 = min(src_h - 1, int(center_y + new_h / 2))
+        # Calculate clamped crop bounds [x1, x2_excl) and [y1, y2_excl)
+        x1 = max(0, int(center_x - new_w / 2.0))
+        y1 = max(0, int(center_y - new_h / 2.0))
+        x2_excl = min(src_w, int(center_x + new_w / 2.0) + 1)
+        y2_excl = min(src_h, int(center_y + new_h / 2.0) + 1)
+        if x2_excl <= x1 or y2_excl <= y1:
+            raise ValueError(f'Expanded face crop does not overlap the {src_w}x{src_h} image')
 
         # Crop and resize
-        cropped = image[y1 : y2 + 1, x1 : x2 + 1]
-        resized = cv2.resize(cropped, self.input_size)
-
-        return resized
+        cropped = image[y1:y2_excl, x1:x2_excl]
+        return cv2.resize(cropped, self.input_size)
 
     def preprocess(self, image: np.ndarray, bbox: list | np.ndarray) -> np.ndarray:
         """Preprocess the input image for model inference.
@@ -166,7 +168,7 @@ class MiniFASNet(BaseSpoofer):
         Returns:
             Preprocessed image tensor with shape (1, C, H, W).
         """
-        # Convert bbox format
+        validate_image(image)
         bbox_xywh = self._xyxy_to_xywh(bbox)
 
         # Crop and resize face region

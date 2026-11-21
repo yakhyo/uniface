@@ -50,6 +50,7 @@ def estimate_norm(
         ValueError: If the input landmark array does not have the shape (5, 2),
             or if image_size is not a multiple of 112 or 128.
     """
+    landmark = np.asarray(landmark, dtype=np.float32)
     if landmark.shape != (5, 2):
         raise ValueError(
             f'estimate_norm requires 5 alignment landmarks, got shape {landmark.shape}. '
@@ -79,6 +80,8 @@ def estimate_norm(
 
     # Compute the transformation matrix
     transform = SimilarityTransform.from_estimate(landmark, alignment)
+    if not transform:
+        raise ValueError('Failed to estimate alignment transform from degenerate or collinear landmarks.')
 
     matrix = transform.params[0:2, :]
     inverse_matrix = np.linalg.inv(transform.params)[0:2, :]
@@ -130,12 +133,18 @@ def compute_similarity(feat1: np.ndarray, feat2: np.ndarray, normalized: bool = 
     Returns:
         Cosine similarity score in range [-1, 1].
     """
+    feat1 = np.asarray(feat1)
+    feat2 = np.asarray(feat2)
+    if (feat1.ndim >= 2 and feat1.shape[0] > 1) or (feat2.ndim >= 2 and feat2.shape[0] > 1):
+        raise ValueError(f'compute_similarity expects single vectors, got shapes {feat1.shape} and {feat2.shape}')
     feat1 = feat1.ravel()
     feat2 = feat2.ravel()
     if normalized:
-        return np.dot(feat1, feat2)
-    # Add small epsilon to prevent division by zero
-    return np.dot(feat1, feat2) / (np.linalg.norm(feat1) * np.linalg.norm(feat2) + 1e-5)
+        return np.float32(np.dot(feat1, feat2))
+    denom = float(np.linalg.norm(feat1) * np.linalg.norm(feat2))
+    if denom == 0.0:
+        return np.float32(0.0)
+    return np.float32(np.dot(feat1, feat2) / denom)
 
 
 def bbox_center_alignment(

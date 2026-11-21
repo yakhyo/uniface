@@ -7,6 +7,7 @@ from __future__ import annotations
 import cv2
 import numpy as np
 
+from uniface.common import validate_image
 from uniface.constants import MODNetWeights
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
@@ -74,6 +75,8 @@ class MODNet(BaseMatting):
         providers: list[str] | None = None,
     ) -> None:
         Logger.info(f'Initializing MODNet with model={model_name}, input_size={input_size}')
+        if input_size < STRIDE:
+            raise ValueError(f'input_size must be at least {STRIDE}, got {input_size}')
 
         self.input_size = input_size
         self.providers = providers
@@ -116,7 +119,10 @@ class MODNet(BaseMatting):
             A tuple of `(tensor, orig_h, orig_w)` where *tensor* has shape
             `(1, 3, H', W')` in float32.
         """
+        validate_image(image)
         orig_h, orig_w = image.shape[:2]
+        if orig_h < STRIDE or orig_w < STRIDE:
+            raise ValueError(f'MODNet needs an image of at least {STRIDE}x{STRIDE} pixels, got {orig_h}x{orig_w}')
         rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
         if max(orig_h, orig_w) < self.input_size or min(orig_h, orig_w) > self.input_size:

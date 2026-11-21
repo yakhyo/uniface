@@ -59,7 +59,11 @@ def roi_from_box(
         ValueError: If fewer than 2 keypoints are given.
     """
     x1, y1, x2, y2 = (float(v) for v in np.asarray(bbox).ravel()[:4])
+    if x2 <= x1 or y2 <= y1:
+        raise ValueError(f'Invalid bounding box {[x1, y1, x2, y2]}: expected x2 > x1 and y2 > y1')
     side = (1.0 + 2.0 * margin) * max(x2 - x1, y2 - y1)
+    if side <= 0.0:
+        raise ValueError(f'ROI side must be strictly positive, got {side}')
 
     angle = 0.0
     if keypoints is not None:
@@ -225,7 +229,8 @@ class FaceMesh(BaseLandmarker):
             # Put z on the same pixel scale as x/y.
             points[idx, :, 2] *= roi[2] / self.input_size
 
-        scores = 1.0 / (1.0 + np.exp(-logits.ravel().astype(np.float64)))
+        clipped = np.clip(logits.ravel().astype(np.float64), -100.0, 100.0)
+        scores = 1.0 / (1.0 + np.exp(-clipped))
         return points.astype(np.float32), scores.astype(np.float32)
 
     def _run_rois(self, image: np.ndarray, rois: list[Roi]) -> tuple[np.ndarray, np.ndarray]:
@@ -283,9 +288,14 @@ class FaceMesh(BaseLandmarker):
 
         if faces is not None:
             bboxes = [f.bbox for f in faces]
-            keypoints = [f.landmarks for f in faces]
-        elif keypoints is not None and len(keypoints) != len(bboxes):
-            raise ValueError(f'Got {len(bboxes)} boxes but {len(keypoints)} keypoint sets')
+            keypoints = [f.landmarks if f.landmarks is not None and len(f.landmarks) >= 2 else None for f in faces]
+        else:
+            if isinstance(bboxes, np.ndarray) and bboxes.ndim == 1:
+                bboxes = bboxes[np.newaxis, :]
+                if isinstance(keypoints, np.ndarray) and keypoints.ndim == 2:
+                    keypoints = [keypoints]
+            if keypoints is not None and len(keypoints) != len(bboxes):
+                raise ValueError(f'Got {len(bboxes)} boxes but {len(keypoints)} keypoint sets')
 
         if len(bboxes) == 0:
             return []

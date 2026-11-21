@@ -38,6 +38,8 @@ def process_image(detector, gaze_estimator, image_path: str, save_dir: str = 'ou
     for i, face in enumerate(faces):
         bbox = face.bbox
         x1, y1, x2, y2 = map(int, bbox[:4])
+        x1, y1 = max(0, x1), max(0, y1)
+        x2, y2 = min(image.shape[1], x2), min(image.shape[0], y2)
         face_crop = image[y1:y2, x1:x2]
 
         if face_crop.size == 0:
@@ -85,6 +87,8 @@ def process_video(detector, gaze_estimator, video_path: str, save_dir: str = 'ou
         for face in faces:
             bbox = face.bbox
             x1, y1, x2, y2 = map(int, bbox[:4])
+            x1, y1 = max(0, x1), max(0, y1)
+            x2, y2 = min(frame.shape[1], x2), min(frame.shape[0], y2)
             face_crop = frame[y1:y2, x1:x2]
 
             if face_crop.size == 0:
@@ -124,6 +128,8 @@ def run_camera(detector, gaze_estimator, camera_id: int = 0):
         for face in faces:
             bbox = face.bbox
             x1, y1, x2, y2 = map(int, bbox[:4])
+            x1, y1 = max(0, x1), max(0, y1)
+            x2, y2 = min(frame.shape[1], x2), min(frame.shape[0], y2)
             face_crop = frame[y1:y2, x1:x2]
 
             if face_crop.size == 0:

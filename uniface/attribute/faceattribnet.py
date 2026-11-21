@@ -70,7 +70,7 @@ class FaceAttribNet(BaseAttribute):
         Raises:
             ValueError: If `input_size` is not square.
         """
-        Logger.info(f'Initializing FaceAttribNet with model={model_name.name}')
+        Logger.info(f'Initializing FaceAttribNet with model={model_name}')
         self.model_path = verify_model_weights(model_name)
         # Normalized to a tuple so a [128, 128] list still compares equal to the ONNX metadata.
         self.input_size = tuple(input_size) if input_size is not None else (128, 128)
