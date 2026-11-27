@@ -160,28 +160,19 @@ def bbox_center_alignment(
             - 2x3 affine transform matrix used.
     """
 
-    # Convert rotation from degrees to radians
+    # Closed-form 2x3 affine equivalent to scale -> translate(-center*scale) -> rotate(rot) -> translate(out/2)
     rot = float(rotation) * np.pi / 180.0
-
-    # Scaling transform
-    t1 = SimilarityTransform(scale=scale)
-
-    # Translate the center point to the origin (after scaling)
-    cx = center[0] * scale
-    cy = center[1] * scale
-    t2 = SimilarityTransform(translation=(-1 * cx, -1 * cy))
-
-    # Rotation around the origin (the face center, after t2)
-    t3 = SimilarityTransform(rotation=rot)
-
-    # Translate origin to center of output image
-    t4 = SimilarityTransform(translation=(output_size / 2, output_size / 2))
-
-    # Combine all transformations in order: scale → center shift → rotate → recentralize
-    t = t1 + t2 + t3 + t4
-
-    # Extract 2x3 affine matrix
-    M = t.params[0:2]
+    a = float(scale) * float(np.cos(rot))
+    b = float(scale) * float(np.sin(rot))
+    half_out = output_size / 2.0
+    cx, cy = float(center[0]), float(center[1])
+    M = np.array(
+        [
+            [a, -b, half_out - a * cx + b * cy],
+            [b, a, half_out - b * cx - a * cy],
+        ],
+        dtype=np.float64,
+    )
 
     # Warp the image using OpenCV
     cropped = cv2.warpAffine(image, M, (output_size, output_size), borderValue=0.0)

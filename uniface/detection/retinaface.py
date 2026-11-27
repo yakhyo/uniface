@@ -97,6 +97,7 @@ class RetinaFace(BaseDetector):
         self.pre_nms_topk = pre_nms_topk
         self.post_nms_topk = post_nms_topk
         self.dynamic_size = dynamic_size
+        self._anchor_cache: dict[tuple[int, int], np.ndarray] = {}
 
         Logger.info(
             f'Initializing RetinaFace with model={self.model_name}, confidence_threshold={self.confidence_threshold}, '
@@ -199,7 +200,13 @@ class RetinaFace(BaseDetector):
 
         if self.dynamic_size:
             height, width, _ = image.shape
-            self._priors = generate_anchors(image_size=(height, width))  # generate anchors for each input image
+            cache_key = (height, width)
+            if cache_key in self._anchor_cache:
+                self._priors = self._anchor_cache[cache_key]
+            else:
+                self._priors = generate_anchors(image_size=cache_key)
+                if len(self._anchor_cache) < 16:
+                    self._anchor_cache[cache_key] = self._priors
             resize_factor = 1.0  # No resizing
         else:
             image, resize_factor = resize_image(image, target_shape=self.input_size)
@@ -248,35 +255,34 @@ class RetinaFace(BaseDetector):
             outputs[2].squeeze(0),
         )
 
-        # Decode boxes and landmarks
-        boxes = decode_boxes(location_predictions, self._priors)
-        landmarks = decode_landmarks(landmark_predictions, self._priors)
-
-        boxes, landmarks = self._scale_detections(boxes, landmarks, resize_factor, shape=(shape[0], shape[1]))
-
-        # Extract confidence scores for the face class
+        # Filter by confidence and pre-NMS top-k before decoding boxes and landmarks
         scores = confidence_scores[:, 1]
         mask = scores > self.confidence_threshold
+        if not np.any(mask):
+            return np.empty((0, 5), dtype=np.float32), np.empty((0, 5, 2), dtype=np.float32)
 
-        # Filter by confidence threshold
-        boxes, landmarks, scores = boxes[mask], landmarks[mask], scores[mask]
+        location_predictions = location_predictions[mask]
+        landmark_predictions = landmark_predictions[mask]
+        priors = self._priors[mask]
+        scores = scores[mask]
 
-        # Sort by scores
         order = scores.argsort()[::-1][: self.pre_nms_topk]
-        boxes, landmarks, scores = boxes[order], landmarks[order], scores[order]
+        location_predictions = location_predictions[order]
+        landmark_predictions = landmark_predictions[order]
+        priors = priors[order]
+        scores = scores[order]
+
+        # Decode and scale only surviving proposals
+        boxes = decode_boxes(location_predictions, priors)
+        landmarks = decode_landmarks(landmark_predictions, priors)
+        boxes, landmarks = self._scale_detections(boxes, landmarks, resize_factor, shape=(shape[0], shape[1]))
 
         # Apply NMS
         detections = np.hstack((boxes, scores[:, np.newaxis])).astype(np.float32, copy=False)
-        keep = non_max_suppression(detections, self.nms_threshold)
+        keep = non_max_suppression(detections, self.nms_threshold)[: self.post_nms_topk]
         detections, landmarks = detections[keep], landmarks[keep]
 
-        # Keep top-k detections
-        detections, landmarks = (
-            detections[: self.post_nms_topk],
-            landmarks[: self.post_nms_topk],
-        )
-
-        landmarks = landmarks.reshape(-1, 5, 2).astype(np.float32)
+        landmarks = landmarks.reshape(-1, 5, 2).astype(np.float32, copy=False)
 
         return detections, landmarks
 
@@ -288,10 +294,12 @@ class RetinaFace(BaseDetector):
         shape: tuple[int, int],
     ) -> tuple[np.ndarray, np.ndarray]:
         """Scale bounding boxes and landmarks to the original image size."""
-        bbox_scale = np.array([shape[0], shape[1]] * 2)
-        boxes = boxes * bbox_scale / resize_factor
+        scale_x = np.float32(shape[0] / resize_factor)
+        scale_y = np.float32(shape[1] / resize_factor)
+        bbox_scale = np.array([scale_x, scale_y, scale_x, scale_y], dtype=np.float32)
+        boxes = boxes * bbox_scale
 
-        landmark_scale = np.array([shape[0], shape[1]] * 5)
-        landmarks = landmarks * landmark_scale / resize_factor
+        landmark_scale = np.array([scale_x, scale_y] * 5, dtype=np.float32)
+        landmarks = landmarks * landmark_scale
 
         return boxes, landmarks
