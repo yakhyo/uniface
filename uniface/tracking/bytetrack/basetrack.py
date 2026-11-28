@@ -27,6 +27,8 @@ class BaseTrack:
     is_activated = False
     state = TrackState.New
 
+    history = OrderedDict()  # noqa: RUF012
+    features = []  # noqa: RUF012
     curr_feature = None
     score = 0
     start_frame = 0
@@ -34,10 +36,6 @@ class BaseTrack:
     time_since_update = 0
 
     location = (np.inf, np.inf)
-
-    def __init__(self) -> None:
-        self.history: OrderedDict = OrderedDict()
-        self.features: list = []
 
     @property
     def end_frame(self) -> int:

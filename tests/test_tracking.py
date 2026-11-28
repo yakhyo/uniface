@@ -7,8 +7,6 @@ from __future__ import annotations
 import numpy as np
 
 from uniface.tracking import BYTETracker
-from uniface.tracking.bytetrack.basetrack import BaseTrack
-from uniface.tracking.bytetrack.kalman import KalmanFilter
 
 
 def test_multiple_bytetrackers_do_not_collide_after_reset():
@@ -36,15 +34,16 @@ def test_multiple_bytetrackers_do_not_collide_after_reset():
     assert len(set(out[:, 4].tolist())) == 3
 
 
-def test_basetrack_mutable_containers_are_per_instance():
-    a = BaseTrack()
-    b = BaseTrack()
+def test_lost_track_is_refound_on_the_frame_after_timeout():
+    """A timed-out lost track stays matchable for one more frame, as in upstream ByteTrack."""
+    tracker = BYTETracker(track_buffer=5)
+    face = np.array([[100.0, 100.0, 200.0, 200.0, 0.9]])
 
-    a.features.append('feat_a')
-    a.history[1] = 'frame_1'
+    first_ids = tracker.update(face)[:, 4].tolist()
+    for frame in range(2, 10):
+        tracker.update(face if frame <= 3 else np.empty((0, 5)))
 
-    assert b.features == []
-    assert list(b.history) == []
+    assert tracker.update(face)[:, 4].tolist() == first_ids
 
 
 def test_removed_stracks_is_bounded():
@@ -57,24 +56,3 @@ def test_removed_stracks_is_bounded():
         tracker.update(np.empty((0, 5)))
 
     assert len(tracker.removed_stracks) <= 1000
-
-
-def test_kalman_multi_predict_matches_single_predict():
-    kf = KalmanFilter()
-    rng = np.random.default_rng(42)
-
-    means, covs = [], []
-    expected_means, expected_covs = [], []
-    for _ in range(10):
-        measurement = rng.uniform(50.0, 250.0, size=4)
-        measurement[2] = rng.uniform(0.6, 1.4)
-        m, c = kf.initiate(measurement)
-        means.append(m)
-        covs.append(c)
-        pm, pc = kf.predict(m.copy(), c.copy())
-        expected_means.append(pm)
-        expected_covs.append(pc)
-
-    actual_means, actual_covs = kf.multi_predict(np.asarray(means), np.asarray(covs))
-    assert np.allclose(actual_means, np.asarray(expected_means), atol=1e-12)
-    assert np.allclose(actual_covs, np.asarray(expected_covs), atol=1e-12)

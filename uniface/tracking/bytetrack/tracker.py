@@ -4,6 +4,8 @@
 
 from __future__ import annotations
 
+import sys
+
 import numpy as np
 
 from . import matching
@@ -62,16 +64,15 @@ class STrack(BaseTrack):
             stracks[i].mean = mean
             stracks[i].covariance = cov
 
-    def activate(self, kalman_filter: KalmanFilter, frame_id: int, track_id: int | None = None) -> None:
+    def activate(self, kalman_filter: KalmanFilter, frame_id: int) -> None:
         """Start a new tracklet.
 
         Args:
             kalman_filter: Kalman filter instance.
             frame_id: Current frame number.
-            track_id: ID to assign. Uses the shared counter when None.
         """
         self.kalman_filter = kalman_filter
-        self.track_id = track_id if track_id is not None else self.next_id()
+        self.track_id = self.next_id()
         self.mean, self.covariance = self.kalman_filter.initiate(self._tlwh_to_xyah(self._tlwh))
 
         self.tracklet_len = 0
@@ -181,23 +182,23 @@ class BYTETracker:
         self.buffer_size = track_buffer
 
         self.frame_id = 0
-        self._next_id = 0
         self.kalman_filter = KalmanFilter()
         self.tracked_stracks: list[STrack] = []
         self.lost_stracks: list[STrack] = []
         self.removed_stracks: list[STrack] = []
+        self.reset_id()
 
-    def _alloc_id(self) -> int:
-        self._next_id += 1
-        return self._next_id
+    def reset_id(self) -> None:
+        """Restart this tracker's track IDs at 1."""
+        self._ids = iter(range(1, sys.maxsize))
 
     def reset(self) -> None:
         """Reset tracker state."""
         self.frame_id = 0
-        self._next_id = 0
         self.tracked_stracks = []
         self.lost_stracks = []
         self.removed_stracks = []
+        self.reset_id()
 
     def update(self, detections: np.ndarray) -> np.ndarray:
         """Update tracker with new detections.
@@ -297,7 +298,8 @@ class BYTETracker:
             track = detections_remain[inew]
             if track.score < self.track_thresh:
                 continue
-            track.activate(self.kalman_filter, self.frame_id, track_id=self._alloc_id())
+            track.next_id = self._ids.__next__  # Take IDs from this tracker, not the shared counter
+            track.activate(self.kalman_filter, self.frame_id)
             activated_stracks.append(track)
 
         # Step 5: Remove old lost tracks
