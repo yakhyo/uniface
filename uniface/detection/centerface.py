@@ -205,16 +205,18 @@ class CenterFace(BaseDetector):
         offset_y = offset[0, 0, cy, cx]
         offset_x = offset[0, 1, cy, cx]
 
-        x1 = np.clip((cx + offset_x + 0.5) * _STRIDE - box_w / 2, 0, width)
-        y1 = np.clip((cy + offset_y + 0.5) * _STRIDE - box_h / 2, 0, height)
-        x2 = np.clip(x1 + box_w, 0, width)
-        y2 = np.clip(y1 + box_h, 0, height)
+        raw_x1 = (cx + offset_x + 0.5) * _STRIDE - box_w / 2
+        raw_y1 = (cy + offset_y + 0.5) * _STRIDE - box_h / 2
+        x1 = np.clip(raw_x1, 0, width)
+        y1 = np.clip(raw_y1, 0, height)
+        x2 = np.clip(raw_x1 + box_w, 0, width)
+        y2 = np.clip(raw_y1 + box_h, 0, height)
         bboxes = np.stack([x1, y1, x2, y2], axis=1)
 
-        # Landmarks are predicted relative to the box: (dy, dx) pairs per point
+        # Landmarks are predicted relative to the unclipped box: (dy, dx) pairs per point
         points = lms[0][:, cy, cx]  # (10, N)
-        kps_x = points[1::2].T * box_w[:, None] + x1[:, None]
-        kps_y = points[0::2].T * box_h[:, None] + y1[:, None]
+        kps_x = points[1::2].T * box_w[:, None] + raw_x1[:, None]
+        kps_y = points[0::2].T * box_h[:, None] + raw_y1[:, None]
         landmarks = np.stack([kps_x, kps_y], axis=2)  # (N, 5, 2)
 
         return bboxes, scores, landmarks

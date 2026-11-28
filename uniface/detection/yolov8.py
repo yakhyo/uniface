@@ -6,7 +6,7 @@ from typing import Literal
 
 import numpy as np
 
-from uniface.common import letterbox_resize, non_max_suppression, softmax
+from uniface.common import letterbox_resize, non_max_suppression, softmax, validate_image
 from uniface.constants import YOLOv8FaceWeights
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
@@ -110,6 +110,8 @@ class YOLOv8Face(BaseDetector):
 
         # YOLOv8 strides for 640x640 input (3 feature maps: 80x80, 40x40, 20x20)
         self.strides = [8, 16, 32]
+        self._dfl_proj = np.arange(16, dtype=np.float32)
+        self._grid_cache: dict[tuple[int, int], tuple[np.ndarray, np.ndarray]] = {}
 
         Logger.info(
             f'Initializing YOLOv8Face with model={self.model_name}, confidence_threshold={self.confidence_threshold}, '
@@ -190,63 +192,68 @@ class YOLOv8Face(BaseDetector):
 
         for pred, stride in zip(predictions, self.strides, strict=False):
             # pred shape: (1, 80, H, W)
-            batch_size, channels, height, width = pred.shape
+            _, channels, height, width = pred.shape
 
-            # Reshape: (1, 80, H, W) -> (1, 80, H*W) -> (1, H*W, 80) -> (H*W, 80)
-            pred = pred.reshape(batch_size, channels, -1).transpose(0, 2, 1)[0]
+            # Reshape: (1, 80, H, W) -> (H*W, 80)
+            pred_flat = pred[0].reshape(channels, -1).T
 
-            # Create grid with 0.5 offset (matching PyTorch's make_anchors)
-            grid_y, grid_x = np.meshgrid(np.arange(height) + 0.5, np.arange(width) + 0.5, indexing='ij')
-            grid_x = grid_x.flatten()
-            grid_y = grid_y.flatten()
+            # Clip logits before sigmoid to prevent float overflow on strongly negative values
+            cls_conf = np.clip(pred_flat[:, 64], -50.0, 50.0)
+            scores = (1.0 / (1.0 + np.exp(-cls_conf))).astype(np.float32, copy=False)
 
-            # Extract components
-            bbox_pred = pred[:, :64]  # DFL bbox prediction (64 channels = 4 * 16)
-            cls_conf = pred[:, 64]  # Class confidence (1 channel)
-            kpt_pred = pred[:, 65:]  # Keypoints (15 channels = 5 points * 3: x, y, visibility)
+            # Filter by confidence before running DFL softmax and keypoint decoding
+            mask = scores >= self.confidence_threshold
+            if not np.any(mask):
+                continue
 
-            # Decode bounding boxes from DFL
-            bbox_pred = bbox_pred.reshape(-1, 4, 16)
-            bbox_dist = softmax(bbox_pred, axis=-1) @ np.arange(16)
+            cache_key = (height, width)
+            if cache_key in self._grid_cache:
+                grid_x, grid_y = self._grid_cache[cache_key]
+            else:
+                gy, gx = np.meshgrid(
+                    np.arange(height, dtype=np.float32),
+                    np.arange(width, dtype=np.float32),
+                    indexing='ij',
+                )
+                grid_x, grid_y = gx.ravel(), gy.ravel()
+                if len(self._grid_cache) < 32:
+                    self._grid_cache[cache_key] = (grid_x, grid_y)
 
-            # Convert distances to xyxy format
-            x1 = (grid_x - bbox_dist[:, 0]) * stride
-            y1 = (grid_y - bbox_dist[:, 1]) * stride
-            x2 = (grid_x + bbox_dist[:, 2]) * stride
-            y2 = (grid_y + bbox_dist[:, 3]) * stride
+            gx_m = grid_x[mask]
+            gy_m = grid_y[mask]
+            pred_m = pred_flat[mask]
+            scores_m = scores[mask]
+
+            # Decode bounding boxes from DFL (64 channels = 4 * 16)
+            bbox_pred = pred_m[:, :64].reshape(-1, 4, 16)
+            bbox_dist = softmax(bbox_pred, axis=-1) @ self._dfl_proj
+
+            # Convert distances to xyxy format using 0.5 cell-center offset
+            cx = gx_m + np.float32(0.5)
+            cy = gy_m + np.float32(0.5)
+            x1 = (cx - bbox_dist[:, 0]) * stride
+            y1 = (cy - bbox_dist[:, 1]) * stride
+            x2 = (cx + bbox_dist[:, 2]) * stride
+            y2 = (cy + bbox_dist[:, 3]) * stride
             boxes = np.stack([x1, y1, x2, y2], axis=-1)
 
-            # Decode keypoints: kpt = (kpt * 2.0 + grid) * stride
-            kpt_grid_y, kpt_grid_x = np.meshgrid(np.arange(height), np.arange(width), indexing='ij')
-            kpt_grid_x = kpt_grid_x.flatten()
-            kpt_grid_y = kpt_grid_y.flatten()
-
-            kpt_pred = kpt_pred.reshape(-1, 5, 3)  # 5 points * (x, y, visibility)
-            kpt_x = (kpt_pred[:, :, 0] * 2.0 + kpt_grid_x[:, None]) * stride
-            kpt_y = (kpt_pred[:, :, 1] * 2.0 + kpt_grid_y[:, None]) * stride
-            # Ignore visibility (kpt_pred[:, :, 2]) for uniface compatibility
+            # Decode keypoints: kpt = (kpt * 2.0 + grid) * stride (visibility channel ignored)
+            kpt_pred = pred_m[:, 65:].reshape(-1, 5, 3)
+            kpt_x = (kpt_pred[:, :, 0] * np.float32(2.0) + gx_m[:, None]) * stride
+            kpt_y = (kpt_pred[:, :, 1] * np.float32(2.0) + gy_m[:, None]) * stride
             landmarks = np.stack([kpt_x, kpt_y], axis=-1).reshape(-1, 10)
 
-            # Apply sigmoid to class confidence
-            scores = 1 / (1 + np.exp(-cls_conf))
-
             boxes_list.append(boxes)
-            scores_list.append(scores)
+            scores_list.append(scores_m)
             landmarks_list.append(landmarks)
 
-        # Concatenate all predictions from all feature maps
+        if not boxes_list:
+            return np.empty((0, 5), dtype=np.float32), np.empty((0, 5, 2), dtype=np.float32)
+
+        # Concatenate filtered predictions from all feature maps
         boxes = np.concatenate(boxes_list, axis=0)
         scores = np.concatenate(scores_list, axis=0)
         landmarks = np.concatenate(landmarks_list, axis=0)
-
-        # Filter by confidence threshold
-        mask = scores >= self.confidence_threshold
-        boxes = boxes[mask]
-        scores = scores[mask]
-        landmarks = landmarks[mask]
-
-        if len(boxes) == 0:
-            return np.array([]), np.array([])
 
         # Apply NMS based on selected mode
         if self.nms_mode == 'torchvision':
@@ -260,7 +267,7 @@ class YOLOv8Face(BaseDetector):
             keep = non_max_suppression(detections_for_nms, self.nms_threshold)
 
         if len(keep) == 0:
-            return np.array([]), np.array([])
+            return np.empty((0, 5), dtype=np.float32), np.empty((0, 5, 2), dtype=np.float32)
 
         # Filter detections and limit to max_det
         keep = keep[: self.max_det]
@@ -282,10 +289,10 @@ class YOLOv8Face(BaseDetector):
         landmarks[:, 1::2] = (landmarks[:, 1::2] - pad_h) / scale  # y coordinates
 
         # Reshape landmarks to (N, 5, 2)
-        landmarks = landmarks.reshape(-1, 5, 2)
+        landmarks = landmarks.reshape(-1, 5, 2).astype(np.float32, copy=False)
 
         # Combine results
-        detections = np.concatenate([boxes, scores[:, None]], axis=1)
+        detections = np.concatenate([boxes, scores[:, None]], axis=1).astype(np.float32, copy=False)
 
         return detections, landmarks
 
@@ -321,6 +328,7 @@ class YOLOv8Face(BaseDetector):
             ...     confidence = face.confidence  # float
             ...     landmarks = face.landmarks  # np.ndarray with shape (5, 2)
         """
+        validate_image(image)
         original_height, original_width = image.shape[:2]
 
         image_tensor, scale, padding = self.preprocess(image)

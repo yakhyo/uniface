@@ -6,7 +6,7 @@ from typing import Literal
 
 import numpy as np
 
-from uniface.common import letterbox_resize, non_max_suppression
+from uniface.common import letterbox_resize, non_max_suppression, validate_image
 from uniface.constants import YOLOv5FaceWeights
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
@@ -185,7 +185,7 @@ class YOLOv5Face(BaseDetector):
         predictions = predictions[mask]
 
         if len(predictions) == 0:
-            return np.array([]), np.array([])
+            return np.empty((0, 5), dtype=np.float32), np.empty((0, 5, 2), dtype=np.float32)
 
         # Convert from xywh to xyxy
         boxes = self._xywh2xyxy(predictions[:, :4])
@@ -208,7 +208,7 @@ class YOLOv5Face(BaseDetector):
             keep = non_max_suppression(detections, self.nms_threshold)
 
         if len(keep) == 0:
-            return np.array([]), np.array([])
+            return np.empty((0, 5), dtype=np.float32), np.empty((0, 5, 2), dtype=np.float32)
 
         # Filter detections and limit to max_det
         keep = keep[: self.max_det]
@@ -222,15 +222,14 @@ class YOLOv5Face(BaseDetector):
         boxes[:, [1, 3]] = (boxes[:, [1, 3]] - pad_h) / scale
 
         # Scale landmarks
-        for i in range(5):
-            landmarks[:, i * 2] = (landmarks[:, i * 2] - pad_w) / scale
-            landmarks[:, i * 2 + 1] = (landmarks[:, i * 2 + 1] - pad_h) / scale
+        landmarks[:, 0::2] = (landmarks[:, 0::2] - pad_w) / scale
+        landmarks[:, 1::2] = (landmarks[:, 1::2] - pad_h) / scale
 
         # Reshape landmarks to (N, 5, 2)
-        landmarks = landmarks.reshape(-1, 5, 2)
+        landmarks = landmarks.reshape(-1, 5, 2).astype(np.float32, copy=False)
 
         # Combine results
-        detections = np.concatenate([boxes, scores[:, None]], axis=1)
+        detections = np.concatenate([boxes, scores[:, None]], axis=1).astype(np.float32, copy=False)
 
         return detections, landmarks
 
@@ -285,6 +284,7 @@ class YOLOv5Face(BaseDetector):
             ...     embedding = recognizer.get_normalized_embedding(image, face.landmarks)
         """
 
+        validate_image(image)
         original_height, original_width = image.shape[:2]
 
         image_tensor, scale, padding = self.preprocess(image)

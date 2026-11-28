@@ -104,3 +104,24 @@ def test_different_input_sizes(centerface_model):
         mock_image = np.random.randint(0, 255, size, dtype=np.uint8)
         faces = centerface_model.detect(mock_image)
         assert isinstance(faces, list), f'Should return list for size {size}'
+
+
+def test_postprocess_border_box_does_not_shift_x2_or_landmarks(centerface_model):
+    """Clamping a negative raw x1/y1 to 0 must not push x2/y2 or landmarks rightward/downward."""
+    heatmap = np.zeros((1, 1, 16, 16), dtype=np.float32)
+    scale = np.zeros((1, 2, 16, 16), dtype=np.float32)
+    offset = np.zeros((1, 2, 16, 16), dtype=np.float32)
+    lms = np.zeros((1, 10, 16, 16), dtype=np.float32)
+
+    # Cell (cy=0, cx=0): center at (2, 2); box_w=box_h=40 -> raw_x1=-18, raw_x2=22
+    heatmap[0, 0, 0, 0] = 0.9
+    scale[0, :, 0, 0] = np.log(40.0 / 4.0)
+    lms[0, :, 0, 0] = 0.5  # center of unclipped box -> (2, 2)
+
+    bboxes, _, landmarks = centerface_model.postprocess([heatmap, scale, offset, lms], image_size=(64, 64))
+
+    assert bboxes[0, 0] == pytest.approx(0.0)
+    assert bboxes[0, 1] == pytest.approx(0.0)
+    assert bboxes[0, 2] == pytest.approx(22.0), f'Expected x2=22.0, got {bboxes[0, 2]}'
+    assert bboxes[0, 3] == pytest.approx(22.0), f'Expected y2=22.0, got {bboxes[0, 3]}'
+    assert np.allclose(landmarks[0], 2.0)

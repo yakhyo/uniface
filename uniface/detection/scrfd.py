@@ -4,11 +4,13 @@
 
 from __future__ import annotations
 
+import math
 from typing import Literal
 
+import cv2
 import numpy as np
 
-from uniface.common import distance2bbox, distance2kps, non_max_suppression, resize_image
+from uniface.common import distance2bbox, distance2kps, non_max_suppression, resize_image, validate_image
 from uniface.constants import SCRFDWeights
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
@@ -74,6 +76,9 @@ class SCRFD(BaseDetector):
             providers=providers,
         )
 
+        if input_size[0] <= 0 or input_size[1] <= 0 or input_size[0] % 8 != 0 or input_size[1] % 8 != 0:
+            raise ValueError(f'input_size dimensions must be positive multiples of 8, got {input_size}')
+
         self.model_name = model_name
         self.confidence_threshold = confidence_threshold
         self.nms_threshold = nms_threshold
@@ -118,18 +123,22 @@ class SCRFD(BaseDetector):
     def preprocess(self, image: np.ndarray) -> np.ndarray:
         """Preprocess image for inference.
 
+        Converts BGR input to RGB and normalizes with mean 127.5 and std 128.0
+        to match InsightFace's SCRFD training pipeline.
+
         Args:
-            image: Input image with shape (H, W, C).
+            image: Input image with shape (H, W, C) in BGR format.
 
         Returns:
             Preprocessed image tensor with shape (1, C, H, W).
         """
-        image = image.astype(np.float32)
-        image = (image - 127.5) / 127.5
-        image = image.transpose(2, 0, 1)  # HWC to CHW
-        image = np.expand_dims(image, axis=0)
-
-        return image
+        return cv2.dnn.blobFromImage(
+            image,
+            scalefactor=1.0 / 128.0,
+            size=(image.shape[1], image.shape[0]),
+            mean=(127.5, 127.5, 127.5),
+            swapRB=True,
+        )
 
     def inference(self, input_tensor: np.ndarray) -> list[np.ndarray]:
         """Perform model inference on the preprocessed image tensor.
@@ -163,12 +172,13 @@ class SCRFD(BaseDetector):
         num_feature_maps = self._num_feature_maps
         for idx, stride in enumerate(self._feat_stride_fpn):
             scores = outputs[idx]
-            bbox_preds = outputs[num_feature_maps + idx] * stride
-            kps_preds = outputs[2 * num_feature_maps + idx] * stride
+            pos_indices = np.where(scores >= self.confidence_threshold)[0]
+            if len(pos_indices) == 0:
+                continue
 
-            # Generate anchors
-            fm_height = image_size[0] // stride
-            fm_width = image_size[1] // stride
+            # FPN heads emit ceil(dim / stride) cells for non-multiple-of-32 sizes (e.g. 720p)
+            fm_height = math.ceil(image_size[0] / stride)
+            fm_width = math.ceil(image_size[1] / stride)
             cache_key = (fm_height, fm_width, stride)
 
             if cache_key in self._center_cache:
@@ -179,23 +189,23 @@ class SCRFD(BaseDetector):
                 anchor_centers = (anchor_centers * stride).reshape(-1, 2)
 
                 if self._num_anchors > 1:
-                    anchor_centers = np.tile(anchor_centers[:, None, :], (1, self._num_anchors, 1)).reshape(-1, 2)
+                    anchor_centers = np.repeat(anchor_centers, self._num_anchors, axis=0)
 
                 if len(self._center_cache) < 100:
                     self._center_cache[cache_key] = anchor_centers
 
-            pos_indices = np.where(scores >= self.confidence_threshold)[0]
-            if len(pos_indices) == 0:
-                continue
+            selected_centers = anchor_centers[pos_indices]
+            bbox_preds = outputs[num_feature_maps + idx][pos_indices] * stride
+            kps_preds = outputs[2 * num_feature_maps + idx][pos_indices] * stride
 
-            bboxes = distance2bbox(anchor_centers, bbox_preds)[pos_indices]
+            bboxes = distance2bbox(selected_centers, bbox_preds)
             scores_selected = scores[pos_indices]
             scores_list.append(scores_selected)
             bboxes_list.append(bboxes)
 
-            landmarks = distance2kps(anchor_centers, kps_preds)
+            landmarks = distance2kps(selected_centers, kps_preds)
             landmarks = landmarks.reshape((landmarks.shape[0], -1, 2))
-            kpss_list.append(landmarks[pos_indices])
+            kpss_list.append(landmarks)
 
         return scores_list, bboxes_list, kpss_list
 
@@ -234,6 +244,7 @@ class SCRFD(BaseDetector):
             ...     embedding = recognizer.get_normalized_embedding(image, face.landmarks)
         """
 
+        validate_image(image)
         original_height, original_width = image.shape[:2]
 
         image, resize_factor = resize_image(image, target_shape=self.input_size)
