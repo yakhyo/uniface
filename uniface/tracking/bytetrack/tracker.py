@@ -4,6 +4,8 @@
 
 from __future__ import annotations
 
+import sys
+
 import numpy as np
 
 from . import matching
@@ -164,6 +166,8 @@ class BYTETracker:
         low_thresh: Low confidence detection threshold.
     """
 
+    _MAX_REMOVED_TRACKS = 1000
+
     def __init__(
         self,
         *,
@@ -182,6 +186,11 @@ class BYTETracker:
         self.tracked_stracks: list[STrack] = []
         self.lost_stracks: list[STrack] = []
         self.removed_stracks: list[STrack] = []
+        self.reset_id()
+
+    def reset_id(self) -> None:
+        """Restart this tracker's track IDs at 1."""
+        self._ids = iter(range(1, sys.maxsize))
 
     def reset(self) -> None:
         """Reset tracker state."""
@@ -189,7 +198,7 @@ class BYTETracker:
         self.tracked_stracks = []
         self.lost_stracks = []
         self.removed_stracks = []
-        BaseTrack.reset_id()
+        self.reset_id()
 
     def update(self, detections: np.ndarray) -> np.ndarray:
         """Update tracker with new detections.
@@ -289,6 +298,7 @@ class BYTETracker:
             track = detections_remain[inew]
             if track.score < self.track_thresh:
                 continue
+            track.next_id = self._ids.__next__  # Take IDs from this tracker, not the shared counter
             track.activate(self.kalman_filter, self.frame_id)
             activated_stracks.append(track)
 
@@ -307,6 +317,8 @@ class BYTETracker:
         self.lost_stracks = _sub_stracks(self.lost_stracks, self.removed_stracks)
         self.tracked_stracks, self.lost_stracks = _remove_duplicate_stracks(self.tracked_stracks, self.lost_stracks)
         self.removed_stracks.extend(removed_stracks)
+        if len(self.removed_stracks) > self._MAX_REMOVED_TRACKS:
+            self.removed_stracks = self.removed_stracks[-self._MAX_REMOVED_TRACKS :]
 
         # Output confirmed tracks
         outputs = []
