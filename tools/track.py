@@ -21,26 +21,26 @@ import cv2
 import numpy as np
 from tqdm import tqdm
 
+from uniface.common import xyxy_to_cxcywh
 from uniface.detection import SCRFD, RetinaFace
 from uniface.draw import draw_tracks
 from uniface.tracking import BYTETracker
-from uniface.tracking.bytetrack import matching
 
 
 def _assign_track_ids(faces, tracks) -> list:
-    """Match tracker outputs 1-to-1 back to detected Face objects by IoU."""
+    """Match tracker outputs back to Face objects by center distance."""
     if len(tracks) == 0 or len(faces) == 0:
         return []
 
     face_bboxes = np.array([f.bbox for f in faces], dtype=np.float32)
-    track_bboxes = tracks[:, :4].astype(np.float32)
     track_ids = tracks[:, 4].astype(int)
 
-    cost_matrix = 1.0 - matching.iou_batch(track_bboxes, face_bboxes)
-    matches, _, _ = matching.linear_assignment(cost_matrix, thresh=0.5)
+    face_centers = xyxy_to_cxcywh(face_bboxes)[:, :2]  # (N, 2) -> [cx, cy]
+    track_centers = xyxy_to_cxcywh(tracks[:, :4])[:, :2]  # (M, 2) -> [cx, cy]
 
-    for ti, fi in matches:
-        faces[int(fi)].track_id = int(track_ids[int(ti)])
+    for ti in range(len(tracks)):
+        dists = (track_centers[ti, 0] - face_centers[:, 0]) ** 2 + (track_centers[ti, 1] - face_centers[:, 1]) ** 2
+        faces[int(np.argmin(dists))].track_id = track_ids[ti]
 
     return [f for f in faces if f.track_id is not None]
 
@@ -86,9 +86,9 @@ def process_video(
 
         frame_count += 1
 
-        # Detect faces and pass both high- and low-confidence candidates to ByteTrack
+        # Detect faces
         faces = detector.detect(frame)
-        dets = np.array([[*f.bbox, f.confidence] for f in faces if f.confidence > tracker.low_thresh])
+        dets = np.array([[*f.bbox, f.confidence] for f in faces if f.confidence >= threshold])
         dets = dets if len(dets) > 0 else np.empty((0, 5))
 
         # Update tracker
@@ -138,9 +138,9 @@ def run_camera(
             break
         frame = cv2.flip(frame, 1)
 
-        # Detect faces and pass both high- and low-confidence candidates to ByteTrack
+        # Detect faces
         faces = detector.detect(frame)
-        dets = np.array([[*f.bbox, f.confidence] for f in faces if f.confidence > tracker.low_thresh])
+        dets = np.array([[*f.bbox, f.confidence] for f in faces if f.confidence >= threshold])
         dets = dets if len(dets) > 0 else np.empty((0, 5))
 
         # Update tracker

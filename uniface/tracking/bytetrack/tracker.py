@@ -68,7 +68,7 @@ class STrack(BaseTrack):
         Args:
             kalman_filter: Kalman filter instance.
             frame_id: Current frame number.
-            track_id: Optional explicit track ID (used for per-tracker ID isolation).
+            track_id: ID to assign. Uses the shared counter when None.
         """
         self.kalman_filter = kalman_filter
         self.track_id = track_id if track_id is not None else self.next_id()
@@ -81,20 +81,13 @@ class STrack(BaseTrack):
         self.frame_id = frame_id
         self.start_frame = frame_id
 
-    def re_activate(
-        self,
-        new_track: STrack,
-        frame_id: int,
-        new_id: bool = False,
-        track_id: int | None = None,
-    ) -> None:
+    def re_activate(self, new_track: STrack, frame_id: int, new_id: bool = False) -> None:
         """Reactivate a lost track.
 
         Args:
             new_track: New detection to reactivate with.
             frame_id: Current frame number.
             new_id: Whether to assign a new track ID.
-            track_id: Optional explicit track ID when `new_id` is True.
         """
         self.mean, self.covariance = self.kalman_filter.update(
             self.mean, self.covariance, self._tlwh_to_xyah(new_track.tlwh)
@@ -104,7 +97,7 @@ class STrack(BaseTrack):
         self.is_activated = True
         self.frame_id = frame_id
         if new_id:
-            self.track_id = track_id if track_id is not None else self.next_id()
+            self.track_id = self.next_id()
         self.score = new_track.score
 
     def update(self, new_track: STrack, frame_id: int) -> None:
@@ -199,7 +192,7 @@ class BYTETracker:
         return self._next_id
 
     def reset(self) -> None:
-        """Reset tracker state without affecting other BYTETracker instances."""
+        """Reset tracker state."""
         self.frame_id = 0
         self._next_id = 0
         self.tracked_stracks = []
@@ -319,7 +312,7 @@ class BYTETracker:
         self.tracked_stracks = _joint_stracks(self.tracked_stracks, refind_stracks)
         self.lost_stracks = _sub_stracks(self.lost_stracks, self.tracked_stracks)
         self.lost_stracks.extend(lost_stracks)
-        self.lost_stracks = _sub_stracks(self.lost_stracks, removed_stracks)
+        self.lost_stracks = _sub_stracks(self.lost_stracks, self.removed_stracks)
         self.tracked_stracks, self.lost_stracks = _remove_duplicate_stracks(self.tracked_stracks, self.lost_stracks)
         self.removed_stracks.extend(removed_stracks)
         if len(self.removed_stracks) > self._MAX_REMOVED_TRACKS:

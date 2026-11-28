@@ -179,7 +179,7 @@ tracker.reset()
 
 This clears all active, lost, and removed tracks, resets the frame counter, and resets the ID counter back to zero.
 
-The ID counter is shared by every `BYTETracker` in the process. Calling `reset()` on one tracker restarts numbering for all of them, and a second tracker created without a reset continues from where the first one stopped. When you track several streams at once, do not rely on IDs being unique or starting at 1 per stream.
+Each `BYTETracker` numbers its own tracks starting at 1, so trackers running on different streams do not affect each other's IDs.
 
 ---
 
