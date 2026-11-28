@@ -173,6 +173,17 @@ class FAISS(BaseStore):
         except Exception as exc:
             raise RuntimeError(f'Failed to load FAISS index from {self.db_path}') from exc
 
+        if loaded_index.d != self.embedding_size:
+            raise RuntimeError(
+                f'Loaded FAISS index dimension ({loaded_index.d}) does not match '
+                f'configured embedding_size ({self.embedding_size})'
+            )
+        if loaded_index.ntotal != len(loaded_metadata):
+            raise RuntimeError(
+                f'Loaded FAISS index count ({loaded_index.ntotal}) does not match '
+                f'metadata length ({len(loaded_metadata)})'
+            )
+
         self.index = loaded_index
         self.metadata = loaded_metadata
         Logger.info('Loaded FAISS index with %d vectors from %s', self.index.ntotal, self.db_path)

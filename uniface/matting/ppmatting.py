@@ -7,6 +7,7 @@ from __future__ import annotations
 import cv2
 import numpy as np
 
+from uniface.common import validate_image
 from uniface.constants import PPMattingWeights
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
@@ -75,6 +76,8 @@ class PPMatting(BaseMatting):
         providers: list[str] | None = None,
     ) -> None:
         Logger.info(f'Initializing PPMatting with model={model_name}, max_short={max_short}')
+        if max_short < STRIDE:
+            raise ValueError(f'max_short must be at least {STRIDE}, got {max_short}')
 
         self.max_short = max_short
         self.providers = providers
@@ -120,6 +123,7 @@ class PPMatting(BaseMatting):
         Raises:
             ValueError: If either side of the image is shorter than 32 pixels.
         """
+        validate_image(image)
         orig_h, orig_w = image.shape[:2]
         if orig_h < STRIDE or orig_w < STRIDE:
             raise ValueError(f'PPMatting needs an image of at least {STRIDE}x{STRIDE} pixels, got {orig_h}x{orig_w}')

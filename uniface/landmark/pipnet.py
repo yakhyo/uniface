@@ -8,6 +8,7 @@ from __future__ import annotations
 import cv2
 import numpy as np
 
+from uniface.common import validate_image
 from uniface.constants import PIPNetWeights
 from uniface.log import Logger
 from uniface.model_store import verify_model_weights
@@ -107,6 +108,7 @@ class PIPNet(BaseLandmarker):
             self._reverse_index1, self._reverse_index2, self._max_len = get_meanface_info(
                 self.num_lms, self.num_neighbors
             )
+            self._flat_reverse_index = self._reverse_index1 * self.num_neighbors + self._reverse_index2
 
             Logger.info(f'Model initialized with {self.num_lms} landmarks ({self.input_h}x{self.input_w} input)')
 
@@ -134,6 +136,7 @@ class PIPNet(BaseLandmarker):
                 - The crop metadata `(x1, y1, crop_w, crop_h)` used to
                   rescale predictions back to original image coordinates.
         """
+        validate_image(image)
         crop, crop_meta = self._crop_face(image, bbox)
         resized = cv2.resize(crop, (self.input_w, self.input_h))
         rgb = cv2.cvtColor(resized, cv2.COLOR_BGR2RGB).astype(np.float32) / 255.0
@@ -144,6 +147,11 @@ class PIPNet(BaseLandmarker):
     def _crop_face(self, image: np.ndarray, bbox: np.ndarray) -> tuple[np.ndarray, tuple[int, int, int, int]]:
         img_h, img_w = image.shape[:2]
         x1, y1, x2, y2 = (float(v) for v in bbox[:4])
+        if x2 <= x1 or y2 <= y1:
+            raise ValueError(f'Invalid bounding box {[x1, y1, x2, y2]}: expected x2 > x1 and y2 > y1')
+        if x2 <= 0 or y2 <= 0 or x1 >= img_w or y1 >= img_h:
+            raise ValueError(f'Bounding box {bbox[:4]} does not overlap the {img_w}x{img_h} image')
+
         det_w = x2 - x1 + 1
         det_h = y2 - y1 + 1
 
@@ -153,10 +161,10 @@ class PIPNet(BaseLandmarker):
         x2 += int(det_w * _BBOX_PAD_RATIO)
         y2 += int(det_h * _BBOX_PAD_RATIO)
 
-        x1 = max(int(x1), 0)
-        y1 = max(int(y1), 0)
-        x2 = min(int(x2), img_w - 1)
-        y2 = min(int(y2), img_h - 1)
+        x1 = min(max(int(x1), 0), img_w - 1)
+        y1 = min(max(int(y1), 0), img_h - 1)
+        x2 = min(max(int(x2), x1), img_w - 1)
+        y2 = min(max(int(y2), y1), img_h - 1)
         crop_w = x2 - x1 + 1
         crop_h = y2 - y1 + 1
 
@@ -217,8 +225,8 @@ class PIPNet(BaseLandmarker):
 
         # Reverse gather: collect predictions about landmark i made by its neighbors,
         # then average with landmark i's own prediction.
-        rev_x = nb_pred_x.reshape(-1)[self._reverse_index1 * nb + self._reverse_index2].reshape(n, self._max_len)
-        rev_y = nb_pred_y.reshape(-1)[self._reverse_index1 * nb + self._reverse_index2].reshape(n, self._max_len)
+        rev_x = nb_pred_x.reshape(-1)[self._flat_reverse_index].reshape(n, self._max_len)
+        rev_y = nb_pred_y.reshape(-1)[self._flat_reverse_index].reshape(n, self._max_len)
 
         merged_x = np.mean(np.concatenate([pred_x[:, None], rev_x], axis=1), axis=1)
         merged_y = np.mean(np.concatenate([pred_y[:, None], rev_y], axis=1), axis=1)
